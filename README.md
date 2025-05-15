@@ -1,3 +1,76 @@
+:fork_and_knife: This Fork
+------------
+
+This fork contains my own setup to compile `pgModeler` in MacOSX Sequoia.
+
+**Versions**
+
+* QT (via `QT Maintainance Tool`): `6.8.2`
+* Xcode (manually installed): `15.4`
+* `openssl` (`brew install openssl@3`): `3.5.2`
+* `postgresql` (`brew install postgresql@17`): `17.4.1`
+* `libxml2` (`brew install libxml2`): `2.13.8`
+
+**Environment Variables**
+
+```shell
+export LDFLAGS="-L${homebrew_dir}/lib $LDFLAGS"
+export CPPFLAGS="-I${homebrew_dir}/include $CPPFLAGS"
+export CXXFLAGS=$CPPFLAGS
+export CMAKE_CXX_FLAGS="-std=c++11 -stdlib=libc++"
+
+# pgsql
+export PGSQL_ROOT=/opt/homebrew/Cellar/libpq/17.4_1
+
+# openssl
+export OPENSSL_ROOT=/opt/homebrew/Cellar/openssl@3/3.5.2
+
+# qt
+export QT_ROOT=/opt/qt/6.8.2/macos
+export QMAKE_CXXFLAGS=$CMAKE_CXX_FLAGS
+export LDFLAGS="$LDFLAGS -L$QT_ROOT/lib"o
+export CPPFLAGS="$CPPFLAGS -I$QT_ROOT/include -std=c++11 -stdlib=libc++"
+
+# pgmodeler
+export INSTALLATION_ROOT=/Applications/pgModeler.app
+export PGMODELER_SOURCE=$HOME/git/pgmodeler
+
+export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:"$QT_ROOT/lib/pkgconfig"
+export PATH="$QT_ROOT/bin":$PATH
+```
+
+At this point you can execute the following against this `main` branch:
+
+```shell
+$QT_ROOT/bin/qmake -r CONFIG+=release pgmodeler.pro
+make
+make install
+$QT_ROOT/bin/macdeployqt $INSTALLATION_ROOT \
+                         $INSTALLATION_ROOT/Contents/MacOS/pgmodeler-ch \
+                         $INSTALLATION_ROOT/Contents/MacOS/pgmodeler-cli
+```
+
+When you upgrade the ancillary libraries (`pgsql`, `openssl`, ..) and recompile you need to follow the "Resolving dependencies" section in the [official documentation](https://pgmodeler.io/support/installation).
+
+Here are my adapted commands:
+
+```shell
+cp -i $PGSQL_ROOT/lib/libpq.5.dylib \
+      $OPENSSL_ROOT/lib/libssl.3.dylib \
+      $OPENSSL_ROOT/lib/libcrypto.3.dylib \
+   $INSTALLATION_ROOT/Contents/Frameworks
+
+install_name_tool -change "@loader_path/../lib/libcrypto.3.dylib" "@loader_path/../Frameworks/libcrypto.3.dylib" $INSTALLATION_ROOT/Contents/Frameworks/libssl.3.dylib
+install_name_tool -change "@loader_path/../lib/libcrypto.3.dylib" "@loader_path/../Frameworks/libcrypto.3.dylib" $INSTALLATION_ROOT/Contents/Frameworks/libpq.5.dylib
+install_name_tool -change "@loader_path/../lib/libssl.3.dylib" "@loader_path/../Frameworks/libssl.3.dylib" $INSTALLATION_ROOT/Contents/Frameworks/libpq.5.dylib
+install_name_tool -change libpq.5.dylib "@loader_path/../Frameworks/libpq.5.dylib" $INSTALLATION_ROOT/Contents/Frameworks/libpgconnector.dylib
+
+mkdir $INSTALLATION_ROOT/PlugIns/tls
+cp -ir $QT_ROOT//plugins/tls/* $INSTALLATION_ROOT/PlugIns/tls
+```
+
+
+-----------
 ![pgmodeler_mainwindow](https://user-images.githubusercontent.com/2205476/213446508-9bd549b3-ee7f-476d-9249-f537c31fce04.png)
 
 
