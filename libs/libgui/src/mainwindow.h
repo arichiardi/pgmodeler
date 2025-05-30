@@ -211,7 +211,7 @@ class __libgui MainWindow: public QMainWindow, public Ui::MainWindow {
 
 public:
 		enum MWViewsId {
-			WelcomeView,
+			HomeView,
 			DesignView,
 			ManageView
 		};

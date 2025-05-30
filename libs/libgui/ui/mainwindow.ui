@@ -32,7 +32,7 @@
    <string>pgModeler - PostgreSQL Database Modeler</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="../res/resources.qrc">
+   <iconset resource="../../../priv-plugins/res/logoicons.qrc">
     <normaloff>:/icons/icons/pgmodeler_logo.png</normaloff>:/icons/icons/pgmodeler_logo.png</iconset>
   </property>
   <property name="statusTip">
@@ -861,7 +861,7 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
-   <addaction name="action_welcome"/>
+   <addaction name="action_home"/>
    <addaction name="action_design"/>
    <addaction name="action_manage"/>
    <addaction name="separator"/>
@@ -1066,7 +1066,7 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset resource="../res/resources.qrc">
+    <iconset resource="../../../priv-plugins/res/logoicons.qrc">
      <normaloff>:/icons/icons/about.png</normaloff>:/icons/icons/about.png</iconset>
    </property>
    <property name="text">
@@ -1431,7 +1431,7 @@
     <string>Ctrl+Shift+D</string>
    </property>
   </action>
-  <action name="action_welcome">
+  <action name="action_home">
    <property name="checkable">
     <bool>true</bool>
    </property>
@@ -1440,16 +1440,16 @@
    </property>
    <property name="icon">
     <iconset resource="../res/resources.qrc">
-     <normaloff>:/icons/icons/pgmodeler_logo.png</normaloff>:/icons/icons/pgmodeler_logo.png</iconset>
+     <normaloff>:/icons/icons/home.png</normaloff>:/icons/icons/home.png</iconset>
    </property>
    <property name="text">
-    <string>Welcome</string>
+    <string>Home</string>
    </property>
    <property name="toolTip">
-    <string>Welcome screen</string>
+    <string>Home screen</string>
    </property>
    <property name="shortcut">
-    <string>Shift+W</string>
+    <string>Shift+H</string>
    </property>
   </action>
   <action name="action_design">
@@ -1602,7 +1602,7 @@
  </tabstops>
  <resources>
   <include location="../res/resources.qrc"/>
-  <include location="../res/resources.qrc"/>
+  <include location="../../../priv-plugins/res/logoicons.qrc"/>
  </resources>
  <connections/>
 </ui>
