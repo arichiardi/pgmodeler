@@ -25,8 +25,8 @@ target_include_directories(${PGM_TARGET} PUBLIC
     ${LIBPARSERS_INC}
     ${LIBUTILS_INC}
     src/compat
-    ../${LIBGUI}/gui_autogen/include
-    ${PRIV_PLUGINS_SRC})
+    ${PRIV_PLUGINS_SRC}
+    ${LIBGUI_AUTOGEN_INC})
 
 target_link_libraries(${PGM_TARGET} PUBLIC
     canvas
