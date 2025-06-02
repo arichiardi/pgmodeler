@@ -279,6 +279,7 @@
         <file>icons/wordwrap.png</file>
         <file>icons/xmlcode.png</file>
         <file>icons/home.png</file>
+        <file>icons/welcome.png</file>
     </qresource>
     <qresource prefix="/images">
         <file>images/brazil_flag.png</file>

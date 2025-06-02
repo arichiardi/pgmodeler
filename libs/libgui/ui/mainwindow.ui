@@ -9,7 +9,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1078</width>
+    <width>1002</width>
     <height>480</height>
    </rect>
   </property>
@@ -736,8 +736,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1078</width>
-     <height>27</height>
+     <width>1002</width>
+     <height>25</height>
     </rect>
    </property>
    <property name="autoFillBackground">
@@ -861,7 +861,7 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
-   <addaction name="action_home"/>
+   <addaction name="action_welcome"/>
    <addaction name="action_design"/>
    <addaction name="action_manage"/>
    <addaction name="separator"/>
@@ -1431,7 +1431,7 @@
     <string>Ctrl+Shift+D</string>
    </property>
   </action>
-  <action name="action_home">
+  <action name="action_welcome">
    <property name="checkable">
     <bool>true</bool>
    </property>
@@ -1440,16 +1440,16 @@
    </property>
    <property name="icon">
     <iconset resource="../res/resources.qrc">
-     <normaloff>:/icons/icons/home.png</normaloff>:/icons/icons/home.png</iconset>
+     <normaloff>:/icons/icons/welcome.png</normaloff>:/icons/icons/welcome.png</iconset>
    </property>
    <property name="text">
-    <string>Home</string>
+    <string>Welcome</string>
    </property>
    <property name="toolTip">
-    <string>Home screen</string>
+    <string>Welcome screen</string>
    </property>
    <property name="shortcut">
-    <string>Shift+H</string>
+    <string>Shift+W</string>
    </property>
   </action>
   <action name="action_design">

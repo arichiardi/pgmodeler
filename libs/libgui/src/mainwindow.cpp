@@ -269,7 +269,7 @@ void MainWindow::configureMenusActionsWidgets()
 	arrange_menu.addAction(tr("Scattered"), this, &MainWindow::arrangeObjects);
 
 	models_tbw->tabBar()->setVisible(false);
-	action_home->setData(HomeView);
+	action_welcome->setData(WelcomeView);
 	action_design->setData(DesignView);
 	action_manage->setData(ManageView);
 
@@ -471,7 +471,7 @@ void MainWindow::createMainWidgets()
 		grid->setContentsMargins(0,0,0,0);
 		grid->setSpacing(0);
 		grid->addWidget(welcome_wgt, 0, 0);
-		views_stw->widget(HomeView)->setLayout(grid);
+		views_stw->widget(WelcomeView)->setLayout(grid);
 
 		sql_tool_wgt=new SQLToolWidget;
 		sql_tool_wgt->setObjectName("sql_tool_wgt");
@@ -657,7 +657,7 @@ void MainWindow::connectSignalsToSlots()
 	connect(action_import, &QAction::triggered, this, &MainWindow::importDatabase);
 	connect(action_diff, &QAction::triggered, this, &MainWindow::diffModelDatabase);
 
-	connect(action_home, &QAction::triggered, this, &MainWindow::changeCurrentView);
+	connect(action_welcome, &QAction::triggered, this, &MainWindow::changeCurrentView);
 	connect(action_design, &QAction::triggered, this, &MainWindow::changeCurrentView);
 	connect(action_manage, &QAction::triggered, this, &MainWindow::changeCurrentView);
 	connect(action_manage, &QAction::toggled, this, &MainWindow::changeCurrentView);
@@ -1423,7 +1423,7 @@ void MainWindow::setCurrentModel()
 	if(models_tbw->count() > 0)
 		action_design->activate(QAction::Trigger);
 	else
-		action_home->activate(QAction::Trigger);
+		action_welcome->activate(QAction::Trigger);
 
 	removeModelActions();
 
@@ -2490,18 +2490,18 @@ void MainWindow::changeCurrentView(bool checked)
 		bool enable=(curr_act==action_design);
 		QList<QAction *> actions;
 
-		action_home->blockSignals(true);
+		action_welcome->blockSignals(true);
 		action_manage->blockSignals(true);
 		action_design->blockSignals(true);
 
-		action_home->setChecked(false);
+		action_welcome->setChecked(false);
 		action_manage->setChecked(false);
 		action_design->setChecked(false);
 
 		curr_act->setChecked(true);
 		views_stw->setCurrentIndex(curr_act->data().toInt());
 
-		action_home->blockSignals(false);
+		action_welcome->blockSignals(false);
 		action_manage->blockSignals(false);
 		action_design->blockSignals(false);
 
@@ -2684,8 +2684,8 @@ void MainWindow::switchView(MWViewsId view)
 		case(DesignView):
 			action_design->toggle();
 		break;
-		case(HomeView):
-			action_home->toggle();
+		case(WelcomeView):
+			action_welcome->toggle();
 		break;
 	}
 }
