@@ -1,8 +1,6 @@
 <RCC>
     <qresource prefix="/icons">
         <file>icons/pgmodeler_logo.png</file>
-        <file>icons/about.png</file>
-        <file>icons/update1.png</file>
     </qresource>
 
     <qresource prefix="/images">
