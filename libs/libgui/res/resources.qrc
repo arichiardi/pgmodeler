@@ -307,5 +307,11 @@
         <file>images/schemafile.png</file>
         <file>images/vsplitter_handle_dark.png</file>
         <file>images/vsplitter_handle_light.png</file>
+        <file>images/down_arrow_black.png</file>
+        <file>images/down_arrow_disabled.png</file>
+        <file>images/down_arrow_white.png</file>
+        <file>images/up_arrow_white.png</file>
+        <file>images/up_arrow_disabled.png</file>
+        <file>images/up_arrow_black.png</file>
     </qresource>
 </RCC>
