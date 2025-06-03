@@ -35,7 +35,7 @@
    <string>Diff tool</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="../../res/logoicons.qrc">
+   <iconset resource="../../../../priv-plugins/res/logoicons.qrc">
     <normaloff>:/icons/icons/pgmodeler_logo.png</normaloff>:/icons/icons/pgmodeler_logo.png</iconset>
   </property>
   <layout class="QGridLayout" name="gridLayout_6">
@@ -2721,7 +2721,7 @@
        </property>
        <property name="maximumSize">
         <size>
-         <width>169</width>
+         <width>180</width>
          <height>35</height>
         </size>
        </property>
@@ -2882,8 +2882,7 @@
  </tabstops>
  <resources>
   <include location="../../res/resources.qrc"/>
-  <include location="../../res/resources.qrc"/>
-  <include location="../../res/logoicons.qrc"/>
+  <include location="../../../../priv-plugins/res/logoicons.qrc"/>
  </resources>
  <connections/>
 </ui>

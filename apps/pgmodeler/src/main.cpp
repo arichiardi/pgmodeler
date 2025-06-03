@@ -107,23 +107,27 @@ int main(int argc, char **argv)
 
 		splash.setPixmap(pix);
 		splash.show();
+		splash.raise();
 		app.processEvents();
 
 		//Creates the main form
 		MainWindow fmain;
 
-		fmain.show();
-		splash.finish(&fmain);
+		// Displaying the splash for one second after displaying the main window
+		QTimer::singleShot(1000, &splash, [&splash, &fmain]() {
+			fmain.show();
+			splash.finish(&fmain);
+		 });
 
 		//Loading models via command line on MacOSX are disabled until the file association work correclty on that system
-#ifndef Q_OS_MACOS
-		QStringList params=app.arguments();
-		params.pop_front();
+		#ifndef Q_OS_MACOS
+			QStringList params=app.arguments();
+			params.pop_front();
 
-		//If the user specifies a list of files to be loaded
-		if(!params.isEmpty())
-			fmain.loadModels(params);
-#endif
+			//If the user specifies a list of files to be loaded
+			if(!params.isEmpty())
+				fmain.loadModels(params);
+		#endif
 
 		res = app.exec();
 		app.closeAllWindows();

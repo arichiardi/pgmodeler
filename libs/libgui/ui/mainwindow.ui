@@ -9,7 +9,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1078</width>
+    <width>1002</width>
     <height>480</height>
    </rect>
   </property>
@@ -32,7 +32,7 @@
    <string>pgModeler - PostgreSQL Database Modeler</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="../res/resources.qrc">
+   <iconset resource="../../../priv-plugins/res/logoicons.qrc">
     <normaloff>:/icons/icons/pgmodeler_logo.png</normaloff>:/icons/icons/pgmodeler_logo.png</iconset>
   </property>
   <property name="statusTip">
@@ -736,8 +736,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1078</width>
-     <height>27</height>
+     <width>1002</width>
+     <height>25</height>
     </rect>
    </property>
    <property name="autoFillBackground">
@@ -1066,7 +1066,7 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset resource="../res/resources.qrc">
+    <iconset resource="../../../priv-plugins/res/logoicons.qrc">
      <normaloff>:/icons/icons/about.png</normaloff>:/icons/icons/about.png</iconset>
    </property>
    <property name="text">
@@ -1440,7 +1440,7 @@
    </property>
    <property name="icon">
     <iconset resource="../res/resources.qrc">
-     <normaloff>:/icons/icons/pgmodeler_logo.png</normaloff>:/icons/icons/pgmodeler_logo.png</iconset>
+     <normaloff>:/icons/icons/welcome.png</normaloff>:/icons/icons/welcome.png</iconset>
    </property>
    <property name="text">
     <string>Welcome</string>
@@ -1602,7 +1602,7 @@
  </tabstops>
  <resources>
   <include location="../res/resources.qrc"/>
-  <include location="../res/resources.qrc"/>
+  <include location="../../../priv-plugins/res/logoicons.qrc"/>
  </resources>
  <connections/>
 </ui>

@@ -1,4 +1,6 @@
 set(CMAKE_AUTORCC ON)
+set(CMAKE_AUTOUIC ON)
+set(CMAKE_AUTOMOC ON)
 
 set(SOURCES
     src/baseform.cpp src/baseform.h
@@ -253,20 +255,25 @@ pgm_add_library(gui
     ${FORMS}
     ${RESOURCES})
 
+# We create the global variable LIBGUI_AUTOGEN_INC that storse the path to the
+# gui_autogen/include folder to be reused by other subprojects
+set(LIBGUI_AUTOGEN_INC ${CMAKE_CURRENT_BINARY_DIR}/${PGM_TARGET}_autogen/include
+    CACHE INTERNAL "Path to the gui_autogen/include folder")
+
 target_include_directories(${PGM_TARGET} PUBLIC
     ${LIBCANVAS_INC}
     ${LIBCONNECTOR_INC}
     ${LIBCORE_INC}
     ${LIBPARSERS_INC}
     ${LIBUTILS_INC}
-    ${TARGET}_autogen/include
     src/
     src/dbobjects
     src/settings
     src/tools
     src/utils
     src/widgets
-    ${PRIV_PLUGINS_SRC})
+    ${PRIV_PLUGINS_SRC}
+    ${LIBGUI_AUTOGEN_INC})
 
 target_link_libraries(${PGM_TARGET} PUBLIC
     connector

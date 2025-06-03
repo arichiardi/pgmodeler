@@ -90,34 +90,34 @@ endif()
 # the one in the target's res/ is used instead. This options has
 # effect only when building Windows binaries
 function(pgm_add_executable TARGET)
-	list(APPEND _SOURCES ${ARGN})
+  list(APPEND _SOURCES ${ARGN})
 
-        if(WIN32)
-		set(PRIV_ICO_RES ${PRIV_PLUGINS_RES}/${TARGET}/windows_ico.rc)
+  if(WIN32)
+    set(PRIV_ICO_RES ${PRIV_PLUGINS_RES}/${TARGET}/windows_ico.rc)
 
-                if((PLUS_VERSION OR BUILD_PRIV_PLUGINS) AND EXISTS ${PRIV_ICO_RES})
-			set(EXEC_ICO_RES ${PRIV_ICO_RES})
-		else()
-			set(EXEC_ICO_RES res/windows_ico.rc)
-		endif()
+    if((PLUS_VERSION OR BUILD_PRIV_PLUGINS) AND EXISTS ${PRIV_ICO_RES})
+      set(EXEC_ICO_RES ${PRIV_ICO_RES})
+    else()
+      set(EXEC_ICO_RES res/windows_ico.rc)
+    endif()
 
-		list(APPEND _SOURCES ${EXEC_ICO_RES})
-	endif()
+    list(APPEND _SOURCES ${EXEC_ICO_RES})
+  endif()
 
-	add_executable(${TARGET} ${_SOURCES})
+  add_executable(${TARGET} ${_SOURCES})
 
-        if(WIN32)
-                set_target_properties(${TARGET} PROPERTIES
-                                      WIN32_EXECUTABLE TRUE
-                                      LINK_FLAGS "-mwindows")
-        elseif(APPLE)
-		set_target_properties(${TARGET} PROPERTIES
-                                  MACOSX_BUNDLE FALSE
-				BUILD_WITH_INSTALL_RPATH TRUE
-				INSTALL_NAME_DIR "@executable_path/../Frameworks")
-	endif()
+  if(WIN32)
+    set_target_properties(${TARGET} PROPERTIES
+                          WIN32_EXECUTABLE TRUE
+                          LINK_FLAGS "-mwindows")
+  elseif(APPLE)
+    set_target_properties(${TARGET} PROPERTIES
+                          MACOSX_BUNDLE FALSE
+                          BUILD_WITH_INSTALL_RPATH TRUE
+                          INSTALL_NAME_DIR "@executable_path/../Frameworks")
+  endif()
 
-	set(PGM_TARGET ${TARGET} PARENT_SCOPE)
+  set(PGM_TARGET ${TARGET} PARENT_SCOPE)
 endfunction()
 
 # This function configure the default includes and link libraries
