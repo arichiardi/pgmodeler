@@ -40,7 +40,7 @@ std::map<QPalette::ColorRole, QStringList> AppearanceConfigWidget::dark_ui_color
 	{ QPalette::Text, {"#eff0f1", "#eff0f1", "#626c76"} },
 	{ QPalette::BrightText, {"#ffffff", "#ffffff", "#ffffff"} },
 	{ QPalette::ButtonText, {"#eff0f1", "#eff0f1", "#626c76"} },
-	{ QPalette::Base, {"#232629", "#232629", "#31363b"} },
+	{ QPalette::Base, {"#2b2f32", "#2b2f32", "#31363b"} },
 	{ QPalette::Window, {"#31363b", "#31363b", "#31363b"} },
 	{ QPalette::Shadow, {"#767676", "#767676", "#b1b1b1"} },
 	{ QPalette::Highlight, {"#3daee9", "#3daee9", "#41484e"} },
