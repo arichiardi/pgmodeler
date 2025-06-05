@@ -1089,6 +1089,11 @@ void AppearanceConfigWidget::applyUiStyleSheet()
 				ui_stylesheet.append(ico_style.readAll());
 		}
 
+		/* Forcing the title element of group box to have a font size 85% of
+		 * the app's original/global font size */
+		ui_stylesheet.append(QString("\nQGroupBox { font-size: %1pt; }")
+												 .arg(qApp->font().pointSizeF() * 0.85).toUtf8());
+
 		qApp->setStyleSheet(ui_stylesheet);
 
 		// Overriding pixel metrics of small icons in table headers, menu icons, etc
