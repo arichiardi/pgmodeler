@@ -34,7 +34,6 @@ bool MainWindow::confirm_validation {true};
 MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags) : QMainWindow(parent, flags)
 {
 	setupUi(this);
-
 	pending_op = NoPendingOp;
 	welcome_wgt = nullptr;
 	window_title = tr("pgModeler %1 - PostgreSQL Database Modeler %2");
@@ -381,7 +380,10 @@ void MainWindow::configureMenusActionsWidgets()
 			font = btn->font();
 			font.setWeight(QFont::Normal);
 			btn->setFont(font);
-			GuiUtilsNs::createDropShadow(btn, 1, 1, 5);
+
+			/* Setting a name for the action's tool button so it can
+			 * be uniquely identified when handling styles via Qt Stylesheets */
+			btn->setObjectName(act->objectName() + "_tb");
 		}
 	}
 
@@ -467,19 +469,20 @@ void MainWindow::createMainWidgets()
 
 		welcome_wgt=new WelcomeWidget(views_stw);
 		welcome_wgt->setObjectName("welcome_wgt");
-		QGridLayout *grid=new QGridLayout;
-		grid->setContentsMargins(0,0,0,0);
-		grid->setSpacing(0);
-		grid->addWidget(welcome_wgt, 0, 0);
-		views_stw->widget(WelcomeView)->setLayout(grid);
 
-		sql_tool_wgt=new SQLToolWidget;
+		QVBoxLayout *vbox = new QVBoxLayout;
+		vbox->setContentsMargins(0,0,0,0);
+		vbox->setSpacing(0);
+		vbox->addWidget(welcome_wgt);
+		views_stw->widget(WelcomeView)->setLayout(vbox);
+
+		sql_tool_wgt = new SQLToolWidget;
 		sql_tool_wgt->setObjectName("sql_tool_wgt");
-		grid=new QGridLayout;
-		grid->setContentsMargins(0,0,0,0);
-		grid->setSpacing(0);
-		grid->addWidget(sql_tool_wgt, 0, 0);
-		views_stw->widget(ManageView)->setLayout(grid);
+		vbox = new QVBoxLayout;
+		vbox->setContentsMargins(0,0,0,0);
+		vbox->setSpacing(0);
+		vbox->addWidget(sql_tool_wgt);
+		views_stw->widget(ManageView)->setLayout(vbox);
 
 		model_nav_wgt=new ModelNavigationWidget(this);
 		model_nav_wgt->setObjectName("model_nav_wgt");
