@@ -31,23 +31,23 @@ std::map<QString, attribs_map> AppearanceConfigWidget::config_params;
 QString AppearanceConfigWidget::UiThemeId;
 
 std::map<QPalette::ColorRole, QStringList> AppearanceConfigWidget::dark_ui_colors {
-	{ QPalette::WindowText, {"#eff0f1", "#eff0f1", "#626c76"} },
-	{ QPalette::Button, {"#31363b", "#31363b", "#31363b"} },
-	{ QPalette::Light, {"#181b1d", "#181b1d", "#181b1d"} },
-	{ QPalette::Midlight, {"#25292c", "#25292c", "#25292c"} },
-	{ QPalette::Mid, {"#41484e", "#41484e", "#41484e"} },
-	{ QPalette::Dark, {"#626c76", "#626c76", "#626c76"} },
+	{ QPalette::Light, {"#15171e", "#15171e", "#15171e"} },
+	{ QPalette::Midlight, {"#191b23", "#191b23", "#191b23"} },
+	{ QPalette::Mid, {"#1c1f28", "#1c1f28", "#1c1f28"} },
+	{ QPalette::Button, {"#232732", "#232732", "#232732"} },
+	{ QPalette::Dark, {"#292d3a", "#292d3a", "#292d3a"} },
+	{ QPalette::Base, {"#191d28", "#191d28", "#191d28"} },
+	{ QPalette::Window, {"#1f242d", "#1f242d", "#101010"} },
+	{ QPalette::Shadow, {"#00a000", "#00a000", "#00a000"} },
 	{ QPalette::Text, {"#eff0f1", "#eff0f1", "#626c76"} },
 	{ QPalette::BrightText, {"#ffffff", "#ffffff", "#ffffff"} },
 	{ QPalette::ButtonText, {"#eff0f1", "#eff0f1", "#626c76"} },
-	{ QPalette::Base, {"#2b2f32", "#2b2f32", "#31363b"} },
-	{ QPalette::Window, {"#31363b", "#31363b", "#31363b"} },
-	{ QPalette::Shadow, {"#767676", "#767676", "#b1b1b1"} },
-	{ QPalette::Highlight, {"#3daee9", "#3daee9", "#41484e"} },
+	{ QPalette::WindowText, {"#eff0f1", "#eff0f1", "#626c76"} },
+	{ QPalette::Highlight, {"#5aafb4", "#5aafb4", "#5aafb4"} },
 	{ QPalette::HighlightedText, {"#eff0f1", "#eff0f1", "#25292c"} },
 	{ QPalette::Link, {"#2980b9", "#2980b9", "#2980b9"} },
 	{ QPalette::LinkVisited, {"#7f8c8d", "#7f8c8d", "#7f8c8d"} },
-	{ QPalette::AlternateBase, {"#31363b", "#31363b", "#31363b"} },
+	{ QPalette::AlternateBase, {"#222837", "#222837", "#222837"} },
 	{ QPalette::ToolTipBase, {"#31363b", "#31363b", "#31363b"} },
 	{ QPalette::ToolTipText, {"#eff0f1", "#eff0f1", "#eff0f1"} },
 	{ QPalette::PlaceholderText, {"#48494b", "#48494b", "#48494b"} }
@@ -1091,7 +1091,7 @@ void AppearanceConfigWidget::applyUiStyleSheet()
 
 		/* Forcing the title element of group box to have a font size 85% of
 		 * the app's original/global font size */
-		ui_stylesheet.append(QString("\nQGroupBox { font-size: %1pt; }")
+		ui_stylesheet.append(QString("\nQGroupBox { font-size: %1pt; font-weight: bold; }")
 												 .arg(qApp->font().pointSizeF() * 0.85).toUtf8());
 
 		qApp->setStyleSheet(ui_stylesheet);
