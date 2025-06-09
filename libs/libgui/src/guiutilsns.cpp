@@ -703,8 +703,9 @@ namespace GuiUtilsNs {
 		if(!AppearanceConfigWidget::isDarkUiTheme())
 		{
 			radius = 1;
-			color.setRgb(200, 200, 200);
-			color.setAlpha(255);
+			//color.setRgb(200, 200, 200);
+			color = qApp->palette().color(QPalette::Shadow);
+			color.setAlpha(100);
 		}
 
 		if(!wgt->graphicsEffect())

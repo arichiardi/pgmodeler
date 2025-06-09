@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>727</width>
+    <width>749</width>
     <height>384</height>
    </rect>
   </property>
@@ -304,7 +304,7 @@
        </property>
        <property name="icon">
         <iconset resource="../../res/resources.qrc">
-         <normaloff>:/icons/icons/close1.png</normaloff>:/icons/icons/close1.png</iconset>
+         <normaloff>:/icons/icons/closetab.png</normaloff>:/icons/icons/closetab.png</iconset>
        </property>
        <property name="iconSize">
         <size>

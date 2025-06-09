@@ -37,13 +37,13 @@ std::map<QPalette::ColorRole, QStringList> AppearanceConfigWidget::dark_ui_color
 	{ QPalette::Button, {"#272b37", "#272b37", "#21242e"} },
 	{ QPalette::Dark, {"#292d3a", "#292d3a", "#292d3a"} },
 	{ QPalette::Base, {"#191d28", "#191d28", "#191d28"} },
-	{ QPalette::Window, {"#1f242d", "#1f242d", "#000000"} },
+	{ QPalette::Window, {"#232933", "#1f242d", "#000000"} },
 	{ QPalette::Shadow, {"#000000", "#000000", "#000000"} },
 	{ QPalette::Text, {"#eff0f1", "#eff0f1", "#626c76"} },
 	{ QPalette::BrightText, {"#ffffff", "#ffffff", "#ffffff"} },
 	{ QPalette::ButtonText, {"#eff0f1", "#eff0f1", "#626c76"} },
 	{ QPalette::WindowText, {"#eff0f1", "#eff0f1", "#626c76"} },
-	{ QPalette::Highlight, {"#4d99a0", "#4d99a0", "#3f7c82"} },
+	{ QPalette::Highlight, {"#26a5b1", "#4d99a0", "#3f7c82"} },
 	{ QPalette::HighlightedText, {"#eff0f1", "#eff0f1", "#25292c"} },
 	{ QPalette::Link, {"#2980b9", "#2980b9", "#2980b9"} },
 	{ QPalette::LinkVisited, {"#7f8c8d", "#7f8c8d", "#7f8c8d"} },
@@ -1091,7 +1091,7 @@ void AppearanceConfigWidget::applyUiStyleSheet()
 
 		/* Forcing the title element of group box to have a font size 85% of
 		 * the app's original/global font size */
-		ui_stylesheet.append(QString("\nQGroupBox { font-size: %1pt; font-weight: bold; }")
+		ui_stylesheet.append(QString("\n QGroupBox { font-size: %1pt; font-weight: bold; }")
 												 .arg(qApp->font().pointSizeF() * 0.85).toUtf8());
 
 		qApp->setStyleSheet(ui_stylesheet);

@@ -375,24 +375,27 @@ void MainWindow::configureMenusActionsWidgets()
 	{
 		btn = qobject_cast<QToolButton *>(tools_acts_tb->widgetForAction(act));
 
-		if(btn)
-		{
-			font = btn->font();
-			font.setWeight(QFont::Normal);
-			btn->setFont(font);
+		if(!btn)
+			continue;
 
-			/* Setting a name for the action's tool button so it can
-			 * be uniquely identified when handling styles via Qt Stylesheets */
-			btn->setObjectName(act->objectName() + "_tb");
-		}
+		font = btn->font();
+		font.setWeight(QFont::Normal);
+		btn->setFont(font);
+
+		/* Setting a name for the action's tool button so it can
+		 * be uniquely identified when handling styles via Qt Stylesheets */
+		btn->setObjectName(act->objectName() + "_tb");
+		GuiUtilsNs::createDropShadow(btn, 1, 1, 5);
 	}
 
 	for(auto &act : model_acts_tb->actions())
 	{
 		btn = qobject_cast<QToolButton *>(model_acts_tb->widgetForAction(act));
 
-		if(btn)
-			GuiUtilsNs::createDropShadow(btn, 1, 1, 5);
+		if(!btn)
+			continue;
+
+		GuiUtilsNs::createDropShadow(btn, 1, 1, 5);
 	}
 
 	ToolsActionsCount = tools_acts_tb->actions().size();
@@ -1494,7 +1497,7 @@ void MainWindow::setCurrentModel()
 		tool_btn->setPopupMode(QToolButton::InstantPopup);
 		btns.push_back(tool_btn);
 
-		for(QToolButton *btn : btns)
+		for(auto &btn : btns)
 		{
 			font = btn->font();
 			font.setWeight(QFont::Normal);
