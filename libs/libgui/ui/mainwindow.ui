@@ -103,16 +103,16 @@
       <widget class="QWidget" name="design_pg">
        <layout class="QGridLayout" name="gridLayout_4">
         <property name="leftMargin">
-         <number>0</number>
+         <number>4</number>
         </property>
         <property name="topMargin">
-         <number>0</number>
+         <number>4</number>
         </property>
         <property name="rightMargin">
-         <number>0</number>
+         <number>4</number>
         </property>
         <property name="bottomMargin">
-         <number>0</number>
+         <number>4</number>
         </property>
         <property name="spacing">
          <number>5</number>
@@ -235,16 +235,16 @@
                    <number>5</number>
                   </property>
                   <property name="leftMargin">
-                   <number>5</number>
+                   <number>0</number>
                   </property>
                   <property name="topMargin">
-                   <number>5</number>
+                   <number>0</number>
                   </property>
                   <property name="rightMargin">
-                   <number>5</number>
+                   <number>0</number>
                   </property>
                   <property name="bottomMargin">
-                   <number>5</number>
+                   <number>0</number>
                   </property>
                   <item>
                    <widget class="QSplitter" name="splitter">
@@ -254,7 +254,14 @@
                     <property name="childrenCollapsible">
                      <bool>false</bool>
                     </property>
-                    <widget class="QWidget" name="model_valid_parent" native="true"/>
+                    <widget class="QWidget" name="model_valid_parent" native="true">
+                     <property name="autoFillBackground">
+                      <bool>true</bool>
+                     </property>
+                     <property name="styleSheet">
+                      <string notr="true"/>
+                     </property>
+                    </widget>
                     <widget class="QWidget" name="obj_search_parent" native="true">
                      <property name="sizePolicy">
                       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -286,6 +293,9 @@
              </property>
              <property name="autoFillBackground">
               <bool>true</bool>
+             </property>
+             <property name="styleSheet">
+              <string notr="true"/>
              </property>
              <layout class="QGridLayout" name="gridLayout_3">
               <property name="leftMargin">
@@ -329,6 +339,9 @@
                    <width>270</width>
                    <height>0</height>
                   </size>
+                 </property>
+                 <property name="autoFillBackground">
+                  <bool>false</bool>
                  </property>
                 </widget>
                 <widget class="QWidget" name="oper_list_parent" native="true">
@@ -387,13 +400,13 @@
                 <number>5</number>
                </property>
                <property name="leftMargin">
-                <number>5</number>
+                <number>0</number>
                </property>
                <property name="topMargin">
                 <number>5</number>
                </property>
                <property name="bottomMargin">
-                <number>5</number>
+                <number>0</number>
                </property>
                <item>
                 <widget class="QToolButton" name="validation_btn">
@@ -402,6 +415,12 @@
                    <horstretch>0</horstretch>
                    <verstretch>0</verstretch>
                   </sizepolicy>
+                 </property>
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>0</height>
+                  </size>
                  </property>
                  <property name="toolTip">
                   <string>Toogle the model validation widget</string>
@@ -438,6 +457,12 @@
                    <verstretch>0</verstretch>
                   </sizepolicy>
                  </property>
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>0</height>
+                  </size>
+                 </property>
                  <property name="toolTip">
                   <string>Toggle the object search widget</string>
                  </property>
@@ -473,6 +498,12 @@
                    <verstretch>0</verstretch>
                   </sizepolicy>
                  </property>
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>0</height>
+                  </size>
+                 </property>
                  <property name="toolTip">
                   <string>Toggle the layers editor</string>
                  </property>
@@ -507,6 +538,12 @@
                    <horstretch>0</horstretch>
                    <verstretch>0</verstretch>
                   </sizepolicy>
+                 </property>
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>0</height>
+                  </size>
                  </property>
                  <property name="toolTip">
                   <string>Handle the changelog settings</string>
@@ -562,18 +599,24 @@
                 <number>5</number>
                </property>
                <property name="rightMargin">
-                <number>5</number>
+                <number>0</number>
                </property>
                <property name="bottomMargin">
-                <number>5</number>
+                <number>0</number>
                </property>
                <item>
                 <widget class="QToolButton" name="objects_btn">
                  <property name="sizePolicy">
-                  <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                    <horstretch>0</horstretch>
                    <verstretch>0</verstretch>
                   </sizepolicy>
+                 </property>
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>30</height>
+                  </size>
                  </property>
                  <property name="toolTip">
                   <string>Toggle the model objects widget</string>
@@ -605,10 +648,16 @@
                <item>
                 <widget class="QToolButton" name="operations_btn">
                  <property name="sizePolicy">
-                  <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                    <horstretch>0</horstretch>
                    <verstretch>0</verstretch>
                   </sizepolicy>
+                 </property>
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>30</height>
+                  </size>
                  </property>
                  <property name="toolTip">
                   <string>Toggle the operation history widget</string>
@@ -746,7 +795,7 @@
      <x>0</x>
      <y>0</y>
      <width>1000</width>
-     <height>27</height>
+     <height>25</height>
     </rect>
    </property>
    <property name="autoFillBackground">
@@ -873,7 +922,6 @@
    <addaction name="action_welcome"/>
    <addaction name="action_design"/>
    <addaction name="action_manage"/>
-   <addaction name="separator"/>
    <addaction name="action_import"/>
    <addaction name="action_export"/>
    <addaction name="action_diff"/>

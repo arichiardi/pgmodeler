@@ -464,7 +464,7 @@ void MainWindow::createMainWidgets()
 		scene_info_wgt->setObjectName("scene_info_wgt");
 		QHBoxLayout *hbox = new QHBoxLayout(scene_info_parent);
 		hbox->addWidget(scene_info_wgt);
-		hbox->setContentsMargins(GuiUtilsNs::LtMargin,GuiUtilsNs::LtMargin,GuiUtilsNs::LtMargin,GuiUtilsNs::LtMargin);
+		hbox->setContentsMargins(0, GuiUtilsNs::LtMargin, 0, 0);
 		scene_info_parent->setLayout(hbox);
 
 		welcome_wgt=new WelcomeWidget(views_stw);

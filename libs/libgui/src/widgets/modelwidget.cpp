@@ -162,7 +162,7 @@ ModelWidget::ModelWidget(QWidget *parent) : QWidget(parent)
 	scene = new ObjectsScene;
 	scene->installEventFilter(this);
 
-	viewport = new QGraphicsView(scene);
+	viewport = new QGraphicsView(scene, this);
 	updateRenderHints();
 	viewport->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 

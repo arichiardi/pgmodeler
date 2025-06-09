@@ -683,29 +683,27 @@ namespace GuiUtilsNs {
 		}
 	}
 
-	[[deprecated]]
 	void createDropShadow(QWidget *wgt, int x_offset, int y_offset, int radius, const QColor &color)
 	{
-		/* QGraphicsDropShadowEffect *shadow=nullptr;
+		QGraphicsDropShadowEffect *shadow=nullptr;
 
 		shadow=new QGraphicsDropShadowEffect(wgt);
 		shadow->setXOffset(x_offset);
 		shadow->setYOffset(y_offset);
 		shadow->setBlurRadius(radius);
 		shadow->setColor(color);
-		wgt->setGraphicsEffect(shadow); */
+		wgt->setGraphicsEffect(shadow);
 	}
 
-	[[deprecated]]
 	void updateDropShadow(QWidget *wgt)
 	{
-		/* QColor color(0, 0, 0, 80);
+		QColor color(0, 0, 0, 80);
 		int radius = 6, x = 1, y = 1;
 
 		if(!AppearanceConfigWidget::isDarkUiTheme())
 		{
 			radius = 1;
-			color.setRgb(225, 225, 225);
+			color.setRgb(200, 200, 200);
 			color.setAlpha(255);
 		}
 
@@ -719,17 +717,16 @@ namespace GuiUtilsNs {
 			shadow->setColor(color);
 			shadow->setOffset(x, y);
 			shadow->setBlurRadius(radius);
-		} */
+		}
 	}
 
-	[[deprecated]]
 	void updateDropShadows(QWidgetList widgets, const QString &class_name)
 	{
-		/* for(auto &wgt : widgets)
+		for(auto &wgt : widgets)
 		{
 			if(wgt->metaObject()->className() == class_name && wgt->graphicsEffect())
 				updateDropShadow(wgt);
-		} */
+		}
 	}
 
 	void createPasswordShowAction(QLineEdit *parent_edt)
