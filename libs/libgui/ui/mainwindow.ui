@@ -837,7 +837,7 @@
     <addaction name="action_undo"/>
     <addaction name="action_redo"/>
     <addaction name="separator"/>
-    <addaction name="action_settings"/>
+    <addaction name="action_configure"/>
     <addaction name="separator"/>
    </widget>
    <widget class="QMenu" name="about_menu">
@@ -929,7 +929,7 @@
    <addaction name="action_import"/>
    <addaction name="action_export"/>
    <addaction name="action_diff"/>
-   <addaction name="action_settings"/>
+   <addaction name="action_configure"/>
   </widget>
   <widget class="QToolBar" name="model_acts_tb">
    <property name="enabled">
@@ -1320,7 +1320,7 @@
     <string>Ctrl+L</string>
    </property>
   </action>
-  <action name="action_settings">
+  <action name="action_configure">
    <property name="checkable">
     <bool>true</bool>
    </property>
@@ -1329,7 +1329,10 @@
      <normaloff>:/icons/icons/config.png</normaloff>:/icons/icons/config.png</iconset>
    </property>
    <property name="text">
-    <string>Settings</string>
+    <string>Configure</string>
+   </property>
+   <property name="iconText">
+    <string>Configure</string>
    </property>
    <property name="toolTip">
     <string>Edit pgModeler settings</string>

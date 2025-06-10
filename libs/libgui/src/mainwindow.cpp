@@ -79,7 +79,7 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags) : QMainWindow(par
 
 	SQLExecutionWidget::loadSQLHistory();
 	//GeneralConfigWidget *conf_wgt=dynamic_cast<GeneralConfigWidget *>(configuration_form->getConfigurationWidget(ConfigurationForm::GeneralConfWgt));
-	GeneralConfigWidget *conf_wgt = dynamic_cast<GeneralConfigWidget *>(settings_wgt->getConfigurationWidget(SettingsWidget::GeneralConfWgt));
+	GeneralConfigWidget *conf_wgt = dynamic_cast<GeneralConfigWidget *>(settings_wgt->getConfigurationWidget(ConfigurationWidget::GeneralConfWgt));
 	std::map<QString, attribs_map >confs = conf_wgt->getConfigurationParams();
 
 	//Restoring the canvas grid options
@@ -227,7 +227,7 @@ void MainWindow::configureMenusActionsWidgets()
 	QAction *act_fix = fix_menu.menuAction();
 	act_fix->setIcon(QIcon(GuiUtilsNs::getIconPath("fix")));
 	act_fix->setText(tr("Fix"));
-	tools_acts_tb->insertAction(action_settings, fix_menu.menuAction());
+	tools_acts_tb->insertAction(action_configure, fix_menu.menuAction());
 	QToolButton *tool_btn = qobject_cast<QToolButton *>(tools_acts_tb->widgetForAction(fix_menu.menuAction()));
 	tool_btn->setPopupMode(QToolButton::InstantPopup);
 
@@ -487,7 +487,7 @@ void MainWindow::createMainWidgets()
 		vbox->addWidget(sql_tool_wgt);
 		views_stw->widget(ManageView)->setLayout(vbox);
 
-		settings_wgt = new SettingsWidget(this);
+		settings_wgt = new ConfigurationWidget(this);
 		sql_tool_wgt->setObjectName("configuration_wgt");
 		vbox = new QVBoxLayout;
 		vbox->setContentsMargins(0,0,0,0);
@@ -681,7 +681,7 @@ void MainWindow::connectSignalsToSlots()
 		action_welcome, action_design,
 		action_manage, action_import,
 		action_export, action_diff,
-		action_settings
+		action_configure
 	});
 
 	int vw_id = 0;
@@ -1598,7 +1598,7 @@ void MainWindow::setCurrentModel()
 	updateWindowTitle();
 
 	edit_menu->addSeparator();
-	edit_menu->addAction(action_settings);
+	edit_menu->addAction(action_configure);
 
 	updateToolsState();
 
@@ -2551,7 +2551,7 @@ void MainWindow::changeCurrentView(bool checked)
 			overview_wgt->close();
 
 		actions = edit_menu->actions();
-		actions.removeOne(action_settings);
+		actions.removeOne(action_configure);
 
 		for(auto &act : actions)
 			act->setEnabled(enable);

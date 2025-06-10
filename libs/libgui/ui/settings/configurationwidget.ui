@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>SettingsWidget</class>
- <widget class="QWidget" name="SettingsWidget">
+ <class>ConfigurationWidget</class>
+ <widget class="QWidget" name="ConfigurationWidget">
   <property name="windowModality">
    <enum>Qt::WindowModality::ApplicationModal</enum>
   </property>

@@ -57,7 +57,7 @@ set(SOURCES
     src/qtconnectmacros.h
     src/settings/appearanceconfigwidget.cpp src/settings/appearanceconfigwidget.h
     src/settings/baseconfigwidget.cpp src/settings/baseconfigwidget.h
-    src/settings/configurationform.cpp src/settings/configurationform.h
+    #src/settings/configurationform.cpp src/settings/configurationform.h
     src/settings/connectionsconfigwidget.cpp src/settings/connectionsconfigwidget.h
     src/settings/generalconfigwidget.cpp src/settings/generalconfigwidget.h
     src/settings/pluginsconfigwidget.cpp src/settings/pluginsconfigwidget.h
@@ -181,7 +181,7 @@ set(FORMS
     ui/settings/connectionsconfigwidget.ui
     ui/settings/pluginsconfigwidget.ui
     ui/settings/snippetsconfigwidget.ui
-    ui/settings/configurationform.ui
+    #ui/settings/configurationform.ui
     ui/settings/generalconfigwidget.ui
     ui/settings/relationshipconfigwidget.ui
     ui/tools/bugreportform.ui
@@ -226,7 +226,7 @@ set(FORMS
     ui/widgets/modelnavigationwidget.ui
     ui/widgets/sceneinfowidget.ui
     ui/widgets/welcomewidget.ui
-    ui/settings/settingswidget.ui)
+    ui/settings/configurationwidget.ui)
 
 set(RESOURCES res/resources.qrc)
 

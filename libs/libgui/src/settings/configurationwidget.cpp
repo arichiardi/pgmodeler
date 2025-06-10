@@ -19,7 +19,7 @@
 #include "configurationwidget.h"
 #include "guiutilsns.h"
 
-SettingsWidget::SettingsWidget(QWidget *parent) : QWidget(parent)
+ConfigurationWidget::ConfigurationWidget(QWidget *parent) : QWidget(parent)
 {
 	setupUi(this);
 
@@ -36,9 +36,9 @@ SettingsWidget::SettingsWidget(QWidget *parent) : QWidget(parent)
 	for(auto &wgt : wgt_list)
 		confs_stw->addWidget(wgt);
 
-	connect(cancel_btn, &QPushButton::clicked, this, &SettingsWidget::reject);
-	connect(apply_btn,  &QPushButton::clicked, this, __slot(this, SettingsWidget::applyConfiguration));
-	connect(defaults_btn,  &QPushButton::clicked, this, __slot(this, SettingsWidget::restoreDefaults));
+	connect(cancel_btn, &QPushButton::clicked, this, &ConfigurationWidget::reject);
+	connect(apply_btn,  &QPushButton::clicked, this, __slot(this, ConfigurationWidget::applyConfiguration));
+	connect(defaults_btn,  &QPushButton::clicked, this, __slot(this, ConfigurationWidget::restoreDefaults));
 
 	setMinimumSize(890, 740);
 
@@ -54,16 +54,16 @@ SettingsWidget::SettingsWidget(QWidget *parent) : QWidget(parent)
 		btn->setFont(fnt);
 		GuiUtilsNs::createDropShadow(btn, 1, 1, 5);
 		btn->setProperty(Attributes::ObjectId.toStdString().c_str(), view_idx++);
-		connect(btn, &QToolButton::toggled, this, &SettingsWidget::changeCurrentView);
+		connect(btn, &QToolButton::toggled, this, &ConfigurationWidget::changeCurrentView);
 	}
 }
 
-SettingsWidget::~SettingsWidget()
+ConfigurationWidget::~ConfigurationWidget()
 {
 	//connections_conf->destroyConnections();
 }
 
-void SettingsWidget::changeCurrentView()
+void ConfigurationWidget::changeCurrentView()
 {
 	QToolButton *btn = nullptr,
 			*btn_sender = qobject_cast<QToolButton *>(sender());
@@ -80,18 +80,18 @@ void SettingsWidget::changeCurrentView()
 	confs_stw->setCurrentIndex(btn_sender->property(Attributes::ObjectId.toStdString().c_str()).toInt());
 }
 
-void SettingsWidget::hideEvent(QHideEvent *event)
+void ConfigurationWidget::hideEvent(QHideEvent *event)
 {
 	if(!event->spontaneous())
 		general_tb->setChecked(true);
 }
 
-void SettingsWidget::showEvent(QShowEvent *)
+void ConfigurationWidget::showEvent(QShowEvent *)
 {
 	//snippets_conf->snippet_txt->updateLineNumbers();
 }
 
-void SettingsWidget::reject()
+void ConfigurationWidget::reject()
 {
 	try
 	{
@@ -119,7 +119,7 @@ void SettingsWidget::reject()
 	//QDialog::reject();
 }
 
-void SettingsWidget::applyConfiguration()
+void ConfigurationWidget::applyConfiguration()
 {
 	BaseConfigWidget *conf_wgt=nullptr;
 	bool curr_escape_comments = BaseObject::isEscapeComments();
@@ -144,7 +144,7 @@ void SettingsWidget::applyConfiguration()
 	//QDialog::accept();
 }
 
-void SettingsWidget::loadConfiguration()
+void ConfigurationWidget::loadConfiguration()
 {
 	BaseConfigWidget *config_wgt = nullptr;
 
@@ -176,7 +176,7 @@ void SettingsWidget::loadConfiguration()
 	}
 }
 
-void SettingsWidget::restoreDefaults()
+void ConfigurationWidget::restoreDefaults()
 {
 	int res = Messagebox::confirm(tr("Any modification made until now in the current section will be lost! Do you really want to restore default settings?"));
 
@@ -184,7 +184,7 @@ void SettingsWidget::restoreDefaults()
 		qobject_cast<BaseConfigWidget *>(confs_stw->currentWidget())->restoreDefaults();
 }
 
-BaseConfigWidget *SettingsWidget::getConfigurationWidget(unsigned idx)
+BaseConfigWidget *ConfigurationWidget::getConfigurationWidget(unsigned idx)
 {
 	if(idx >= static_cast<unsigned>(confs_stw->count()))
 		return nullptr;
@@ -193,7 +193,7 @@ BaseConfigWidget *SettingsWidget::getConfigurationWidget(unsigned idx)
 }
 
 template<class Widget>
-Widget *SettingsWidget::getSettingsWidget(unsigned int idx)
+Widget *ConfigurationWidget::getSettingsWidget(unsigned int idx)
 {
 	if(idx >= static_cast<unsigned>(confs_stw->count()))
 		return nullptr;

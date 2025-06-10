@@ -102,7 +102,7 @@ class __libgui MainWindow: public QMainWindow, public Ui::MainWindow {
 		//! \brief SQL tool widget widget
 		SQLToolWidget *sql_tool_wgt;
 
-		SettingsWidget *settings_wgt;
+		ConfigurationWidget *settings_wgt;
 
 		//! \brief Operation list dock widget
 		OperationListWidget *oper_list_wgt;

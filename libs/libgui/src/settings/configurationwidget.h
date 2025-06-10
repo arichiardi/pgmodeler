@@ -18,14 +18,14 @@
 
 /**
 \ingroup libgui
-\class SettingsWidget
+\class ConfigurationWidget
 \brief Reunites in a single form all available configuration widgets.
 */
 
 #ifndef CONFIGURATION_WIDGET_H
 #define CONFIGURATION_WIDGET_H
 
-#include "ui_settingswidget.h"
+#include "ui_configurationwidget.h"
 #include "appearanceconfigwidget.h"
 #include "generalconfigwidget.h"
 #include "connectionsconfigwidget.h"
@@ -33,7 +33,7 @@
 #include "relationshipconfigwidget.h"
 #include "snippetsconfigwidget.h"
 
-class __libgui SettingsWidget: public QWidget, public Ui::SettingsWidget {
+class __libgui ConfigurationWidget: public QWidget, public Ui::ConfigurationWidget {
 	Q_OBJECT
 
 	private:	
@@ -57,8 +57,8 @@ class __libgui SettingsWidget: public QWidget, public Ui::SettingsWidget {
 			PluginsConfWgt
 		};
 		
-		SettingsWidget(QWidget * parent = nullptr);
-		virtual ~SettingsWidget();
+		ConfigurationWidget(QWidget * parent = nullptr);
+		virtual ~ConfigurationWidget();
 		
 		[[deprecated("Use template method getSettingsWidget<Class>() instead!")]]
 		BaseConfigWidget *getConfigurationWidget(unsigned idx);
