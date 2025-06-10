@@ -127,7 +127,8 @@ set(SOURCES
     src/widgets/tabledatawidget.cpp src/widgets/tabledatawidget.h
     src/widgets/taskprogresswidget.cpp src/widgets/taskprogresswidget.h
     src/widgets/updatenotifierwidget.cpp src/widgets/updatenotifierwidget.h
-    src/widgets/welcomewidget.cpp src/widgets/welcomewidget.h)
+    src/widgets/welcomewidget.cpp src/widgets/welcomewidget.h
+    src/settings/configurationwidget.h src/settings/configurationwidget.cpp)
 
 set(FORMS
     ui/baseform.ui
@@ -224,7 +225,8 @@ set(FORMS
     ui/widgets/customsqlwidget.ui
     ui/widgets/modelnavigationwidget.ui
     ui/widgets/sceneinfowidget.ui
-    ui/widgets/welcomewidget.ui)
+    ui/widgets/welcomewidget.ui
+    ui/settings/settingswidget.ui)
 
 set(RESOURCES res/resources.qrc)
 

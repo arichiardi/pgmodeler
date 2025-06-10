@@ -45,6 +45,7 @@
 #include "widgets/sceneinfowidget.h"
 #include "widgets/layersconfigwidget.h"
 #include "widgets/changelogwidget.h"
+#include "settings/configurationwidget.h"
 
 class __libgui MainWindow: public QMainWindow, public Ui::MainWindow {
 	Q_OBJECT
@@ -64,6 +65,9 @@ class __libgui MainWindow: public QMainWindow, public Ui::MainWindow {
 			PendingExportOp,
 			PendingDiffOp
 		};
+
+		//! \brief Store the actions related to views in the main window (Manage, Design, Welcome, etc)
+		static QList<QAction *> view_actions;
 
 		PendingOpId pending_op;
 
@@ -98,6 +102,8 @@ class __libgui MainWindow: public QMainWindow, public Ui::MainWindow {
 		//! \brief SQL tool widget widget
 		SQLToolWidget *sql_tool_wgt;
 
+		SettingsWidget *settings_wgt;
+
 		//! \brief Operation list dock widget
 		OperationListWidget *oper_list_wgt;
 
@@ -114,7 +120,7 @@ class __libgui MainWindow: public QMainWindow, public Ui::MainWindow {
 		UpdateNotifierWidget *update_notifier_wgt;
 
 		//! \brief Configuration form
-		ConfigurationForm *configuration_form;
+		// ConfigurationForm *configuration_form;
 
 		//! \brief Stores the currently focused model
 		ModelWidget *current_model;
@@ -213,7 +219,11 @@ public:
 		enum MWViewsId {
 			WelcomeView,
 			DesignView,
-			ManageView
+			ManageView,
+			ImportView,
+			ExportView,
+			DiffView,
+			SettingsView,
 		};
 
 		MainWindow(QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::Widget);
@@ -251,7 +261,7 @@ public:
 		ModelWidget *getModel(int idx);
 
 		//! \brief Switches the currently opened view (Design, Manage, Welcome)
-		void switchView(MWViewsId view);
+		//void switchView(MWViewsId view);
 
 		/*! \brief This is a convenience method to make able the addition of execution tabs in SQL tool without
 		 *  expose the SQL Tool widget itself (useful for plugin developers) */

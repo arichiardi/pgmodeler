@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>1000</width>
-    <height>480</height>
+    <height>830</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -782,6 +782,10 @@
        </layout>
       </widget>
       <widget class="QWidget" name="manage_pg"/>
+      <widget class="QWidget" name="import_pg"/>
+      <widget class="QWidget" name="export_pg"/>
+      <widget class="QWidget" name="diff_pg"/>
+      <widget class="QWidget" name="settings_pg"/>
      </widget>
     </item>
    </layout>
@@ -833,7 +837,7 @@
     <addaction name="action_undo"/>
     <addaction name="action_redo"/>
     <addaction name="separator"/>
-    <addaction name="action_configuration"/>
+    <addaction name="action_settings"/>
     <addaction name="separator"/>
    </widget>
    <widget class="QMenu" name="about_menu">
@@ -925,7 +929,7 @@
    <addaction name="action_import"/>
    <addaction name="action_export"/>
    <addaction name="action_diff"/>
-   <addaction name="action_configuration"/>
+   <addaction name="action_settings"/>
   </widget>
   <widget class="QToolBar" name="model_acts_tb">
    <property name="enabled">
@@ -1191,6 +1195,9 @@
    </property>
   </action>
   <action name="action_export">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="enabled">
     <bool>false</bool>
    </property>
@@ -1313,7 +1320,10 @@
     <string>Ctrl+L</string>
    </property>
   </action>
-  <action name="action_configuration">
+  <action name="action_settings">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="icon">
     <iconset resource="../res/resources.qrc">
      <normaloff>:/icons/icons/config.png</normaloff>:/icons/icons/config.png</iconset>
@@ -1389,6 +1399,9 @@
    </property>
   </action>
   <action name="action_import">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="icon">
     <iconset resource="../res/resources.qrc">
      <normaloff>:/icons/icons/import.png</normaloff>:/icons/icons/import.png</iconset>
@@ -1471,6 +1484,9 @@
    </property>
   </action>
   <action name="action_diff">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="enabled">
     <bool>true</bool>
    </property>
