@@ -33,7 +33,7 @@
 #include "relationshipconfigwidget.h"
 #include "snippetsconfigwidget.h"
 
-class __libgui ConfigurationWidget: public QWidget, public Ui::SettingsWidget {
+class __libgui ConfigurationWidget: public QWidget, public Ui::ConfigurationWidget {
 	Q_OBJECT
 
 	private:	

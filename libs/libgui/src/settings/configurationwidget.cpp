@@ -23,12 +23,12 @@ ConfigurationWidget::ConfigurationWidget(QWidget *parent) : QWidget(parent)
 {
 	setupUi(this);
 
-	general_conf=new GeneralConfigWidget;
-	appearance_conf=new AppearanceConfigWidget;
-	connections_conf=new ConnectionsConfigWidget;
-	relationships_conf=new RelationshipConfigWidget;
-	snippets_conf=new SnippetsConfigWidget;
-	plugins_conf=new PluginsConfigWidget;
+	general_conf = new GeneralConfigWidget;
+	appearance_conf = new AppearanceConfigWidget;
+	connections_conf = new ConnectionsConfigWidget;
+	relationships_conf = new RelationshipConfigWidget;
+	snippets_conf = new SnippetsConfigWidget;
+	plugins_conf = new PluginsConfigWidget;
 
 	QWidgetList wgt_list={ general_conf, appearance_conf, relationships_conf,
 												 connections_conf, snippets_conf, plugins_conf };
@@ -39,8 +39,6 @@ ConfigurationWidget::ConfigurationWidget(QWidget *parent) : QWidget(parent)
 	connect(cancel_btn, &QPushButton::clicked, this, &ConfigurationWidget::reject);
 	connect(apply_btn,  &QPushButton::clicked, this, __slot(this, ConfigurationWidget::applyConfiguration));
 	connect(defaults_btn,  &QPushButton::clicked, this, __slot(this, ConfigurationWidget::restoreDefaults));
-
-	setMinimumSize(890, 740);
 
 	QFont fnt;
 	int view_idx = GeneralConfWgt;
@@ -68,7 +66,7 @@ void ConfigurationWidget::changeCurrentView()
 	QToolButton *btn = nullptr,
 			*btn_sender = qobject_cast<QToolButton *>(sender());
 
-	for(auto &obj : bnts_parent_wgt->children())
+	for(auto &obj : btns_parent_wgt->children())
 	{
 		btn = dynamic_cast<QToolButton *>(obj);
 		if(!btn || btn == btn_sender) continue;
