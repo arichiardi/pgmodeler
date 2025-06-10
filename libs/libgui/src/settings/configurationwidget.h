@@ -18,7 +18,7 @@
 
 /**
 \ingroup libgui
-\class ConfigurationWidget
+\class SettingsWidget
 \brief Reunites in a single form all available configuration widgets.
 */
 
@@ -33,7 +33,7 @@
 #include "relationshipconfigwidget.h"
 #include "snippetsconfigwidget.h"
 
-class __libgui ConfigurationWidget: public QWidget, public Ui::ConfigurationWidget {
+class __libgui ConfigurationWidget: public QWidget, public Ui::SettingsWidget {
 	Q_OBJECT
 
 	private:	
