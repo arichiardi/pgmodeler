@@ -282,6 +282,7 @@
         <file>icons/welcome.png</file>
         <file>icons/about.png</file>
         <file>icons/closetab.png</file>
+        <file>icons/closetab1.png</file>
     </qresource>
     <qresource prefix="/images">
         <file>images/brazil_flag.png</file>

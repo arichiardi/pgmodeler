@@ -211,19 +211,19 @@ void ConfigurationWidget::restoreDefaults()
 		qobject_cast<BaseConfigWidget *>(confs_stw->currentWidget())->restoreDefaults();
 }
 
-BaseConfigWidget *ConfigurationWidget::getConfigurationWidget(unsigned idx)
+/*BaseConfigWidget *ConfigurationWidget::getConfigurationWidget(unsigned idx)
 {
 	if(idx >= static_cast<unsigned>(confs_stw->count()))
 		return nullptr;
 
 	return qobject_cast<BaseConfigWidget *>(confs_stw->widget(static_cast<unsigned>(idx)));
-}
+} */
 
-template<class Widget>
-Widget *ConfigurationWidget::getSettingsWidget(unsigned int idx)
+/* template<class Widget>
+Widget *ConfigurationWidget::getConfigurationWidget(unsigned int idx)
 {
 	if(idx >= static_cast<unsigned>(confs_stw->count()))
 		return nullptr;
 
 	return qobject_cast<Widget *>(confs_stw->widget(static_cast<unsigned>(idx)));
-}
+} */

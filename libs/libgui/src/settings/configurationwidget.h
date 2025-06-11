@@ -58,13 +58,14 @@ class __libgui ConfigurationWidget: public QWidget, public Ui::ConfigurationWidg
 		};
 		
 		ConfigurationWidget(QWidget * parent = nullptr);
+
 		virtual ~ConfigurationWidget();
 		
-		[[deprecated("Use template method getSettingsWidget<Class>() instead!")]]
-		BaseConfigWidget *getConfigurationWidget(unsigned idx);
-
-		template<class Widget>
-		Widget *getSettingsWidget(unsigned idx);
+		template<class Widget, std::enable_if_t<std::is_base_of_v<BaseConfigWidget, Widget>, bool> = true>
+		Widget *getConfigurationWidget()
+		{
+			return confs_stw->findChild<Widget *>();
+		}
 		
 	public slots:
 		void applyConfiguration();
