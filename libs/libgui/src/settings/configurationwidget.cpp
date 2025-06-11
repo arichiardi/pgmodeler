@@ -43,7 +43,7 @@ ConfigurationWidget::ConfigurationWidget(QWidget *parent) : QWidget(parent)
 		});
 	}
 
-	connect(revert_btn, &QPushButton::clicked, this, &ConfigurationWidget::revertConfiguration);
+	connect(revert_btn, &QPushButton::clicked, this, &ConfigurationWidget::discardConfiguration);
 	connect(apply_btn,  &QPushButton::clicked, this, __slot(this, ConfigurationWidget::applyConfiguration));
 	connect(defaults_btn,  &QPushButton::clicked, this, __slot(this, ConfigurationWidget::restoreDefaults));
 
@@ -110,7 +110,7 @@ void ConfigurationWidget::showEvent(QShowEvent *)
 	snippets_conf->snippet_txt->updateLineNumbers();
 }
 
-void ConfigurationWidget::revertConfiguration()
+void ConfigurationWidget::discardConfiguration()
 {
 	try
 	{
@@ -141,7 +141,7 @@ void ConfigurationWidget::checkChangedConfiguration()
 			if(res == Messagebox::Accepted)
 				applyConfiguration();
 			else
-				revertConfiguration();
+				discardConfiguration();
 
 			break;
 		}
@@ -210,20 +210,3 @@ void ConfigurationWidget::restoreDefaults()
 	if(Messagebox::isAccepted(res))
 		qobject_cast<BaseConfigWidget *>(confs_stw->currentWidget())->restoreDefaults();
 }
-
-/*BaseConfigWidget *ConfigurationWidget::getConfigurationWidget(unsigned idx)
-{
-	if(idx >= static_cast<unsigned>(confs_stw->count()))
-		return nullptr;
-
-	return qobject_cast<BaseConfigWidget *>(confs_stw->widget(static_cast<unsigned>(idx)));
-} */
-
-/* template<class Widget>
-Widget *ConfigurationWidget::getConfigurationWidget(unsigned int idx)
-{
-	if(idx >= static_cast<unsigned>(confs_stw->count()))
-		return nullptr;
-
-	return qobject_cast<Widget *>(confs_stw->widget(static_cast<unsigned>(idx)));
-} */

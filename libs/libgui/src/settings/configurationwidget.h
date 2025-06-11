@@ -76,7 +76,7 @@ class __libgui ConfigurationWidget: public QWidget, public Ui::ConfigurationWidg
 		 *  section, while restoreDefaults(), copies the configuration
 		 *  files of each section from the defaults folder, restoring
 		 *  the original post-installation settings. */
-		void revertConfiguration();
+		void discardConfiguration();
 
 		void checkChangedConfiguration();
 		

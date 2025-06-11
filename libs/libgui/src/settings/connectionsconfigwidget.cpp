@@ -80,7 +80,6 @@ void ConnectionsConfigWidget::showEvent(QShowEvent *event)
 	{
 		updateConnectionsCombo();
 		newConnection();
-		conn_attribs_tbw->setCurrentIndex(0);
 	}
 }
 
@@ -655,6 +654,11 @@ bool ConnectionsConfigWidget::openConnectionsConfiguration(bool one_time_edit,
 			conns_changed = true;
 		)
 	});
+
+	// Ajusting the layout when using in standalone mode
+	conn_cfg_wgt.conn_cfg_grid->removeItem(conn_cfg_wgt.grid_horiz_spacer);
+	conn_cfg_wgt.conn_cfg_grid->setContentsMargins(GuiUtilsNs::LtMargin, GuiUtilsNs::LtMargin,
+																								 1, GuiUtilsNs::LtMargin);
 
 	conn_cfg_wgt.setOneTimeEditMode(one_time_edit, conn_alias, dbname, host, port, username, password);
 	parent_form.setWindowTitle(tr("Edit database connections"));
