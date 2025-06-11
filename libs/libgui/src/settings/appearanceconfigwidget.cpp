@@ -253,7 +253,7 @@ CREATE TABLE public.table_b (\n \
 	layout->addWidget(line_numbers_bg_cp);
 	layout->addWidget(line_highlight_cp);
 	layout->addItem(new QSpacerItem(1000,20, QSizePolicy::Expanding));
-	grid->addLayout(layout, 2, 1);
+	grid->addLayout(layout, 3, 1);
 	grid->addWidget(font_preview_txt,grid->count(),0, 1, 4);
 
 	ui_theme_cmb->addItem(tr("System default"), Attributes::System);

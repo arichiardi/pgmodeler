@@ -166,8 +166,6 @@ void ConfigurationWidget::applyConfiguration()
 	general_conf->applyConfiguration();
 	relationships_conf->applyConfiguration();
 
-	//if(curr_escape_comments != BaseObject::isEscapeComments())
-	//	emit s_invalidateModelsRequested();
 	emit s_configurationChanged();
 
 	qApp->restoreOverrideCursor();
