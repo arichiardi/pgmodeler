@@ -623,6 +623,8 @@ void GeneralConfigWidget::applyConfiguration()
 
 	PlainTextItemDelegate::setMaxDisplayLength(trunc_columns_data_chk->isChecked() ? trunc_columns_data_spb->value() : 0);
 	PlainTextItemDelegate::setTextEditorEnabled(trunc_columns_data_chk->isChecked() ? !disable_inline_editor_chk->isChecked() : false);
+
+	setConfigurationChanged(false);
 }
 
 void GeneralConfigWidget::restoreDefaults()

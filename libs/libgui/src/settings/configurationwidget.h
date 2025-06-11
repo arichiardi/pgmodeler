@@ -69,7 +69,15 @@ class __libgui ConfigurationWidget: public QWidget, public Ui::ConfigurationWidg
 	public slots:
 		void applyConfiguration();
 		void loadConfiguration();
-		void reject();
+
+		/*! \brief This method is different from restoreDefaults().
+		 *  It reloads the current configuration file of each
+		 *  section, while restoreDefaults(), copies the configuration
+		 *  files of each section from the defaults folder, restoring
+		 *  the original post-installation settings. */
+		void revertConfiguration();
+
+		void checkChangedConfiguration();
 		
 	private slots:
 		void restoreDefaults();
@@ -77,6 +85,8 @@ class __libgui ConfigurationWidget: public QWidget, public Ui::ConfigurationWidg
 
 	signals:
 		void s_invalidateModelsRequested();
+		void s_configurationChanged();
+		void s_configurationReverted();
 };
 
 #endif

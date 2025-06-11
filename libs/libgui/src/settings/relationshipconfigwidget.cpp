@@ -202,6 +202,8 @@ void RelationshipConfigWidget::applyConfiguration()
 		else
 			RelationshipView::setLineConnectionMode(RelationshipView::ConnectCenterPoints);
 	}
+
+	setConfigurationChanged(false);
 }
 
 void RelationshipConfigWidget::restoreDefaults()

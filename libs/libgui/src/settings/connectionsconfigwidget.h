@@ -120,7 +120,7 @@ class __libgui ConnectionsConfigWidget: public BaseConfigWidget, public Ui::Conn
 		void enableConnectionTest();
 		virtual void applyConfiguration(void) override {}
 		
-		friend class ConfigurationForm;
+		friend class ConfigurationWidget;
 };
 
 #endif

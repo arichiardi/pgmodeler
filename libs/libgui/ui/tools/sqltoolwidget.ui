@@ -14,23 +14,23 @@
    <string>Form</string>
   </property>
   <property name="autoFillBackground">
-   <bool>true</bool>
+   <bool>false</bool>
   </property>
   <property name="styleSheet">
    <string notr="true"/>
   </property>
   <layout class="QGridLayout" name="sqltool_grid">
    <property name="leftMargin">
-    <number>5</number>
+    <number>4</number>
    </property>
    <property name="topMargin">
-    <number>5</number>
+    <number>4</number>
    </property>
    <property name="rightMargin">
-    <number>5</number>
+    <number>4</number>
    </property>
    <property name="bottomMargin">
-    <number>5</number>
+    <number>4</number>
    </property>
    <property name="spacing">
     <number>0</number>

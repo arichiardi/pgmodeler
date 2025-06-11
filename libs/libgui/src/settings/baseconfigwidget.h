@@ -110,6 +110,9 @@ class __libgui BaseConfigWidget: public QWidget {
 		
 	public slots:
 		virtual void setConfigurationChanged(bool changed = true);
+
+	signals:
+		void s_configurationChanged(bool);
 };
 
 #endif

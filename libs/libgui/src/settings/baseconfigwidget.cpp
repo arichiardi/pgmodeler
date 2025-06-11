@@ -52,7 +52,8 @@ void BaseConfigWidget::showEvent(QShowEvent *)
 
 void BaseConfigWidget::setConfigurationChanged(bool changed)
 {
-	config_changed=changed;
+	config_changed = changed;
+	emit s_configurationChanged(changed);
 }
 
 bool BaseConfigWidget::isConfigurationChanged()

@@ -78,8 +78,7 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags) : QMainWindow(par
 	applyConfigurations();
 
 	SQLExecutionWidget::loadSQLHistory();
-	//GeneralConfigWidget *conf_wgt=dynamic_cast<GeneralConfigWidget *>(configuration_form->getConfigurationWidget(ConfigurationForm::GeneralConfWgt));
-	GeneralConfigWidget *conf_wgt = dynamic_cast<GeneralConfigWidget *>(settings_wgt->getConfigurationWidget(ConfigurationWidget::GeneralConfWgt));
+	GeneralConfigWidget *conf_wgt = dynamic_cast<GeneralConfigWidget *>(configuration_wgt->getConfigurationWidget(ConfigurationWidget::GeneralConfWgt));
 	std::map<QString, attribs_map >confs = conf_wgt->getConfigurationParams();
 
 	//Restoring the canvas grid options
@@ -142,7 +141,7 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags) : QMainWindow(par
 
 	// Post initilize plug-ins
 	//PluginsConfigWidget *plugins_conf_wgt = dynamic_cast<PluginsConfigWidget *>(configuration_form->getConfigurationWidget(ConfigurationForm::PluginsConfWgt));
-	PluginsConfigWidget *plugins_conf_wgt = dynamic_cast<PluginsConfigWidget *>(settings_wgt->getConfigurationWidget(ConfigurationWidget::PluginsConfWgt));
+	PluginsConfigWidget *plugins_conf_wgt = dynamic_cast<PluginsConfigWidget *>(configuration_wgt->getConfigurationWidget(ConfigurationWidget::PluginsConfWgt));
 	plugins_conf_wgt->postInitPlugins();
 
 	// Updating drop shadows settings to match the current UI theme
@@ -487,12 +486,12 @@ void MainWindow::createMainWidgets()
 		vbox->addWidget(sql_tool_wgt);
 		views_stw->widget(ManageView)->setLayout(vbox);
 
-		settings_wgt = new ConfigurationWidget(this);
+		configuration_wgt = new ConfigurationWidget(this);
 		sql_tool_wgt->setObjectName("configuration_wgt");
 		vbox = new QVBoxLayout;
 		vbox->setContentsMargins(0,0,0,0);
 		vbox->setSpacing(0);
-		vbox->addWidget(settings_wgt);
+		vbox->addWidget(configuration_wgt);
 		views_stw->widget(SettingsView)->setLayout(vbox);
 
 		model_nav_wgt=new ModelNavigationWidget(this);
@@ -529,9 +528,9 @@ void MainWindow::loadConfigurations()
 		//configuration_form=new ConfigurationForm(nullptr, Qt::WindowTitleHint | Qt::WindowMinMaxButtonsHint | Qt::WindowCloseButtonHint);
 		//GuiUtilsNs::resizeDialog(configuration_form);
 		//configuration_form->loadConfiguration();
-		settings_wgt->loadConfiguration();
+		configuration_wgt->loadConfiguration();
 
-		PluginsConfigWidget *plugins_conf_wgt = dynamic_cast<PluginsConfigWidget *>(settings_wgt->getConfigurationWidget(ConfigurationWidget::PluginsConfWgt));
+		PluginsConfigWidget *plugins_conf_wgt = dynamic_cast<PluginsConfigWidget *>(configuration_wgt->getConfigurationWidget(ConfigurationWidget::PluginsConfWgt));
 		plugins_conf_wgt->initPlugins(this);
 
 		plugins_tb_acts = PgModelerGuiPlugin::getPluginsActions(PgModelerGuiPlugin::ToolbarAction);
@@ -644,27 +643,14 @@ void MainWindow::connectSignalsToSlots()
 
 	connect(action_print, &QAction::triggered, this, &MainWindow::printModel);
 
-	/* connect(action_settings, &QAction::triggered, this, [this](){
-		GeneralConfigWidget::restoreWidgetGeometry(configuration_form);
-		configuration_form->exec();
-		GeneralConfigWidget::saveWidgetGeometry(configuration_form);
-	}); */
-
 	connect(oper_list_wgt, &OperationListWidget::s_operationExecuted, overview_wgt, qOverload<>(&ModelOverviewWidget::updateOverview));
 	connect(oper_list_wgt, &OperationListWidget::s_operationExecuted, layers_cfg_wgt, &LayersConfigWidget::updateLayersRects);
 	connect(layers_cfg_wgt, &LayersConfigWidget::s_activeLayersChanged, overview_wgt, qOverload<>(&ModelOverviewWidget::updateOverview));
 
-	//connect(configuration_form, &ConfigurationForm::finished, this, &MainWindow::applyConfigurations);
-
-	/* connect(configuration_form, &ConfigurationForm::rejected, this, [this]() {
-		updateConnections();
+	connect(configuration_wgt, &ConfigurationWidget::s_configurationChanged, this, &MainWindow::applyConfigurations);
+	connect(configuration_wgt, &ConfigurationWidget::s_configurationReverted, this, [this]() {
+		updateConnections(true);
 	});
-
-	connect(configuration_form, &ConfigurationForm::s_invalidateModelsRequested, this, [this](){
-		//Forcing the models code invalidation if the user changes the escape comments option
-		for(int idx = 0; idx < models_tbw->count(); idx++)
-			dynamic_cast<ModelWidget *>(models_tbw->widget(idx))->getDatabaseModel()->setCodesInvalidated();
-	}); */
 
 	connect(&model_save_timer, &QTimer::timeout, this, &MainWindow::saveAllModels);
 
@@ -964,7 +950,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
 	else
 	{
 		//GeneralConfigWidget *conf_wgt = dynamic_cast<GeneralConfigWidget *>(configuration_form->getConfigurationWidget(ConfigurationForm::GeneralConfWgt));
-		GeneralConfigWidget *conf_wgt = dynamic_cast<GeneralConfigWidget *>(settings_wgt->getConfigurationWidget(ConfigurationWidget::GeneralConfWgt));
+		GeneralConfigWidget *conf_wgt = dynamic_cast<GeneralConfigWidget *>(configuration_wgt->getConfigurationWidget(ConfigurationWidget::GeneralConfWgt));
 		//std::map<QString, attribs_map > confs = conf_wgt->getConfigurationParams();
 		GeneralConfigWidget::saveWidgetGeometry(this);
 
@@ -1110,12 +1096,10 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
 void MainWindow::updateConnections(bool force)
 {
-	ConnectionsConfigWidget *conn_cfg_wgt=
-			//dynamic_cast<ConnectionsConfigWidget *>(configuration_form->getConfigurationWidget(ConfigurationForm::ConnectionsConfWgt));
-			dynamic_cast<ConnectionsConfigWidget *>(settings_wgt->getConfigurationWidget(ConfigurationWidget::ConnectionsConfWgt));
+	ConnectionsConfigWidget *conn_cfg_wgt =
+			dynamic_cast<ConnectionsConfigWidget *>(configuration_wgt->getConfigurationWidget(ConfigurationWidget::ConnectionsConfWgt));
 
-	if(force || (!force && (conn_cfg_wgt->isConfigurationChanged() ||
-													model_valid_wgt->connections_cmb->count() == 0 ||
+	if(force || (!force && (model_valid_wgt->connections_cmb->count() == 0 ||
 													sql_tool_wgt->connections_cmb->count() == 0)))
 	{
 		if(sender() != sql_tool_wgt)
@@ -1621,7 +1605,7 @@ void MainWindow::setCurrentModel()
 void MainWindow::setGridOptions()
 {
 	//GeneralConfigWidget *conf_wgt = dynamic_cast<GeneralConfigWidget *>(configuration_form->getConfigurationWidget(ConfigurationForm::GeneralConfWgt));
-	GeneralConfigWidget *conf_wgt = dynamic_cast<GeneralConfigWidget *>(settings_wgt->getConfigurationWidget(ConfigurationWidget::GeneralConfWgt));
+	GeneralConfigWidget *conf_wgt = dynamic_cast<GeneralConfigWidget *>(configuration_wgt->getConfigurationWidget(ConfigurationWidget::GeneralConfWgt));
 	std::map<QString, attribs_map> attribs = conf_wgt->getConfigurationParams();
 
 	ObjectsScene::setShowGrid(action_show_grid->isChecked());
@@ -1765,62 +1749,49 @@ void MainWindow::updateWindowTitle()
 
 void MainWindow::applyConfigurations()
 {
-  if(!sender() ||
-			//(sender()==configuration_form && configuration_form->result()==QDialog::Accepted))
-		 #warning "Fix me!"
-		 (sender() == settings_wgt /* && settings_wgt->result() == QDialog::Accepted) */))
+	GeneralConfigWidget *conf_wgt =
+			dynamic_cast<GeneralConfigWidget *>(configuration_wgt->getConfigurationWidget(ConfigurationWidget::GeneralConfWgt));
+
+	scene_info_wgt->obj_sel_info_frm->setHidden(conf_wgt->hide_obj_sel_info_chk->isChecked());
+	scene_info_wgt->cursor_pos_info_frm->setHidden(conf_wgt->hide_cur_pos_zoom_info_chk->isChecked());
+
+	//Disable the auto save if the option is not checked
+	if(!conf_wgt->autosave_interv_chk->isChecked())
 	{
-		GeneralConfigWidget *conf_wgt=nullptr;
-		int count, i;
-		ModelWidget *model=nullptr;
-
-		//conf_wgt = dynamic_cast<GeneralConfigWidget *>(configuration_form->getConfigurationWidget(ConfigurationForm::GeneralConfWgt));
-		conf_wgt = dynamic_cast<GeneralConfigWidget *>(settings_wgt->getConfigurationWidget(ConfigurationWidget::GeneralConfWgt));
-
-		scene_info_wgt->obj_sel_info_frm->setHidden(conf_wgt->hide_obj_sel_info_chk->isChecked());
-		scene_info_wgt->cursor_pos_info_frm->setHidden(conf_wgt->hide_cur_pos_zoom_info_chk->isChecked());
-
-		//Disable the auto save if the option is not checked
-		if(!conf_wgt->autosave_interv_chk->isChecked())
-		{
-			//Stop the save timer
-			model_save_timer.setInterval(InfinityInterval);
-			model_save_timer.stop();
-		}
-		else
-		{
-			model_save_timer.setInterval(conf_wgt->autosave_interv_spb->value() * 60000);
-			model_save_timer.start();
-		}
-
-		//Temporary models are saved every five minutes
-		tmpmodel_save_timer.setInterval(model_save_timer.interval() < InfinityInterval ? model_save_timer.interval()/2 : 300000);
-		tmpmodel_save_timer.start();
-
-		qApp->setOverrideCursor(Qt::WaitCursor);
-
-		//Force the update of all opened models
-		count=models_tbw->count();
-		for(i=0; i < count; i++)
-		{
-			model=dynamic_cast<ModelWidget *>(models_tbw->widget(i));
-			model->updateObjectsOpacity();
-			model->db_model->setObjectsModified();
-		}
-
-		if(current_model)
-			setGridOptions();
-
-		updateConnections();
-		sql_tool_wgt->configureSnippets();
-		sql_tool_wgt->reloadHighlightConfigs();
-
-		qApp->restoreOverrideCursor();
+		//Stop the save timer
+		model_save_timer.setInterval(InfinityInterval);
+		model_save_timer.stop();
+	}
+	else
+	{
+		model_save_timer.setInterval(conf_wgt->autosave_interv_spb->value() * 60000);
+		model_save_timer.start();
 	}
 
-	sql_tool_wgt->updateTabs();
-}
+	//Temporary models are saved every five minutes
+	tmpmodel_save_timer.setInterval(model_save_timer.interval() < InfinityInterval ? model_save_timer.interval()/2 : 300000);
+	tmpmodel_save_timer.start();
 
+	qApp->setOverrideCursor(Qt::WaitCursor);
+
+	//Force the update of all opened models
+	for(auto &model : models_tbw->findChildren<ModelWidget *>())
+	{
+		model->updateObjectsOpacity();
+		model->db_model->setObjectsModified();
+		model->db_model->setCodesInvalidated();
+	}
+
+	if(current_model)
+		setGridOptions();
+
+	updateConnections(true);
+	sql_tool_wgt->configureSnippets();
+	sql_tool_wgt->reloadHighlightConfigs();
+	sql_tool_wgt->updateTabs();
+
+	qApp->restoreOverrideCursor();
+}
 
 void MainWindow::saveAllModels()
 {
@@ -2078,7 +2049,7 @@ void MainWindow::printModel()
 		QPrinter *printer=nullptr;
 		QPageLayout curr_page_lt, orig_page_lt;
 		//GeneralConfigWidget *conf_wgt=dynamic_cast<GeneralConfigWidget *>(configuration_form->getConfigurationWidget(ConfigurationForm::GeneralConfWgt));
-		GeneralConfigWidget *conf_wgt = dynamic_cast<GeneralConfigWidget *>(settings_wgt->getConfigurationWidget(ConfigurationWidget::GeneralConfWgt));
+		GeneralConfigWidget *conf_wgt = dynamic_cast<GeneralConfigWidget *>(configuration_wgt->getConfigurationWidget(ConfigurationWidget::GeneralConfWgt));
 
 		print_dlg.setOption(QAbstractPrintDialog::PrintCurrentPage, false);
 		print_dlg.setWindowTitle(tr("Database model printing"));
@@ -2401,7 +2372,7 @@ void MainWindow::configureSamplesMenu()
 void MainWindow::storeDockWidgetsSettings()
 {
 	//GeneralConfigWidget *conf_wgt=dynamic_cast<GeneralConfigWidget *>(configuration_form->getConfigurationWidget(ConfigurationForm::GeneralConfWgt));
-	GeneralConfigWidget *conf_wgt = dynamic_cast<GeneralConfigWidget *>(settings_wgt->getConfigurationWidget(ConfigurationWidget::GeneralConfWgt));
+	GeneralConfigWidget *conf_wgt = dynamic_cast<GeneralConfigWidget *>(configuration_wgt->getConfigurationWidget(ConfigurationWidget::GeneralConfWgt));
 	attribs_map params;
 
 	params[Attributes::Validator]=Attributes::True;
@@ -2435,7 +2406,7 @@ void MainWindow::storeDockWidgetsSettings()
 void MainWindow::restoreDockWidgetsSettings()
 {
 	//GeneralConfigWidget *conf_wgt=dynamic_cast<GeneralConfigWidget *>(configuration_form->getConfigurationWidget(ConfigurationForm::GeneralConfWgt));
-	GeneralConfigWidget *conf_wgt = dynamic_cast<GeneralConfigWidget *>(settings_wgt->getConfigurationWidget(ConfigurationWidget::GeneralConfWgt));
+	GeneralConfigWidget *conf_wgt = dynamic_cast<GeneralConfigWidget *>(configuration_wgt->getConfigurationWidget(ConfigurationWidget::GeneralConfWgt));
 	std::map<QString, attribs_map> confs=conf_wgt->getConfigurationParams();
 
 #ifndef DEMO_VERSION
@@ -2521,6 +2492,7 @@ void MainWindow::changeCurrentView(bool checked)
 {
 	QAction *curr_act = qobject_cast<QAction *>(sender());
 
+	configuration_wgt->checkChangedConfiguration();
 	layers_cfg_wgt->setVisible(false);
 	changelog_wgt->setVisible(false);
 
@@ -2634,7 +2606,7 @@ void MainWindow::toggleCompactView()
 {
 	ModelWidget *model_wgt = nullptr;
 	//GeneralConfigWidget *conf_wgt = dynamic_cast<GeneralConfigWidget *>(configuration_form->getConfigurationWidget(ConfigurationForm::GeneralConfWgt));
-	GeneralConfigWidget *conf_wgt = dynamic_cast<GeneralConfigWidget *>(settings_wgt->getConfigurationWidget(ConfigurationWidget::GeneralConfWgt));
+	GeneralConfigWidget *conf_wgt = dynamic_cast<GeneralConfigWidget *>(configuration_wgt->getConfigurationWidget(ConfigurationWidget::GeneralConfWgt));
 	std::map<QString, attribs_map> attribs = conf_wgt->getConfigurationParams();
 
 	attribs[Attributes::Configuration][Attributes::CompactView] = action_compact_view->isChecked() ? Attributes::True : Attributes::False;

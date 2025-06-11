@@ -30,13 +30,20 @@ ConfigurationWidget::ConfigurationWidget(QWidget *parent) : QWidget(parent)
 	snippets_conf = new SnippetsConfigWidget;
 	plugins_conf = new PluginsConfigWidget;
 
-	QWidgetList wgt_list={ general_conf, appearance_conf, relationships_conf,
-												 connections_conf, snippets_conf, plugins_conf };
+	QList<BaseConfigWidget *> wgt_list={ general_conf, appearance_conf, relationships_conf,
+																			 connections_conf, snippets_conf, plugins_conf };
 
 	for(auto &wgt : wgt_list)
+	{
 		confs_stw->addWidget(wgt);
 
-	connect(cancel_btn, &QPushButton::clicked, this, &ConfigurationWidget::reject);
+		connect(wgt, &BaseConfigWidget::s_configurationChanged, this, [this](bool changed) {
+			apply_btn->setEnabled(changed);
+			revert_btn->setEnabled(changed);
+		});
+	}
+
+	connect(revert_btn, &QPushButton::clicked, this, &ConfigurationWidget::revertConfiguration);
 	connect(apply_btn,  &QPushButton::clicked, this, __slot(this, ConfigurationWidget::applyConfiguration));
 	connect(defaults_btn,  &QPushButton::clicked, this, __slot(this, ConfigurationWidget::restoreDefaults));
 
@@ -58,68 +65,92 @@ ConfigurationWidget::ConfigurationWidget(QWidget *parent) : QWidget(parent)
 
 ConfigurationWidget::~ConfigurationWidget()
 {
-	//connections_conf->destroyConnections();
+	connections_conf->destroyConnections();
 }
 
 void ConfigurationWidget::changeCurrentView()
 {
 	QToolButton *btn = nullptr,
 			*btn_sender = qobject_cast<QToolButton *>(sender());
+	QList<QToolButton *> child_btns = btns_parent_wgt->findChildren<QToolButton *>();
 
-	for(auto &obj : btns_parent_wgt->children())
+	child_btns.removeOne(btn_sender);
+
+	for(auto &obj : child_btns)
 	{
 		btn = dynamic_cast<QToolButton *>(obj);
-		if(!btn || btn == btn_sender) continue;
+
+		if(!btn)
+			continue;
+
 		btn->blockSignals(true);
 		btn->setChecked(false);
 		btn->blockSignals(false);
 	}
 
-	confs_stw->setCurrentIndex(btn_sender->property(Attributes::ObjectId.toStdString().c_str()).toInt());
+	if(btn_sender)
+	{
+		/* Forcing the sender button to keep the checked state
+		 * when the user clicks it when it is already checked */
+		btn_sender->blockSignals(true);
+		btn_sender->setChecked(true);
+		btn_sender->blockSignals(false);
+
+		confs_stw->setCurrentIndex(btn_sender->property(Attributes::ObjectId.toStdString().c_str()).toInt());
+	}
 }
 
 void ConfigurationWidget::hideEvent(QHideEvent *event)
 {
-	if(!event->spontaneous())
-		general_tb->setChecked(true);
+	general_tb->setChecked(true);
 }
 
 void ConfigurationWidget::showEvent(QShowEvent *)
 {
-	//snippets_conf->snippet_txt->updateLineNumbers();
+	snippets_conf->snippet_txt->updateLineNumbers();
 }
 
-void ConfigurationWidget::reject()
+void ConfigurationWidget::revertConfiguration()
 {
 	try
 	{
-		if(sender() == cancel_btn)
+		qApp->setOverrideCursor(Qt::WaitCursor);
+
+		for(auto &conf_wgt : confs_stw->findChildren<BaseConfigWidget *>())
 		{
-			QWidgetList wgt_list={ general_conf, appearance_conf, connections_conf, snippets_conf };
-			BaseConfigWidget *conf_wgt=nullptr;
-
-			qApp->setOverrideCursor(Qt::WaitCursor);
-
-			for(QWidget *wgt : wgt_list)
-			{
-				conf_wgt = qobject_cast<BaseConfigWidget *>(wgt);
-
-				if(conf_wgt->isConfigurationChanged())
-					conf_wgt->loadConfiguration();
-			}
-
-			qApp->restoreOverrideCursor();
+			if(conf_wgt->isConfigurationChanged())
+				conf_wgt->loadConfiguration();
 		}
+
+		emit s_configurationReverted();
+		qApp->restoreOverrideCursor();
 	}
 	catch(Exception &)
 	{}
+}
 
-	//QDialog::reject();
+void ConfigurationWidget::checkChangedConfiguration()
+{
+	for(auto &conf_wgt : confs_stw->findChildren<BaseConfigWidget *>())
+	{
+		if(conf_wgt->isConfigurationChanged())
+		{
+			int res = Messagebox::confirm(tr("Some configuration parameters were changed! How do you wish to proceed?"),
+																		Messagebox::YesNoButtons, tr("Apply"), tr("Discard"));
+
+			if(res == Messagebox::Accepted)
+				applyConfiguration();
+			else
+				revertConfiguration();
+
+			break;
+		}
+	}
 }
 
 void ConfigurationWidget::applyConfiguration()
 {
-	BaseConfigWidget *conf_wgt=nullptr;
+	BaseConfigWidget *conf_wgt = nullptr;
 	bool curr_escape_comments = BaseObject::isEscapeComments();
 
 	qApp->setOverrideCursor(Qt::WaitCursor);
@@ -135,11 +166,11 @@ void ConfigurationWidget::applyConfiguration()
 	general_conf->applyConfiguration();
 	relationships_conf->applyConfiguration();
 
-	if(curr_escape_comments != BaseObject::isEscapeComments())
-		emit s_invalidateModelsRequested();
+	//if(curr_escape_comments != BaseObject::isEscapeComments())
+	//	emit s_invalidateModelsRequested();
+	emit s_configurationChanged();
 
 	qApp->restoreOverrideCursor();
-	//QDialog::accept();
 }
 
 void ConfigurationWidget::loadConfiguration()
