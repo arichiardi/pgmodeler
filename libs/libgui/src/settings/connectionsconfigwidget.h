@@ -53,7 +53,7 @@ class __libgui ConnectionsConfigWidget: public BaseConfigWidget, public Ui::Conn
 		
 	public:
 		ConnectionsConfigWidget(QWidget * parent = nullptr);
-		virtual ~ConnectionsConfigWidget();
+		~ConnectionsConfigWidget() = default;
 		
 		virtual void saveConfiguration() override;
 

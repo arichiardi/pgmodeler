@@ -54,8 +54,7 @@ class __libcore Textbox: public BaseGraphicObject{
 		 the method setComment() must be used and the getComment()
 		 method used to get the current text */
 		Textbox();
-
-		virtual ~Textbox(){}
+		~Textbox() = default;
 
 		//! \brief Sets the attributes of the text
 		void setTextAttribute(TextAttrib attrib, bool value);

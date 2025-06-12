@@ -40,7 +40,6 @@
 #include "widgets/updatenotifierwidget.h"
 #include "widgets/modelnavigationwidget.h"
 #include "widgets/welcomewidget.h"
-//#include "settings/configurationform.h"
 #include "widgets/donatewidget.h"
 #include "widgets/sceneinfowidget.h"
 #include "widgets/layersconfigwidget.h"
@@ -118,9 +117,6 @@ class __libgui MainWindow: public QMainWindow, public Ui::MainWindow {
 
 		//! \brief Update notifier popup widget
 		UpdateNotifierWidget *update_notifier_wgt;
-
-		//! \brief Configuration form
-		// ConfigurationForm *configuration_form;
 
 		//! \brief Stores the currently focused model
 		ModelWidget *current_model;

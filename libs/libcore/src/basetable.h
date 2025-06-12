@@ -59,8 +59,7 @@ class __libcore BaseTable: public BaseGraphicObject {
 		};
 
 		BaseTable();
-
-		virtual ~BaseTable() {}
+		virtual ~BaseTable() = default;
 
 		QString getHashCode();
 

@@ -56,11 +56,6 @@ ConnectionsConfigWidget::ConnectionsConfigWidget(QWidget * parent) : BaseConfigW
 	cancel_tb->setVisible(false);
 }
 
-ConnectionsConfigWidget::~ConnectionsConfigWidget()
-{
-
-}
-
 void ConnectionsConfigWidget::hideEvent(QHideEvent *event)
 {
 	if(!event->spontaneous())
@@ -69,7 +64,7 @@ void ConnectionsConfigWidget::hideEvent(QHideEvent *event)
 		one_time_conn_edit = false;
 		host_edt->setEnabled(true);
 		port_sbp->setEnabled(true);
-		conn_btns_wgt->setVisible(true);
+		conn_btns_grp->setVisible(true);
 		add_tb->setVisible(true);
 	}
 }
@@ -162,7 +157,7 @@ void ConnectionsConfigWidget::loadConfiguration()
 void ConnectionsConfigWidget::setOneTimeEditMode(bool one_time_edit, const QString &conn_alias, const QString &dbname, const QString &host, int port, const QString &username, const QString &password)
 {
 	one_time_conn_edit = one_time_edit;
-	conn_btns_wgt->setVisible(!one_time_edit);
+	conn_btns_grp->setVisible(!one_time_edit);
 	add_tb->setVisible(!one_time_edit);
 	host_edt->setDisabled(one_time_edit && !host.isEmpty());
 	port_sbp->setDisabled(one_time_edit && port > 0);
@@ -189,13 +184,14 @@ void ConnectionsConfigWidget::enableCertificates()
 void ConnectionsConfigWidget::enableConnectionTest()
 {
 	test_tb->setEnabled(!alias_edt->text().isEmpty() &&
-						!host_edt->text().isEmpty() &&
-						!user_edt->text().isEmpty() &&
-						!conn_db_edt->text().isEmpty());
+											!host_edt->text().isEmpty() &&
+											!user_edt->text().isEmpty() &&
+											!conn_db_edt->text().isEmpty());
+
 	add_tb->setEnabled(test_tb->isEnabled());
 	update_tb->setEnabled(test_tb->isEnabled());
 
-	if(!isConfigurationChanged())
+	if(!isConfigurationChanged() && test_tb->isEnabled())
 		setConfigurationChanged(true);
 }
 

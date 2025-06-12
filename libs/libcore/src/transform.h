@@ -47,8 +47,7 @@ class __libcore Transform : public BaseObject {
 
 	public:
 		Transform();
-
-		virtual ~Transform(){}
+		~Transform() = default;
 
 		//! \brief This method has a hardcoded way to generated the transform's name. It'll reject any value passed by its parameter
 		virtual void setName(const QString &) override;

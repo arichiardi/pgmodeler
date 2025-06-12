@@ -86,8 +86,7 @@ class __libcore Column: public TableObject{
 		static const QString NextValFuncTmpl;
 
 		Column();
-
-		virtual ~Column(){}
+		virtual ~Column() = default;
 
 		//! \brief Defines if the column accepts null values or not
 		void setNotNull(bool value);

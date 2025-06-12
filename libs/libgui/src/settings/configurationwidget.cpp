@@ -129,36 +129,34 @@ void ConfigurationWidget::discardConfiguration()
 	{}
 }
 
-void ConfigurationWidget::checkChangedConfiguration()
+int ConfigurationWidget::checkChangedConfiguration()
 {
 	for(auto &conf_wgt : confs_stw->findChildren<BaseConfigWidget *>())
 	{
 		if(conf_wgt->isConfigurationChanged())
 		{
 			int res = Messagebox::confirm(tr("Some configuration parameters were changed! How do you wish to proceed?"),
-																		Messagebox::YesNoButtons, tr("Apply"), tr("Discard"));
+																		Messagebox::AllButtons, tr("Apply"), tr("Discard"), tr("Keep editing"),
+																		"", GuiUtilsNs::getIconPath("delete"), GuiUtilsNs::getIconPath("edit"));
 
 			if(res == Messagebox::Accepted)
 				applyConfiguration();
-			else
+			else if(res == Messagebox::Rejected)
 				discardConfiguration();
 
-			break;
+			return res;
 		}
 	}
+
+	return Messagebox::Accepted;
 }
 
 void ConfigurationWidget::applyConfiguration()
 {
-	BaseConfigWidget *conf_wgt = nullptr;
-	bool curr_escape_comments = BaseObject::isEscapeComments();
-
 	qApp->setOverrideCursor(Qt::WaitCursor);
 
-	for(int i = GeneralConfWgt; i <= SnippetsConfWgt; i++)
+	for(auto &conf_wgt : confs_stw->findChildren<BaseConfigWidget *>())
 	{
-		conf_wgt = qobject_cast<BaseConfigWidget *>(confs_stw->widget(i));
-
 		if(conf_wgt->isConfigurationChanged())
 			conf_wgt->saveConfiguration();
 	}
@@ -173,18 +171,15 @@ void ConfigurationWidget::applyConfiguration()
 
 void ConfigurationWidget::loadConfiguration()
 {
-	BaseConfigWidget *config_wgt = nullptr;
-
-	for(int i=GeneralConfWgt; i <= PluginsConfWgt; i++)
+	for(auto &conf_wgt : confs_stw->findChildren<BaseConfigWidget *>())
 	{
 		try
 		{
-			config_wgt = qobject_cast<BaseConfigWidget *>(confs_stw->widget(i));
-			config_wgt->loadConfiguration();
+			conf_wgt->loadConfiguration();
 		}
 		catch(Exception &e)
 		{
-			if(e.getErrorCode()==ErrorCode::PluginsNotLoaded)
+			if(e.getErrorCode() == ErrorCode::PluginsNotLoaded)
 			{
 				Messagebox::error(e, __PRETTY_FUNCTION__, __FILE__, __LINE__);
 			}
@@ -197,7 +192,7 @@ void ConfigurationWidget::loadConfiguration()
 										 Messagebox::AlertIcon, Messagebox::YesNoButtons, tr("Restore"), "", "", GuiUtilsNs::getIconPath("refresh"));
 
 				if(msg_box.isAccepted())
-					config_wgt->restoreDefaults();
+					conf_wgt->restoreDefaults();
 			}
 		}
 	}

@@ -86,11 +86,6 @@ BaseObjectWidget::BaseObjectWidget(QWidget *parent, ObjectType obj_type): QWidge
 	baseobject_grid->addLayout(misc_btns_lt,9,0,1,5);
 }
 
-BaseObjectWidget::~BaseObjectWidget()
-{
-
-}
-
 bool BaseObjectWidget::eventFilter(QObject *object, QEvent *event)
 {
 	//Filters the ENTER/RETURN pressing forcing the parent form activate the "Apply" button

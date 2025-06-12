@@ -85,8 +85,7 @@ class __libcore Trigger: public TableObject{
 		};
 
 		Trigger();
-
-		virtual ~Trigger(){}
+		~Trigger() = default;
 
 		/*! \brief Adds a column as a firing condition (only when the event UPDATE is used).
 		 The columns added by this method must belongs to the trigger owner table. */

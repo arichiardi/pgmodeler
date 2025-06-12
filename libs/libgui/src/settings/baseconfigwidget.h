@@ -92,21 +92,21 @@ class __libgui BaseConfigWidget: public QWidget {
 
 	public:
 		BaseConfigWidget(QWidget *parent = nullptr);
-		~BaseConfigWidget(){}
+		virtual ~BaseConfigWidget() = default;
 		
 		bool isConfigurationChanged();
 		
 		//! \brief Applies the configuration to object
-		virtual void applyConfiguration(void)=0;
+		virtual void applyConfiguration()=0;
 		
 		//! \brief Loads a set of configurations from a file
-		virtual void loadConfiguration(void)=0;
+		virtual void loadConfiguration()=0;
 		
 		//! \brief Saves the current settings to a file
-		virtual void saveConfiguration(void)=0;
+		virtual void saveConfiguration()=0;
 		
 		//! \brief Destroy the current configuration file and makes a copy of the default one located at conf/defaults
-		virtual void restoreDefaults(void)=0;
+		virtual void restoreDefaults()=0;
 		
 	public slots:
 		virtual void setConfigurationChanged(bool changed = true);

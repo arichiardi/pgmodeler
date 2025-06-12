@@ -87,8 +87,7 @@ class __libcore BaseGraphicObject: public QObject, public BaseObject {
 		MinZValue = -50;
 
 		BaseGraphicObject();
-
-		virtual ~BaseGraphicObject() {}
+		virtual ~BaseGraphicObject() = default;
 
 		/*! \brief Sets whether the object is protected or not (method overloading
 		 from base class BaseObject) the difference is that this method

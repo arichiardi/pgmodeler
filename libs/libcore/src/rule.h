@@ -49,8 +49,7 @@ class __libcore Rule: public TableObject{
 
 	public:
 		Rule();
-
-		virtual ~Rule(){}
+		~Rule() = default;
 
 		//! \brief Adds the SQL command to be executed by the rule
 		void addCommand(const QString &cmd);

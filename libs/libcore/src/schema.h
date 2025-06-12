@@ -39,8 +39,7 @@ class __libcore Schema: public BaseGraphicObject {
 
 	public:
 		Schema();
-
-	 virtual ~Schema(){}
+		~Schema() = default;
 
 		virtual void setName(const QString &name) override;
 

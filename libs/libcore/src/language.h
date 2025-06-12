@@ -51,8 +51,7 @@ class __libcore Language: public BaseObject{
 		};
 
 		Language();
-
-		virtual ~Language(){}
+		~Language() = default;
 
 		//! \brief Sets the language name
 		virtual void setName(const QString &name) override;

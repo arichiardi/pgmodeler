@@ -63,8 +63,7 @@ class __libcore Operator: public BaseObject {
 		};
 
 		Operator();
-
-		virtual ~Operator(){}
+		~Operator() = default;
 
 		//! \brief Defines the name of the operator
 		virtual void setName(const QString &name) override;

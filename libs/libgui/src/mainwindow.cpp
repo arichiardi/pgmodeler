@@ -154,7 +154,6 @@ MainWindow::~MainWindow()
 
 	delete restoration_form;
 	delete overview_wgt;
-	//delete configuration_form;
 }
 
 bool MainWindow::mimeDataHasModelFiles(const QMimeData *mime_data)
@@ -670,7 +669,7 @@ void MainWindow::connectSignalsToSlots()
 	for(auto &act : view_actions)
 	{
 		act->setData(static_cast<MWViewsId>(vw_id++));
-		connect(act, &QAction::triggered, this, &MainWindow::changeCurrentView);
+		//connect(act, &QAction::triggered, this, &MainWindow::changeCurrentView);
 		connect(act, &QAction::toggled, this, &MainWindow::changeCurrentView);
 	}
 
@@ -960,23 +959,19 @@ void MainWindow::closeEvent(QCloseEvent *event)
 		//Checking if there is modified models and ask the user to save them before close the application
 		if(models_tbw->count() > 0)
 		{
-			int i = 0;
 			QStringList model_names;
 			ModelWidget *model = nullptr;
 
 			action_design->trigger();
-			i=0;
-			while(i < models_tbw->count())
-			{
-				model=dynamic_cast<ModelWidget *>(models_tbw->widget(i++));
 
+			for(auto &model : models_tbw->findChildren<ModelWidget *>())
+			{
 				if(model->isModified())
 					model_names.push_back(QString("<strong>%1</strong>").arg(model->getDatabaseModel()->getName()));
 			}
 
 			if(!model_names.isEmpty() &&
-					conf_wgt->getConfigurationParam(Attributes::Configuration, Attributes::AlertUnsavedModels) != Attributes::False
-					/* confs[Attributes::Configuration][Attributes::AlertUnsavedModels] != Attributes::False */)
+					conf_wgt->getConfigurationParam(Attributes::Configuration, Attributes::AlertUnsavedModels) != Attributes::False)
 			{
 				msg_box.setCustomOptionText(tr("Always close without alerting me next time."));
 				msg_box.show(tr("Unsaved model(s)"),
@@ -988,7 +983,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
 																								msg_box.isCustomOptionChecked() ? Attributes::False : Attributes::True }});
 
 				/* If the user rejects the message box the close event will be aborted
-				causing pgModeler not to be finished */
+				 * causing pgModeler not to be finished */
 				if(msg_box.isRejected())
 					event->ignore();
 			}
@@ -996,8 +991,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
 		// Warning the user about non empty sql execution panels
 		if(event->isAccepted() && sql_tool_wgt->hasSQLExecutionPanels() &&
-				conf_wgt->getConfigurationParam(Attributes::Configuration, Attributes::AlertOpenSqlTabs) != Attributes::False
-				/* confs[Attributes::Configuration][Attributes::AlertOpenSqlTabs] != Attributes::False */)
+				conf_wgt->getConfigurationParam(Attributes::Configuration, Attributes::AlertOpenSqlTabs) != Attributes::False)
 		{
 			action_manage->trigger();
 			msg_box.setCustomOptionText(tr("Always close without alerting me next time."));
@@ -1040,16 +1034,16 @@ void MainWindow::closeEvent(QCloseEvent *event)
 		//Saving the session
 		for(auto i = 0; i < models_tbw->count(); i++)
 		{
-			model=dynamic_cast<ModelWidget *>(models_tbw->widget(i));
+			model = dynamic_cast<ModelWidget *>(models_tbw->widget(i));
 
 			if(!model->getFilename().isEmpty() &&
 				 /* Models loaded from temporary dir are not included in the session
 					* since they are removed once pgModeler is closed */
 				 !model->getFilename().contains(GlobalAttributes::getTemporaryPath()))
 			{
-				param_id=QString("%1%2").arg(Attributes::File).arg(i);
-				attribs[Attributes::Id]=param_id;
-				attribs[Attributes::Path]=model->getFilename();
+				param_id = QString("%1%2").arg(Attributes::File).arg(i);
+				attribs[Attributes::Id] = param_id;
+				attribs[Attributes::Path] = model->getFilename();
 				conf_wgt->setConfigurationSection(param_id, attribs);
 				attribs.clear();
 			}
@@ -1058,18 +1052,17 @@ void MainWindow::closeEvent(QCloseEvent *event)
 		//Saving recent models list
 		if(!recent_models.isEmpty())
 		{
-			int i=0;
+			int i = 0;
 			QString param_id;
 			attribs_map attribs;
 
-			while(!recent_models.isEmpty())
+			for(auto &rec_model : recent_models)
 			{
-				param_id=QString("%1%2").arg(Attributes::Recent).arg(QString::number(i++).rightJustified(2, '0'));
-				attribs[Attributes::Id]=param_id;
-				attribs[Attributes::Path]=recent_models.front();
+				param_id = QString("%1%2").arg(Attributes::Recent).arg(QString::number(i++).rightJustified(2, '0'));
+				attribs[Attributes::Id] = param_id;
+				attribs[Attributes::Path] = rec_model;
 				conf_wgt->setConfigurationSection(param_id, attribs);
 				attribs.clear();
-				recent_models.pop_front();
 			}
 
 			recent_models_menu->clear();
@@ -2482,7 +2475,16 @@ void MainWindow::changeCurrentView(bool checked)
 {
 	QAction *curr_act = qobject_cast<QAction *>(sender());
 
-	configuration_wgt->checkChangedConfiguration();
+	/* If the user let uncommited configuration changes
+	 * we don't change the view and keep the configuration view open */
+	if(checked && configuration_wgt->checkChangedConfiguration() == Messagebox::Canceled)
+	{
+		curr_act->blockSignals(true);
+		curr_act->setChecked(false);
+		curr_act->blockSignals(false);
+		return;
+	}
+
 	layers_cfg_wgt->setVisible(false);
 	changelog_wgt->setVisible(false);
 

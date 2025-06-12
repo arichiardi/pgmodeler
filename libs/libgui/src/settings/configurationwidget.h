@@ -78,7 +78,7 @@ class __libgui ConfigurationWidget: public QWidget, public Ui::ConfigurationWidg
 		 *  the original post-installation settings. */
 		void discardConfiguration();
 
-		void checkChangedConfiguration();
+		int checkChangedConfiguration();
 		
 	private slots:
 		void restoreDefaults();

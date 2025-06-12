@@ -165,9 +165,7 @@ void BaseRelationship::configureRelationship()
 
 BaseRelationship::~BaseRelationship()
 {
-	//disconnectRelationship();
-
-	//Unallocates the labels
+	//Deallocates the labels
 	for(unsigned i = 0; i < 3; i++)
 	{
 		if(lables[i])

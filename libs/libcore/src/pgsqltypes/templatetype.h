@@ -98,7 +98,7 @@ TemplateType<Class>::TemplateType()
 }
 
 template<class Class>
-TemplateType<Class>::~TemplateType(){ }
+TemplateType<Class>::~TemplateType() = default;
 
 template<class Class>
 unsigned TemplateType<Class>::operator = (unsigned type_id)

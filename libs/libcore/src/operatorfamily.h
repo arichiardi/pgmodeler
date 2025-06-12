@@ -36,8 +36,7 @@ class __libcore OperatorFamily: public BaseObject {
 
 	public:
 		OperatorFamily();
-
-		virtual ~OperatorFamily(){}
+		~OperatorFamily() = default;
 
 		//! \brief Sets the indexing type of the operator family
 		void setIndexingType(IndexingType idx_type);
