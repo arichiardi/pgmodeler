@@ -1087,9 +1087,6 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
 void MainWindow::updateConnections(bool force)
 {
-	ConnectionsConfigWidget *conn_cfg_wgt =
-			configuration_wgt->getConfigurationWidget<ConnectionsConfigWidget>();
-
 	if(force || (!force && (model_valid_wgt->connections_cmb->count() == 0 ||
 													sql_tool_wgt->connections_cmb->count() == 0)))
 	{
