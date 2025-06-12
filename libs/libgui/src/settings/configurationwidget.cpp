@@ -43,7 +43,7 @@ ConfigurationWidget::ConfigurationWidget(QWidget *parent) : QWidget(parent)
 		});
 	}
 
-	connect(revert_btn, &QPushButton::clicked, this, &ConfigurationWidget::discardConfiguration);
+	connect(revert_btn, &QPushButton::clicked, this, &ConfigurationWidget::__discardConfiguration);
 	connect(apply_btn,  &QPushButton::clicked, this, __slot(this, ConfigurationWidget::applyConfiguration));
 	connect(defaults_btn,  &QPushButton::clicked, this, __slot(this, ConfigurationWidget::restoreDefaults));
 
@@ -110,7 +110,7 @@ void ConfigurationWidget::showEvent(QShowEvent *)
 	snippets_conf->snippet_txt->updateLineNumbers();
 }
 
-void ConfigurationWidget::discardConfiguration()
+void ConfigurationWidget::__discardConfiguration()
 {
 	try
 	{
@@ -125,8 +125,10 @@ void ConfigurationWidget::discardConfiguration()
 		emit s_configurationReverted();
 		qApp->restoreOverrideCursor();
 	}
-	catch(Exception &)
-	{}
+	catch(Exception &e)
+	{
+		Messagebox::error(e, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+	}
 }
 
 int ConfigurationWidget::checkChangedConfiguration()
@@ -142,7 +144,7 @@ int ConfigurationWidget::checkChangedConfiguration()
 			if(res == Messagebox::Accepted)
 				applyConfiguration();
 			else if(res == Messagebox::Rejected)
-				discardConfiguration();
+				__discardConfiguration();
 
 			return res;
 		}

@@ -199,7 +199,7 @@ void GeneralConfigWidget::loadConfiguration()
 		unsigned interv=0;
 		int x=0, y=0, w=0, h=0, idx = -1;
 
-		for(QWidget *wgt : child_wgts)
+		for(auto &wgt : child_wgts)
 			wgt->blockSignals(true);
 
 		BaseConfigWidget::loadConfiguration(GlobalAttributes::GeneralConf, config_params, { Attributes::Id });
@@ -282,7 +282,7 @@ void GeneralConfigWidget::loadConfiguration()
 		int ui_idx = ui_language_cmb->findData(config_params[Attributes::Configuration][Attributes::UiLanguage]);
 		ui_language_cmb->setCurrentIndex(ui_idx >= 0 ? ui_idx : 0);
 
-		for(QWidget *wgt : child_wgts)
+		for(auto &wgt : child_wgts)
 			wgt->blockSignals(false);
 
 		widgets_geom.clear();

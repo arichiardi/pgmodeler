@@ -945,7 +945,6 @@ void MainWindow::closeEvent(QCloseEvent *event)
 	else
 	{
 		GeneralConfigWidget *conf_wgt = configuration_wgt->getConfigurationWidget<GeneralConfigWidget>();
-		GeneralConfigWidget::saveWidgetGeometry(this);
 
 		//Stops the saving timers as well the temp. model saving thread before close pgmodeler
 		model_save_timer.stop();
@@ -1012,6 +1011,11 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
 		if(!event->isAccepted())
 			return;
+
+		/* If we have any uncommited config changes, we discard them
+		 * reloading the original ones */
+		configuration_wgt->discardConfiguration<GeneralConfigWidget>();
+		GeneralConfigWidget::saveWidgetGeometry(this);
 
 		QString param_id;
 		attribs_map attribs;

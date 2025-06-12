@@ -36,7 +36,7 @@
 class __libgui ConfigurationWidget: public QWidget, public Ui::ConfigurationWidget {
 	Q_OBJECT
 
-	private:	
+	private:
 		GeneralConfigWidget *general_conf;
 		AppearanceConfigWidget *appearance_conf;
 		ConnectionsConfigWidget *connections_conf;
@@ -56,33 +56,51 @@ class __libgui ConfigurationWidget: public QWidget, public Ui::ConfigurationWidg
 			SnippetsConfWgt,
 			PluginsConfWgt
 		};
-		
+
 		ConfigurationWidget(QWidget * parent = nullptr);
 
 		virtual ~ConfigurationWidget();
+
+		int checkChangedConfiguration();
 		
 		template<class Widget, std::enable_if_t<std::is_base_of_v<BaseConfigWidget, Widget>, bool> = true>
 		Widget *getConfigurationWidget()
 		{
 			return confs_stw->findChild<Widget *>();
 		}
-		
+
+		template<class Widget, std::enable_if_t<std::is_base_of_v<BaseConfigWidget, Widget>, bool> = true>
+		void discardConfiguration()
+		{
+			Widget * conf_wgt = getConfigurationWidget<Widget>();
+
+			if(!conf_wgt ||
+				 (conf_wgt && !conf_wgt->isConfigurationChanged()))
+				return;
+
+			try
+			{
+				conf_wgt->loadConfiguration();
+			}
+			catch(Exception &e)
+			{
+				Messagebox::error(e, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+			}
+		}
+
 	public slots:
 		void applyConfiguration();
 		void loadConfiguration();
 
-		/*! \brief This method is different from restoreDefaults().
-		 *  It reloads the current configuration file of each
-		 *  section, while restoreDefaults(), copies the configuration
-		 *  files of each section from the defaults folder, restoring
-		 *  the original post-installation settings. */
-		void discardConfiguration();
-
-		int checkChangedConfiguration();
-		
 	private slots:
 		void restoreDefaults();
 		void changeCurrentView();
+
+		/*! \brief This method is discard any uncommited configuration changes
+		 *  in all configuration sections. Different from restoreDefaults() that
+		 *  restore the default configuration files, this method reloads the current
+		 *  configuration file of each section */
+		void __discardConfiguration();
 
 	signals:
 		void s_invalidateModelsRequested();
