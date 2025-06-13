@@ -222,7 +222,7 @@ AppearanceConfigWidget::AppearanceConfigWidget(QWidget * parent) : BaseConfigWid
 	delimiters_color_cp->setButtonToolTip(0, tr("Define a custom color for the page delimiter lines"));
 	hbox->addWidget(delimiters_color_cp);
 
-	QGridLayout *grid=dynamic_cast<QGridLayout *>(appearance_frm->layout());
+	QGridLayout *grid = dynamic_cast<QGridLayout *>(objects_gb->layout());
 	grid->addWidget(elem_color_cp, 3, 1, 1, 4);
 	grid->addWidget(viewp, 4 , 0, 1, 5);
 
@@ -247,14 +247,14 @@ CREATE TABLE public.table_b (\n \
 
 	font_preview_hl = new SyntaxHighlighter(font_preview_txt, false, true);
 
-	QBoxLayout *layout=new QBoxLayout(QBoxLayout::LeftToRight);
-	grid=dynamic_cast<QGridLayout *>(code_font_gb->layout());
+	QHBoxLayout *layout = new QHBoxLayout;
+	grid = dynamic_cast<QGridLayout *>(code_font_gb->layout());
 	layout->addWidget(line_numbers_cp);
 	layout->addWidget(line_numbers_bg_cp);
 	layout->addWidget(line_highlight_cp);
-	layout->addItem(new QSpacerItem(1000,20, QSizePolicy::Expanding));
-	grid->addLayout(layout, 3, 1);
-	grid->addWidget(font_preview_txt,grid->count(),0, 1, 4);
+	layout->addItem(new QSpacerItem(20, 20, QSizePolicy::Expanding));
+	grid->addLayout(layout, 1, 1);
+	grid->addWidget(font_preview_txt, grid->count(), 0, 1, 3);
 
 	ui_theme_cmb->addItem(tr("System default"), Attributes::System);
 	ui_theme_cmb->addItem(tr("Light"), Attributes::Light);
