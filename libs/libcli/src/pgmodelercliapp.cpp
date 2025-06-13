@@ -261,14 +261,14 @@ PgModelerCliApp::PgModelerCliApp(int argc, char **argv) : Application(argc, argv
 
 					//Raises an error if the option is not recognized
 					if(!isOptionRecognized(op, accepts_val))
-						throw Exception(tr("Unrecognized option `%1'.").arg(orig_op), ErrorCode::Custom,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+						throw Exception(tr("Unrecognized option `%1'.").arg(orig_op), ErrorCode::Custom,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 					//Raises an error if the value is empty and the option accepts a value
 					if(accepts_val && value.isEmpty())
-						throw Exception(tr("Value not specified for option `%1'.").arg(orig_op), ErrorCode::Custom,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+						throw Exception(tr("Value not specified for option `%1'.").arg(orig_op), ErrorCode::Custom,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 					if(!accepts_val && !value.isEmpty())
-						throw Exception(tr("Option `%1' does not accept values.").arg(orig_op), ErrorCode::Custom,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+						throw Exception(tr("Option `%1' does not accept values.").arg(orig_op), ErrorCode::Custom,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 					/* If we find a filter object parameter we append its parameter index so
 					 * its value is not replaced by the next filter parameter found */
@@ -398,7 +398,7 @@ QString PgModelerCliApp::getParsedOptValue(const QString &opt)
 	if(parsed_opts.count(opt) == 0)
 	{
 		throw Exception(tr("Trying to retrieve the value of unknown parsed option `%1'!").arg(opt),
-										ErrorCode::Custom,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+										ErrorCode::Custom,PGM_FUNC,PGM_FILE,PGM_LINE);
 	}
 
 	return parsed_opts[opt];
@@ -409,7 +409,7 @@ void PgModelerCliApp::setParsedOptValue(const QString &opt, const QString &value
 	if(parsed_opts.count(opt) == 0)
 	{
 		throw Exception(tr("Trying to set the value of unknown parsed option `%1'!").arg(opt),
-										 ErrorCode::Custom,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+										 ErrorCode::Custom,PGM_FUNC,PGM_FILE,PGM_LINE);
 	}
 
 	parsed_opts[opt] = value;
@@ -425,7 +425,7 @@ void PgModelerCliApp::configureConnection(bool extra_conn)
 	{
 		if(!connections.count(parsed_opts[ConnAlias + chr]))
 			throw Exception(tr("Connection aliased as '%1' was not found in the configuration file.").arg(parsed_opts[ConnAlias + chr]),
-							ErrorCode::Custom,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+							ErrorCode::Custom,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 		//Make a copy of the named connection
 		*conn = (*connections[parsed_opts[ConnAlias + chr]]);
@@ -816,52 +816,52 @@ void PgModelerCliApp::parseOptions(attribs_map &opts)
 			zoom = opts[ZoomFactor].toDouble()/static_cast<double>(100);
 
 		if(other_modes_cnt == 0 && exp_mode_cnt == 0)
-			throw Exception(tr("No operation mode was specified!"), ErrorCode::Custom,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+			throw Exception(tr("No operation mode was specified!"), ErrorCode::Custom,PGM_FUNC,PGM_FILE,PGM_LINE);
 		
 		if((exp_mode_cnt > 0 && (fix_model || upd_mime || import_db || diff || create_configs || list_conns || list_plugins)) ||
 			 (exp_mode_cnt == 0 && other_modes_cnt > 1))
-			throw Exception(tr("Multiple operation modes were specified!"), ErrorCode::Custom,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+			throw Exception(tr("Multiple operation modes were specified!"), ErrorCode::Custom,PGM_FUNC,PGM_FILE,PGM_LINE);
 		
 		if(!fix_model && !upd_mime && !plugin_op && exp_mode_cnt > 1)
-			throw Exception(tr("Multiple export modes were specified!"), ErrorCode::Custom,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+			throw Exception(tr("Multiple export modes were specified!"), ErrorCode::Custom,PGM_FUNC,PGM_FILE,PGM_LINE);
 		
 		if(!plugin_op && !list_conns && !list_plugins && !upd_mime && !import_db &&
 			 !diff && !create_configs && !opts.count(Input))
-			throw Exception(tr("No input file was specified!"), ErrorCode::Custom,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+			throw Exception(tr("No input file was specified!"), ErrorCode::Custom,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 		if(import_db && !opts.count(InputDb))
-			throw Exception(tr("No input database was specified!"), ErrorCode::Custom,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+			throw Exception(tr("No input database was specified!"), ErrorCode::Custom,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 		if(!plugin_op && !export_dbms && !upd_mime && !list_conns &&
 			 !list_plugins && !diff && !create_configs && !opts.count(Output))
-			throw Exception(tr("No output file was specified!"), ErrorCode::Custom,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+			throw Exception(tr("No output file was specified!"), ErrorCode::Custom,PGM_FUNC,PGM_FILE,PGM_LINE);
 		
 		if(!export_dbms && !upd_mime && !import_db && !list_conns && !list_plugins &&
 			 !create_configs && opts.count(Input) && opts.count(Output) &&
 			 QFileInfo(opts[Input]).absoluteFilePath() == QFileInfo(opts[Output]).absoluteFilePath())
-			throw Exception(tr("The input file must be different from the output!"), ErrorCode::Custom,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+			throw Exception(tr("The input file must be different from the output!"), ErrorCode::Custom,PGM_FUNC,PGM_FILE,PGM_LINE);
 		
 		if(export_dbms && !opts.count(ConnAlias) &&
 			 (!opts.count(Host) || !opts.count(User) || !opts.count(Passwd) || !opts.count(InitialDb)) )
-			throw Exception(tr("Incomplete connection information!"), ErrorCode::Custom,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+			throw Exception(tr("Incomplete connection information!"), ErrorCode::Custom,PGM_FUNC,PGM_FILE,PGM_LINE);
 		
 		if(export_dbms && opts.count(Force) && !opts.count(DropDatabase))
-			throw Exception(tr("The option `%1' must be used only with `%2' when exporting to DBMS!").arg(Force, DropDatabase), ErrorCode::Custom,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+			throw Exception(tr("The option `%1' must be used only with `%2' when exporting to DBMS!").arg(Force, DropDatabase), ErrorCode::Custom,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 		if(export_dbms && opts.count(Simulate) && opts.count(NonTransactional))
-			throw Exception(tr("The options `%1' and `%2' can't be used together when exporting to DBMS!").arg(Simulate, NonTransactional), ErrorCode::Custom,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+			throw Exception(tr("The options `%1' and `%2' can't be used together when exporting to DBMS!").arg(Simulate, NonTransactional), ErrorCode::Custom,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 		if(export_dbms && (opts.count(IgnoreErrorCodes) || opts.count(IgnoreDuplicates)) && !opts.count(NonTransactional))
-			throw Exception(tr("The options `%1' and `%2' can't be used in transactional export mode. Use `%3' to enable those options!").arg(IgnoreErrorCodes, IgnoreDuplicates, NonTransactional), ErrorCode::Custom,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+			throw Exception(tr("The options `%1' and `%2' can't be used in transactional export mode. Use `%3' to enable those options!").arg(IgnoreErrorCodes, IgnoreDuplicates, NonTransactional), ErrorCode::Custom,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 		if(opts.count(ExportToPng) && (zoom < ModelWidget::MinimumZoom || zoom > ModelWidget::MaximumZoom))
-			throw Exception(tr("Invalid zoom specified!"), ErrorCode::Custom,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+			throw Exception(tr("Invalid zoom specified!"), ErrorCode::Custom,PGM_FUNC,PGM_FILE,PGM_LINE);
 		
 		if(upd_mime && opts[DbmMimeType] != Install && opts[DbmMimeType] != Uninstall)
-			throw Exception(tr("Invalid action specified to mime type update option!"), ErrorCode::Custom,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+			throw Exception(tr("Invalid action specified to mime type update option!"), ErrorCode::Custom,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 		if(create_configs && opts.count(Force) && opts.count(MissingOnly))
-			throw Exception(tr("The options `%1' and `%2' can't be used together when handling configuration files!").arg(Force, MissingOnly), ErrorCode::Custom,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+			throw Exception(tr("The options `%1' and `%2' can't be used together when handling configuration files!").arg(Force, MissingOnly), ErrorCode::Custom,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 		if(opts.count(DependenciesSql) || opts.count(ChildrenSql) || opts.count(GroupByType))
 		{
@@ -870,36 +870,36 @@ void PgModelerCliApp::parseOptions(attribs_map &opts)
 			num_opts += opts.count(GroupByType) ? 1 : 0;
 
 			if(!export_file || (export_file && !opts.count(Split)))
-				throw Exception(tr("The options `%1', `%2' and `%3' must be used together with the split mode option `%4'!").arg(DependenciesSql, ChildrenSql, GroupByType, Split), ErrorCode::Custom,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+				throw Exception(tr("The options `%1', `%2' and `%3' must be used together with the split mode option `%4'!").arg(DependenciesSql, ChildrenSql, GroupByType, Split), ErrorCode::Custom,PGM_FUNC,PGM_FILE,PGM_LINE);
 			else if(num_opts > 1)
-				throw Exception(tr("The options `%1', `%2' and `%3' can't be used at the same time!").arg(DependenciesSql, ChildrenSql, GroupByType), ErrorCode::Custom,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+				throw Exception(tr("The options `%1', `%2' and `%3' can't be used at the same time!").arg(DependenciesSql, ChildrenSql, GroupByType), ErrorCode::Custom,PGM_FUNC,PGM_FILE,PGM_LINE);
 		}
 
 		if(diff)
 		{
 			if(!opts.count(Input) && !opts.count(InputDb))
-				throw Exception(tr("No input file or database was specified!"), ErrorCode::Custom,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+				throw Exception(tr("No input file or database was specified!"), ErrorCode::Custom,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 			if(opts.count(Input) && opts.count(InputDb))
-				throw Exception(tr("The input file and the input database can't be used at the same time!"), ErrorCode::Custom,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+				throw Exception(tr("The input file and the input database can't be used at the same time!"), ErrorCode::Custom,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 			if(!opts.count(CompareTo))
-				throw Exception(tr("No database to be compared was specified!"), ErrorCode::Custom,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+				throw Exception(tr("No database to be compared was specified!"), ErrorCode::Custom,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 			if(!opts.count(SaveDiff) && !opts.count(ApplyDiff))
-				throw Exception(tr("No diff action (save or apply) was specified!"), ErrorCode::Custom,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+				throw Exception(tr("No diff action (save or apply) was specified!"), ErrorCode::Custom,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 			if(opts.count(SaveDiff) && opts[Output].isEmpty())
-				throw Exception(tr("No output file for the diff code was specified!"), ErrorCode::Custom,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+				throw Exception(tr("No output file for the diff code was specified!"), ErrorCode::Custom,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 			if(opts.count(PartialDiff) && opts[Input].isEmpty() && (opts.count(StartDate) || opts.count(EndDate)))
-				throw Exception(tr("The date filters are allowed only on partial diff using an input model!"), ErrorCode::Custom,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+				throw Exception(tr("The date filters are allowed only on partial diff using an input model!"), ErrorCode::Custom,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 			if(opts.count(PartialDiff) && opts.count(FilterObjects) && (opts.count(StartDate) || opts.count(EndDate)))
-				throw Exception(tr("The date filters and object filters can't be used together!"), ErrorCode::Custom,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+				throw Exception(tr("The date filters and object filters can't be used together!"), ErrorCode::Custom,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 			if(opts.count(PartialDiff) && !opts.count(FilterObjects) && !opts.count(StartDate) && !opts.count(EndDate))
-				throw Exception(tr("Partial diff enabled but no object filter was provided!"), ErrorCode::Custom,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+				throw Exception(tr("Partial diff enabled but no object filter was provided!"), ErrorCode::Custom,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 			// For partial diff we force the --only-matching option and --force-children = all
 			if(opts.count(PartialDiff))
@@ -919,7 +919,7 @@ void PgModelerCliApp::parseOptions(attribs_map &opts)
 					*dates[idx] = QDateTime::fromString(opts[dt_params[idx]], Qt::ISODate);
 
 					if(!dates[idx]->isValid())
-						throw Exception(tr("Invalid date format `%1' in option `%2'!").arg(opts[dt_params[idx]], dt_params[idx]), ErrorCode::Custom,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+						throw Exception(tr("Invalid date format `%1' in option `%2'!").arg(opts[dt_params[idx]], dt_params[idx]), ErrorCode::Custom,PGM_FUNC,PGM_FILE,PGM_LINE);
 				}
 			}
 
@@ -984,7 +984,7 @@ void PgModelerCliApp::parseOptions(attribs_map &opts)
 			if(!acc_opts.contains(long_opt))
 			{
 				throw Exception(tr("The option `%1' is not accepted by the operation mode `%2'!").arg(long_opt, curr_op_mode),
-												ErrorCode::Custom,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+												ErrorCode::Custom,PGM_FUNC,PGM_FILE,PGM_LINE);
 			}
 		}
 
@@ -1031,7 +1031,7 @@ int PgModelerCliApp::exec()
 	}
 	catch(Exception &e)
 	{
-		throw Exception(e.getErrorMessage(), e.getErrorCode(), __PRETTY_FUNCTION__, __FILE__, __LINE__, &e);
+		throw Exception(e.getErrorMessage(), e.getErrorCode(), PGM_FUNC, PGM_FILE, PGM_LINE, &e);
 	}
 }
 
@@ -1158,7 +1158,7 @@ void PgModelerCliApp::extractObjectXML()
 	start = header_match.capturedStart();
 
 	if(start < 0)
-		throw Exception(tr("Invalid input file! It seems that is not a pgModeler generated model or the file is corrupted!"), ErrorCode::Custom,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(tr("Invalid input file! It seems that is not a pgModeler generated model or the file is corrupted!"), ErrorCode::Custom,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	//Extracting layers informations from the tag <dbmodel>
 	static QRegularExpression dbm_regexp { TagExpr.arg(Attributes::DbModel) },
@@ -1498,7 +1498,7 @@ void PgModelerCliApp::recreateObjects()
 				has_fix_log = true;
 			}
 			else
-				throw Exception(e.getErrorMessage(), e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__, &e);
+				throw Exception(e.getErrorMessage(), e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 		}
 
 		if(objs_xml.isEmpty() && (!fail_objs.isEmpty() || !constr.isEmpty()))
@@ -2190,7 +2190,7 @@ void PgModelerCliApp::importDatabase(DatabaseModel *model, Connection conn)
 	}
 	catch(Exception &e)
 	{
-		throw Exception(e.getErrorMessage(), e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__, &e);
+		throw Exception(e.getErrorMessage(), e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 	}
 }
 
@@ -2382,7 +2382,7 @@ void PgModelerCliApp::updateMimeType()
 	}
 	catch (Exception &e)
 	{
-		throw Exception(e.getErrorMessage(),e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__,&e);
+		throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE,&e);
 	}
 #endif
 }
@@ -2497,10 +2497,10 @@ void PgModelerCliApp::handleLinuxMimeDatabase(bool uninstall, bool system_wide, 
 	{
 		//When installing, check if the necessary file exists. If exists, raises an error and abort.
 		if(!uninstall && QFileInfo::exists(files[i]) && !force)
-			throw Exception(MsgFileAssociated, ErrorCode::Custom,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+			throw Exception(MsgFileAssociated, ErrorCode::Custom,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 		if(uninstall && !QFileInfo::exists(files[i]) && !force)
-			throw Exception(MsgNoFileAssociation, ErrorCode::Custom,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+			throw Exception(MsgNoFileAssociation, ErrorCode::Custom,PGM_FUNC,PGM_FILE,PGM_LINE);
 	}
 
 	if(!uninstall && !system_wide)
@@ -2517,7 +2517,7 @@ void PgModelerCliApp::handleLinuxMimeDatabase(bool uninstall, bool system_wide, 
 				if(!QFile(files[i]).remove() && !force)
 				{
 					throw Exception(tr("Can't erase the file %1! Check if the current user has permissions to delete it and if the file exists.").arg(files[i]),
-													ErrorCode::Custom,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+													ErrorCode::Custom,PGM_FUNC,PGM_FILE,PGM_LINE);
 				}
 			}
 			else
@@ -2553,7 +2553,7 @@ void PgModelerCliApp::handleLinuxMimeDatabase(bool uninstall, bool system_wide, 
 
 			if(!out.isOpen())
 				throw Exception(Exception::getErrorMessage(ErrorCode::FileDirectoryNotWritten).arg(mimeapps),
-												ErrorCode::FileDirectoryNotWritten,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+												ErrorCode::FileDirectoryNotWritten,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 			//Opens the mimeapps.list to add a entry linking pgModeler to .dbm files
 			buf=out.readAll();
@@ -2597,7 +2597,7 @@ void PgModelerCliApp::handleLinuxMimeDatabase(bool uninstall, bool system_wide, 
 	}
 	catch(Exception &e)
 	{
-		throw Exception(e.getErrorMessage(),e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__,&e);
+		throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE,&e);
 	}
 }
 
@@ -2616,12 +2616,12 @@ void PgModelerCliApp::handleWindowsMimeDatabase(bool uninstall, bool system_wide
 	if(uninstall && !force &&
 		 (dbm_ext.value("Default").toString().isEmpty() ||
 			sch_ext.value("Default").toString().isEmpty()))
-		throw Exception(MsgNoFileAssociation, ErrorCode::Custom,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(MsgNoFileAssociation, ErrorCode::Custom,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	if(!uninstall && !force &&
 		 (!dbm_ext.value("Default").toString().isEmpty() ||
 			!sch_ext.value("Default").toString().isEmpty()))
-		throw Exception(MsgFileAssociated, ErrorCode::Custom,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(MsgFileAssociated, ErrorCode::Custom,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	if(!uninstall)
 	{
@@ -2682,7 +2682,7 @@ void PgModelerCliApp::createConfigurations()
 			force = parsed_opts.count(Force) > 0;
 
 	if(!missing_only && !force && QDir(GlobalAttributes::getConfigurationsPath()).exists())
-		throw Exception(tr("Configuration files already exist!"), ErrorCode::Custom,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(tr("Configuration files already exist!"), ErrorCode::Custom,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	try
 	{
@@ -2695,7 +2695,7 @@ void PgModelerCliApp::createConfigurations()
 			printMessage(tr("Backup path: %1").arg(bkp_conf_dir));
 
 			if(!dir.rename(conf_dir, bkp_conf_dir))
-				throw Exception(tr("Failed to create the configuration files backup!").arg(bkp_conf_dir), ErrorCode::Custom,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+				throw Exception(tr("Failed to create the configuration files backup!").arg(bkp_conf_dir), ErrorCode::Custom,PGM_FUNC,PGM_FILE,PGM_LINE);
 		}
 
 		createUserConfiguration();
@@ -2703,7 +2703,7 @@ void PgModelerCliApp::createConfigurations()
 	}
 	catch (Exception &e)
 	{
-		throw Exception(e.getErrorMessage(),e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__,&e);
+		throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE,&e);
 	}
 }
 
@@ -2769,7 +2769,7 @@ void PgModelerCliApp::loadPlugins()
 			{
 				errors.push_back(Exception(Exception::getErrorMessage(ErrorCode::PluginNotLoaded)
 																	 .arg(plugin_name, lib, tr("The plug-in contains a list of options that are either malformed or that conflict with the pgmodeler-cli default options!")),
-																	 ErrorCode::PluginNotLoaded, __PRETTY_FUNCTION__,__FILE__,__LINE__,
+																	 ErrorCode::PluginNotLoaded, PGM_FUNC,PGM_FILE,PGM_LINE,
 																	 nullptr, tr("Plug-in id: %1").arg(plugin_name)));
 			}
 			else if(plugin->getOperationId() != PgModelerCliPlugin::CustomCliOp &&
@@ -2777,7 +2777,7 @@ void PgModelerCliApp::loadPlugins()
 			{
 				errors.push_back(Exception(Exception::getErrorMessage(ErrorCode::PluginNotLoaded)
 																	 .arg(plugin_name, lib, tr("The plug-in doesn't implement a custom CLI operation but has a list of operation modes defined!")),
-																	 ErrorCode::PluginNotLoaded, __PRETTY_FUNCTION__,__FILE__,__LINE__,
+																	 ErrorCode::PluginNotLoaded, PGM_FUNC,PGM_FILE,PGM_LINE,
 																	 nullptr, tr("Plug-in id: %1").arg(plugin_name)));
 			}
 			else if(plugin->getOperationId() == PgModelerCliPlugin::CustomCliOp &&
@@ -2785,7 +2785,7 @@ void PgModelerCliApp::loadPlugins()
 			{
 				errors.push_back(Exception(Exception::getErrorMessage(ErrorCode::PluginNotLoaded)
 																	 .arg(plugin_name, lib, tr("The plug-in implements a custom CLI operation but doesn't specify a list of operation modes!")),
-																	 ErrorCode::PluginNotLoaded, __PRETTY_FUNCTION__,__FILE__,__LINE__,
+																	 ErrorCode::PluginNotLoaded, PGM_FUNC,PGM_FILE,PGM_LINE,
 																	 nullptr, tr("Plug-in id: %1").arg(plugin_name)));
 			}
 			else
@@ -2807,7 +2807,7 @@ void PgModelerCliApp::loadPlugins()
 		{
 			errors.push_back(Exception(Exception::getErrorMessage(ErrorCode::PluginNotLoaded)
 																 .arg(plugin_name, lib, plugin_loader.errorString()),
-																	 ErrorCode::PluginNotLoaded, __PRETTY_FUNCTION__,__FILE__,__LINE__,
+																	 ErrorCode::PluginNotLoaded, PGM_FUNC,PGM_FILE,PGM_LINE,
 																	 nullptr, tr("Plug-in id: %1").arg(plugin_name)));
 		}
 	}
@@ -2817,7 +2817,7 @@ void PgModelerCliApp::loadPlugins()
 		plugin_load_errors = Exception(Exception::getErrorMessage(ErrorCode::PluginsNotLoaded) + " " +
 																	 tr("HINT: you can use the option `%1' to ignore the faulty plug-in(s) errors.").arg(IgnoreFaultyPlugins),
 																	 ErrorCode::PluginsNotLoaded,
-																	 __PRETTY_FUNCTION__, __FILE__, __LINE__, errors).getExceptionsText();
+																	 PGM_FUNC, PGM_FILE, PGM_LINE, errors).getExceptionsText();
 	}
 }
 
@@ -2980,7 +2980,7 @@ void PgModelerCliApp::runPluginsPreOperations()
 		}
 		catch(Exception &e)
 		{
-			throw Exception(e.getErrorMessage(), e.getErrorCode(), __PRETTY_FUNCTION__, __FILE__, __LINE__, &e,
+			throw Exception(e.getErrorMessage(), e.getErrorCode(), PGM_FUNC, PGM_FILE, PGM_LINE, &e,
 											tr("Plug-in id: %1").arg(plugin->getPluginName()));
 		}
 	}
@@ -2996,7 +2996,7 @@ void PgModelerCliApp::runPluginsOperations()
 		}
 		catch(Exception &e)
 		{
-			throw Exception(e.getErrorMessage(), e.getErrorCode(), __PRETTY_FUNCTION__, __FILE__, __LINE__, &e,
+			throw Exception(e.getErrorMessage(), e.getErrorCode(), PGM_FUNC, PGM_FILE, PGM_LINE, &e,
 											tr("Plug-in id: %1").arg(plugin->getPluginName()));
 		}
 	}
@@ -3012,7 +3012,7 @@ void PgModelerCliApp::runPluginsPostOperations()
 		}
 		catch(Exception &e)
 		{
-			throw Exception(e.getErrorMessage(), e.getErrorCode(), __PRETTY_FUNCTION__, __FILE__, __LINE__, &e,
+			throw Exception(e.getErrorMessage(), e.getErrorCode(), PGM_FUNC, PGM_FILE, PGM_LINE, &e,
 											tr("Plug-in id: %1").arg(plugin->getPluginName()));
 		}
 	}

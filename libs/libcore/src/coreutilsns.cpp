@@ -71,7 +71,7 @@ namespace CoreUtilsNs {
 
 		//Raises an error if the copy object is not allocated
 		if(!copy_obj)
-			throw Exception(ErrorCode::AsgNotAllocattedObject,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+			throw Exception(ErrorCode::AsgNotAllocattedObject,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 		//Allocates the source object if its not allocated
 		if(!orig_obj)
@@ -207,7 +207,7 @@ namespace CoreUtilsNs {
 				copyObject(psrc_obj, dynamic_cast<Procedure *>(copy_obj));
 			break;
 			default:
-				throw Exception(ErrorCode::OprObjectInvalidType,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+				throw Exception(ErrorCode::OprObjectInvalidType,PGM_FUNC,PGM_FILE,PGM_LINE);
 		}
 	}
 

@@ -515,7 +515,7 @@ void MainWindow::createMainWidgets()
 	catch(Exception &e)
 	{
 		handleInitializationFailure(e);
-		throw Exception(e.getErrorMessage(), e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__, &e);
+		throw Exception(e.getErrorMessage(), e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 	}
 }
 
@@ -561,7 +561,7 @@ void MainWindow::loadConfigurations()
 	catch(Exception &e)
 	{
 		handleInitializationFailure(e);
-		throw Exception(e.getErrorMessage(), e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__, &e);
+		throw Exception(e.getErrorMessage(), e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 	}
 }
 
@@ -793,7 +793,7 @@ void MainWindow::restoreTemporaryModels()
 					if(!restoration_form->keep_models_chk->isChecked())
 						restoration_form->removeTemporaryModel(model_file);
 
-					Messagebox::error(e, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+					Messagebox::error(e, PGM_FUNC, PGM_FILE, PGM_LINE);
 				}
 			}
 		}
@@ -876,7 +876,7 @@ void MainWindow::restoreLastSession()
 		catch(Exception &e)
 		{
 			//qApp->restoreOverrideCursor();
-			Messagebox::error(e, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+			Messagebox::error(e, PGM_FUNC, PGM_FILE, PGM_LINE);
 		}
 	}
 }
@@ -1141,8 +1141,7 @@ void MainWindow::saveTemporaryModels()
 	}
 	catch(Exception &e)
 	{
-		//qApp->restoreOverrideCursor();
-		Messagebox::error(e, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+		Messagebox::error(e, PGM_FUNC, PGM_FILE, PGM_LINE);
 		tmpmodel_save_timer.start();
 	}
 #endif
@@ -1252,7 +1251,7 @@ void MainWindow::loadModelFromAction()
 			if(QFileInfo(filename).exists())
 				showFixMessage(e, filename);
 			else
-				Messagebox::error(e, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+				Messagebox::error(e, PGM_FUNC, PGM_FILE, PGM_LINE);
 		}
 	}
 }
@@ -1329,7 +1328,7 @@ void MainWindow::addModel(const QString &filename)
 
 				updateToolsState(true);
 
-				throw Exception(e.getErrorMessage(),e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__, &e);
+				throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 			}
 		}
 
@@ -1355,7 +1354,7 @@ void MainWindow::addModel(const QString &filename)
 	}
 	catch(Exception &e)
 	{
-		throw Exception(e.getErrorMessage(),e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__, &e);
+		throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 	}
 }
 
@@ -1373,9 +1372,9 @@ void MainWindow::addModel(ModelWidget *model_wgt)
 	try
 	{
 		if(!model_wgt)
-			throw Exception(ErrorCode::AsgNotAllocattedObject,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+			throw Exception(ErrorCode::AsgNotAllocattedObject,PGM_FUNC,PGM_FILE,PGM_LINE);
 		else if(model_wgt->parent())
-			throw Exception(ErrorCode::AsgWidgetAlreadyHasParent,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+			throw Exception(ErrorCode::AsgWidgetAlreadyHasParent,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 		model_nav_wgt->addModel(model_wgt);
 		models_tbw->blockSignals(true);
@@ -1391,7 +1390,7 @@ void MainWindow::addModel(ModelWidget *model_wgt)
 	}
 	catch(Exception &e)
 	{
-		throw Exception(e.getErrorMessage(),e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__, &e);
+		throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 	}
 }
 
@@ -1403,7 +1402,7 @@ int MainWindow::getModelCount()
 ModelWidget *MainWindow::getModel(int idx)
 {
 	if(idx < 0 || idx > models_tbw->count())
-		throw Exception(ErrorCode::RefObjectInvalidIndex,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::RefObjectInvalidIndex,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	return dynamic_cast<ModelWidget *>(models_tbw->widget(idx));
 }
@@ -1798,7 +1797,7 @@ void MainWindow::saveAllModels()
 	}
 	catch(Exception &e)
 	{
-		Messagebox::error(e, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+		Messagebox::error(e, PGM_FUNC, PGM_FILE, PGM_LINE);
 	}
 }
 
@@ -1906,7 +1905,7 @@ void MainWindow::saveModel(ModelWidget *model)
 	catch(Exception &e)
 	{
 		stopTimers(false);
-		throw Exception(e.getErrorMessage(),e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__, &e);
+		throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 	}
 #endif
 }
@@ -2105,7 +2104,7 @@ void MainWindow::loadModel()
 	}
 	catch(Exception &e)
 	{
-		Messagebox::error(e, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+		Messagebox::error(e, PGM_FUNC, PGM_FILE, PGM_LINE);
 	}
 }
 
@@ -2152,7 +2151,7 @@ void MainWindow::loadModels(const QStringList &files)
 			showFixMessage(e, files[i]);
 		else
 		{
-			Messagebox::error(e, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+			Messagebox::error(e, PGM_FUNC, PGM_FILE, PGM_LINE);
 		}
 	}
 }
@@ -2162,7 +2161,7 @@ void MainWindow::showFixMessage(Exception &e, const QString &filename)
 	Messagebox msg_box;
 
 	msg_box.show(Exception(Exception::getErrorMessage(ErrorCode::ModelFileNotLoaded).arg(filename),
-												 ErrorCode::ModelFileNotLoaded ,__PRETTY_FUNCTION__,__FILE__,__LINE__, &e),
+												 ErrorCode::ModelFileNotLoaded ,PGM_FUNC,PGM_FILE,PGM_LINE, &e),
 							 tr("Could not load the database model file `%1'! Check the error stack to see details. You can try to fix it in order to make it loadable again.").arg(filename),
 							 Messagebox::ErrorIcon, Messagebox::YesNoButtons,
 							 tr("Fix model"), tr("Cancel"), "",
@@ -2705,7 +2704,7 @@ void MainWindow::addExecTabInSQLTool(const QString &sql_cmd)
 	}
 	catch(Exception &e)
 	{
-		Messagebox::error(e, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+		Messagebox::error(e, PGM_FUNC, PGM_FILE, PGM_LINE);
 	}
 }
 

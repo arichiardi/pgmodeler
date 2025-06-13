@@ -542,7 +542,7 @@ void ModelDatabaseDiffForm::listDatabases()
 		db_cmb->clear();
 		db_cmb->setEnabled(false);
 		db_lbl->setEnabled(false);
-		throw Exception(e.getErrorMessage(), e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__, &e);
+		throw Exception(e.getErrorMessage(), e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 	}
 }
 
@@ -638,7 +638,7 @@ void ModelDatabaseDiffForm::importDatabase(ThreadId thread_id)
 	try
 	{
 		if(thread_id != SrcImportThread && thread_id != ImportThread)
-			throw Exception(ErrorCode::AllocationObjectInvalidType,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+			throw Exception(ErrorCode::AllocationObjectInvalidType,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 		createThread(thread_id);
 
@@ -727,7 +727,7 @@ void ModelDatabaseDiffForm::importDatabase(ThreadId thread_id)
 	}
 	catch(Exception &e)
 	{
-		throw Exception(e.getErrorMessage(), e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__, &e);
+		throw Exception(e.getErrorMessage(), e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 	}
 }
 
@@ -881,7 +881,7 @@ void ModelDatabaseDiffForm::loadDiffInSQLTool()
 	}
 	catch(Exception &e)
 	{
-		Messagebox::error(e, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+		Messagebox::error(e, PGM_FUNC, PGM_FILE, PGM_LINE);
 	}
 }
 
@@ -983,7 +983,7 @@ void ModelDatabaseDiffForm::captureThreadError(Exception e)
 	item=GuiUtilsNs::createOutputTreeItem(output_trw, UtilsNs::formatMessage(e.getErrorMessage()), progress_ico_lbl->pixmap(Qt::ReturnByValue), nullptr, false, true);
 	GuiUtilsNs::createExceptionsTree(output_trw, e, item);
 
-	Messagebox::error(e, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+	Messagebox::error(e, PGM_FUNC, PGM_FILE, PGM_LINE);
 }
 
 void ModelDatabaseDiffForm::handleImportFinished(Exception e)
@@ -1241,7 +1241,7 @@ void ModelDatabaseDiffForm::saveConfiguration()
 	}
 	catch(Exception &e)
 	{
-		throw Exception(e.getErrorMessage(),e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__, &e);
+		throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 	}
 }
 
@@ -1273,7 +1273,7 @@ void ModelDatabaseDiffForm::restoreDefaults()
 	}
 	catch(Exception &e)
 	{
-		Messagebox::error(e, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+		Messagebox::error(e, PGM_FUNC, PGM_FILE, PGM_LINE);
 	}
 }
 
@@ -1474,7 +1474,7 @@ void ModelDatabaseDiffForm::savePreset()
 	}
 	catch(Exception &e)
 	{
-		throw Exception(e.getErrorMessage(), e.getErrorCode(), __PRETTY_FUNCTION__, __FILE__, __LINE__, &e);
+		throw Exception(e.getErrorMessage(), e.getErrorCode(), PGM_FUNC, PGM_FILE, PGM_LINE, &e);
 	}
 }
 
@@ -1548,7 +1548,7 @@ void ModelDatabaseDiffForm::applyPartialDiffFilters()
 	}
 	catch(Exception &e)
 	{
-		Messagebox::error(e, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+		Messagebox::error(e, PGM_FUNC, PGM_FILE, PGM_LINE);
 	}
 }
 

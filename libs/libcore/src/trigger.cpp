@@ -90,7 +90,7 @@ void Trigger::setFiringType(FiringType firing_type)
 void Trigger::setEvent(EventType event, bool value)
 {
 	if(event==EventType::OnSelect)
-		throw Exception(ErrorCode::RefInvalidTriggerEvent,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::RefInvalidTriggerEvent,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	setCodeInvalidated(events[event] != value);
 	events[event]=value;
@@ -103,18 +103,18 @@ void Trigger::setFunction(Function *func)
 		throw Exception(Exception::getErrorMessage(ErrorCode::AsgNotAllocatedFunction)
 						.arg(this->getName())
 						.arg(BaseObject::getTypeName(ObjectType::Trigger)),
-						ErrorCode::AsgNotAllocatedFunction,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+						ErrorCode::AsgNotAllocatedFunction,PGM_FUNC,PGM_FILE,PGM_LINE);
 	else
 	{
 		//Case the function doesn't returns 'trigger' it cannot be used with the trigger thus raise an error
 		if(func->getReturnType()!="trigger")
-			throw Exception(Exception::getErrorMessage(ErrorCode::AsgInvalidTriggerFunction).arg("trigger"),__PRETTY_FUNCTION__,__FILE__,__LINE__);
+			throw Exception(Exception::getErrorMessage(ErrorCode::AsgInvalidTriggerFunction).arg("trigger"),PGM_FUNC,PGM_FILE,PGM_LINE);
 		//Case the function has some parameters raise an error
 		else if(func->getParameterCount()!=0)
 			throw Exception(Exception::getErrorMessage(ErrorCode::AsgFunctionInvalidParamCount)
 							.arg(this->getName())
 							.arg(BaseObject::getTypeName(ObjectType::Trigger)),
-							ErrorCode::AsgFunctionInvalidParamCount,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+							ErrorCode::AsgFunctionInvalidParamCount,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 		setCodeInvalidated(function != func);
 		this->function=func;
@@ -133,18 +133,18 @@ void Trigger::addColumn(Column *column)
 		throw Exception(Exception::getErrorMessage(ErrorCode::AsgNotAllocatedColumn)
 						.arg(this->getName(true))
 						.arg(this->getTypeName()),
-						ErrorCode::AsgNotAllocatedColumn,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+						ErrorCode::AsgNotAllocatedColumn,PGM_FUNC,PGM_FILE,PGM_LINE);
 	else if(!column->getParentTable())
 		throw Exception(Exception::getErrorMessage(ErrorCode::AsgColumnNoParent)
 						.arg(this->getName(true))
 						.arg(this->getTypeName()),
-						ErrorCode::AsgNotAllocatedColumn,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+						ErrorCode::AsgNotAllocatedColumn,PGM_FUNC,PGM_FILE,PGM_LINE);
 	else if(this->getParentTable() &&
 			column->getParentTable() != this->getParentTable())
 		throw Exception(Exception::getErrorMessage(ErrorCode::AsgInvalidColumnTrigger)
 						.arg(column->getName(true))
 						.arg(this->getName(true)),
-						ErrorCode::AsgInvalidColumnTrigger,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+						ErrorCode::AsgInvalidColumnTrigger,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	upd_columns.push_back(column);
 	setCodeInvalidated(true);
@@ -159,7 +159,7 @@ void Trigger::addColumns(const std::vector<Column *> &cols)
 	}
 	catch(Exception &e)
 	{
-		throw Exception(e.getErrorMessage(), e.getErrorCode(), __PRETTY_FUNCTION__, __FILE__, __LINE__, &e);
+		throw Exception(e.getErrorMessage(), e.getErrorCode(), PGM_FUNC, PGM_FILE, PGM_LINE, &e);
 	}
 }
 
@@ -167,7 +167,7 @@ void Trigger::editArgument(unsigned arg_idx, const QString &new_arg)
 {
 	//Raises an error if the argument index is invalid (out of bound)
 	if(static_cast<int>(arg_idx) >= arguments.size())
-		throw Exception(ErrorCode::RefArgumentInvalidIndex,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::RefArgumentInvalidIndex,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	arguments[arg_idx] = new_arg;
 	setCodeInvalidated(true);
@@ -182,7 +182,7 @@ void Trigger::setExecutePerRow(bool value)
 bool Trigger::isExecuteOnEvent(EventType event)
 {
 	if(event==EventType::OnSelect)
-		throw Exception(ErrorCode::RefInvalidTriggerEvent,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::RefInvalidTriggerEvent,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	return events.at(!event);
 }
@@ -196,7 +196,7 @@ QString Trigger::getArgument(unsigned arg_idx)
 {
 	//Raises an error if the argument index is invalid (out of bound)
 	if(static_cast<int>(arg_idx) >= arguments.size())
-		throw Exception(ErrorCode::RefArgumentInvalidIndex,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::RefArgumentInvalidIndex,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	return arguments[arg_idx];
 }
@@ -205,7 +205,7 @@ Column *Trigger::getColumn(unsigned col_idx)
 {
 	//Raises an error if the column index is invalid (out of bound)
 	if(col_idx>=upd_columns.size())
-		throw Exception(ErrorCode::RefColumnInvalidIndex,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::RefColumnInvalidIndex,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	return upd_columns[col_idx];
 }
@@ -244,7 +244,7 @@ void Trigger::removeArgument(unsigned arg_idx)
 {
 	//Raises an error if the argument index is invalid (out of bound)
 	if(static_cast<int>(arg_idx) >= arguments.size())
-		throw Exception(ErrorCode::RefArgumentInvalidIndex,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::RefArgumentInvalidIndex,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	arguments.removeAt(arg_idx);
 	setCodeInvalidated(true);
@@ -266,7 +266,7 @@ void Trigger::setReferecendTable(BaseTable *ref_table)
 {
 	//If the referenced table isn't valid raises an error
 	if(ref_table && ref_table->getObjectType()!=ObjectType::Table)
-		throw Exception(ErrorCode::AsgObjectInvalidType,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::AsgObjectInvalidType,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	setCodeInvalidated(referenced_table != ref_table);
 	this->referenced_table=ref_table;
@@ -308,7 +308,7 @@ void Trigger::setConstraint(bool value)
 void Trigger::setTransitionTableName(TransitionTableId tab_idx, const QString &name)
 {
 	if(tab_idx > NewTableName)
-		throw Exception(ErrorCode::RefElementInvalidIndex,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::RefElementInvalidIndex,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	setCodeInvalidated(transition_tabs_names[tab_idx] != name);
 	transition_tabs_names[tab_idx] = name;
@@ -317,7 +317,7 @@ void Trigger::setTransitionTableName(TransitionTableId tab_idx, const QString &n
 QString Trigger::getTransitionTableName(TransitionTableId tab_idx)
 {
 	if(tab_idx > NewTableName)
-		throw Exception(ErrorCode::RefElementInvalidIndex,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::RefElementInvalidIndex,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	return transition_tabs_names[tab_idx];
 }
@@ -461,33 +461,33 @@ void Trigger::validateTrigger()
 		{
 			//The INSTEAD OF mode cannot be used on triggers that belongs to tables! This is available only for view triggers
 			if(firing_type==FiringType::InsteadOf && parent_type != ObjectType::View)
-				throw Exception(ErrorCode::InvTableTriggerInsteadOfFiring,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+				throw Exception(ErrorCode::InvTableTriggerInsteadOfFiring,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 			//The INSTEAD OF mode cannot be used on view triggers that executes for each statement
 			else if(firing_type==FiringType::InsteadOf && parent_type==ObjectType::View && !is_exec_per_row)
-				throw Exception(ErrorCode::InvUsageInsteadOfOnTrigger,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+				throw Exception(ErrorCode::InvUsageInsteadOfOnTrigger,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 			//A trigger cannot make reference to columns when using INSTEAD OF mode and UPDATE event
 			else if(firing_type==FiringType::InsteadOf && events[EventType::OnUpdate] && !upd_columns.empty())
-				throw Exception(ErrorCode::InvUsageInsteadOfUpdateTrigger,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+				throw Exception(ErrorCode::InvUsageInsteadOfUpdateTrigger,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 			//The TRUNCATE event can only be used when the trigger executes for each statement and belongs to a table
 			else if(events[EventType::OnTruncate] && (is_exec_per_row || parent_type==ObjectType::View))
-				throw Exception(ErrorCode::InvUsageTruncateOnTrigger,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+				throw Exception(ErrorCode::InvUsageTruncateOnTrigger,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 			//A view trigger cannot be AFTER/BEFORE when it executes for each row
 			else if(parent_type==ObjectType::View && is_exec_per_row && (firing_type==FiringType::After || firing_type==FiringType::Before))
-				throw Exception(ErrorCode::InvUsageAfterBeforeViewTrigger,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+				throw Exception(ErrorCode::InvUsageAfterBeforeViewTrigger,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 			//Only constraint triggers can be deferrable or reference another table
 			else if(referenced_table || is_deferrable)
-				throw Exception(ErrorCode::InvUseConstraintTriggerAttribs,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+				throw Exception(ErrorCode::InvUseConstraintTriggerAttribs,PGM_FUNC,PGM_FILE,PGM_LINE);
 		}
 		//Constraint triggers can only be executed on AFTER events and for each row
 		else
 		{
 			if(firing_type!=FiringType::After && !is_exec_per_row)
-				throw Exception(ErrorCode::InvConstrTriggerNotAfterRow,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+				throw Exception(ErrorCode::InvConstrTriggerNotAfterRow,PGM_FUNC,PGM_FILE,PGM_LINE);
 		}
 	}
 }
@@ -543,7 +543,7 @@ QString Trigger::getDataDictionary(bool md_format, const attribs_map &extra_attr
 	}
 	catch(Exception &e)
 	{
-		throw Exception(e.getErrorMessage(), e.getErrorCode(), __PRETTY_FUNCTION__, __FILE__, __LINE__, &e);
+		throw Exception(e.getErrorMessage(), e.getErrorCode(), PGM_FUNC, PGM_FILE, PGM_LINE, &e);
 	}
 }
 

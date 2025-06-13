@@ -137,7 +137,7 @@ void PluginsConfigWidget::loadConfiguration()
 																 .arg(plugin_name)
 																 .arg(lib)
 																 .arg(plugin_loader.errorString()),
-																 ErrorCode::PluginNotLoaded, __PRETTY_FUNCTION__,__FILE__,__LINE__));
+																 ErrorCode::PluginNotLoaded, PGM_FUNC,PGM_FILE,PGM_LINE));
 		}
 
 		plugins_tab->clearSelection();
@@ -145,7 +145,7 @@ void PluginsConfigWidget::loadConfiguration()
 	}
 
 	if(!errors.empty())
-		throw Exception(ErrorCode::PluginsNotLoaded,__PRETTY_FUNCTION__,__FILE__,__LINE__, errors);
+		throw Exception(ErrorCode::PluginsNotLoaded,PGM_FUNC,PGM_FILE,PGM_LINE, errors);
 }
 
 void PluginsConfigWidget::initPlugins(MainWindow *main_window)
@@ -184,7 +184,7 @@ void PluginsConfigWidget::initPlugins(MainWindow *main_window)
 	if(!errors.empty())
 	{
 		Messagebox::error(tr("One or more plug-ins failed to initialize and were discarded! Please, check the error stack for more details."),
-											ErrorCode::Custom, __PRETTY_FUNCTION__, __FILE__, __LINE__, errors);
+											ErrorCode::Custom, PGM_FUNC, PGM_FILE, PGM_LINE, errors);
 	}
 }
 
@@ -207,6 +207,6 @@ void PluginsConfigWidget::postInitPlugins()
 	if(!errors.empty())
 	{
 		Messagebox::error(tr("One or more plug-ins failed to perform post initialization operations! Please, check the error stack for more details."),
-											ErrorCode::Custom, __PRETTY_FUNCTION__, __FILE__, __LINE__, errors);
+											ErrorCode::Custom, PGM_FUNC, PGM_FILE, PGM_LINE, errors);
 	}
 }

@@ -24,7 +24,7 @@
 BaseRelationship::BaseRelationship(BaseRelationship *rel)
 {
 	if(!rel)
-		throw Exception(ErrorCode::AsgNotAllocattedObject,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::AsgNotAllocattedObject,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	for(unsigned i=0; i < 3; i++)
 		lables[i]=nullptr;
@@ -72,7 +72,7 @@ BaseRelationship::BaseRelationship(RelType rel_type, BaseTable *src_tab, BaseTab
 	}
 	catch(Exception &e)
 	{
-		throw Exception(e.getErrorMessage(),e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__, &e);
+		throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 	}
 }
 
@@ -132,12 +132,12 @@ void BaseRelationship::configureRelationship()
 			throw Exception(Exception::getErrorMessage(ErrorCode::AsgNotAllocatedTable)
 							.arg(this->getName())
 							.arg(BaseObject::getTypeName(ObjectType::BaseRelationship)),
-							ErrorCode::AsgNotAllocatedTable,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+							ErrorCode::AsgNotAllocatedTable,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 		/* Raises an error if the relationship type is generalization or dependency
 			and the source and destination table are the same. */
 		if((rel_type==RelationshipGen || rel_type==RelationshipDep || rel_type==RelationshipPart) && src_table==dst_table)
-			throw Exception(ErrorCode::InvInheritCopyPartRelationship,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+			throw Exception(ErrorCode::InvInheritCopyPartRelationship,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 		//Allocates the textbox for the name label
 		lables[RelNameLabel]=new Textbox;
@@ -160,7 +160,7 @@ void BaseRelationship::configureRelationship()
 	}
 	else
 		//Raises an error if the specified relationship typ is invalid
-		throw Exception(ErrorCode::AllocationObjectInvalidType,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::AllocationObjectInvalidType,PGM_FUNC,PGM_FILE,PGM_LINE);
 }
 
 BaseRelationship::~BaseRelationship()
@@ -187,7 +187,7 @@ void BaseRelationship::setName(const QString &name)
 	}
 	catch(Exception &e)
 	{
-		throw Exception(e.getErrorMessage(),e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__, &e);
+		throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 	}
 }
 
@@ -203,7 +203,7 @@ void BaseRelationship::setMandatoryTable(TableId table_id, bool value)
 	if(rel_type==Relationship11 &&
 			((table_id==SrcTable && value && dst_mandatory) ||
 			 (table_id==DstTable && value && src_mandatory)))
-		throw Exception(ErrorCode::NotImplementedRelationshipType,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::NotImplementedRelationshipType,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	//Case the source table is mandatory
 	if(table_id==SrcTable)
@@ -315,7 +315,7 @@ void BaseRelationship::connectRelationship()
 Textbox *BaseRelationship::getLabel(LabelId label_id)
 {
 	if(label_id > RelNameLabel)
-		throw Exception(ErrorCode::RefLabelInvalidIndex,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::RefLabelInvalidIndex,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	return lables[label_id];
 }
@@ -491,7 +491,7 @@ void BaseRelationship::setPoints(const std::vector<QPointF> &points)
 void BaseRelationship::setLabelDistance(LabelId label_id, QPointF label_dist)
 {
 	if(label_id > RelNameLabel)
-		throw Exception(ErrorCode::RefObjectInvalidIndex,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::RefObjectInvalidIndex,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	lables_dist[label_id]=label_dist;
 	setCodeInvalidated(true);
@@ -500,7 +500,7 @@ void BaseRelationship::setLabelDistance(LabelId label_id, QPointF label_dist)
 QPointF BaseRelationship::getLabelDistance(LabelId label_id)
 {
 	if(label_id > RelNameLabel)
-		throw Exception(ErrorCode::RefObjectInvalidIndex,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::RefObjectInvalidIndex,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	return lables_dist[label_id];
 }

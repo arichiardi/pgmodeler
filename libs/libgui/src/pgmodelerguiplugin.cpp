@@ -166,7 +166,7 @@ void PgModelerGuiPlugin::postInitPlugin()
 	if(!main_window)
 	{
 		throw Exception(QT_TRANSLATE_NOOP("PgModelerGuiPlugin", "Trying to perform a post initialization on a plug-in without initializing the application's main window!"),
-										ErrorCode::Custom, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+										ErrorCode::Custom, PGM_FUNC, PGM_FILE, PGM_LINE);
 	}
 }
 

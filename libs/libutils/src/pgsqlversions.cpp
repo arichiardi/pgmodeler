@@ -52,7 +52,7 @@ namespace PgSqlVersions {
 							.arg(pgsql_ver)
 							.arg(PgSqlVersions::MinimumVersion)
 							.arg(PgSqlVersions::DefaulVersion),
-							ErrorCode::InvPostgreSQLVersion,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+							ErrorCode::InvPostgreSQLVersion,PGM_FUNC,PGM_FILE,PGM_LINE);
 		}
 
 		if(curr_ver > 0 && curr_ver <= default_ver)

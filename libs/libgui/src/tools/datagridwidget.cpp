@@ -309,7 +309,7 @@ void DataGridWidget::sortResults(int column, Qt::SortOrder order)
 	}
 	catch(Exception &e)
 	{
-		Messagebox::error(e, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+		Messagebox::error(e, PGM_FUNC, PGM_FILE, PGM_LINE);
 	}
 }
 
@@ -360,7 +360,7 @@ void DataGridWidget::listColumns(const std::vector<attribs_map> &cols)
 	}
 	catch(Exception &e)
 	{
-		throw Exception(e.getErrorMessage(),e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__,&e);
+		throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE,&e);
 	}
 }
 
@@ -513,7 +513,7 @@ void DataGridWidget::retrieveData()
 		//qApp->restoreOverrideCursor();
 		conn_sql.close();
 		catalog.closeConnection();
-		throw Exception(e.getErrorMessage(), e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__, &e);
+		throw Exception(e.getErrorMessage(), e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 	}
 }
 
@@ -698,7 +698,7 @@ void DataGridWidget::loadDataFromCsv(bool load_from_clipboard, bool force_csv_pa
 	catch(Exception &e)
 	{
 		//qApp->restoreOverrideCursor();
-		Messagebox::error(e, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+		Messagebox::error(e, PGM_FUNC, PGM_FILE, PGM_LINE);
 	}
 }
 
@@ -783,7 +783,7 @@ void DataGridWidget::retrievePKColumns(Catalog &catalog)
 	}
 	catch(Exception &e)
 	{
-		throw Exception(e.getErrorMessage(), e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__, &e);
+		throw Exception(e.getErrorMessage(), e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 	}
 }
 
@@ -910,7 +910,7 @@ void DataGridWidget::retrieveFKColumns(Catalog &catalog)
 	}
 	catch(Exception &e)
 	{
-		throw Exception(e.getErrorMessage(), e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__, &e);
+		throw Exception(e.getErrorMessage(), e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 	}
 }
 
@@ -1346,7 +1346,7 @@ void DataGridWidget::saveChanges()
 
 		Messagebox::error(Exception::getErrorMessage(ErrorCode::RowDataNotManipulated)
 											.arg(op_names[op_type]).arg(fmt_tb_name).arg(row + 1).arg(e.getErrorMessage()),
-											ErrorCode::RowDataNotManipulated, __PRETTY_FUNCTION__, __FILE__, __LINE__, &e);
+											ErrorCode::RowDataNotManipulated, PGM_FUNC, PGM_FILE, PGM_LINE, &e);
 	}
 #endif
 }
@@ -1414,7 +1414,7 @@ QString DataGridWidget::getDMLCommand(int row)
 				{
 					throw Exception(Exception::getErrorMessage(ErrorCode::MalformedUnescapedValue)
 													.arg(row + 1).arg(col_name),
-													ErrorCode::MalformedUnescapedValue, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+													ErrorCode::MalformedUnescapedValue, PGM_FUNC, PGM_FILE, PGM_LINE);
 				}
 
 				col_list.push_back(QString("\"%1\"").arg(col_name));
@@ -1501,7 +1501,7 @@ void DataGridWidget::truncateTable()
 	}
 	catch(Exception &e)
 	{
-		Messagebox::error(e, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+		Messagebox::error(e, PGM_FUNC, PGM_FILE, PGM_LINE);
   }
 }
 
@@ -1578,7 +1578,7 @@ void DataGridWidget::saveSelectedItems(bool csv_format)
 	}
 	catch(Exception &e)
 	{
-		Messagebox::error(e, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+		Messagebox::error(e, PGM_FUNC, PGM_FILE, PGM_LINE);
 	}
 }
 

@@ -232,7 +232,7 @@ void SwapObjectsIdsWidget::swapObjectsIds()
 		 (src_obj->getObjectType() != dst_obj->getObjectType()))
 	{
 		Messagebox::error(Exception::getErrorMessage(ErrorCode::InvRelationshipIdSwap),
-											ErrorCode::InvRelationshipIdSwap, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+											ErrorCode::InvRelationshipIdSwap, PGM_FUNC, PGM_FILE, PGM_LINE);
 		return;
 	}
 
@@ -276,7 +276,7 @@ void SwapObjectsIdsWidget::swapObjectsIds()
 	catch(Exception &e)
 	{
 		//qApp->restoreOverrideCursor();
-		Messagebox::error(e, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+		Messagebox::error(e, PGM_FUNC, PGM_FILE, PGM_LINE);
 	}
 }
 

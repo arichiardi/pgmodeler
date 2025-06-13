@@ -49,7 +49,7 @@ namespace GuiUtilsNs {
 	QTreeWidgetItem *createOutputTreeItem(QTreeWidget *output_trw, const QString &text, const QPixmap &ico, QTreeWidgetItem *parent, bool expand_item, bool word_wrap)
 	{
 		if(!output_trw)
-			throw Exception(ErrorCode::OprNotAllocatedObject,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+			throw Exception(ErrorCode::OprNotAllocatedObject,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 		QTreeWidgetItem *item=nullptr;
 
@@ -88,7 +88,7 @@ namespace GuiUtilsNs {
 	void createOutputListItem(QListWidget *output_lst, const QString &text, const QPixmap &ico, bool is_formated)
 	{
 		if(!output_lst)
-			throw Exception(ErrorCode::OprNotAllocatedObject,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+			throw Exception(ErrorCode::OprNotAllocatedObject,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 		QListWidgetItem *item=new QListWidgetItem;
 
@@ -134,7 +134,7 @@ namespace GuiUtilsNs {
 			{
 				throw Exception(Exception::getErrorMessage(ErrorCode::OprReservedObject)
 								.arg(object->getName(true), object->getTypeName()),
-								ErrorCode::OprReservedObject,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+								ErrorCode::OprReservedObject,PGM_FUNC,PGM_FILE,PGM_LINE);
 			}
 
 			object->setSQLDisabled(disable);
@@ -650,7 +650,7 @@ namespace GuiUtilsNs {
 		}
 		catch(Exception &e)
 		{
-			throw Exception(e.getErrorMessage(), __PRETTY_FUNCTION__, __FILE__, __LINE__, &e);
+			throw Exception(e.getErrorMessage(), PGM_FUNC, PGM_FILE, PGM_LINE, &e);
 		}
 	}
 
@@ -679,7 +679,7 @@ namespace GuiUtilsNs {
 		}
 		catch(Exception &e)
 		{
-			throw Exception(e.getErrorMessage(), __PRETTY_FUNCTION__, __FILE__, __LINE__, &e);
+			throw Exception(e.getErrorMessage(), PGM_FUNC, PGM_FILE, PGM_LINE, &e);
 		}
 	}
 

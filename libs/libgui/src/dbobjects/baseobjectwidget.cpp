@@ -270,7 +270,7 @@ void BaseObjectWidget::setAttributes(DatabaseModel *model, OperationList *op_lis
 	this->table=nullptr;
 
 	if(!model || (uses_op_list && !op_list))
-		throw Exception(ErrorCode::AsgNotAllocattedObject,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::AsgNotAllocattedObject,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	if(op_list)
 	  operation_count = op_list->getCurrentSize();
@@ -286,7 +286,7 @@ void BaseObjectWidget::setAttributes(DatabaseModel *model, OperationList *op_lis
 		else if(parent_type==ObjectType::Relationship)
 			this->relationship=dynamic_cast<Relationship *>(parent_obj);
 		else if(parent_type!=ObjectType::Database && parent_type!=ObjectType::Schema)
-			throw Exception(ErrorCode::AsgObjectInvalidType,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+			throw Exception(ErrorCode::AsgObjectInvalidType,PGM_FUNC,PGM_FILE,PGM_LINE);
 	}
 	else
 	{
@@ -722,7 +722,7 @@ void BaseObjectWidget::applyConfiguration()
 									.arg(BaseObject::getTypeName(obj_type))
 									.arg(parent_obj->getName(true))
 									.arg(parent_obj->getTypeName()),
-									ErrorCode::AsgDuplicatedObject,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+									ErrorCode::AsgDuplicatedObject,PGM_FUNC,PGM_FILE,PGM_LINE);
 				}
 			}
 
@@ -766,7 +766,7 @@ void BaseObjectWidget::applyConfiguration()
 		catch(Exception &e)
 		{
 			//qApp->restoreOverrideCursor();
-			throw Exception(e.getErrorMessage(),e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__, &e);
+			throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 		}
 	}
 }
@@ -864,9 +864,9 @@ void BaseObjectWidget::finishConfiguration()
 		if(e.getErrorCode()==ErrorCode::AsgObjectInvalidDefinition)
 			throw Exception(Exception::getErrorMessage(ErrorCode::RequiredFieldsNotFilled)
 							.arg(this->object->getName()).arg(this->object->getTypeName()),
-							ErrorCode::RequiredFieldsNotFilled,__PRETTY_FUNCTION__,__FILE__,__LINE__,&e);
+							ErrorCode::RequiredFieldsNotFilled,PGM_FUNC,PGM_FILE,PGM_LINE,&e);
 		else
-			throw Exception(e.getErrorMessage(),e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__,&e);
+			throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE,&e);
 	}
 }
 
@@ -933,6 +933,6 @@ void BaseObjectWidget::registerNewObject()
 	}
 	catch(Exception &e)
 	{
-		throw Exception(e.getErrorMessage(),e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__,&e);
+		throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE,&e);
 	}
 }

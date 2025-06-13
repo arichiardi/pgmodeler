@@ -84,7 +84,7 @@ class __libgui ConfigurationWidget: public QWidget, public Ui::ConfigurationWidg
 			}
 			catch(Exception &e)
 			{
-				Messagebox::error(e, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+				Messagebox::error(e, PGM_FUNC, PGM_FILE, PGM_LINE);
 			}
 		}
 

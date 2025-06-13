@@ -31,9 +31,9 @@ void ModelExportHelper::abortExport(Exception &e)
 
 	//When running in a separated thread (other than the main application thread) redirects the error in form of signal
 	if(this->thread() && this->thread()!=qApp->thread())
-		emit s_exportAborted(Exception(e.getErrorMessage(), e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__, &e));
+		emit s_exportAborted(Exception(e.getErrorMessage(), e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e));
 	else
-		throw Exception(e.getErrorMessage(),e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__, &e);
+		throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 }
 
 void ModelExportHelper::handleSQLError(Exception &e, const QString &sql_cmd, bool ignore_dup)
@@ -44,7 +44,7 @@ void ModelExportHelper::handleSQLError(Exception &e, const QString &sql_cmd, boo
 		emit s_errorIgnored(e.getExtraInfo(), e.getErrorMessage(), sql_cmd);
 	//Raises an excpetion if the error returned by the database is not listed in the ignored list of errors
 	else if(ignored_errors.indexOf(e.getExtraInfo()) < 0)
-		throw Exception(e.getErrorMessage(), e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__,&e, sql_cmd);
+		throw Exception(e.getErrorMessage(), e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE,&e, sql_cmd);
 	else
 		errors.push_back(e);
 }
@@ -67,7 +67,7 @@ void ModelExportHelper::setIgnoredErrors(const QStringList &err_codes)
 void ModelExportHelper::exportToSQL(DatabaseModel *db_model, const QString &filename, const QString &pgsql_ver, bool split, DatabaseModel::CodeGenMode code_gen_mode, bool gen_drop_file)
 {
 	if(!db_model)
-		throw Exception(ErrorCode::AsgNotAllocattedObject,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::AsgNotAllocattedObject,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	connect(db_model, &DatabaseModel::s_objectLoaded, this, &ModelExportHelper::updateProgress);
 
@@ -99,7 +99,7 @@ void ModelExportHelper::exportToSQL(DatabaseModel *db_model, const QString &file
 	catch(Exception &e)
 	{
 		disconnect(db_model, nullptr, this, nullptr);
-		throw Exception(e.getErrorMessage(), e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__, &e);
+		throw Exception(e.getErrorMessage(), e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 	}
 
 	disconnect(db_model, nullptr, this, nullptr);
@@ -108,7 +108,7 @@ void ModelExportHelper::exportToSQL(DatabaseModel *db_model, const QString &file
 void ModelExportHelper::exportToPNG(ObjectsScene *scene, const QString &filename, double zoom, bool show_grid, bool show_delim, bool page_by_page, bool override_bg_color, QGraphicsView *viewp)
 {
 	if(!scene)
-		throw Exception(ErrorCode::AsgNotAllocattedObject,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::AsgNotAllocattedObject,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	try
 	{
@@ -221,7 +221,7 @@ void ModelExportHelper::exportToPNG(ObjectsScene *scene, const QString &filename
 				scene->update();
 
 				throw Exception(Exception::getErrorMessage(ErrorCode::FileDirectoryNotWritten).arg(file),
-												ErrorCode::FileDirectoryNotWritten,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+												ErrorCode::FileDirectoryNotWritten,PGM_FUNC,PGM_FILE,PGM_LINE);
 			}
 		}
 
@@ -247,14 +247,14 @@ void ModelExportHelper::exportToPNG(ObjectsScene *scene, const QString &filename
 	}
 	catch(Exception &e)
 	{
-		throw Exception(e.getErrorMessage(), e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__, &e);
+		throw Exception(e.getErrorMessage(), e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 	}
 }
 
 void ModelExportHelper::exportToSVG(ObjectsScene *scene, const QString &filename, bool show_grid, bool show_delim)
 {
 	if(!scene)
-		throw Exception(ErrorCode::AsgNotAllocattedObject,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::AsgNotAllocattedObject,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	bool prev_show_dlm=false, prev_show_grd=false;
 	QSvgGenerator svg_gen;
@@ -334,7 +334,7 @@ void ModelExportHelper::exportToSVG(ObjectsScene *scene, const QString &filename
 	if(!fi.exists() || !fi.isWritable() || !fi.isReadable())
 	{
 			throw Exception(Exception::getErrorMessage(ErrorCode::FileDirectoryNotWritten).arg(filename),
-											ErrorCode::FileDirectoryNotWritten,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+											ErrorCode::FileDirectoryNotWritten,PGM_FUNC,PGM_FILE,PGM_LINE);
 	}
 
 	emit s_progressUpdated(100, tr("Output file `%1' successfully written.").arg(filename), ObjectType::BaseObject);
@@ -357,15 +357,15 @@ void ModelExportHelper::exportToDBMS(DatabaseModel *db_model, Connection conn, c
 	try
 	{
 		if(!db_model)
-			throw Exception(ErrorCode::AsgNotAllocattedObject,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+			throw Exception(ErrorCode::AsgNotAllocattedObject,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 		/* If the export is called using ignore duplications or drop database and simulation mode at same time
 		an error is raised because the simulate mode (mainly used as SQL validation) cannot
 		undo column addition (this can be changed in the future) */
 		if(simulate && (ignore_dup || drop_db || drop_objs || transactional))
-			throw Exception(ErrorCode::MixingIncompExportOptions,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+			throw Exception(ErrorCode::MixingIncompExportOptions,PGM_FUNC,PGM_FILE,PGM_LINE);
 		else if(drop_db && drop_objs)
-			throw Exception(ErrorCode::MixingIncompDropOptions,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+			throw Exception(ErrorCode::MixingIncompDropOptions,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 		connect(db_model, &DatabaseModel::s_objectLoaded, this, &ModelExportHelper::updateProgress, Qt::DirectConnection);
 
@@ -399,7 +399,7 @@ void ModelExportHelper::exportToDBMS(DatabaseModel *db_model, Connection conn, c
 			generateTempObjectNames(db_model);
 		}
 		else if(use_tmp_names)
-			throw Exception(ErrorCode::InvUsageTempNamesExportOption,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+			throw Exception(ErrorCode::InvUsageTempNamesExportOption,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 		if(db_model->isSQLDisabled())
 		{
@@ -411,7 +411,7 @@ void ModelExportHelper::exportToDBMS(DatabaseModel *db_model, Connection conn, c
 			}
 			else
 				throw Exception(Exception::getErrorMessage(ErrorCode::ExportFailureDbSQLDisabled).arg(db_model->getName()),
-												ErrorCode::ExportFailureDbSQLDisabled, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+												ErrorCode::ExportFailureDbSQLDisabled, PGM_FUNC, PGM_FILE, PGM_LINE);
 		}
 
 		if(ignore_dup)
@@ -602,17 +602,17 @@ void ModelExportHelper::exportToDBMS(DatabaseModel *db_model, Connection conn, c
 		if(this->thread() && this->thread()!=qApp->thread())
 		{
 			errors.push_back(e);
-			emit s_exportAborted(Exception(e.getErrorMessage(), e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__, errors));
+			emit s_exportAborted(Exception(e.getErrorMessage(), e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, errors));
 		}
 		else
 		{
 			//Redirects any error to terrorsr
 			if(errors.empty())
-				throw Exception(e.getErrorMessage(),e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__, &e);
+				throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 			else
 			{
 				errors.push_back(e);
-				throw Exception(e.getErrorMessage(),__PRETTY_FUNCTION__,__FILE__,__LINE__, errors);
+				throw Exception(e.getErrorMessage(),PGM_FUNC,PGM_FILE,PGM_LINE, errors);
 			}
 		}
 	}
@@ -621,7 +621,7 @@ void ModelExportHelper::exportToDBMS(DatabaseModel *db_model, Connection conn, c
 void ModelExportHelper::exportToDataDict(DatabaseModel *db_model, const QString &path, bool browsable, bool split, bool md_format)
 {
 	if(!db_model)
-		throw Exception(ErrorCode::AsgNotAllocattedObject,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::AsgNotAllocattedObject,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	connect(db_model, &DatabaseModel::s_objectLoaded, this, &ModelExportHelper::updateProgress);
 
@@ -640,7 +640,7 @@ void ModelExportHelper::exportToDataDict(DatabaseModel *db_model, const QString 
 	catch(Exception &e)
 	{
 		disconnect(db_model, nullptr, this, nullptr);
-		throw Exception(e.getErrorMessage(), e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__, &e);
+		throw Exception(e.getErrorMessage(), e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 	}
 
 	disconnect(db_model, nullptr, this, nullptr);

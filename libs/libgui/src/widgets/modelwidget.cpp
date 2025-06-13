@@ -1650,7 +1650,7 @@ void ModelWidget::convertRelationshipNN()
 					op_list->ignoreOperationChain(false);
 				}
 
-				Messagebox::error(e, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+				Messagebox::error(e, PGM_FUNC, PGM_FILE, PGM_LINE);
 			}
 		}
 	}
@@ -1828,7 +1828,7 @@ void ModelWidget::convertRelationship1N()
 			op_list->ignoreOperationChain(false);
 		}
 
-		Messagebox::error(e, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+		Messagebox::error(e, PGM_FUNC, PGM_FILE, PGM_LINE);
 	}
 }
 
@@ -1876,7 +1876,7 @@ void ModelWidget::loadModel(const QString &filename)
 	{
 		task_prog_wgt.close();
 		setModified(false);
-		throw Exception(e.getErrorMessage(),e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__, &e);
+		throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 	}
 }
 
@@ -2067,7 +2067,7 @@ void ModelWidget::saveModel(const QString &filename)
 			 * we can write the new one in its place */
 			if(!QFile::rename(filename, bkpfile))
 				throw Exception(Exception::getErrorMessage(ErrorCode::FileDirectoryNotWritten).arg(bkpfile),
-												ErrorCode::FileDirectoryNotWritten,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+												ErrorCode::FileDirectoryNotWritten,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 			has_bkp_file = true;
 		}
@@ -2085,7 +2085,7 @@ void ModelWidget::saveModel(const QString &filename)
 		 * so we raise an error to the user and restore the backup file to its original path */
 		if(fi.size() == 0)
 			throw Exception(Exception::getErrorMessage(ErrorCode::ModelFileInvalidSize).arg(filename),
-											ErrorCode::ModelFileInvalidSize,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+											ErrorCode::ModelFileInvalidSize,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 		// Removing the backup file if the model was successfully saved
 		if(has_bkp_file)
@@ -2105,10 +2105,10 @@ void ModelWidget::saveModel(const QString &filename)
 			QFile::copy(bkpfile, filename);
 
 			throw Exception(Exception::getErrorMessage(ErrorCode::ModelFileSaveFailure).arg(filename).arg(bkpfile),
-											ErrorCode::ModelFileSaveFailure,__PRETTY_FUNCTION__,__FILE__,__LINE__, &e);
+											ErrorCode::ModelFileSaveFailure,PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 		}
 
-		throw Exception(e.getErrorMessage(),e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__, &e);
+		throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 	}
 }
 
@@ -2273,10 +2273,10 @@ void ModelWidget::showObjectForm(ObjectType obj_type, BaseObject *object, BaseOb
 		if(obj_type!=ObjectType::Permission)
 		{
 			if(object && obj_type!=object->getObjectType())
-				throw Exception(ErrorCode::OprObjectInvalidType,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+				throw Exception(ErrorCode::OprObjectInvalidType,PGM_FUNC,PGM_FILE,PGM_LINE);
 			//If the user try to call the table object form without specify a parent object
 			else if(!parent_obj && TableObject::isTableObject(obj_type))
-				throw Exception(ErrorCode::OprNotAllocatedObject,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+				throw Exception(ErrorCode::OprNotAllocatedObject,PGM_FUNC,PGM_FILE,PGM_LINE);
 		}
 
 		if(object && dynamic_cast<BaseGraphicObject *>(object))
@@ -2290,7 +2290,7 @@ void ModelWidget::showObjectForm(ObjectType obj_type, BaseObject *object, BaseOb
 		{
 			throw Exception(Exception::getErrorMessage(ErrorCode::OprReservedObject)
 											.arg(object->getName(), object->getTypeName()),
-											ErrorCode::OprReservedObject,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+											ErrorCode::OprReservedObject,PGM_FUNC,PGM_FILE,PGM_LINE);
 		}
 
 		setBlinkAddedObjects(BaseGraphicObject::isGraphicObject(obj_type));
@@ -2432,7 +2432,7 @@ void ModelWidget::showObjectForm(ObjectType obj_type, BaseObject *object, BaseOb
 	}
 	catch(Exception &e)
 	{
-		Messagebox::error(e, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+		Messagebox::error(e, PGM_FUNC, PGM_FILE, PGM_LINE);
 	}
 }
 
@@ -2554,7 +2554,7 @@ void ModelWidget::moveToSchema()
 		if(op_id >=0 && op_id > op_curr_idx)
 			op_list->removeLastOperation();
 
-		Messagebox::error(e, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+		Messagebox::error(e, PGM_FUNC, PGM_FILE, PGM_LINE);
 	}
 }
 
@@ -2598,7 +2598,7 @@ void ModelWidget::changeOwner()
 					throw Exception(Exception::getErrorMessage(ErrorCode::OprReservedObject)
 									.arg(obj->getName())
 									.arg(obj->getTypeName()),
-									ErrorCode::OprReservedObject,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+									ErrorCode::OprReservedObject,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 				//Register an operation only if the object is not the database itself
 				if(obj->getObjectType()!=ObjectType::Database)
@@ -2618,7 +2618,7 @@ void ModelWidget::changeOwner()
 		if(op_id >=0 && op_id >= op_curr_idx)
 			op_list->removeLastOperation();
 
-		Messagebox::error(e, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+		Messagebox::error(e, PGM_FUNC, PGM_FILE, PGM_LINE);
 	}
 }
 
@@ -2657,7 +2657,7 @@ void ModelWidget::setTag()
 		if(op_id >=0 &&  op_id > op_curr_idx)
 			op_list->removeLastOperation();
 
-		Messagebox::error(e, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+		Messagebox::error(e, PGM_FUNC, PGM_FILE, PGM_LINE);
 	}
 }
 
@@ -2780,7 +2780,7 @@ void ModelWidget::protectObject()
 					{
 						throw Exception(Exception::getErrorMessage(ErrorCode::OprRelationshipAddedObject)
 										.arg(object->getName()).arg(object->getTypeName()),
-										ErrorCode::OprRelationshipAddedObject,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+										ErrorCode::OprRelationshipAddedObject,PGM_FUNC,PGM_FILE,PGM_LINE);
 					}
 				}
 
@@ -2827,7 +2827,7 @@ void ModelWidget::protectObject()
 	catch(Exception &e)
 	{
 		scene->blockSignals(false);
-		Messagebox::error(e, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+		Messagebox::error(e, PGM_FUNC, PGM_FILE, PGM_LINE);
 	}
 }
 
@@ -2871,7 +2871,7 @@ void ModelWidget::copyObjects(bool duplicate_mode, bool copy_deps)
 		{
 			throw Exception(Exception::getErrorMessage(ErrorCode::OprReservedObject)
 											.arg(selected_objects[0]->getName()).arg(selected_objects[0]->getTypeName()),
-											ErrorCode::OprReservedObject,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+											ErrorCode::OprReservedObject,PGM_FUNC,PGM_FILE,PGM_LINE);
 		}
 	}
 
@@ -3297,7 +3297,7 @@ void ModelWidget::pasteObjects(bool duplicate_mode)
 	{
 		Messagebox msg_box;
 		msg_box.show(Exception(tr("Not all objects were pasted to the model due to errors returned during the process! Refer to error stack for more details!"),
-								 ErrorCode::Custom,__PRETTY_FUNCTION__,__FILE__,__LINE__, errors), "",
+								 ErrorCode::Custom,PGM_FUNC,PGM_FILE,PGM_LINE, errors), "",
 								 Messagebox::AlertIcon);
 	}
 
@@ -3453,7 +3453,7 @@ void ModelWidget::duplicateObject()
 		if(op_id >= 0)
 			op_list->removeLastOperation();
 
-		Messagebox::error(e, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+		Messagebox::error(e, PGM_FUNC, PGM_FILE, PGM_LINE);
 	}
 }
 
@@ -3638,14 +3638,14 @@ void ModelWidget::removeObjects(bool cascade)
 					if(object->isSystemObject())
 						throw Exception(Exception::getErrorMessage(ErrorCode::OprReservedObject)
 														.arg(object->getName()).arg(object->getTypeName()),
-														ErrorCode::OprReservedObject,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+														ErrorCode::OprReservedObject,PGM_FUNC,PGM_FILE,PGM_LINE);
 					//Raises an error if the user try to remove a protected object
 					else if(object->isProtected())
 					{
 						throw Exception(Exception::getErrorMessage(ErrorCode::RemProtectedObject)
 														.arg(object->getName(true))
 														.arg(object->getTypeName()),
-														ErrorCode::RemProtectedObject,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+														ErrorCode::RemProtectedObject,PGM_FUNC,PGM_FILE,PGM_LINE);
 					}
 					else
 					{
@@ -3658,7 +3658,7 @@ void ModelWidget::removeObjects(bool cascade)
 								throw Exception(Exception::getErrorMessage(ErrorCode::RemProtectedObject)
 																.arg(tab_obj->getName(true))
 																.arg(tab_obj->getTypeName()),
-																ErrorCode::RemProtectedObject,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+																ErrorCode::RemProtectedObject,PGM_FUNC,PGM_FILE,PGM_LINE);
 							}
 
 							table=dynamic_cast<BaseTable *>(tab_obj->getParentTable());
@@ -3696,7 +3696,7 @@ void ModelWidget::removeObjects(bool cascade)
 															 e.getErrorCode()==ErrorCode::OprReservedObject))
 									errors.push_back(e);
 								else
-									throw Exception(e.getErrorMessage(),e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__,&e);
+									throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE,&e);
 							}
 						}
 						else
@@ -3726,7 +3726,7 @@ void ModelWidget::removeObjects(bool cascade)
 																 e.getErrorCode()==ErrorCode::OprReservedObject))
 										errors.push_back(e);
 									else
-										throw Exception(e.getErrorMessage(),e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__,&e);
+										throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE,&e);
 								}
 
 								if(rel)
@@ -3750,7 +3750,7 @@ void ModelWidget::removeObjects(bool cascade)
 
 				if(!errors.empty())
 				{
-					msg_box.show(Exception(ErrorCode::RemInvalidatedObjects, __PRETTY_FUNCTION__,__FILE__,__LINE__, errors),
+					msg_box.show(Exception(ErrorCode::RemInvalidatedObjects, PGM_FUNC,PGM_FILE,PGM_LINE, errors),
 								 tr("The cascade deletion found some problems when running! Some objects could not be deleted or registered in the operation's history! Please, refer to error stack for more details."),
 								 Messagebox::AlertIcon);
 				}
@@ -3776,7 +3776,7 @@ void ModelWidget::removeObjects(bool cascade)
 				emit s_objectRemoved();
 
 				//msg_box.show(e);
-				Messagebox::error(e, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+				Messagebox::error(e, PGM_FUNC, PGM_FILE, PGM_LINE);
 			}
 
 			/* In case of any object removal we clear the copied objects list in order to avoid
@@ -5005,7 +5005,7 @@ void ModelWidget::createSequenceFromColumn()
 	}
 	catch(Exception &e)
 	{
-		Messagebox::error(e, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+		Messagebox::error(e, PGM_FUNC, PGM_FILE, PGM_LINE);
 	}
 }
 
@@ -5022,7 +5022,7 @@ void ModelWidget::convertIntegerToSerial()
 
 		if(!col_type.isIntegerType() || (!col->getDefaultValue().contains(regexp) && !col->getSequence()))
 			throw Exception(Exception::getErrorMessage(ErrorCode::InvConversionIntegerToSerial).arg(col->getName()),
-											ErrorCode::InvConversionIntegerToSerial ,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+											ErrorCode::InvConversionIntegerToSerial ,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 		op_list->registerObject(col, Operation::ObjModified, -1, tab);
 
@@ -5045,7 +5045,7 @@ void ModelWidget::convertIntegerToSerial()
 	}
 	catch(Exception &e)
 	{
-		Messagebox::error(e, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+		Messagebox::error(e, PGM_FUNC, PGM_FILE, PGM_LINE);
 	}
 }
 
@@ -5065,7 +5065,7 @@ void ModelWidget::breakRelationshipLine()
 	}
 	catch(Exception &e)
 	{
-		Messagebox::error(e, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+		Messagebox::error(e, PGM_FUNC, PGM_FILE, PGM_LINE);
 	}
 }
 
@@ -5105,7 +5105,7 @@ void ModelWidget::breakRelationshipLine(BaseRelationship *rel, RelBreakMode brea
 	}
 	catch(Exception &e)
 	{
-		throw Exception(e.getErrorMessage(), e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__, &e);
+		throw Exception(e.getErrorMessage(), e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 	}
 }
 
@@ -5151,7 +5151,7 @@ void ModelWidget::removeRelationshipPoints()
 	}
 	catch(Exception &e)
 	{
-		Messagebox::error(e, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+		Messagebox::error(e, PGM_FUNC, PGM_FILE, PGM_LINE);
 	}
 }
 
@@ -5490,7 +5490,7 @@ void ModelWidget::rearrangeTablesHierarchically()
 			}
 			catch(Exception &e)
 			{
-				Messagebox::error(e, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+				Messagebox::error(e, PGM_FUNC, PGM_FILE, PGM_LINE);
 			}
 		}
 

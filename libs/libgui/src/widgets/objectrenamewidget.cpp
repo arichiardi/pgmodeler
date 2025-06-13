@@ -54,14 +54,14 @@ void ObjectRenameWidget::setAttributes(std::vector<BaseObject *> objs, DatabaseM
 		{
 			throw Exception(Exception::getErrorMessage(ErrorCode::OprReservedObject)
 												 .arg(obj->getName(), obj->getTypeName()),
-											ErrorCode::OprReservedObject,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+											ErrorCode::OprReservedObject,PGM_FUNC,PGM_FILE,PGM_LINE);
 		}
 
 		if(tab_obj && tab_obj->isAddedByRelationship())
 		{
 			throw Exception(Exception::getErrorMessage(ErrorCode::OprRelationshipAddedObject)
 											.arg(tab_obj->getName(), tab_obj->getTypeName()),
-											ErrorCode::OprRelationshipAddedObject ,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+											ErrorCode::OprRelationshipAddedObject ,PGM_FUNC,PGM_FILE,PGM_LINE);
 		}
 	}
 
@@ -295,7 +295,7 @@ void ObjectRenameWidget::applyRenaming()
 	}
 	catch(Exception &e)
 	{
-		Messagebox::error(e, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+		Messagebox::error(e, PGM_FUNC, PGM_FILE, PGM_LINE);
 
 		if(obj_type != ObjectType::Database)
 			op_list->removeLastOperation();
@@ -312,7 +312,7 @@ void ObjectRenameWidget::validateName()
 	if(!BaseObject::isValidName(new_name_edt->text()))
 	{
 		Messagebox::error(Exception::getErrorMessage(ErrorCode::AsgInvalidNameObject),
-											ErrorCode::AsgInvalidNameObject, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+											ErrorCode::AsgInvalidNameObject, PGM_FUNC, PGM_FILE, PGM_LINE);
 
 		return;
 	}

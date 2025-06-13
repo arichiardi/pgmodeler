@@ -269,7 +269,7 @@ void PermissionWidget::showSelectedRoleData()
 											.arg(role->getName())
 											.arg(role->getTypeName())
 											.arg(roles_gb->title().remove('&')),
-											ErrorCode::InsDuplicatedRole,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+											ErrorCode::InsDuplicatedRole,PGM_FUNC,PGM_FILE,PGM_LINE);
 		}
 	}
 }
@@ -298,7 +298,7 @@ void PermissionWidget::addPermission()
 		}
 
 		cancelOperation();
-		throw Exception(e.getErrorMessage(), e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__, &e);
+		throw Exception(e.getErrorMessage(), e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 	}
 }
 
@@ -333,7 +333,7 @@ void PermissionWidget::updatePermission()
 			throw Exception(Exception::getErrorMessage(ErrorCode::AsgDuplicatedPermission)
 							.arg(permission->getObject()->getName())
 							.arg(permission->getObject()->getTypeName()),
-							ErrorCode::AsgDuplicatedPermission,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+							ErrorCode::AsgDuplicatedPermission,PGM_FUNC,PGM_FILE,PGM_LINE);
 		}
 
 		delete perm_bkp;
@@ -348,7 +348,7 @@ void PermissionWidget::updatePermission()
 		delete perm_bkp;
 
 		cancelOperation();
-		throw Exception(e.getErrorMessage(), e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__, &e);
+		throw Exception(e.getErrorMessage(), e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 	}
 }
 

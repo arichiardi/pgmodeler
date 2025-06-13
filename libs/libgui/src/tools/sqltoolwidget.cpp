@@ -259,7 +259,7 @@ void SQLToolWidget::connectToServer()
 	}
 	catch(Exception &e)
 	{
-		throw Exception(e.getErrorMessage(), e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__, &e);
+		throw Exception(e.getErrorMessage(), e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 	}
 }
 
@@ -294,7 +294,7 @@ void SQLToolWidget::disconnectFromDatabases()
 	}
 	catch(Exception &e)
 	{
-		Messagebox::error(e, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+		Messagebox::error(e, PGM_FUNC, PGM_FILE, PGM_LINE);
 	}
 }
 
@@ -342,7 +342,7 @@ DatabaseExplorerWidget *SQLToolWidget::browseDatabase()
 	}
 	catch(Exception &e)
 	{
-		throw Exception(e.getErrorMessage(),e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__,&e);
+		throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE,&e);
 	}
 }
 
@@ -372,7 +372,7 @@ SQLExecutionWidget *SQLToolWidget::addSQLExecutionTab(const QString &sql_cmd)
 	}
 	catch(Exception &e)
 	{
-		throw Exception(e.getErrorMessage(),e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__,&e);
+		throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE,&e);
 	}
 }
 
@@ -387,7 +387,7 @@ void SQLToolWidget::addSQLExecutionTab(const QString &conn_id, const QString &da
 	{
 		throw Exception(tr("Failed to load the file `%1' in SQL tool because the connection ID `%2' was not found!")
 										.arg(sql_file).arg(conn_id),
-										ErrorCode::Custom,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+										ErrorCode::Custom,PGM_FUNC,PGM_FILE,PGM_LINE);
 	}
 
 	buf.append(UtilsNs::loadFile(sql_file));
@@ -422,7 +422,7 @@ void SQLToolWidget::reloadHighlightConfigs()
 	}
 	catch(Exception &e)
 	{
-		Messagebox::error(e, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+		Messagebox::error(e, PGM_FUNC, PGM_FILE, PGM_LINE);
 	}
 }
 
@@ -519,7 +519,7 @@ void SQLToolWidget::showSnippet(const QString &snip)
 	}
 	catch(Exception &e)
 	{
-		Messagebox::error(e, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+		Messagebox::error(e, PGM_FUNC, PGM_FILE, PGM_LINE);
 	}
 }
 
@@ -622,12 +622,12 @@ void SQLToolWidget::dropDatabase(int database_idx)
 		{
 			/* throw Exception(Exception::getErrorMessage(ErrorCode::DropCurrentDBDefault)
 											.arg(dbname, conn.getConnectionParam(Connection::ParamAlias)),
-											ErrorCode::DropCurrentDBDefault,__PRETTY_FUNCTION__,__FILE__,__LINE__, &e); */
+											ErrorCode::DropCurrentDBDefault,PGM_FUNC,PGM_FILE,PGM_LINE, &e); */
 			Messagebox::error(Exception::getErrorMessage(ErrorCode::DropCurrentDBDefault).arg(dbname, conn.getConnectionParam(Connection::ParamAlias)),
-												ErrorCode::DropCurrentDBDefault,__PRETTY_FUNCTION__,__FILE__,__LINE__, &e);
+												ErrorCode::DropCurrentDBDefault,PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 		}
 		else
-			Messagebox::error(e, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+			Messagebox::error(e, PGM_FUNC, PGM_FILE, PGM_LINE);
 	}
 }
 

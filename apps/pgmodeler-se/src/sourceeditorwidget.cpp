@@ -100,7 +100,7 @@ void SourceEditorWidget::loadSyntaxConfig(const QString &filename)
 	}
 	catch(Exception &e)
 	{
-		throw Exception(e.getErrorMessage(), e.getErrorCode(), __PRETTY_FUNCTION__, __FILE__, __LINE__, &e);
+		throw Exception(e.getErrorMessage(), e.getErrorCode(), PGM_FUNC, PGM_FILE, PGM_LINE, &e);
 	}
 }
 
@@ -254,7 +254,7 @@ void SourceEditorWidget::validateSyntax()
 		pal.setColor(QPalette::HighlightedText, QColor("#ffffff"));
 		editor_txt->setPalette(pal);
 
-		Messagebox::error(e, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+		Messagebox::error(e, PGM_FUNC, PGM_FILE, PGM_LINE);
 	}
 }
 

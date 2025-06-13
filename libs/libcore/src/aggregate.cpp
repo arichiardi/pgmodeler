@@ -36,14 +36,14 @@ void Aggregate::setFunction(FunctionId func_id, Function *func)
 {
 	//Case the function index is invalid raises an error
 	if(func_id > TransitionFunc)
-		throw Exception(ErrorCode::RefFunctionInvalidType,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::RefFunctionInvalidType,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	//Checks if the function is valid, if not the case raises an error
 	if(!isValidFunction(func_id, func))
 		throw Exception(Exception::getErrorMessage(ErrorCode::AsgFunctionInvalidConfiguration)
 						.arg(this->getName())
 						.arg(BaseObject::getTypeName(ObjectType::Aggregate)),
-						ErrorCode::AsgFunctionInvalidConfiguration,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+						ErrorCode::AsgFunctionInvalidConfiguration,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	setCodeInvalidated(functions[func_id]!=func);
 	functions[func_id]=func;
@@ -122,11 +122,11 @@ void Aggregate::setSortOperator(Operator *sort_op)
 		func=sort_op->getFunction(Operator::FuncOperator);
 		//Validating the condition 1
 		if(data_types.size()!=1)
-			throw Exception(ErrorCode::AsgInvalidOperatorArguments,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+			throw Exception(ErrorCode::AsgInvalidOperatorArguments,PGM_FUNC,PGM_FILE,PGM_LINE);
 		//Validating the condition 2
 		else if(func->getParameter(0).getType()!=data_types[0] ||
 				(func->getParameterCount()==2 && func->getParameter(1).getType()!=data_types[0]))
-			throw Exception(ErrorCode::AsgInvalidOperatorTypes,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+			throw Exception(ErrorCode::AsgInvalidOperatorTypes,PGM_FUNC,PGM_FILE,PGM_LINE);
 	}
 
 	setCodeInvalidated(sort_operator != sort_op);
@@ -167,7 +167,7 @@ void Aggregate::removeDataType(unsigned type_idx)
 {
 	//Raises an exception if the type index is out of bound
 	if(type_idx >= data_types.size())
-		throw Exception(ErrorCode::RefTypeInvalidIndex,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::RefTypeInvalidIndex,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	//Removes the type at the specified position
 	auto type_itr = data_types.begin() + type_idx;
@@ -190,7 +190,7 @@ Function *Aggregate::getFunction(FunctionId func_id)
 {
 	//Raises an exception if the function index is invalid
 	if(func_id > TransitionFunc)
-		throw Exception(ErrorCode::RefFunctionInvalidType,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::RefFunctionInvalidType,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	return functions[func_id];
 }
@@ -214,7 +214,7 @@ PgSqlType Aggregate::getDataType(unsigned type_idx)
 {
 	//Raises an exception if the type index is out of bound
 	if(type_idx >= data_types.size())
-		throw Exception(ErrorCode::RefTypeInvalidIndex,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::RefTypeInvalidIndex,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	return data_types[type_idx];
 }
@@ -283,7 +283,7 @@ QString Aggregate::getAlterCode(BaseObject *object)
 	}
 	catch(Exception &e)
 	{
-		throw Exception(e.getErrorMessage(),e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__,&e);
+		throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE,&e);
 	}
 }
 

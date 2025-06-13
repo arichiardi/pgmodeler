@@ -87,7 +87,7 @@ void DataHandlingForm::setAttributes(const attribs_map &conn_params, const QStri
 {
 	if(!BaseTable::isBaseTable(obj_type))
 	{
-		Messagebox::error(ErrorCode::OprObjectInvalidType, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+		Messagebox::error(ErrorCode::OprObjectInvalidType, PGM_FUNC, PGM_FILE, PGM_LINE);
 		return;
 	}
 
@@ -115,7 +115,7 @@ void DataHandlingForm::setAttributes(const attribs_map &conn_params, const QStri
 	}
 	catch(Exception &e)
 	{
-		Messagebox::error(e, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+		Messagebox::error(e, PGM_FUNC, PGM_FILE, PGM_LINE);
 	}
 }
 
@@ -299,7 +299,7 @@ void DataHandlingForm::addDataGrid(const QString &schema, const QString &table, 
 	}
 	catch(Exception &e)
 	{
-		Messagebox::error(e, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+		Messagebox::error(e, PGM_FUNC, PGM_FILE, PGM_LINE);
 	}
 }
 
@@ -323,7 +323,7 @@ void DataHandlingForm::listTables()
 	}
 	catch(Exception &e)
 	{
-		Messagebox::error(e, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+		Messagebox::error(e, PGM_FUNC, PGM_FILE, PGM_LINE);
 	}
 }
 
@@ -387,7 +387,7 @@ void DataHandlingForm::listObjects(QComboBox *combo, std::vector<ObjectType> obj
 	catch(Exception &e)
 	{
 		catalog.closeConnection();
-		throw Exception(e.getErrorMessage(), e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__, &e);
+		throw Exception(e.getErrorMessage(), e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 	}
 }
 
@@ -506,7 +506,7 @@ void DataHandlingForm::openNewWindow(const attribs_map &conn_params, const QStri
 {
 	if(!BaseTable::isBaseTable(obj_type))
 	{
-		Messagebox::error(ErrorCode::OprObjectInvalidType, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+		Messagebox::error(ErrorCode::OprObjectInvalidType, PGM_FUNC, PGM_FILE, PGM_LINE);
 		return;
 	}
 
@@ -525,6 +525,6 @@ void DataHandlingForm::openNewWindow(const attribs_map &conn_params, const QStri
 	}
 	catch(Exception &e)
 	{
-		Messagebox::error(e, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+		Messagebox::error(e, PGM_FUNC, PGM_FILE, PGM_LINE);
 	}
 }

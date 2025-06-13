@@ -86,7 +86,7 @@ void BaseConfigWidget::saveConfiguration(const QString &conf_id, std::map<QStrin
 	catch(Exception &e)
 	{
 		throw Exception(Exception::getErrorMessage(ErrorCode::FileNotWrittenInvalidDefinition).arg(cfg_filename),
-										ErrorCode::FileNotWrittenInvalidDefinition,__PRETTY_FUNCTION__,__FILE__,__LINE__, &e);
+										ErrorCode::FileNotWrittenInvalidDefinition,PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 	}
 }
 
@@ -104,7 +104,7 @@ void BaseConfigWidget::restoreDefaults(const QString &conf_id, bool silent)
 	//Raises an error if the default file doesn't exists
 	if(!QFile::exists(default_file))
 		throw Exception(Exception::getErrorMessage(ErrorCode::DefaultConfigNotRestored).arg(default_file),
-										ErrorCode::DefaultConfigNotRestored,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+										ErrorCode::DefaultConfigNotRestored,PGM_FUNC,PGM_FILE,PGM_LINE);
 	else
 	{
 		bool bkp_saved = false;
@@ -177,7 +177,7 @@ void BaseConfigWidget::loadConfiguration(const QString &filename, const QString 
 	}
 	catch(Exception &e)
 	{
-		throw Exception(e.getErrorMessage(),e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__, &e, filename);
+		throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e, filename);
 	}
 }
 
@@ -190,7 +190,7 @@ void BaseConfigWidget::loadConfiguration(const QString &conf_id, std::map<QStrin
 	}
 	catch(Exception &e)
 	{
-		throw Exception(e.getErrorMessage(),e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__, &e, e.getExtraInfo());
+		throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e, e.getExtraInfo());
 	}
 }
 
