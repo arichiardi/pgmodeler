@@ -309,5 +309,9 @@
         <file>images/schemafile.png</file>
         <file>images/vsplitter_handle_dark.png</file>
         <file>images/vsplitter_handle_light.png</file>
+        <file>images/notation_pktofk.png</file>
+        <file>images/notation_tabcenter.png</file>
+        <file>images/notation_tabedges.png</file>
+        <file>images/notation_crowsfoot.png</file>
     </qresource>
 </RCC>

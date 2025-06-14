@@ -66,7 +66,7 @@ RelationshipConfigWidget::RelationshipConfigWidget(QWidget * parent) : BaseConfi
 	for(auto &type : IndexingType::getTypes())
 		index_type_cmb->addItem(type, type);
 
-	settings_twg->widget(0)->setFocusProxy(crows_foot_rb);
+	//settings_twg->widget(0)->setFocusProxy(crows_foot_rb);
 	foreign_key_gb->setFocusProxy(deferrable_chk);
 
 	connect(crows_foot_rb, &QRadioButton::toggled, this, &RelationshipConfigWidget::enableConnModePreview);
@@ -296,5 +296,5 @@ void RelationshipConfigWidget::enableConnModePreview()
 
 void RelationshipConfigWidget::hideEvent(QHideEvent *)
 {
-	settings_twg->setCurrentIndex(0);
+	//settings_twg->setCurrentIndex(0);
 }

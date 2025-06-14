@@ -56,6 +56,12 @@
    </item>
    <item row="0" column="0">
     <widget class="QGroupBox" name="general_gb">
+     <property name="maximumSize">
+      <size>
+       <width>700</width>
+       <height>16777215</height>
+      </size>
+     </property>
      <property name="title">
       <string>G&amp;eneral</string>
      </property>
@@ -327,6 +333,12 @@
    </item>
    <item row="1" column="0">
     <widget class="QGroupBox" name="sql_tool_gb">
+     <property name="maximumSize">
+      <size>
+       <width>700</width>
+       <height>16777215</height>
+      </size>
+     </property>
      <property name="title">
       <string>SQL &amp;tool</string>
      </property>
@@ -617,6 +629,12 @@
    </item>
    <item row="2" column="0">
     <widget class="QGroupBox" name="printing_gb">
+     <property name="maximumSize">
+      <size>
+       <width>700</width>
+       <height>16777215</height>
+      </size>
+     </property>
      <property name="title">
       <string>Printing</string>
      </property>
