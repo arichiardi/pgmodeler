@@ -36,8 +36,6 @@ class __libgui RelationshipConfigWidget:  public BaseConfigWidget, public Ui::Re
 
 		std::map<QString, attribs_map> patterns;
 
-		virtual void hideEvent(QHideEvent *) override;
-
 	public:
 		RelationshipConfigWidget(QWidget * parent = nullptr);
 
@@ -54,8 +52,6 @@ class __libgui RelationshipConfigWidget:  public BaseConfigWidget, public Ui::Re
 	private slots:
 		void fillNamePatterns();
 		void updatePattern();
-		void enableConnModePreview();
-
 };
 
 #endif

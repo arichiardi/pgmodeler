@@ -18,6 +18,7 @@
 
 #include "configurationwidget.h"
 #include "guiutilsns.h"
+#include <QButtonGroup>
 
 ConfigurationWidget::ConfigurationWidget(QWidget *parent) : QWidget(parent)
 {
@@ -49,55 +50,29 @@ ConfigurationWidget::ConfigurationWidget(QWidget *parent) : QWidget(parent)
 
 	QFont fnt;
 	int view_idx = GeneralConfWgt;
-	QList<QToolButton *> btns = { general_tb, appearance_tb, relationships_tb,
-																connections_tb, snippets_tb, plugins_tb };
 
-	for(auto &btn : btns)
+	QButtonGroup *btn_group { new QButtonGroup(this) };
+	btn_group->setExclusive(true);
+
+	for(auto &btn : btns_parent_wgt->findChildren<QToolButton *>())
 	{
+		btn_group->addButton(btn);
+
 		fnt = btn->font();
 		fnt.setWeight(QFont::Normal);
 		btn->setFont(fnt);
-		GuiUtilsNs::createDropShadow(btn, 1, 1, 5);
 		btn->setProperty(Attributes::ObjectId.toStdString().c_str(), view_idx++);
-		connect(btn, &QToolButton::toggled, this, &ConfigurationWidget::changeCurrentView);
+		GuiUtilsNs::createDropShadow(btn, 1, 1, 5);
 	}
+
+	connect(btn_group, &QButtonGroup::buttonToggled, this, [this](QAbstractButton *btn){
+		confs_stw->setCurrentIndex(btn->property(Attributes::ObjectId.toStdString().c_str()).toInt());
+	});
 }
 
 ConfigurationWidget::~ConfigurationWidget()
 {
 	connections_conf->destroyConnections();
-}
-
-void ConfigurationWidget::changeCurrentView()
-{
-	QToolButton *btn = nullptr,
-			*btn_sender = qobject_cast<QToolButton *>(sender());
-	QList<QToolButton *> child_btns = btns_parent_wgt->findChildren<QToolButton *>();
-
-	child_btns.removeOne(btn_sender);
-
-	for(auto &obj : child_btns)
-	{
-		btn = dynamic_cast<QToolButton *>(obj);
-
-		if(!btn)
-			continue;
-
-		btn->blockSignals(true);
-		btn->setChecked(false);
-		btn->blockSignals(false);
-	}
-
-	if(btn_sender)
-	{
-		/* Forcing the sender button to keep the checked state
-		 * when the user clicks it when it is already checked */
-		btn_sender->blockSignals(true);
-		btn_sender->setChecked(true);
-		btn_sender->blockSignals(false);
-
-		confs_stw->setCurrentIndex(btn_sender->property(Attributes::ObjectId.toStdString().c_str()).toInt());
-	}
 }
 
 void ConfigurationWidget::hideEvent(QHideEvent *event)

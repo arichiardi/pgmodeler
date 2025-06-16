@@ -94,7 +94,6 @@ class __libgui ConfigurationWidget: public QWidget, public Ui::ConfigurationWidg
 
 	private slots:
 		void restoreDefaults();
-		void changeCurrentView();
 
 		/*! \brief This method is discard any uncommited configuration changes
 		 *  in all configuration sections. Different from restoreDefaults() that

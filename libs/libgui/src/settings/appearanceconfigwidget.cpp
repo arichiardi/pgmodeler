@@ -25,6 +25,7 @@
 #include "tableview.h"
 #include "styledtextboxview.h"
 #include "graphicalview.h"
+#include <QButtonGroup>
 
 QPalette AppearanceConfigWidget::system_pal;
 std::map<QString, attribs_map> AppearanceConfigWidget::config_params;
@@ -261,9 +262,18 @@ CREATE TABLE public.table_b (\n \
 	ui_theme_cmb->addItem(tr("Dark"), Attributes::Dark);
 	ui_theme_cmb->addItem(tr("InkSaver"), Attributes::InkSaver);
 
-	icons_size_cmb->addItem(tr("Big"), Attributes::Big);
-	icons_size_cmb->addItem(tr("Medium"), Attributes::Medium);
-	icons_size_cmb->addItem(tr("Small"), Attributes::Small);
+	ico_sz_btn_grp = new QButtonGroup(this);
+	ico_sz_btn_grp->setExclusive(true);
+
+	icon_small_tb->setProperty(Attributes::IconsSize.toLatin1(), Attributes::Small);
+	icon_medium_tb->setProperty(Attributes::IconsSize.toLatin1(), Attributes::Medium);
+	icon_big_tb->setProperty(Attributes::IconsSize.toLatin1(), Attributes::Big);
+
+	ico_sz_btn_grp->addButton(icon_small_tb);
+	ico_sz_btn_grp->addButton(icon_medium_tb);
+	ico_sz_btn_grp->addButton(icon_big_tb);
+
+	connect(ico_sz_btn_grp, &QButtonGroup::buttonToggled, this, __slot(this, AppearanceConfigWidget::previewUiSettings));
 
 	connect(element_cmb, &QComboBox::currentTextChanged, this, &AppearanceConfigWidget::enableConfigElement);
 	connect(elem_font_cmb, &QFontComboBox::currentFontChanged, this, &AppearanceConfigWidget::applyElementFontStyle);
@@ -304,7 +314,6 @@ CREATE TABLE public.table_b (\n \
 	connect(grid_pattern_cmb, &QComboBox::currentIndexChanged, this, &AppearanceConfigWidget::previewCanvasColors);
 
 	connect(ui_theme_cmb, &QComboBox::activated, this, __slot(this, AppearanceConfigWidget::previewUiSettings));
-	connect(icons_size_cmb, &QComboBox::currentTextChanged, this, __slot(this, AppearanceConfigWidget::previewUiSettings));
 
 	connect(custom_scale_chk, &QCheckBox::toggled, this, [this](bool toggled){
 		custom_scale_spb->setEnabled(toggled);
@@ -469,16 +478,22 @@ void AppearanceConfigWidget::loadConfiguration()
 		BaseConfigWidget::loadConfiguration(GlobalAttributes::AppearanceConf, config_params, { Attributes::Id }, true);
 
 		ui_theme_cmb->blockSignals(true);
-		icons_size_cmb->blockSignals(true);
+		ico_sz_btn_grp->blockSignals(true);
 
+		QString icon_size = config_params[GlobalAttributes::AppearanceConf][Attributes::IconsSize];
 		int idx = ui_theme_cmb->findData(config_params[GlobalAttributes::AppearanceConf][Attributes::UiTheme], Qt::UserRole, Qt::MatchExactly);
+
 		ui_theme_cmb->setCurrentIndex(idx < 0 ? 0 : idx);
 
-		idx = icons_size_cmb->findData(config_params[GlobalAttributes::AppearanceConf][Attributes::IconsSize], Qt::UserRole, Qt::MatchExactly);
-		icons_size_cmb->setCurrentIndex(idx < 0 ? 0 : idx);
+		if(icon_size == Attributes::Big)
+			icon_big_tb->setChecked(true);
+		if(icon_size == Attributes::Medium)
+			icon_medium_tb->setChecked(true);
+		else
+			icon_small_tb->setChecked(true);
 
 		ui_theme_cmb->blockSignals(false);
-		icons_size_cmb->blockSignals(false);
+		ico_sz_btn_grp->blockSignals(false);
 
 		custom_scale_chk->setChecked(config_params[GlobalAttributes::AppearanceConf].count(Attributes::CustomScale));
 		custom_scale_spb->setValue(config_params[GlobalAttributes::AppearanceConf][Attributes::CustomScale].toDouble());
@@ -607,7 +622,7 @@ void AppearanceConfigWidget::saveConfiguration()
 
 		config_params.erase(GlobalAttributes::AppearanceConf);
 		attribs[Attributes::UiTheme] =  ui_theme_cmb->currentData(Qt::UserRole).toString();
-		attribs[Attributes::IconsSize] = icons_size_cmb->currentData(Qt::UserRole).toString();
+		attribs[Attributes::IconsSize] = ico_sz_btn_grp->checkedButton()->property(Attributes::IconsSize.toLatin1()).toString();
 
 		attribs[Attributes::CustomScale] = custom_scale_chk->isChecked() ?
 					QString::number(custom_scale_spb->value(), 'g', 2) : "";
@@ -1048,13 +1063,13 @@ void AppearanceConfigWidget::applyUiStyleSheet()
 	{
 		Messagebox msg;
 		msg.show(Exception(Exception::getErrorMessage(ErrorCode::FileDirectoryNotAccessed).arg(ui_style.fileName()),
-											 ErrorCode::FileDirectoryNotAccessed,PGM_FUNC,PGM_FILE,PGM_LINE));
+											 ErrorCode::FileDirectoryNotAccessed, PGM_FUNC, PGM_FILE, PGM_LINE));
 	}
 	else
 	{
 		QByteArray ui_stylesheet = ui_style.readAll();
 
-		QString icon_size = icons_size_cmb->currentData().toString().toLower(),
+		QString icon_size = ico_sz_btn_grp->checkedButton()->property(Attributes::IconsSize.toLatin1()).toString(),
 				ico_style_conf = GlobalAttributes::getTmplConfigurationFilePath("",
 																																				"icons-" + icon_size +
 																																				GlobalAttributes::ConfigurationExt);

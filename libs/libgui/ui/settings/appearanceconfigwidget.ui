@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1061</width>
+    <width>791</width>
     <height>611</height>
    </rect>
   </property>
@@ -79,8 +79,25 @@
           <property name="spacing">
            <number>5</number>
           </property>
-          <item row="0" column="3">
-           <widget class="QComboBox" name="icons_size_cmb"/>
+          <item row="0" column="8" rowspan="2">
+           <spacer name="horizontalSpacer_2">
+            <property name="orientation">
+             <enum>Qt::Orientation::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item row="0" column="0">
+           <widget class="QLabel" name="label">
+            <property name="text">
+             <string>Theme:</string>
+            </property>
+           </widget>
           </item>
           <item row="0" column="1">
            <widget class="QComboBox" name="ui_theme_cmb">
@@ -92,6 +109,132 @@
             </property>
             <property name="currentIndex">
              <number>-1</number>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1" colspan="5">
+           <layout class="QHBoxLayout" name="horizontalLayout">
+            <item>
+             <widget class="QToolButton" name="icon_small_tb">
+              <property name="minimumSize">
+               <size>
+                <width>60</width>
+                <height>60</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>Small</string>
+              </property>
+              <property name="icon">
+               <iconset resource="../../res/resources.qrc">
+                <normaloff>:/icons/icons/config.png</normaloff>:/icons/icons/config.png</iconset>
+              </property>
+              <property name="iconSize">
+               <size>
+                <width>32</width>
+                <height>32</height>
+               </size>
+              </property>
+              <property name="checkable">
+               <bool>true</bool>
+              </property>
+              <property name="toolButtonStyle">
+               <enum>Qt::ToolButtonStyle::ToolButtonIconOnly</enum>
+              </property>
+              <property name="autoRaise">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QToolButton" name="icon_medium_tb">
+              <property name="minimumSize">
+               <size>
+                <width>60</width>
+                <height>60</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>Medium</string>
+              </property>
+              <property name="icon">
+               <iconset resource="../../res/resources.qrc">
+                <normaloff>:/icons/icons/config.png</normaloff>:/icons/icons/config.png</iconset>
+              </property>
+              <property name="iconSize">
+               <size>
+                <width>38</width>
+                <height>38</height>
+               </size>
+              </property>
+              <property name="checkable">
+               <bool>true</bool>
+              </property>
+              <property name="toolButtonStyle">
+               <enum>Qt::ToolButtonStyle::ToolButtonIconOnly</enum>
+              </property>
+              <property name="autoRaise">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QToolButton" name="icon_big_tb">
+              <property name="minimumSize">
+               <size>
+                <width>60</width>
+                <height>60</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>Big</string>
+              </property>
+              <property name="icon">
+               <iconset resource="../../res/resources.qrc">
+                <normaloff>:/icons/icons/config.png</normaloff>:/icons/icons/config.png</iconset>
+              </property>
+              <property name="iconSize">
+               <size>
+                <width>48</width>
+                <height>48</height>
+               </size>
+              </property>
+              <property name="checkable">
+               <bool>true</bool>
+              </property>
+              <property name="checked">
+               <bool>false</bool>
+              </property>
+              <property name="toolButtonStyle">
+               <enum>Qt::ToolButtonStyle::ToolButtonIconOnly</enum>
+              </property>
+              <property name="autoRaise">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="horizontalSpacer_4">
+              <property name="orientation">
+               <enum>Qt::Orientation::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
+          </item>
+          <item row="0" column="4">
+           <widget class="QCheckBox" name="custom_scale_chk">
+            <property name="toolTip">
+             <string>&lt;p&gt;Defines a custom UI scale factor. This factor is applied when drawing widgets and fonts. Requires restarting pgModeler when in use.&lt;/p&gt;</string>
+            </property>
+            <property name="text">
+             <string>Custom scale:</string>
             </property>
            </widget>
           </item>
@@ -114,38 +257,8 @@
             </property>
            </widget>
           </item>
-          <item row="0" column="8" rowspan="2">
-           <spacer name="horizontalSpacer_2">
-            <property name="orientation">
-             <enum>Qt::Orientation::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>40</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-          <item row="0" column="4">
-           <widget class="QCheckBox" name="custom_scale_chk">
-            <property name="toolTip">
-             <string>&lt;p&gt;Defines a custom UI scale factor. This factor is applied when drawing widgets and fonts. Requires restarting pgModeler when in use.&lt;/p&gt;</string>
-            </property>
-            <property name="text">
-             <string>Custom scale:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="0">
-           <widget class="QLabel" name="label">
-            <property name="text">
-             <string>Theme:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="2">
-           <widget class="QLabel" name="icons_size_lbl">
+          <item row="1" column="0">
+           <widget class="QLabel" name="icons_size_lbl_2">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
               <horstretch>0</horstretch>
