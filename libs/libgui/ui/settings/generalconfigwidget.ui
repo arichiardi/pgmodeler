@@ -63,7 +63,7 @@
       </size>
      </property>
      <property name="title">
-      <string>G&amp;eneral</string>
+      <string>General</string>
      </property>
      <property name="flat">
       <bool>false</bool>
@@ -340,7 +340,7 @@
       </size>
      </property>
      <property name="title">
-      <string>SQL &amp;tool</string>
+      <string>SQL tool</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_2">
       <property name="leftMargin">

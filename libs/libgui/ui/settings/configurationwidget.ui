@@ -204,7 +204,7 @@
          </size>
         </property>
         <property name="text">
-         <string>&amp;General</string>
+         <string>General</string>
         </property>
         <property name="icon">
          <iconset resource="../../res/resources.qrc">
@@ -248,7 +248,7 @@
          </size>
         </property>
         <property name="text">
-         <string>A&amp;ppearance</string>
+         <string>Appearance</string>
         </property>
         <property name="icon">
          <iconset resource="../../res/resources.qrc">
@@ -289,7 +289,7 @@
          </size>
         </property>
         <property name="text">
-         <string>&amp;Relationships</string>
+         <string>Relationships</string>
         </property>
         <property name="icon">
          <iconset resource="../../res/resources.qrc">
@@ -330,7 +330,7 @@
          </size>
         </property>
         <property name="text">
-         <string>C&amp;onnections</string>
+         <string>Connections</string>
         </property>
         <property name="icon">
          <iconset resource="../../res/resources.qrc">
@@ -371,7 +371,7 @@
          </size>
         </property>
         <property name="text">
-         <string>&amp;Snippets</string>
+         <string>Snippets</string>
         </property>
         <property name="icon">
          <iconset resource="../../res/resources.qrc">
@@ -412,7 +412,7 @@
          </size>
         </property>
         <property name="text">
-         <string>P&amp;lug-ins</string>
+         <string>Plug-ins</string>
         </property>
         <property name="icon">
          <iconset resource="../../res/resources.qrc">

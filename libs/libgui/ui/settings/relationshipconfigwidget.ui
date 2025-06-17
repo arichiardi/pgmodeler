@@ -253,7 +253,7 @@
         <enum>Qt::FocusPolicy::TabFocus</enum>
        </property>
        <property name="title">
-        <string>Foreign &amp;key settings</string>
+        <string>Foreign key settings</string>
        </property>
        <property name="checkable">
         <bool>false</bool>
@@ -477,7 +477,7 @@
         <enum>Qt::FocusPolicy::TabFocus</enum>
        </property>
        <property name="title">
-        <string>&amp;Name patterns</string>
+        <string>Name patterns</string>
        </property>
        <property name="checkable">
         <bool>false</bool>

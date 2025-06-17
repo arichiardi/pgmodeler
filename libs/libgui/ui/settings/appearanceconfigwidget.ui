@@ -43,7 +43,7 @@
         <normaloff>:/icons/icons/uicode.png</normaloff>:/icons/icons/uicode.png</iconset>
       </attribute>
       <attribute name="title">
-       <string>&amp;Interface &amp;&amp; Code</string>
+       <string>Interface &amp;&amp; Code</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout_3">
        <property name="leftMargin">
@@ -61,7 +61,7 @@
        <item row="0" column="0">
         <widget class="QGroupBox" name="ui_gb">
          <property name="title">
-          <string>&amp;User interface</string>
+          <string>User interface</string>
          </property>
          <layout class="QGridLayout" name="gridLayout_2">
           <property name="leftMargin">
@@ -285,7 +285,7 @@
           </sizepolicy>
          </property>
          <property name="title">
-          <string>Co&amp;de style</string>
+          <string>Code style</string>
          </property>
          <layout class="QGridLayout" name="gridLayout_5">
           <property name="leftMargin">
@@ -496,7 +496,7 @@
         <normaloff>:/icons/icons/dbmodel.png</normaloff>:/icons/icons/dbmodel.png</iconset>
       </attribute>
       <attribute name="title">
-       <string>Ca&amp;nvas &amp;&amp; Objects</string>
+       <string>Canvas &amp;&amp; Objects</string>
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_3">
        <property name="spacing">
@@ -523,7 +523,7 @@
           </size>
          </property>
          <property name="title">
-          <string>&amp;Canvas</string>
+          <string>Canvas</string>
          </property>
          <layout class="QHBoxLayout" name="horizontalLayout_13">
           <property name="spacing">
@@ -941,7 +941,7 @@
        <item>
         <widget class="QGroupBox" name="objects_gb">
          <property name="title">
-          <string>O&amp;bjects</string>
+          <string>Objects</string>
          </property>
          <layout class="QGridLayout" name="gridLayout">
           <property name="leftMargin">
