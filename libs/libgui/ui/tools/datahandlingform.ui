@@ -156,7 +156,7 @@
     </layout>
    </item>
    <item row="0" column="0" rowspan="2">
-    <widget class="QWidget" name="bnts_parent_wgt" native="true">
+    <widget class="QWidget" name="btns_parent_wgt" native="true">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
        <horstretch>0</horstretch>

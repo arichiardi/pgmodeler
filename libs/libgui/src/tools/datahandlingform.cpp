@@ -32,7 +32,7 @@ DataHandlingForm::DataHandlingForm(QWidget * parent, Qt::WindowFlags f): QDialog
 	QToolButton *btn = nullptr;
 	QFont fnt;
 
-	for(auto &obj : bnts_parent_wgt->children())
+	for(auto &obj : btns_parent_wgt->children())
 	{
 		btn = dynamic_cast<QToolButton *>(obj);
 		if(!btn) continue;
@@ -403,7 +403,7 @@ void DataHandlingForm::resizeEvent(QResizeEvent *event)
 
 	if(refresh_tb->toolButtonStyle() != style)
 	{
-		for(auto obj : bnts_parent_wgt->children())
+		for(auto obj : btns_parent_wgt->children())
 		{
 			btn = qobject_cast<QToolButton *>(obj);
 
@@ -481,7 +481,7 @@ bool DataHandlingForm::eventFilter(QObject *object, QEvent *event)
 		 object->metaObject()->className() == QString("QMenu"))
 	{
 		QMenu *menu = dynamic_cast<QMenu *>(object);
-		QWidget *btn = bnts_parent_wgt->childAt(bnts_parent_wgt->mapFromGlobal(QCursor::pos()));
+		QWidget *btn = btns_parent_wgt->childAt(btns_parent_wgt->mapFromGlobal(QCursor::pos()));
 
 		/* Sometime the button can be null indicating that the menu was called by right clicking
 		 * in the data grid items. In that case, we just ignore skip the menu position adjustment */
