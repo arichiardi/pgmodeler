@@ -31,9 +31,13 @@ ModelObjectsWidget::ModelObjectsWidget(bool simplified_view, QWidget *parent) : 
 	db_model=nullptr;
 	setModel(db_model);
 
+	QFont fnt = title_lbl->font();
+	fnt.setPointSizeF(fnt.pointSizeF() * 0.85);
+	title_lbl->setFont(fnt);
+
 	title_wgt->setVisible(!simplified_view);
-	this->simplified_view=simplified_view;
-	this->save_tree_state=!simplified_view;
+	this->simplified_view = simplified_view;
+	this->save_tree_state = !simplified_view;
 	enable_obj_creation=simplified_view;
 
 	select_tb->setVisible(simplified_view);
@@ -42,9 +46,14 @@ ModelObjectsWidget::ModelObjectsWidget(bool simplified_view, QWidget *parent) : 
 	visibleobjects_grp->setVisible(false);
 	filter_wgt->setVisible(simplified_view);
 
+	/* Since the frame border is modified via Qt stylesheets
+	 * we need to deactivate it using css too since using
+	 * setFrameStyle has no effect */
+	if(simplified_view)
+		content_frm->setStyleSheet("QFrame#content_frm { border: none; }");
+
 	connect(objectstree_tw, &QTreeWidget::itemPressed, this, &ModelObjectsWidget::selectObject);
 	connect(objectstree_tw, &QTreeWidget::itemPressed, this, &ModelObjectsWidget::showObjectMenu);
-	//connect(objectstree_tw, &QTreeWidget::itemSelectionChanged, this, &ModelObjectsWidget::selectObject);
 
 	connect(objectstree_tw, &QTreeWidget::itemCollapsed, this, [this](){
 		objectstree_tw->resizeColumnToContents(0);
@@ -93,8 +102,6 @@ ModelObjectsWidget::ModelObjectsWidget(bool simplified_view, QWidget *parent) : 
 	}
 	else
 	{
-		model_objs_grid->setContentsMargins(GuiUtilsNs::LtMargin, GuiUtilsNs::LtMargin,
-																				GuiUtilsNs::LtMargin, GuiUtilsNs::LtMargin);
 		setMinimumSize(250, 300);
 		setWindowFlags(Qt::Dialog | Qt::WindowCloseButtonHint | Qt::WindowTitleHint);
 		setWindowModality(Qt::ApplicationModal);
@@ -786,7 +793,7 @@ void ModelObjectsWidget::setModel(DatabaseModel *db_model)
 	bool enable = (db_model!=nullptr);
 
 	this->db_model=db_model;
-	content_wgt->setEnabled(enable);
+	content_frm->setEnabled(enable);
 	updateObjectsView();	
 	expand_all_tb->setEnabled(enable);
 	collapse_all_tb->setEnabled(enable);

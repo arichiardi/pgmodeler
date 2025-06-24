@@ -24,6 +24,10 @@ OperationListWidget::OperationListWidget(QWidget *parent) : QWidget(parent)
 	setupUi(this);
 	setModel(nullptr);
 
+	QFont fnt = title_lbl->font();
+	fnt.setPointSizeF(fnt.pointSizeF() * 0.85);
+	title_lbl->setFont(fnt);
+
 	operations_tw->headerItem()->setHidden(true);
 	connect(undo_tb, &QToolButton::clicked, this, &OperationListWidget::undoOperation);
 	connect(redo_tb, &QToolButton::clicked, this, &OperationListWidget::redoOperation);
@@ -54,7 +58,7 @@ void OperationListWidget::selectItem(QTreeWidgetItem *item, int)
 
 void OperationListWidget::updateOperationList()
 {
-	content_wgt->setEnabled(this->model_wgt!=nullptr);
+	content_frm->setEnabled(this->model_wgt!=nullptr);
 
 	if(!model_wgt)
 	{

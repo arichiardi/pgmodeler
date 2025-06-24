@@ -144,31 +144,31 @@ GeneralConfigWidget::GeneralConfigWidget(QWidget * parent) : BaseConfigWidget(pa
 	QList<QComboBox *> combos=this->findChildren<QComboBox *>();
 	QList<QRadioButton *> radios=this->findChildren<QRadioButton *>();
 
-	for(QCheckBox *chk : chk_boxes)
+	for(auto &chk : chk_boxes)
 	{
 		child_wgts.push_back(chk);
 		connect(chk, &QCheckBox::toggled, this, &GeneralConfigWidget::setConfigurationChanged);
 	}
 
-	for(QSpinBox *spin : spin_boxes)
+	for(auto &spin : spin_boxes)
 	{
 		child_wgts.push_back(spin);
 		connect(spin, &QSpinBox::valueChanged, this, &GeneralConfigWidget::setConfigurationChanged);
 	}
 
-	for(QDoubleSpinBox *dspin : dspin_boxes)
+	for(auto &dspin : dspin_boxes)
 	{
 		child_wgts.push_back(dspin);
 		connect(dspin,  &QDoubleSpinBox::valueChanged, this, &GeneralConfigWidget::setConfigurationChanged);
 	}
 
-	for(QComboBox *cmb : combos)
+	for(auto &cmb : combos)
 	{
 		child_wgts.push_back(cmb);
 		connect(cmb, &QComboBox::currentIndexChanged, this, &GeneralConfigWidget::setConfigurationChanged);
 	}
 
-	for(QRadioButton *radio : radios)
+	for(auto &radio : radios)
 	{
 		child_wgts.push_back(radio);
 		connect(radio, &QRadioButton::toggled, this, &GeneralConfigWidget::setConfigurationChanged);
