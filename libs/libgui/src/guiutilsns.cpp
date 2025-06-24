@@ -697,16 +697,13 @@ namespace GuiUtilsNs {
 
 	void updateDropShadow(QWidget *wgt)
 	{
-		QColor color(0, 0, 0, 80);
+		QColor color { qApp->palette().color(QPalette::Shadow) };
 		int radius = 6, x = 1, y = 1;
 
+		color.setAlpha(80);
+
 		if(!AppearanceConfigWidget::isDarkUiTheme())
-		{
 			radius = 1;
-			//color.setRgb(200, 200, 200);
-			color = qApp->palette().color(QPalette::Shadow);
-			color.setAlpha(100);
-		}
 
 		if(!wgt->graphicsEffect())
 			createDropShadow(wgt, x, y, radius, color);
