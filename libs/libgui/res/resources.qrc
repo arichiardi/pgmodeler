@@ -282,6 +282,7 @@
         <file>icons/welcome.png</file>
         <file>icons/about.png</file>
         <file>icons/closetab.png</file>
+        <file>icons/closetab1.png</file>
     </qresource>
     <qresource prefix="/images">
         <file>images/brazil_flag.png</file>
@@ -297,16 +298,12 @@
         <file>images/hsplitter_handle_dark.png</file>
         <file>images/hsplitter_handle_light.png</file>
         <file>images/pgmodeler_name.png</file>
-        <file>images/rel_center_pnts_dark.png</file>
-        <file>images/rel_center_pnts_light.png</file>
-        <file>images/rel_crows_foot_dark.png</file>
-        <file>images/rel_crows_foot_light.png</file>
-        <file>images/rel_fk_to_pk_dark.png</file>
-        <file>images/rel_fk_to_pk_light.png</file>
-        <file>images/rel_tab_edges_dark.png</file>
-        <file>images/rel_tab_edges_light.png</file>
         <file>images/schemafile.png</file>
         <file>images/vsplitter_handle_dark.png</file>
         <file>images/vsplitter_handle_light.png</file>
+        <file>images/conn_crowsfoot.png</file>
+        <file>images/conn_fktopk.png</file>
+        <file>images/conn_tabcenter.png</file>
+        <file>images/conn_tabedges.png</file>
     </qresource>
 </RCC>

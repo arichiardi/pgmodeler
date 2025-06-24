@@ -337,7 +337,7 @@ void ModelExportForm::exportModel()
 	catch(Exception &e)
 	{
 		finishExport(tr("Exporting process aborted!"));
-		Messagebox::error(e, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+		Messagebox::error(e, PGM_FUNC, PGM_FILE, PGM_LINE);
 	}
 }
 
@@ -373,7 +373,7 @@ void ModelExportForm::captureThreadError(Exception e)
 	ico_lbl->setPixmap(QPixmap(GuiUtilsNs::getIconPath("error")));
 	finishExport(tr("Exporting process aborted!"));
 
-	Messagebox::error(e, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+	Messagebox::error(e, PGM_FUNC, PGM_FILE, PGM_LINE);
 }
 
 void ModelExportForm::cancelExport()

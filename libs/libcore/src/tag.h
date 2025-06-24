@@ -44,8 +44,7 @@ class __libcore Tag: public BaseObject {
 
 	public:
 		Tag();
-
-	 virtual ~Tag(){}
+		~Tag() = default;
 
 		/*! \brief Set the tag name. Different from regular database model object there is no rule
 	when setting the name. The only exception is that the name cannot be greater than

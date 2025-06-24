@@ -41,8 +41,7 @@ class __libcore ForeignObject {
 		OptionValueSeparator;
 
 		ForeignObject();
-
-		virtual ~ForeignObject(){}
+		~ForeignObject() = default;
 
 		void setOption(const QString &opt, const QString &value);
 		void setOptions(const attribs_map &options);

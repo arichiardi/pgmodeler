@@ -319,7 +319,7 @@ void FunctionWidget::validateConfiguredFunction()
 										.arg(object->getName(true))
 										.arg(object->getTypeName()),
 										ErrorCode::InvFuncConfigInvalidatesObject,
-										__PRETTY_FUNCTION__,__FILE__,__LINE__, &e);
+										PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 	}
 }
 
@@ -367,7 +367,7 @@ void FunctionWidget::applyConfiguration()
 	catch(Exception &e)
 	{
 		cancelConfiguration();
-		throw Exception(e.getErrorMessage(),e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__, &e);
+		throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 	}
 }
 

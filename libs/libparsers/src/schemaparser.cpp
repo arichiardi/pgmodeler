@@ -98,7 +98,7 @@ void SchemaParser::setPgSQLVersion(const QString &pgsql_ver, bool ignore_db_vers
 	catch(Exception &e)
 	{
 		throw Exception(e.getErrorMessage(), e.getErrorCode(),
-										__PRETTY_FUNCTION__, __FILE__, __LINE__, &e);
+										PGM_FUNC, PGM_FILE, PGM_LINE, &e);
 	}
 }
 
@@ -227,7 +227,7 @@ void SchemaParser::loadBuffer(const QString &buf)
 		catch(Exception &e)
 		{
 			QDir::setCurrent(orig_cwd);
-			throw Exception(e.getErrorMessage(), e.getErrorCode(), __PRETTY_FUNCTION__, __FILE__, __LINE__, &e);
+			throw Exception(e.getErrorMessage(), e.getErrorCode(), PGM_FUNC, PGM_FILE, PGM_LINE, &e);
 		}
 
 		// Add the treated line in the buffer
@@ -257,7 +257,7 @@ bool SchemaParser::parseInclude(const QString &include_ln, QString &src_buf, qin
 		throw Exception(Exception::getErrorMessage(ErrorCode::InvalidSyntax)
 										.arg(filename).arg(getCurrentLine()).arg(getCurrentColumn()) + " " +
 										QString(QT_TR_NOOP("Expected a valid include statement in the form `%1 \"file.sch\"'.")).arg(TokenInclude),
-										ErrorCode::InvalidSyntax, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+										ErrorCode::InvalidSyntax, PGM_FUNC, PGM_FILE, PGM_LINE);
 	}
 	else
 	{
@@ -277,7 +277,7 @@ bool SchemaParser::parseInclude(const QString &include_ln, QString &src_buf, qin
 			throw Exception(Exception::getErrorMessage(ErrorCode::InvalidInclude)
 											.arg(filename).arg(getCurrentLine()).arg(getCurrentColumn()) + " " +
 											QString(QT_TR_NOOP("No such include file `%1'.")).arg(fi.absoluteFilePath()),
-											ErrorCode::InvalidInclude, __PRETTY_FUNCTION__, __FILE__, __LINE__,
+											ErrorCode::InvalidInclude, PGM_FUNC, PGM_FILE, PGM_LINE,
 											nullptr, fi.absoluteFilePath());
 		}
 
@@ -297,7 +297,7 @@ bool SchemaParser::parseInclude(const QString &include_ln, QString &src_buf, qin
 				throw Exception(Exception::getErrorMessage(ErrorCode::InvalidInclude)
 												.arg(filename).arg(getCurrentLine()).arg(getCurrentColumn()) + " " +
 												QString(QT_TR_NOOP("The included file `%1' contains one or more `%2' statements. This isn't currently supported!")).arg(fi.absoluteFilePath(), TokenInclude),
-												ErrorCode::InvalidInclude, __PRETTY_FUNCTION__, __FILE__, __LINE__,
+												ErrorCode::InvalidInclude, PGM_FUNC, PGM_FILE, PGM_LINE,
 												nullptr, fi.absoluteFilePath());
 			}
 
@@ -321,7 +321,7 @@ bool SchemaParser::parseInclude(const QString &include_ln, QString &src_buf, qin
 		}
 		catch(Exception &e)
 		{
-			throw Exception(e.getErrorMessage(), e.getErrorCode(), __PRETTY_FUNCTION__, __FILE__, __LINE__, &e);
+			throw Exception(e.getErrorMessage(), e.getErrorCode(), PGM_FUNC, PGM_FILE, PGM_LINE, &e);
 		}
 	}
 }
@@ -340,7 +340,7 @@ void SchemaParser::loadFile(const QString &filename)
 	}
 	catch(Exception &e)
 	{
-		throw Exception(e.getErrorMessage(), e.getErrorCode(), __PRETTY_FUNCTION__, __FILE__, __LINE__, &e);
+		throw Exception(e.getErrorMessage(), e.getErrorCode(), PGM_FUNC, PGM_FILE, PGM_LINE, &e);
 	}
 }
 
@@ -414,12 +414,12 @@ QString SchemaParser::getAttribute(bool &found_conv_to_xml)
 		throw Exception(getParseError(ErrorCode::InvalidSyntax,
 																	 QString(QT_TR_NOOP("Expected a valid attribute token enclosed by `%1%2'."))
 																	 .arg(CharStartAttribute).arg(CharEndAttribute)),
-										ErrorCode::InvalidSyntax, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+										ErrorCode::InvalidSyntax, PGM_FUNC, PGM_FILE, PGM_LINE);
 	}
 	else if(!AttribRegExp.match(atrib).hasMatch())
 	{
 		throw Exception(getParseError(ErrorCode::InvalidAttribute),
-										ErrorCode::InvalidAttribute, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+										ErrorCode::InvalidAttribute, PGM_FUNC, PGM_FILE, PGM_LINE);
 	}
 
 	return atrib;
@@ -531,7 +531,7 @@ QString SchemaParser::getPlainText()
 		throw Exception(getParseError(ErrorCode::InvalidSyntax,
 										QString(QT_TR_NOOP("Plain text expression is unbalanced or is not properly enclosed by `%1%2'."))
 										.arg(CharStartPlainText).arg(CharEndPlainText)),
-										ErrorCode::InvalidSyntax, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+										ErrorCode::InvalidSyntax, PGM_FUNC, PGM_FILE, PGM_LINE);
 	}
 
 	return text;
@@ -571,7 +571,7 @@ QString SchemaParser::getConditional()
 	{
 		throw Exception(getParseError(ErrorCode::InvalidSyntax,
 										QString(QT_TR_NOOP("Expected a valid conditional instruction token starting with `%1' and followed by, at least, a letter.")).arg(CharStartConditional)),
-										ErrorCode::InvalidSyntax, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+										ErrorCode::InvalidSyntax, PGM_FUNC, PGM_FILE, PGM_LINE);
 	}
 
 	return conditional;
@@ -586,7 +586,7 @@ QString SchemaParser::getMetaCharacter()
 	catch(Exception &e)
 	{
 		throw Exception(e.getErrorMessage(), e.getErrorCode(),
-										__PRETTY_FUNCTION__, __FILE__, __LINE__, &e);
+										PGM_FUNC, PGM_FILE, PGM_LINE, &e);
 	}
 }
 
@@ -599,7 +599,7 @@ QString SchemaParser::getEscapedCharacter()
 	catch(Exception &e)
 	{
 		throw Exception(e.getErrorMessage(), e.getErrorCode(),
-										__PRETTY_FUNCTION__, __FILE__, __LINE__, &e);
+										PGM_FUNC, PGM_FILE, PGM_LINE, &e);
 	}
 }
 
@@ -649,7 +649,7 @@ QString SchemaParser::getMetaOrEscapedToken(bool is_escaped)
 			extra_msg = QString(QT_TR_NOOP("Expected a valid metacharacter token starting with `%1' and followed by, at least, a letter.")).arg(start_chr);
 
 		throw Exception(getParseError(ErrorCode::InvalidSyntax, extra_msg),
-										ErrorCode::InvalidSyntax, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+										ErrorCode::InvalidSyntax, PGM_FUNC, PGM_FILE, PGM_LINE);
 	}
 
 	return chr_token;
@@ -730,12 +730,12 @@ bool SchemaParser::evaluateComparisonExpr()
 				else if(!opers.contains(QString(oper).remove('f').remove('i')))
 				{
 					throw Exception(getParseError(ErrorCode::InvalidOperatorInExpression, "", oper),
-													ErrorCode::InvalidOperatorInExpression, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+													ErrorCode::InvalidOperatorInExpression, PGM_FUNC, PGM_FILE, PGM_LINE);
 				}
 				else if(attributes.count(attrib)==0 && !ignore_unk_atribs)
 				{
 					throw Exception(getParseError(ErrorCode::UnkownAttribute, "", attrib),
-													ErrorCode::UnkownAttribute, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+													ErrorCode::UnkownAttribute, PGM_FUNC, PGM_FILE, PGM_LINE);
 				}
 				else
 				{
@@ -794,7 +794,7 @@ bool SchemaParser::evaluateComparisonExpr()
 	catch(Exception &e)
 	{
 		throw Exception(e.getErrorMessage(),e.getErrorCode(),
-										__PRETTY_FUNCTION__, __FILE__, __LINE__, &e);
+										PGM_FUNC, PGM_FILE, PGM_LINE, &e);
 	}
 
 	if(error && !end_eval && extra_error_msg.isEmpty())
@@ -803,7 +803,7 @@ bool SchemaParser::evaluateComparisonExpr()
 	if(error)
 	{
 		throw Exception(getParseError(ErrorCode::InvalidSyntax, extra_error_msg),
-										ErrorCode::InvalidSyntax, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+										ErrorCode::InvalidSyntax, PGM_FUNC, PGM_FILE, PGM_LINE);
 	}
 
 	return expr_is_true;
@@ -854,7 +854,7 @@ void SchemaParser::defineAttribute()
 					if(attributes.count(attrib)==0 && !ignore_unk_atribs)
 					{
 						throw Exception(getParseError(ErrorCode::UnkownAttribute),
-														ErrorCode::UnkownAttribute, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+														ErrorCode::UnkownAttribute, PGM_FUNC, PGM_FILE, PGM_LINE);
 					}
 
 					value += to_xml_entity ? UtilsNs::convertToXmlEntities(attributes[attrib]) : attributes[attrib];
@@ -892,7 +892,7 @@ void SchemaParser::defineAttribute()
 	catch(Exception &e)
 	{
 		throw Exception(e.getErrorMessage(), e.getErrorCode(),
-										__PRETTY_FUNCTION__, __FILE__, __LINE__, &e);
+										PGM_FUNC, PGM_FILE, PGM_LINE, &e);
 	}
 
 	if(!error)
@@ -903,7 +903,7 @@ void SchemaParser::defineAttribute()
 		if(!AttribRegExp.match(attrib).hasMatch())
 		{
 			throw Exception(getParseError(ErrorCode::InvalidAttribute),
-											ErrorCode::InvalidAttribute, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+											ErrorCode::InvalidAttribute, PGM_FUNC, PGM_FILE, PGM_LINE);
 		}
 
 		/* Creates the attribute in the attribute map of the schema, making the attribute
@@ -913,7 +913,7 @@ void SchemaParser::defineAttribute()
 	else
 	{
 		throw Exception(getParseError(ErrorCode::InvalidSyntax),
-										ErrorCode::InvalidSyntax, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+										ErrorCode::InvalidSyntax, PGM_FUNC, PGM_FILE, PGM_LINE);
 	}
 }
 
@@ -943,12 +943,12 @@ void SchemaParser::unsetAttribute()
 				if(attributes.count(attrib)==0 && !ignore_unk_atribs)
 				{
 					throw Exception(getParseError(ErrorCode::UnkownAttribute, "", attrib),
-													 ErrorCode::UnkownAttribute, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+													 ErrorCode::UnkownAttribute, PGM_FUNC, PGM_FILE, PGM_LINE);
 				}
 				else if(!AttribRegExp.match(attrib).hasMatch())
 				{
 					throw Exception(getParseError(ErrorCode::InvalidAttribute, "", attrib),
-													 ErrorCode::InvalidAttribute, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+													 ErrorCode::InvalidAttribute, PGM_FUNC, PGM_FILE, PGM_LINE);
 				}
 
 				attributes[attrib]="";
@@ -956,14 +956,14 @@ void SchemaParser::unsetAttribute()
 			else
 			{
 				throw Exception(getParseError(ErrorCode::InvalidSyntax),
-												 ErrorCode::InvalidSyntax, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+												 ErrorCode::InvalidSyntax, PGM_FUNC, PGM_FILE, PGM_LINE);
 			}
 		}
 	}
 	catch(Exception &e)
 	{
 		throw Exception(e.getErrorMessage(),e.getErrorCode(),
-										__PRETTY_FUNCTION__, __FILE__, __LINE__, &e);
+										PGM_FUNC, PGM_FILE, PGM_LINE, &e);
 	}
 }
 bool SchemaParser::evaluateExpression()
@@ -1038,7 +1038,7 @@ bool SchemaParser::evaluateExpression()
 				if(attributes.count(attrib)==0 && !ignore_unk_atribs)
 				{
 					throw Exception(getParseError(ErrorCode::UnkownAttribute, "", attrib),
-													ErrorCode::UnkownAttribute, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+													ErrorCode::UnkownAttribute, PGM_FUNC, PGM_FILE, PGM_LINE);
 				}
 
 				//Error 1: A conditional token other than %or %not %and if found on conditional expression
@@ -1097,13 +1097,13 @@ bool SchemaParser::evaluateExpression()
 	}
 	catch(Exception &e)
 	{
-		throw Exception(e.getErrorMessage(),e.getErrorCode(),	__PRETTY_FUNCTION__,__FILE__,__LINE__, &e);
+		throw Exception(e.getErrorMessage(),e.getErrorCode(),	PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 	}
 
 	if(error)
 	{
 		throw Exception(getParseError(ErrorCode::InvalidSyntax),
-										ErrorCode::InvalidSyntax,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+										ErrorCode::InvalidSyntax,PGM_FUNC,PGM_FILE,PGM_LINE);
 	}
 
 	return expr_is_true;
@@ -1136,7 +1136,7 @@ QString SchemaParser::convertMetaCharacter(const QString &meta)
 	if(metas.count(meta) == 0)
 	{
 		throw Exception(getParseError(ErrorCode::InvalidMetacharacter, "", CharStartMetachar + meta),
-										ErrorCode::InvalidMetacharacter, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+										ErrorCode::InvalidMetacharacter, PGM_FUNC, PGM_FILE, PGM_LINE);
 	}
 
 	return metas.at(meta);
@@ -1176,7 +1176,7 @@ QString SchemaParser::convertEscapedCharacter(const QString &escaped)
 	if(idx < 0)
 	{
 		throw Exception(getParseError(ErrorCode::InvalidEscapedCharacter, "", CharStartEscaped + escaped),
-										ErrorCode::InvalidEscapedCharacter, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+										ErrorCode::InvalidEscapedCharacter, PGM_FUNC, PGM_FILE, PGM_LINE);
 	}
 
 	if(idx <= 2)
@@ -1228,7 +1228,7 @@ QString SchemaParser::getSourceCode(const QString & obj_name, attribs_map &attri
 	}
 	catch(Exception &e)
 	{
-		throw Exception(e.getErrorMessage(),e.getErrorCode(),	__PRETTY_FUNCTION__,__FILE__,__LINE__,&e);
+		throw Exception(e.getErrorMessage(),e.getErrorCode(),	PGM_FUNC,PGM_FILE,PGM_LINE,&e);
 	}
 }
 
@@ -1290,7 +1290,7 @@ QString SchemaParser::getSourceCode(const attribs_map &attribs)
 				if(if_level>=0 && vet_tk_if[if_level] && !vet_tk_then[if_level])
 				{
 					throw Exception(getParseError(ErrorCode::InvalidSyntax),
-													ErrorCode::InvalidSyntax, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+													ErrorCode::InvalidSyntax, PGM_FUNC, PGM_FILE, PGM_LINE);
 				}
 				else
 				{
@@ -1331,7 +1331,7 @@ QString SchemaParser::getSourceCode(const attribs_map &attribs)
 					if(!ignore_unk_atribs)
 					{
 						throw Exception(getParseError(ErrorCode::UnkownAttribute, "", atrib),
-														ErrorCode::UnkownAttribute, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+														ErrorCode::UnkownAttribute, PGM_FUNC, PGM_FILE, PGM_LINE);
 					}
 					else
 						attributes[atrib]	= "";
@@ -1369,7 +1369,7 @@ QString SchemaParser::getSourceCode(const attribs_map &attribs)
 					if(attributes[atrib].isEmpty() && !ignore_empty_atribs)
 					{
 						throw Exception(getParseError(ErrorCode::UndefinedAttributeValue, "", atrib),
-														ErrorCode::UndefinedAttributeValue, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+														ErrorCode::UndefinedAttributeValue, PGM_FUNC, PGM_FILE, PGM_LINE);
 					}
 
 					/* If the parser is not in an if / else, concatenates the value of the attribute
@@ -1392,7 +1392,7 @@ QString SchemaParser::getSourceCode(const attribs_map &attribs)
 					 cond != TokenUnset)
 				{
 					throw Exception(getParseError(ErrorCode::InvalidInstruction, "", cond),
-													ErrorCode::InvalidInstruction, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+													ErrorCode::InvalidInstruction, PGM_FUNC, PGM_FILE, PGM_LINE);
 				}
 				else if(cond == TokenSet || cond == TokenUnset)
 				{
@@ -1559,7 +1559,7 @@ QString SchemaParser::getSourceCode(const attribs_map &attribs)
 									if(word.isEmpty() && !ignore_empty_atribs)
 									{
 										throw Exception(getParseError(ErrorCode::UndefinedAttributeValue, "", atrib),
-																		ErrorCode::UndefinedAttributeValue, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+																		ErrorCode::UndefinedAttributeValue, PGM_FUNC, PGM_FILE, PGM_LINE);
 									}
 								}
 
@@ -1610,7 +1610,7 @@ QString SchemaParser::getSourceCode(const attribs_map &attribs)
 					if(error)
 					{
 						throw Exception(getParseError(ErrorCode::InvalidSyntax),
-														ErrorCode::InvalidSyntax, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+														ErrorCode::InvalidSyntax, PGM_FUNC, PGM_FILE, PGM_LINE);
 					}
 				}
 			}
@@ -1630,7 +1630,7 @@ QString SchemaParser::getSourceCode(const attribs_map &attribs)
 					if(vet_tk_if[if_level] && !vet_tk_then[if_level])
 					{
 						throw Exception(getParseError(ErrorCode::InvalidSyntax),
-														ErrorCode::InvalidSyntax, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+														ErrorCode::InvalidSyntax, PGM_FUNC, PGM_FILE, PGM_LINE);
 					}
 					//Case the parser is in 'if' section
 					else if(vet_tk_if[if_level] &&
@@ -1657,7 +1657,7 @@ QString SchemaParser::getSourceCode(const attribs_map &attribs)
 		if(if_cnt!=end_cnt)
 		{
 			throw Exception(getParseError(ErrorCode::InvalidSyntax),
-											ErrorCode::InvalidSyntax, __PRETTY_FUNCTION__ , __FILE__, __LINE__);
+											ErrorCode::InvalidSyntax, PGM_FUNC , PGM_FILE, PGM_LINE);
 		}
 	}
 
@@ -1677,7 +1677,7 @@ QString SchemaParser::getSourceCode(const QString &filename, attribs_map &attrib
 	}
 	catch(Exception &e)
 	{
-		throw Exception(e.getErrorMessage(),e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__, &e);
+		throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 	}
 }
 

@@ -50,8 +50,7 @@ class __libcore GenericSQL: public BaseObject{
 
 	public:
 		GenericSQL();
-
-		virtual ~GenericSQL(){}
+		~GenericSQL() = default;
 
 		void setDefinition(const QString &def);
 

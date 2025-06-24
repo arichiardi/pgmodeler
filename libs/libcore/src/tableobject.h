@@ -71,8 +71,7 @@ class __libcore TableObject: public BaseObject {
 
 	public:
 		TableObject();
-
-		virtual ~TableObject(){}
+		~TableObject() = default;
 
 		//! \brief Defines the parent table for the object
 		virtual void setParentTable(BaseTable *table);

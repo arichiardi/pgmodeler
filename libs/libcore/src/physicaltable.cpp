@@ -372,7 +372,7 @@ void PhysicalTable::addObject(BaseObject *obj, int obj_idx)
 	ObjectType obj_type;
 
 	if(!obj)
-		throw Exception(ErrorCode::AsgNotAllocattedObject,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::AsgNotAllocattedObject,PGM_FUNC,PGM_FILE,PGM_LINE);
 	else
 	{
 		int idx;
@@ -388,12 +388,12 @@ void PhysicalTable::addObject(BaseObject *obj, int obj_idx)
 												.arg(obj->getTypeName())
 												.arg(this->getName(true))
 												.arg(this->getTypeName()),
-												ErrorCode::AsgDuplicatedObject,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+												ErrorCode::AsgDuplicatedObject,PGM_FUNC,PGM_FILE,PGM_LINE);
 			}
 
 			//Raises an error if the user try to set the table as ancestor/copy of itself
 			else if((isPhysicalTable(obj_type) || obj_type==ObjectType::BaseTable) && obj==this)
-				throw Exception(ErrorCode::InvInheritCopyPartRelationship,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+				throw Exception(ErrorCode::InvInheritCopyPartRelationship,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 			if(!isPhysicalTable(obj_type))
 			{
@@ -409,7 +409,7 @@ void PhysicalTable::addObject(BaseObject *obj, int obj_idx)
 					tab_obj->setParentTable(this);
 				//Raises an error if the parent table of the table object is different from table 'this'
 				else if(tab_obj->getParentTable()!=this)
-					throw Exception(ErrorCode::AsgObjectBelongsAnotherTable,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+					throw Exception(ErrorCode::AsgObjectBelongsAnotherTable,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 				//Validates the object SQL code befor insert on table
 				obj->getSourceCode(SchemaParser::SqlCode);
@@ -419,14 +419,14 @@ void PhysicalTable::addObject(BaseObject *obj, int obj_idx)
 					throw Exception(Exception::getErrorMessage(ErrorCode::InvColumnTableType)
 													.arg(col->getName())
 													.arg(this->getName()),
-													ErrorCode::InvColumnTableType,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+													ErrorCode::InvColumnTableType,PGM_FUNC,PGM_FILE,PGM_LINE);
 				}
 				else if(obj_type==ObjectType::Constraint)
 				{
 					//Raises a error if the user try to add a second primary key on the table
 					if(dynamic_cast<Constraint *>(tab_obj)->getConstraintType()==ConstraintType::PrimaryKey &&
 						 this->getPrimaryKey())
-						throw Exception(ErrorCode::AsgExistingPrimaryKeyTable,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+						throw Exception(ErrorCode::AsgExistingPrimaryKeyTable,PGM_FUNC,PGM_FILE,PGM_LINE);
 				}
 				else if(obj_type==ObjectType::Trigger)
 					dynamic_cast<Trigger *>(tab_obj)->validateTrigger();
@@ -465,7 +465,7 @@ void PhysicalTable::addObject(BaseObject *obj, int obj_idx)
 					ancestor_tables.insert((ancestor_tables.begin() + obj_idx), tab);
 			}
 			else
-				throw Exception(ErrorCode::AsgObjectInvalidType,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+				throw Exception(ErrorCode::AsgObjectInvalidType,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 			setCodeInvalidated(true);
 		}
@@ -475,9 +475,9 @@ void PhysicalTable::addObject(BaseObject *obj, int obj_idx)
 				throw Exception(Exception::getErrorMessage(ErrorCode::AsgObjectInvalidDefinition)
 												.arg(obj->getName())
 												.arg(obj->getTypeName()),
-												ErrorCode::AsgObjectInvalidDefinition,__PRETTY_FUNCTION__,__FILE__,__LINE__, &e);
+												ErrorCode::AsgObjectInvalidDefinition,PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 			else
-				throw Exception(e.getErrorMessage(),e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__, &e);
+				throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 		}
 	}
 }
@@ -490,7 +490,7 @@ void PhysicalTable::addColumn(Column *col, int idx)
 	}
 	catch(Exception &e)
 	{
-		throw Exception(e.getErrorMessage(), e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__, &e);
+		throw Exception(e.getErrorMessage(), e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 	}
 }
 
@@ -502,7 +502,7 @@ void PhysicalTable::addTrigger(Trigger *trig, int idx)
 	}
 	catch(Exception &e)
 	{
-		throw Exception(e.getErrorMessage(), e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__, &e);
+		throw Exception(e.getErrorMessage(), e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 	}
 }
 
@@ -554,7 +554,7 @@ void PhysicalTable::addConstraint(Constraint *constr, int idx)
 	}
 	catch(Exception &e)
 	{
-		throw Exception(e.getErrorMessage(), e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__, &e);
+		throw Exception(e.getErrorMessage(), e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 	}
 }
 
@@ -566,7 +566,7 @@ void PhysicalTable::addAncestorTable(PhysicalTable *tab, int idx)
 	}
 	catch(Exception &e)
 	{
-		throw Exception(e.getErrorMessage(), e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__, &e);
+		throw Exception(e.getErrorMessage(), e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 	}
 }
 
@@ -614,7 +614,7 @@ void PhysicalTable::addPartitionKeys(std::vector<PartitionKey> &part_keys)
 
 	if(partitioning_type == PartitioningType::List && part_keys.size() > 1)
 		throw Exception(Exception::getErrorMessage(ErrorCode::InvPartitionKeyCount).arg(this->getSignature()),
-										ErrorCode::InvPartitionKeyCount,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+										ErrorCode::InvPartitionKeyCount,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	partition_keys.clear();
 
@@ -623,7 +623,7 @@ void PhysicalTable::addPartitionKeys(std::vector<PartitionKey> &part_keys)
 		if(std::find(partition_keys.begin(), partition_keys.end(), part_key) != partition_keys.end())
 		{
 			partition_keys = part_keys_bkp;
-			throw Exception(ErrorCode::InsDuplicatedElement,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+			throw Exception(ErrorCode::InsDuplicatedElement,PGM_FUNC,PGM_FILE,PGM_LINE);
 		}
 
 		if(part_key.getColumn() && part_key.getColumn()->isAddedByRelationship())
@@ -631,7 +631,7 @@ void PhysicalTable::addPartitionKeys(std::vector<PartitionKey> &part_keys)
 			partition_keys = part_keys_bkp;
 			throw Exception(Exception::getErrorMessage(ErrorCode::AsgInvalidColumnPartitionKey)
 											.arg(part_key.getColumn()->getSignature(true)),
-											ErrorCode::AsgInvalidColumnPartitionKey,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+											ErrorCode::AsgInvalidColumnPartitionKey,PGM_FUNC,PGM_FILE,PGM_LINE);
 		}
 
 		partition_keys.push_back(part_key);
@@ -664,7 +664,7 @@ void PhysicalTable::removeObject(BaseObject *obj)
 	}
 	catch(Exception &e)
 	{
-		throw Exception(e.getErrorMessage(), e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__, &e);
+		throw Exception(e.getErrorMessage(), e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 	}
 }
 
@@ -684,7 +684,7 @@ void PhysicalTable::removeObject(unsigned obj_idx, ObjectType obj_type)
 {
 	//Raises an error if the user try to remove a object with invalid type
 	if(!TableObject::isTableObject(obj_type) && obj_type!=ObjectType::Table)
-		throw Exception(ErrorCode::RemObjectInvalidType,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::RemObjectInvalidType,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	else if(PhysicalTable::isPhysicalTable(obj_type) && obj_idx < ancestor_tables.size())
 	{
@@ -702,7 +702,7 @@ void PhysicalTable::removeObject(unsigned obj_idx, ObjectType obj_type)
 
 		//Raises an error if the object index is out of bound
 		if(obj_idx >= obj_list->size())
-			throw Exception(ErrorCode::RefObjectInvalidIndex,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+			throw Exception(ErrorCode::RefObjectInvalidIndex,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 		if(obj_type!=ObjectType::Column)
 		{
@@ -739,7 +739,7 @@ void PhysicalTable::removeObject(unsigned obj_idx, ObjectType obj_type)
 						.arg(refs[0]->getTypeName())
 						.arg(this->getSignature())
 						.arg(this->getTypeName()),
-						ErrorCode::RemInderectReference,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+						ErrorCode::RemInderectReference,PGM_FUNC,PGM_FILE,PGM_LINE);
 			}
 
 			//Raises an error if the column is being referenced by any partition key
@@ -747,7 +747,7 @@ void PhysicalTable::removeObject(unsigned obj_idx, ObjectType obj_type)
 			{
 				throw Exception(Exception::getErrorMessage(ErrorCode::RemColumnRefByPartitionKey)
 								.arg(column->getSignature()).arg(this->getSignature()),
-								ErrorCode::RemColumnRefByPartitionKey,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+								ErrorCode::RemColumnRefByPartitionKey,PGM_FUNC,PGM_FILE,PGM_LINE);
 			}
 
 			column->clearDependencies();
@@ -767,7 +767,7 @@ void PhysicalTable::removeColumn(const QString &name)
 	}
 	catch(Exception &e)
 	{
-		throw Exception(e.getErrorMessage(), e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__, &e);
+		throw Exception(e.getErrorMessage(), e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 	}
 }
 
@@ -779,7 +779,7 @@ void PhysicalTable::removeColumn(unsigned idx)
 	}
 	catch(Exception &e)
 	{
-		throw Exception(e.getErrorMessage(), e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__, &e);
+		throw Exception(e.getErrorMessage(), e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 	}
 }
 
@@ -791,7 +791,7 @@ void PhysicalTable::removeTrigger(const QString &name)
 	}
 	catch(Exception &e)
 	{
-		throw Exception(e.getErrorMessage(), e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__, &e);
+		throw Exception(e.getErrorMessage(), e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 	}
 }
 
@@ -803,7 +803,7 @@ void PhysicalTable::removeTrigger(unsigned idx)
 	}
 	catch(Exception &e)
 	{
-		throw Exception(e.getErrorMessage(), e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__, &e);
+		throw Exception(e.getErrorMessage(), e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 	}
 }
 
@@ -815,7 +815,7 @@ void PhysicalTable::removeConstraint(const QString &name)
 	}
 	catch(Exception &e)
 	{
-		throw Exception(e.getErrorMessage(), e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__, &e);
+		throw Exception(e.getErrorMessage(), e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 	}
 }
 
@@ -827,7 +827,7 @@ void PhysicalTable::removeConstraint(unsigned idx)
 	}
 	catch(Exception &e)
 	{
-		throw Exception(e.getErrorMessage(), e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__, &e);
+		throw Exception(e.getErrorMessage(), e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 	}
 }
 
@@ -839,7 +839,7 @@ void PhysicalTable::removeAncestorTable(const QString &name)
 	}
 	catch(Exception &e)
 	{
-		throw Exception(e.getErrorMessage(), e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__, &e);
+		throw Exception(e.getErrorMessage(), e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 	}
 }
 
@@ -851,7 +851,7 @@ void PhysicalTable::removeAncestorTable(unsigned idx)
 	}
 	catch(Exception &e)
 	{
-		throw Exception(e.getErrorMessage(), e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__, &e);
+		throw Exception(e.getErrorMessage(), e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 	}
 }
 
@@ -955,7 +955,7 @@ BaseObject *PhysicalTable::getObject(const QString &name, ObjectType obj_type, i
 		else obj_idx=-1;
 	}
 	else
-		throw Exception(ErrorCode::ObtObjectInvalidType,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::ObtObjectInvalidType,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	return object;
 }
@@ -968,7 +968,7 @@ BaseObject *PhysicalTable::getObject(unsigned obj_idx, ObjectType obj_type)
 	{
 		//Raises an error if the object index is out of bound
 		if(obj_idx >= ancestor_tables.size())
-			throw Exception(ErrorCode::RefObjectInvalidIndex,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+			throw Exception(ErrorCode::RefObjectInvalidIndex,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 		return ancestor_tables[obj_idx];
 	}
@@ -983,7 +983,7 @@ BaseObject *PhysicalTable::getObject(unsigned obj_idx, ObjectType obj_type)
 			return obj_list->at(obj_idx);
 
 		//Raises an error if the object index is out of bound
-		throw Exception(ErrorCode::RefObjectInvalidIndex,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::RefObjectInvalidIndex,PGM_FUNC,PGM_FILE,PGM_LINE);
 	}
 }
 
@@ -1093,7 +1093,7 @@ unsigned PhysicalTable::getAncestorTableCount()
 unsigned PhysicalTable::getObjectCount(ObjectType obj_type, bool inc_added_by_rel)
 {
 	if(!TableObject::isTableObject(obj_type) && !isPhysicalTable(obj_type))
-		throw Exception(ErrorCode::RefObjectInvalidIndex,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::RefObjectInvalidIndex,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	if(isPhysicalTable(obj_type))
 		return ancestor_tables.size();
@@ -1136,7 +1136,7 @@ void PhysicalTable::setRelObjectsIndexes(const std::vector<QString> &obj_names, 
 		else if(obj_type==ObjectType::Constraint)
 			obj_idxs_map=&constr_indexes;
 		else
-			throw Exception(ErrorCode::OprObjectInvalidType,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+			throw Exception(ErrorCode::OprObjectInvalidType,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 		for(idx=0; idx < size; idx++)
 			(*obj_idxs_map)[obj_names[idx]]=idxs[idx];
@@ -1482,7 +1482,7 @@ void PhysicalTable::swapObjectsIndexes(ObjectType obj_type, unsigned idx1, unsig
 
 			//Raises an error if both index is out of list bounds
 			if(idx1 >= obj_list->size() && idx2 >= obj_list->size())
-				throw Exception(ErrorCode::RefObjectInvalidIndex,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+				throw Exception(ErrorCode::RefObjectInvalidIndex,PGM_FUNC,PGM_FILE,PGM_LINE);
 			//If the idx1 is out of bound inserts the element idx2 at the list's begin
 			else if(idx1 >= obj_list->size())
 			{
@@ -1519,7 +1519,7 @@ void PhysicalTable::swapObjectsIndexes(ObjectType obj_type, unsigned idx1, unsig
 	}
 	catch(Exception &e)
 	{
-		throw Exception(e.getErrorMessage(), e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__,&e);
+		throw Exception(e.getErrorMessage(), e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE,&e);
 	}
 }
 
@@ -1795,6 +1795,6 @@ QString PhysicalTable::getDataDictionary(bool split, bool md_format, const attri
 	}
 	catch(Exception &e)
 	{
-		throw Exception(e.getErrorMessage(), e.getErrorCode(), __PRETTY_FUNCTION__, __FILE__, __LINE__, &e);
+		throw Exception(e.getErrorMessage(), e.getErrorCode(), PGM_FUNC, PGM_FILE, PGM_LINE, &e);
 	}
 }

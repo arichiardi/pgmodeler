@@ -79,8 +79,7 @@ class __libcore Sequence: public BaseObject {
 		MaxBigNegativeValue;
 
 		Sequence();
-
-		virtual ~Sequence(){}
+		~Sequence() = default;
 
 		//! \brief Defines if the sequence is a cycle
 		void setCycle(bool value);

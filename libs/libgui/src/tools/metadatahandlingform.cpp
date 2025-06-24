@@ -121,7 +121,7 @@ void MetadataHandlingForm::handleObjectsMetada()
 	if(!backup_file_sel->getSelectedFile().isEmpty() &&
 		 backup_file_sel->getSelectedFile() == model_wgt->getFilename())
 		throw Exception(tr("The backup file cannot be the same as the input model!"),
-										ErrorCode::Custom,	__PRETTY_FUNCTION__,__FILE__,__LINE__);
+										ErrorCode::Custom,	PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	QTemporaryFile tmp_file;
 	QString metadata_file;
@@ -236,7 +236,7 @@ void MetadataHandlingForm::handleObjectsMetada()
 		ico_lbl->setPixmap(icon);
 		progress_lbl->setText(tr("Metadata processing aborted!"));
 
-		throw Exception(e.getErrorMessage(),e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__, &e);
+		throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 	}
 }
 

@@ -51,8 +51,7 @@ class __libcore Policy : public TableObject {
 
 	public:
 		Policy();
-
-		virtual ~Policy(){}
+		~Policy() = default;
 
 		virtual void setParentTable(BaseTable *table) final;
 

@@ -67,7 +67,7 @@ void Rule::addCommand(const QString &cmd)
 {
 	//Raises an error if the command is empty
 	if(cmd.isEmpty())
-		throw Exception(ErrorCode::InsEmptyRuleCommand,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::InsEmptyRuleCommand,PGM_FUNC,PGM_FILE,PGM_LINE);
 	else
 	{
 		QString cmd_aux=cmd;
@@ -96,7 +96,7 @@ QString Rule::getCommand(unsigned cmd_idx)
 {
 	//Raises an error if the command index is out of bound
 	if(cmd_idx >= commands.size())
-		throw Exception(ErrorCode::RefRuleCommandInvalidIndex,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::RefRuleCommandInvalidIndex,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	return commands[cmd_idx];
 }
@@ -110,7 +110,7 @@ void Rule::removeCommand(unsigned cmd_idx)
 {
 	//Raises an error if the command index is out of bound
 	if(cmd_idx>=commands.size())
-		throw Exception(ErrorCode::RefRuleCommandInvalidIndex,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::RefRuleCommandInvalidIndex,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	commands.erase(commands.begin() + cmd_idx);
 	setCodeInvalidated(true);

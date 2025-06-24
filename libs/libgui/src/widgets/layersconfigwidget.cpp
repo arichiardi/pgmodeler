@@ -39,11 +39,11 @@ LayersConfigWidget::LayersConfigWidget(QWidget *parent) : QWidget(parent)
 	act = visibility_menu.addAction(tr("Hide all"), this, &LayersConfigWidget::setLayersActive);
 	act->setData(false);
 
-	add_tb->setToolTip(add_tb->toolTip() + QString(" (%1)").arg(add_tb->shortcut().toString()));
-	remove_tb->setToolTip(remove_tb->toolTip() + QString(" (%1)").arg(remove_tb->shortcut().toString()));
-	remove_all_tb->setToolTip(remove_all_tb->toolTip() + QString(" (%1)").arg(remove_all_tb->shortcut().toString()));
+	add_btn->setToolTip(add_btn->toolTip() + QString(" (%1)").arg(add_btn->shortcut().toString()));
+	remove_btn->setToolTip(remove_btn->toolTip() + QString(" (%1)").arg(remove_btn->shortcut().toString()));
+	remove_all_btn->setToolTip(remove_all_btn->toolTip() + QString(" (%1)").arg(remove_all_btn->shortcut().toString()));
 
-	visibility_tb->setMenu(&visibility_menu);
+	visibility_btn->setMenu(&visibility_menu);
 	GuiUtilsNs::createDropShadow(this, 5, 5, 30);
 
 	connect(toggle_layers_rects_chk, &QCheckBox::toggled, this, &LayersConfigWidget::toggleLayersRects);
@@ -52,18 +52,18 @@ LayersConfigWidget::LayersConfigWidget(QWidget *parent) : QWidget(parent)
 
 	connect(hide_tb, &QToolButton::clicked, this, &LayersConfigWidget::s_visibilityChanged);
 
-	connect(add_tb, &QToolButton::clicked, this, [this](){
+	connect(add_btn, &QPushButton::clicked, this, [this](){
 		addLayer("", true);
 	});
 
-	connect(remove_tb, &QToolButton::clicked, this, &LayersConfigWidget::removeLayer);
+	connect(remove_btn, &QPushButton::clicked, this, &LayersConfigWidget::removeLayer);
 
 	connect(layers_tab, &QTableWidget::itemDoubleClicked, this, &LayersConfigWidget::startLayerRenaming);
 	connect(layers_tab, &QTableWidget::itemChanged, this, &LayersConfigWidget::updateActiveLayers);
 	connect(layers_tab, &QTableWidget::itemSelectionChanged, this, &LayersConfigWidget::finishLayerRenaming);
 	connect(layers_tab, &QTableWidget::itemSelectionChanged, this, &LayersConfigWidget::enableButtons);
 
-	connect(remove_all_tb, &QToolButton::clicked, this, [this](){
+	connect(remove_all_btn, &QPushButton::clicked, this, [this](){
 		removeLayer(true);
 	});
 
@@ -197,8 +197,8 @@ void LayersConfigWidget::updateLayerColors(int layer_idx)
 
 void LayersConfigWidget::enableButtons()
 {
-	remove_tb->setEnabled(layers_tab->currentRow() > 0);
-	remove_all_tb->setEnabled(layers_tab->rowCount() > 1);
+	remove_btn->setEnabled(layers_tab->currentRow() > 0);
+	remove_all_btn->setEnabled(layers_tab->rowCount() > 1);
 }
 
 void LayersConfigWidget::setLayersActive()
@@ -306,7 +306,7 @@ void LayersConfigWidget::setModel(ModelWidget *model)
 	layers_tab->setRowCount(0);
 	name_color_pickers.clear();
 	rect_color_pickers.clear();
-	add_tb->setEnabled(enable);
+	add_btn->setEnabled(enable);
 	updateLayersList();
 }
 

@@ -37,8 +37,7 @@ class __libcore ForeignServer: public BaseObject, public ForeignObject {
 
 	public:
 		ForeignServer();
-
-		virtual ~ForeignServer(){}
+		~ForeignServer() = default;
 
 		void setType(const QString &type);
 		void setVersion(const QString &version);

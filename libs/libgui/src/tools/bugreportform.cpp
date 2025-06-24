@@ -106,7 +106,7 @@ void BugReportForm::generateReport(const QByteArray &buf)
 	if(!output.isOpen())
 	{
 		Messagebox::error(Exception::getErrorMessage(ErrorCode::FileDirectoryNotWritten).arg(filename),
-											ErrorCode::FileDirectoryNotWritten, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+											ErrorCode::FileDirectoryNotWritten, PGM_FUNC, PGM_FILE, PGM_LINE);
 	}
 	else
 	{
@@ -140,6 +140,6 @@ void BugReportForm::attachModel()
 	}
 	catch(Exception &e)
 	{
-		Messagebox::error(e, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+		Messagebox::error(e, PGM_FUNC, PGM_FILE, PGM_LINE);
 	}
 }

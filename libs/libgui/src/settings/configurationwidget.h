@@ -18,14 +18,14 @@
 
 /**
 \ingroup libgui
-\class ConfigurationForm
+\class SettingsWidget
 \brief Reunites in a single form all available configuration widgets.
 */
 
-#ifndef CONFIGURATION_FORM_H
-#define CONFIGURATION_FORM_H
+#ifndef CONFIGURATION_WIDGET_H
+#define CONFIGURATION_WIDGET_H
 
-#include "ui_configurationform.h"
+#include "ui_configurationwidget.h"
 #include "appearanceconfigwidget.h"
 #include "generalconfigwidget.h"
 #include "connectionsconfigwidget.h"
@@ -33,10 +33,10 @@
 #include "relationshipconfigwidget.h"
 #include "snippetsconfigwidget.h"
 
-class __libgui ConfigurationForm: public QDialog, public Ui::ConfigurationForm {
+class __libgui ConfigurationWidget: public QWidget, public Ui::ConfigurationWidget {
 	Q_OBJECT
 
-	private:	
+	private:
 		GeneralConfigWidget *general_conf;
 		AppearanceConfigWidget *appearance_conf;
 		ConnectionsConfigWidget *connections_conf;
@@ -56,23 +56,55 @@ class __libgui ConfigurationForm: public QDialog, public Ui::ConfigurationForm {
 			SnippetsConfWgt,
 			PluginsConfWgt
 		};
+
+		ConfigurationWidget(QWidget * parent = nullptr);
+
+		virtual ~ConfigurationWidget();
+
+		int checkChangedConfiguration();
 		
-		ConfigurationForm(QWidget * parent = nullptr, Qt::WindowFlags f = Qt::Widget);
-		virtual ~ConfigurationForm();
-		
-		BaseConfigWidget *getConfigurationWidget(unsigned idx);
-		
+		template<class Widget, std::enable_if_t<std::is_base_of_v<BaseConfigWidget, Widget>, bool> = true>
+		Widget *getConfigurationWidget()
+		{
+			return confs_stw->findChild<Widget *>();
+		}
+
+		template<class Widget, std::enable_if_t<std::is_base_of_v<BaseConfigWidget, Widget>, bool> = true>
+		void discardConfiguration()
+		{
+			Widget * conf_wgt = getConfigurationWidget<Widget>();
+
+			if(!conf_wgt ||
+				 (conf_wgt && !conf_wgt->isConfigurationChanged()))
+				return;
+
+			try
+			{
+				conf_wgt->loadConfiguration();
+			}
+			catch(Exception &e)
+			{
+				Messagebox::error(e, PGM_FUNC, PGM_FILE, PGM_LINE);
+			}
+		}
+
 	public slots:
 		void applyConfiguration();
 		void loadConfiguration();
-		void reject();
-		
+
 	private slots:
 		void restoreDefaults();
-		void changeCurrentView();
+
+		/*! \brief This method is discard any uncommited configuration changes
+		 *  in all configuration sections. Different from restoreDefaults() that
+		 *  restore the default configuration files, this method reloads the current
+		 *  configuration file of each section */
+		void __discardConfiguration();
 
 	signals:
 		void s_invalidateModelsRequested();
+		void s_configurationChanged();
+		void s_configurationReverted();
 };
 
 #endif

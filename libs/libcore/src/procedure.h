@@ -29,8 +29,7 @@
 class __libcore Procedure: public BaseFunction {
 	public:
 		Procedure();
-
-		virtual ~Procedure(){}
+		~Procedure() = default;
 
 		virtual QString getSourceCode(SchemaParser::CodeType def_type, bool) final;
 		virtual QString getSourceCode(SchemaParser::CodeType def_type) final;

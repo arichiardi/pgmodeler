@@ -169,7 +169,7 @@ void OperationListWidget::undoOperation()
 			msg_box.show(e, "", Messagebox::AlertIcon);
 		}
 		else
-			Messagebox::error(e, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+			Messagebox::error(e, PGM_FUNC, PGM_FILE, PGM_LINE);
 	}
 }
 
@@ -194,7 +194,7 @@ void OperationListWidget::redoOperation()
 			msg_box.show(e, "", Messagebox::AlertIcon);
 		}
 		else
-			Messagebox::error(e, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+			Messagebox::error(e, PGM_FUNC, PGM_FILE, PGM_LINE);
 	}
 }
 

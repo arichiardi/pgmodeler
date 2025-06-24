@@ -80,7 +80,7 @@ void DatabaseImportHelper::setConnection(Connection &conn)
 	}
 	catch(Exception &e)
 	{
-		throw Exception(e.getErrorMessage(), e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__, &e);
+		throw Exception(e.getErrorMessage(), e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 	}
 }
 
@@ -99,14 +99,14 @@ void DatabaseImportHelper::setCurrentDatabase(const QString &dbname)
 	}
 	catch(Exception &e)
 	{
-		throw Exception(e.getErrorMessage(), e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__, &e);
+		throw Exception(e.getErrorMessage(), e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 	}
 }
 
 void DatabaseImportHelper::setSelectedOIDs(DatabaseModel *db_model, const std::map<ObjectType, std::vector<unsigned> > &obj_oids, const std::map<unsigned, std::vector<unsigned> > &col_oids)
 {
 	if(!db_model)
-		throw Exception(ErrorCode::AsgNotAllocattedObject ,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::AsgNotAllocattedObject ,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	dbmodel=db_model;
 	xmlparser=dbmodel->getXMLParser();
@@ -176,7 +176,7 @@ attribs_map DatabaseImportHelper::getObjects(ObjectType obj_type, const QString 
 	}
 	catch(Exception &e)
 	{
-		throw Exception(e.getErrorMessage(), e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__, &e);
+		throw Exception(e.getErrorMessage(), e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 	}
 }
 
@@ -189,7 +189,7 @@ std::vector<attribs_map> DatabaseImportHelper::getObjects(std::vector<ObjectType
 	}
 	catch(Exception &e)
 	{
-		throw Exception(e.getErrorMessage(), e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__, &e);
+		throw Exception(e.getErrorMessage(), e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 	}
 }
 
@@ -336,7 +336,7 @@ void DatabaseImportHelper::retrieveTableColumns(const QString &sch_name, const Q
 	}
 	catch(Exception &e)
 	{
-		throw Exception(e.getErrorMessage(), e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__, &e);
+		throw Exception(e.getErrorMessage(), e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 	}
 }
 
@@ -433,7 +433,7 @@ void DatabaseImportHelper::createObjects()
 					{
 						//In case of some error store the oid and the error in separated lists
 						not_created_objs.push_back(*itr);
-						aux_errors.push_back(Exception(e.getErrorMessage(), e.getErrorCode(), __PRETTY_FUNCTION__,__FILE__,__LINE__, &e, dumpObjectAttributes(attribs)));
+						aux_errors.push_back(Exception(e.getErrorMessage(), e.getErrorCode(), PGM_FUNC,PGM_FILE,PGM_LINE, &e, dumpObjectAttributes(attribs)));
 					}
 
 					progress=(i/static_cast<double>(not_created_objs.size())) * 100;
@@ -452,7 +452,7 @@ void DatabaseImportHelper::createObjects()
 				 that no object was created in this interaction which means error */
 					if(prev_size==not_created_objs.size() && !ignore_errors)
 						throw Exception(aux_errors.back().getErrorMessage(), aux_errors.back().getErrorCode(),
-										__PRETTY_FUNCTION__,__FILE__,__LINE__, aux_errors);
+										PGM_FUNC,PGM_FILE,PGM_LINE, aux_errors);
 					else if(ignore_errors)
 						errors.insert(errors.end(), aux_errors.begin(), aux_errors.end());
 
@@ -499,9 +499,9 @@ void DatabaseImportHelper::createConstraints()
 		catch(Exception &e)
 		{
 			if(ignore_errors)
-				errors.push_back(Exception(e.getErrorMessage(), e.getErrorCode(), __PRETTY_FUNCTION__,__FILE__,__LINE__, &e, dumpObjectAttributes(attribs)));
+				errors.push_back(Exception(e.getErrorMessage(), e.getErrorCode(), PGM_FUNC,PGM_FILE,PGM_LINE, &e, dumpObjectAttributes(attribs)));
 			else
-				throw Exception(e.getErrorMessage(), e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__, &e);
+				throw Exception(e.getErrorMessage(), e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 		}
 
 		progress=(i/static_cast<double>(constraints.size())) * 100;
@@ -563,9 +563,9 @@ void DatabaseImportHelper::createPermissions()
 	catch(Exception &e)
 	{
 		if(ignore_errors)
-			errors.push_back(Exception(e.getErrorMessage(), e.getErrorCode(), __PRETTY_FUNCTION__,__FILE__,__LINE__, &e, dumpObjectAttributes(attribs)));
+			errors.push_back(Exception(e.getErrorMessage(), e.getErrorCode(), PGM_FUNC,PGM_FILE,PGM_LINE, &e, dumpObjectAttributes(attribs)));
 		else
-			throw Exception(e.getErrorMessage(), e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__, &e);
+			throw Exception(e.getErrorMessage(), e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 	}
 }
 
@@ -601,7 +601,7 @@ void DatabaseImportHelper::updateFKRelationships()
 	}
 	catch(Exception &e)
 	{
-		throw Exception(e.getErrorMessage(), e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__, &e);
+		throw Exception(e.getErrorMessage(), e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 	}
 }
 
@@ -610,7 +610,7 @@ void DatabaseImportHelper::importDatabase()
 	try
 	{
 		if(!dbmodel)
-			throw Exception(ErrorCode::OprNotAllocatedObject ,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+			throw Exception(ErrorCode::OprNotAllocatedObject ,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 		BaseGraphicObject::setUpdatesEnabled(false);
 		dbmodel->setObjectListsCapacity(creation_order.size());
@@ -668,7 +668,7 @@ void DatabaseImportHelper::importDatabase()
 				import_log.close();
 
 				emit s_importFinished(Exception(tr("The database import ended but some errors were generated and saved into the log file `%1'. This file will last until pgModeler quit.").arg(log_name),
-												__PRETTY_FUNCTION__,__FILE__,__LINE__));
+												PGM_FUNC,PGM_FILE,PGM_LINE));
 			}
 		}
 		else
@@ -717,10 +717,10 @@ void DatabaseImportHelper::importDatabase()
 		/* When running in a separated thread (other than the main application thread)
 		 * redirects the error in form of signal */
 		if(this->thread() && this->thread() != qApp->thread())
-			emit s_importAborted(Exception(e.getErrorMessage(), e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__, &e, e.getExtraInfo()));
+			emit s_importAborted(Exception(e.getErrorMessage(), e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e, e.getExtraInfo()));
 		else
 			//Redirects any error to the user
-			throw Exception(e.getErrorMessage(),e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__, &e, e.getExtraInfo());
+			throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e, e.getExtraInfo());
 	}
 }
 
@@ -875,7 +875,7 @@ void DatabaseImportHelper::createObject(attribs_map &attribs)
 		{
 			throw Exception(Exception::getErrorMessage(ErrorCode::ObjectNotImported)
 											.arg(obj_name).arg(BaseObject::getTypeName(obj_type)).arg(attribs[Attributes::Oid]),
-											ErrorCode::ObjectNotImported,__PRETTY_FUNCTION__,__FILE__,__LINE__, &e, dumpObjectAttributes(attribs));
+											ErrorCode::ObjectNotImported,PGM_FUNC,PGM_FILE,PGM_LINE, &e, dumpObjectAttributes(attribs));
 		}
 	}
 }
@@ -893,7 +893,7 @@ QString DatabaseImportHelper::getComment(attribs_map &attribs)
 	}
 	catch(Exception &e)
 	{
-		throw Exception(e.getErrorMessage(), e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__, &e);
+		throw Exception(e.getErrorMessage(), e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 	}
 }
 
@@ -970,7 +970,7 @@ QString DatabaseImportHelper::getDependencyObject(const QString &oid, ObjectType
 	}
 	catch(Exception &e)
 	{
-		throw Exception(e.getErrorMessage(), e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__, &e);
+		throw Exception(e.getErrorMessage(), e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 	}
 }
 
@@ -996,7 +996,7 @@ void DatabaseImportHelper::loadObjectXML(ObjectType obj_type, attribs_map &attri
 	}
 	catch(Exception &e)
 	{
-		throw Exception(e.getErrorMessage(), e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__, &e, xml_buf);
+		throw Exception(e.getErrorMessage(), e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e, xml_buf);
 	}
 }
 
@@ -1069,7 +1069,7 @@ Tablespace *DatabaseImportHelper::createTablespace(attribs_map &attribs)
 	catch(Exception &e)
 	{
 		if(tabspc) delete tabspc;
-		throw Exception(e.getErrorMessage(), e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__, &e);
+		throw Exception(e.getErrorMessage(), e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 	}
 }
 
@@ -1102,7 +1102,7 @@ Schema *DatabaseImportHelper::createSchema(attribs_map &attribs)
 	{
 		if(schema) delete schema;
 		throw Exception(e.getErrorMessage(), e.getErrorCode(),
-						__PRETTY_FUNCTION__,__FILE__,__LINE__, &e, xmlparser->getXMLBuffer());
+						PGM_FUNC,PGM_FILE,PGM_LINE, &e, xmlparser->getXMLBuffer());
 	}
 }
 
@@ -1136,7 +1136,7 @@ Role *DatabaseImportHelper::createRole(attribs_map &attribs)
 	{
 		if(role) delete role;
 		throw Exception(e.getErrorMessage(), e.getErrorCode(),
-						__PRETTY_FUNCTION__,__FILE__,__LINE__, &e, xmlparser->getXMLBuffer());
+						PGM_FUNC,PGM_FILE,PGM_LINE, &e, xmlparser->getXMLBuffer());
 	}
 }
 
@@ -1175,7 +1175,7 @@ Domain *DatabaseImportHelper::createDomain(attribs_map &attribs)
 	{
 		if(dom) delete dom;
 		throw Exception(e.getErrorMessage(), e.getErrorCode(),
-						__PRETTY_FUNCTION__,__FILE__,__LINE__, &e, xmlparser->getXMLBuffer());
+						PGM_FUNC,PGM_FILE,PGM_LINE, &e, xmlparser->getXMLBuffer());
 	}
 }
 
@@ -1241,7 +1241,7 @@ Extension *DatabaseImportHelper::createExtension(attribs_map &attribs)
 	{
 		if(ext) delete ext;
 		throw Exception(e.getErrorMessage(), e.getErrorCode(),
-						__PRETTY_FUNCTION__,__FILE__,__LINE__, &e, xmlparser->getXMLBuffer());
+						PGM_FUNC,PGM_FILE,PGM_LINE, &e, xmlparser->getXMLBuffer());
 	}
 }
 
@@ -1380,7 +1380,7 @@ void DatabaseImportHelper::configureBaseFunctionAttribs(attribs_map &attribs)
 	}
 	catch(Exception &e)
 	{
-		throw Exception(e.getErrorMessage(), e.getErrorCode(), __PRETTY_FUNCTION__, __FILE__, __LINE__, &e);
+		throw Exception(e.getErrorMessage(), e.getErrorCode(), PGM_FUNC, PGM_FILE, PGM_LINE, &e);
 	}
 }
 
@@ -1415,7 +1415,7 @@ Function *DatabaseImportHelper::createFunction(attribs_map &attribs)
 	{
 		if(func) delete func;
 		throw Exception(e.getErrorMessage(), e.getErrorCode(),
-										__PRETTY_FUNCTION__,__FILE__,__LINE__, &e, xmlparser->getXMLBuffer());
+										PGM_FUNC,PGM_FILE,PGM_LINE, &e, xmlparser->getXMLBuffer());
 	}
 }
 
@@ -1436,7 +1436,7 @@ Procedure *DatabaseImportHelper::createProcedure(attribs_map &attribs)
 	{
 		if(proc) delete proc;
 		throw Exception(e.getErrorMessage(), e.getErrorCode(),
-										__PRETTY_FUNCTION__,__FILE__,__LINE__, &e, xmlparser->getXMLBuffer());
+										PGM_FUNC,PGM_FILE,PGM_LINE, &e, xmlparser->getXMLBuffer());
 	}
 }
 
@@ -1475,7 +1475,7 @@ Language *DatabaseImportHelper::createLanguage(attribs_map &attribs)
 	{
 		if(lang) delete lang;
 		throw Exception(e.getErrorMessage(), e.getErrorCode(),
-						__PRETTY_FUNCTION__,__FILE__,__LINE__, &e, xmlparser->getXMLBuffer());
+						PGM_FUNC,PGM_FILE,PGM_LINE, &e, xmlparser->getXMLBuffer());
 	}
 }
 
@@ -1495,7 +1495,7 @@ OperatorFamily *DatabaseImportHelper::createOperatorFamily(attribs_map &attribs)
 	{
 		if(opfam) delete opfam;
 		throw Exception(e.getErrorMessage(), e.getErrorCode(),
-						__PRETTY_FUNCTION__,__FILE__,__LINE__, &e, xmlparser->getXMLBuffer());
+						PGM_FUNC,PGM_FILE,PGM_LINE, &e, xmlparser->getXMLBuffer());
 	}
 }
 
@@ -1579,7 +1579,7 @@ OperatorClass *DatabaseImportHelper::createOperatorClass(attribs_map &attribs)
 	{
 		if(opclass) delete opclass;
 		throw Exception(e.getErrorMessage(), e.getErrorCode(),
-						__PRETTY_FUNCTION__,__FILE__,__LINE__, &e, xmlparser->getXMLBuffer());
+						PGM_FUNC,PGM_FILE,PGM_LINE, &e, xmlparser->getXMLBuffer());
 	}
 }
 
@@ -1642,7 +1642,7 @@ Operator *DatabaseImportHelper::createOperator(attribs_map &attribs)
 	{
 		if(oper) delete oper;
 		throw Exception(e.getErrorMessage(), e.getErrorCode(),
-						__PRETTY_FUNCTION__,__FILE__,__LINE__, &e, xmlparser->getXMLBuffer());
+						PGM_FUNC,PGM_FILE,PGM_LINE, &e, xmlparser->getXMLBuffer());
 	}
 }
 
@@ -1662,7 +1662,7 @@ Collation *DatabaseImportHelper::createCollation(attribs_map &attribs)
 	{
 		if(coll) delete coll;
 		throw Exception(e.getErrorMessage(), e.getErrorCode(),
-						__PRETTY_FUNCTION__,__FILE__,__LINE__, &e, xmlparser->getXMLBuffer());
+						PGM_FUNC,PGM_FILE,PGM_LINE, &e, xmlparser->getXMLBuffer());
 	}
 }
 
@@ -1685,7 +1685,7 @@ Cast *DatabaseImportHelper::createCast(attribs_map &attribs)
 	{
 		if(cast) delete cast;
 		throw Exception(e.getErrorMessage(), e.getErrorCode(),
-						__PRETTY_FUNCTION__,__FILE__,__LINE__, &e, xmlparser->getXMLBuffer());
+						PGM_FUNC,PGM_FILE,PGM_LINE, &e, xmlparser->getXMLBuffer());
 	}
 }
 
@@ -1706,7 +1706,7 @@ Conversion *DatabaseImportHelper::createConversion(attribs_map &attribs)
 	{
 		if(conv) delete conv;
 		throw Exception(e.getErrorMessage(), e.getErrorCode(),
-						__PRETTY_FUNCTION__,__FILE__,__LINE__, &e, xmlparser->getXMLBuffer());
+						PGM_FUNC,PGM_FILE,PGM_LINE, &e, xmlparser->getXMLBuffer());
 	}
 }
 
@@ -1779,7 +1779,7 @@ Sequence *DatabaseImportHelper::createSequence(attribs_map &attribs)
 	{
 		if(seq) delete seq;
 		throw Exception(e.getErrorMessage(), e.getErrorCode(),
-						__PRETTY_FUNCTION__,__FILE__,__LINE__, &e, xmlparser->getXMLBuffer());
+						PGM_FUNC,PGM_FILE,PGM_LINE, &e, xmlparser->getXMLBuffer());
 	}
 }
 
@@ -1829,7 +1829,7 @@ Aggregate *DatabaseImportHelper::createAggregate(attribs_map &attribs)
 	{
 		if(agg) delete agg;
 		throw Exception(e.getErrorMessage(), e.getErrorCode(),
-						__PRETTY_FUNCTION__,__FILE__,__LINE__, &e, xmlparser->getXMLBuffer());
+						PGM_FUNC,PGM_FILE,PGM_LINE, &e, xmlparser->getXMLBuffer());
 	}
 }
 
@@ -1925,7 +1925,7 @@ Type *DatabaseImportHelper::createType(attribs_map &attribs)
 	{
 		if(type) delete type;
 		throw Exception(e.getErrorMessage(), e.getErrorCode(),
-						__PRETTY_FUNCTION__,__FILE__,__LINE__, &e, xmlparser->getXMLBuffer());
+						PGM_FUNC,PGM_FILE,PGM_LINE, &e, xmlparser->getXMLBuffer());
 	}
 }
 
@@ -1967,7 +1967,7 @@ Table *DatabaseImportHelper::createTable(attribs_map &attribs)
 				throw Exception(Exception::getErrorMessage(ErrorCode::RefObjectInexistsModel)
 												.arg(attribs[Attributes::Name]).arg(BaseObject::getTypeName(ObjectType::Table))
 												.arg(attribs[Attributes::PartitionedTable]).arg(BaseObject::getTypeName(ObjectType::Table)),
-												ErrorCode::RefObjectInexistsModel ,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+												ErrorCode::RefObjectInexistsModel ,PGM_FUNC,PGM_FILE,PGM_LINE);
 			}
 		}
 
@@ -2045,7 +2045,7 @@ Table *DatabaseImportHelper::createTable(attribs_map &attribs)
 		}
 
 		throw Exception(e.getErrorMessage(), e.getErrorCode(),
-						__PRETTY_FUNCTION__,__FILE__,__LINE__, &e, xmlparser->getXMLBuffer());
+						PGM_FUNC,PGM_FILE,PGM_LINE, &e, xmlparser->getXMLBuffer());
 	}
 }
 
@@ -2166,7 +2166,7 @@ View *DatabaseImportHelper::createView(attribs_map &attribs)
 	{
 		if(view) delete view;
 		throw Exception(e.getErrorMessage(), e.getErrorCode(),
-						__PRETTY_FUNCTION__,__FILE__,__LINE__, &e, xmlparser->getXMLBuffer());
+						PGM_FUNC,PGM_FILE,PGM_LINE, &e, xmlparser->getXMLBuffer());
 	}
 }
 
@@ -2205,7 +2205,7 @@ Rule *DatabaseImportHelper::createRule(attribs_map &attribs)
 	catch(Exception &e)
 	{
 		throw Exception(e.getErrorMessage(), e.getErrorCode(),
-						__PRETTY_FUNCTION__,__FILE__,__LINE__, &e, xmlparser->getXMLBuffer());
+						PGM_FUNC,PGM_FILE,PGM_LINE, &e, xmlparser->getXMLBuffer());
 	}
 }
 
@@ -2233,7 +2233,7 @@ Trigger *DatabaseImportHelper::createTrigger(attribs_map &attribs)
 	catch(Exception &e)
 	{
 		throw Exception(e.getErrorMessage(), e.getErrorCode(),
-						__PRETTY_FUNCTION__,__FILE__,__LINE__, &e, xmlparser->getXMLBuffer());
+						PGM_FUNC,PGM_FILE,PGM_LINE, &e, xmlparser->getXMLBuffer());
 	}
 }
 
@@ -2263,7 +2263,7 @@ Index *DatabaseImportHelper::createIndex(attribs_map &attribs)
 				throw Exception(Exception::getErrorMessage(ErrorCode::RefObjectInexistsModel)
 												.arg(attribs[Attributes::Name]).arg(BaseObject::getTypeName(ObjectType::Index))
 												.arg(tab_name).arg(BaseObject::getTypeName(ObjectType::Table)),
-												ErrorCode::RefObjectInexistsModel ,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+												ErrorCode::RefObjectInexistsModel ,PGM_FUNC,PGM_FILE,PGM_LINE);
 		}
 
 		cols = Catalog::parseArrayValues(attribs[Attributes::Columns]);
@@ -2350,7 +2350,7 @@ Index *DatabaseImportHelper::createIndex(attribs_map &attribs)
 	catch(Exception &e)
 	{
 		throw Exception(e.getErrorMessage(), e.getErrorCode(),
-						__PRETTY_FUNCTION__,__FILE__,__LINE__, &e, xmlparser->getXMLBuffer());
+						PGM_FUNC,PGM_FILE,PGM_LINE, &e, xmlparser->getXMLBuffer());
 	}
 }
 
@@ -2484,7 +2484,7 @@ Constraint *DatabaseImportHelper::createConstraint(attribs_map &attribs)
 	catch(Exception &e)
 	{
 		throw Exception(e.getErrorMessage(), e.getErrorCode(),
-						__PRETTY_FUNCTION__,__FILE__,__LINE__, &e, xmlparser->getXMLBuffer());
+						PGM_FUNC,PGM_FILE,PGM_LINE, &e, xmlparser->getXMLBuffer());
 	}
 }
 
@@ -2504,7 +2504,7 @@ Policy *DatabaseImportHelper::createPolicy(attribs_map &attribs)
 	catch(Exception &e)
 	{
 		throw Exception(e.getErrorMessage(), e.getErrorCode(),
-						__PRETTY_FUNCTION__,__FILE__,__LINE__, &e, xmlparser->getXMLBuffer());
+						PGM_FUNC,PGM_FILE,PGM_LINE, &e, xmlparser->getXMLBuffer());
 	}
 }
 
@@ -2528,7 +2528,7 @@ EventTrigger *DatabaseImportHelper::createEventTrigger(attribs_map &attribs)
 	catch(Exception &e)
 	{
 		throw Exception(e.getErrorMessage(), e.getErrorCode(),
-						__PRETTY_FUNCTION__,__FILE__,__LINE__, &e, xmlparser->getXMLBuffer());
+						PGM_FUNC,PGM_FILE,PGM_LINE, &e, xmlparser->getXMLBuffer());
 	}
 }
 
@@ -2555,7 +2555,7 @@ ForeignDataWrapper *DatabaseImportHelper::createForeignDataWrapper(attribs_map &
 	{
 		if(fdw) delete fdw;
 		throw Exception(e.getErrorMessage(), e.getErrorCode(),
-										__PRETTY_FUNCTION__,__FILE__,__LINE__, &e, xmlparser->getXMLBuffer());
+										PGM_FUNC,PGM_FILE,PGM_LINE, &e, xmlparser->getXMLBuffer());
 	}
 }
 
@@ -2578,7 +2578,7 @@ ForeignServer *DatabaseImportHelper::createForeignServer(attribs_map &attribs)
 	{
 		if(server) delete server;
 		throw Exception(e.getErrorMessage(), e.getErrorCode(),
-										__PRETTY_FUNCTION__,__FILE__,__LINE__, &e, xmlparser->getXMLBuffer());
+										PGM_FUNC,PGM_FILE,PGM_LINE, &e, xmlparser->getXMLBuffer());
 	}
 }
 
@@ -2601,7 +2601,7 @@ UserMapping *DatabaseImportHelper::createUserMapping(attribs_map &attribs)
 	{
 		if(usr_map) delete usr_map;
 		throw Exception(e.getErrorMessage(), e.getErrorCode(),
-										__PRETTY_FUNCTION__,__FILE__,__LINE__, &e, xmlparser->getXMLBuffer());
+										PGM_FUNC,PGM_FILE,PGM_LINE, &e, xmlparser->getXMLBuffer());
 	}
 }
 
@@ -2646,7 +2646,7 @@ ForeignTable *DatabaseImportHelper::createForeignTable(attribs_map &attribs)
 				throw Exception(Exception::getErrorMessage(ErrorCode::RefObjectInexistsModel)
 												.arg(attribs[Attributes::Name]).arg(BaseObject::getTypeName(ObjectType::Table))
 												.arg(attribs[Attributes::PartitionedTable]).arg(BaseObject::getTypeName(ObjectType::Table)),
-												ErrorCode::RefObjectInexistsModel ,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+												ErrorCode::RefObjectInexistsModel ,PGM_FUNC,PGM_FILE,PGM_LINE);
 			}
 		}
 
@@ -2663,7 +2663,7 @@ ForeignTable *DatabaseImportHelper::createForeignTable(attribs_map &attribs)
 			delete ftable;
 		}
 		throw Exception(e.getErrorMessage(), e.getErrorCode(),
-										__PRETTY_FUNCTION__,__FILE__,__LINE__, &e, xmlparser->getXMLBuffer());
+										PGM_FUNC,PGM_FILE,PGM_LINE, &e, xmlparser->getXMLBuffer());
 	}
 }
 
@@ -2687,7 +2687,7 @@ Transform *DatabaseImportHelper::createTransform(attribs_map &attribs)
 	{
 		if(transf) delete transf;
 		throw Exception(e.getErrorMessage(), e.getErrorCode(),
-										__PRETTY_FUNCTION__,__FILE__,__LINE__, &e, xmlparser->getXMLBuffer());
+										PGM_FUNC,PGM_FILE,PGM_LINE, &e, xmlparser->getXMLBuffer());
 	}
 }
 
@@ -2765,7 +2765,7 @@ void DatabaseImportHelper::createPermission(attribs_map &attribs)
 													.arg(perm_str)
 													.arg(BaseObject::getTypeName(ObjectType::Permission))
 													.arg("n/d"),
-													ErrorCode::ObjectNotImported,__PRETTY_FUNCTION__,__FILE__,__LINE__, &e,
+													ErrorCode::ObjectNotImported,PGM_FUNC,PGM_FILE,PGM_LINE, &e,
 													dumpObjectAttributes(attribs));
 				}
 			}
@@ -2776,7 +2776,7 @@ void DatabaseImportHelper::createPermission(attribs_map &attribs)
 				throw Exception(Exception::getErrorMessage(ErrorCode::RefObjectInexistsModel)
 								.arg(QString("%1").arg(perm_str)).arg(BaseObject::getTypeName(ObjectType::Permission))
 								.arg(role_name).arg(BaseObject::getTypeName(ObjectType::Role))
-								,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+								,PGM_FUNC,PGM_FILE,PGM_LINE);
 			else
 			{
 				try
@@ -2809,9 +2809,9 @@ void DatabaseImportHelper::createPermission(attribs_map &attribs)
 						delete permission;
 
 					if(ignore_errors)
-						errors.push_back(Exception(e.getErrorMessage(), e.getErrorCode(), __PRETTY_FUNCTION__,__FILE__,__LINE__, &e, dumpObjectAttributes(attribs)));
+						errors.push_back(Exception(e.getErrorMessage(), e.getErrorCode(), PGM_FUNC,PGM_FILE,PGM_LINE, &e, dumpObjectAttributes(attribs)));
 					else
-						throw Exception(e.getErrorMessage(), e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__, &e);
+						throw Exception(e.getErrorMessage(), e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 				}
 			}
 		}
@@ -2836,7 +2836,7 @@ void DatabaseImportHelper::createTableInheritances()
 			if(ignore_errors)
 				errors.push_back(e);
 			else
-				throw Exception(e.getErrorMessage(), e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__, &e);
+				throw Exception(e.getErrorMessage(), e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 		}
 	}
 }
@@ -2879,7 +2879,7 @@ void DatabaseImportHelper::createTablePartitionings()
 	}
 	catch(Exception &e)
 	{
-		throw Exception(e.getErrorMessage(), e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__, &e);
+		throw Exception(e.getErrorMessage(), e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 	}
 }
 
@@ -2922,7 +2922,7 @@ void DatabaseImportHelper::destroyDetachedColumns()
 			if(ignore_errors)
 				errors.push_back(e);
 			else
-				throw Exception(e.getErrorMessage(),e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__,&e);
+				throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE,&e);
 		}
 	}
 
@@ -2965,7 +2965,7 @@ void DatabaseImportHelper::createColumns()
 			if(!tab)
 			{
 				throw Exception(tr("Trying to create column(s) in the table `%1' that doesn't exist in the model!").arg(tab_signature),
-												ErrorCode::Custom, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+												ErrorCode::Custom, PGM_FUNC, PGM_FILE, PGM_LINE);
 			}
 
 			for(auto &col_xml : col_xmls)
@@ -2996,14 +2996,14 @@ void DatabaseImportHelper::createColumns()
 					if(col)
 						delete col;
 
-					throw Exception(e.getErrorMessage(), e.getErrorCode(), __PRETTY_FUNCTION__, __FILE__, __LINE__, &e);
+					throw Exception(e.getErrorMessage(), e.getErrorCode(), PGM_FUNC, PGM_FILE, PGM_LINE, &e);
 				}
 			}
 		}
 	}
 	catch(Exception &e)
 	{
-		throw Exception(e.getErrorMessage(), e.getErrorCode(), __PRETTY_FUNCTION__, __FILE__, __LINE__, &e);
+		throw Exception(e.getErrorMessage(), e.getErrorCode(), PGM_FUNC, PGM_FILE, PGM_LINE, &e);
 	}
 }
 
@@ -3296,7 +3296,7 @@ void DatabaseImportHelper::__createTableInheritances()
 					if(!parent_tab)
 						throw Exception(Exception::getErrorMessage(ErrorCode::InvInheritParentTableNotFound)
 														.arg(child_tab->getSignature()).arg(inh_oid),
-														ErrorCode::InvInheritParentTableNotFound,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+														ErrorCode::InvInheritParentTableNotFound,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 					//Create the inheritance relationship
 					rel = new Relationship(Relationship::RelationshipGen, child_tab, parent_tab);
@@ -3314,7 +3314,7 @@ void DatabaseImportHelper::__createTableInheritances()
 					if(ignore_errors)
 						errors.push_back(e);
 					else
-						throw Exception(e.getErrorMessage(), e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__, &e);
+						throw Exception(e.getErrorMessage(), e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 				}
 			}
 		}
@@ -3335,7 +3335,7 @@ void DatabaseImportHelper::configureDatabase(attribs_map &attribs)
 	catch(Exception &e)
 	{
 		throw Exception(e.getErrorMessage(), e.getErrorCode(),
-						__PRETTY_FUNCTION__,__FILE__,__LINE__, &e, xmlparser->getXMLBuffer());
+						PGM_FUNC,PGM_FILE,PGM_LINE, &e, xmlparser->getXMLBuffer());
 	}
 }
 
@@ -3677,7 +3677,7 @@ QString DatabaseImportHelper::getType(const QString &oid_str, bool generate_xml,
 	}
 	catch(Exception &e)
 	{
-		throw Exception(e.getErrorMessage(), e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__, &e);
+		throw Exception(e.getErrorMessage(), e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 	}
 }
 

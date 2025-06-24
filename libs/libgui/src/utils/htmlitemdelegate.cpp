@@ -27,11 +27,6 @@ HtmlItemDelegate::HtmlItemDelegate(QObject *parent, bool ignore_tags_sz_hint) : 
 	this->ignore_tags_sz_hint = ignore_tags_sz_hint;
 }
 
-HtmlItemDelegate::~HtmlItemDelegate()
-{
-
-}
-
 QSize HtmlItemDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
 	QSize sz = PlainTextItemDelegate::sizeHint(option, index);

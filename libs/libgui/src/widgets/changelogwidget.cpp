@@ -35,9 +35,9 @@ ChangelogWidget::ChangelogWidget(QWidget *parent) : QWidget(parent)
 	GuiUtilsNs::configureWidgetFont(updated_cnt_lbl, GuiUtilsNs::HugeFontFactor);
 	GuiUtilsNs::configureWidgetFont(total_cnt_lbl, GuiUtilsNs::HugeFontFactor);
 
-	connect(inspect_tb, &QToolButton::clicked, this, &ChangelogWidget::inspectChangelog);
+	connect(inspect_btn, &QPushButton::clicked, this, &ChangelogWidget::inspectChangelog);
 	connect(hide_tb, &QToolButton::clicked, this, &ChangelogWidget::s_visibilityChanged);
-	connect(clear_tb, &QToolButton::clicked, this, &ChangelogWidget::clearChangelog);
+	connect(clear_btn, &QPushButton::clicked, this, &ChangelogWidget::clearChangelog);
 	connect(persisted_chk, &QCheckBox::toggled, this, [this](bool checked){
 		model->getDatabaseModel()->setPersistedChangelog(checked);
 		model->setModified(true);
@@ -86,8 +86,8 @@ void ChangelogWidget::updateChangelogInfo()
 		total_cnt_lbl->setText(QString::number(total_len));
 	}
 
-	inspect_tb->setEnabled(total_len > 0);
-	clear_tb->setEnabled(total_len > 0);
+	inspect_btn->setEnabled(total_len > 0);
+	clear_btn->setEnabled(total_len > 0);
 	adjustSize();
 }
 
@@ -184,7 +184,7 @@ void ChangelogWidget::inspectChangelog()
 	}
 	catch(Exception &e)
 	{
-		Messagebox::error(e, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+		Messagebox::error(e, PGM_FUNC, PGM_FILE, PGM_LINE);
 	}
 
 	data_tbw->setWindowTitle("Changelog entries");

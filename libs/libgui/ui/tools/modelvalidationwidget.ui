@@ -64,7 +64,7 @@
         <number>5</number>
        </property>
        <item>
-        <widget class="QToolButton" name="validate_btn">
+        <widget class="QPushButton" name="validate_btn">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
            <horstretch>0</horstretch>
@@ -84,16 +84,10 @@
            <height>25</height>
           </size>
          </property>
-         <property name="toolButtonStyle">
-          <enum>Qt::ToolButtonStyle::ToolButtonTextBesideIcon</enum>
-         </property>
-         <property name="autoRaise">
-          <bool>false</bool>
-         </property>
         </widget>
        </item>
        <item>
-        <widget class="QToolButton" name="fix_btn">
+        <widget class="QPushButton" name="fix_btn">
          <property name="enabled">
           <bool>false</bool>
          </property>
@@ -119,19 +113,10 @@
            <height>25</height>
           </size>
          </property>
-         <property name="toolButtonStyle">
-          <enum>Qt::ToolButtonStyle::ToolButtonTextBesideIcon</enum>
-         </property>
-         <property name="autoRaise">
-          <bool>false</bool>
-         </property>
-         <property name="arrowType">
-          <enum>Qt::ArrowType::NoArrow</enum>
-         </property>
         </widget>
        </item>
        <item>
-        <widget class="QToolButton" name="cancel_btn">
+        <widget class="QPushButton" name="cancel_btn">
          <property name="enabled">
           <bool>false</bool>
          </property>
@@ -160,16 +145,10 @@
          <property name="shortcut">
           <string>Esc</string>
          </property>
-         <property name="toolButtonStyle">
-          <enum>Qt::ToolButtonStyle::ToolButtonTextBesideIcon</enum>
-         </property>
-         <property name="autoRaise">
-          <bool>false</bool>
-         </property>
         </widget>
        </item>
        <item>
-        <widget class="QToolButton" name="swap_ids_btn">
+        <widget class="QPushButton" name="swap_ids_btn">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
            <horstretch>0</horstretch>
@@ -192,16 +171,10 @@
            <height>25</height>
           </size>
          </property>
-         <property name="toolButtonStyle">
-          <enum>Qt::ToolButtonStyle::ToolButtonTextBesideIcon</enum>
-         </property>
-         <property name="autoRaise">
-          <bool>false</bool>
-         </property>
         </widget>
        </item>
        <item>
-        <widget class="QToolButton" name="options_btn">
+        <widget class="QPushButton" name="options_btn">
          <property name="enabled">
           <bool>true</bool>
          </property>
@@ -230,16 +203,10 @@
          <property name="checkable">
           <bool>true</bool>
          </property>
-         <property name="toolButtonStyle">
-          <enum>Qt::ToolButtonStyle::ToolButtonTextBesideIcon</enum>
-         </property>
-         <property name="autoRaise">
-          <bool>false</bool>
-         </property>
         </widget>
        </item>
        <item>
-        <widget class="QToolButton" name="output_btn">
+        <widget class="QPushButton" name="output_btn">
          <property name="enabled">
           <bool>false</bool>
          </property>
@@ -266,15 +233,6 @@
           </size>
          </property>
          <property name="checkable">
-          <bool>false</bool>
-         </property>
-         <property name="popupMode">
-          <enum>QToolButton::ToolButtonPopupMode::InstantPopup</enum>
-         </property>
-         <property name="toolButtonStyle">
-          <enum>Qt::ToolButtonStyle::ToolButtonTextBesideIcon</enum>
-         </property>
-         <property name="autoRaise">
           <bool>false</bool>
          </property>
         </widget>

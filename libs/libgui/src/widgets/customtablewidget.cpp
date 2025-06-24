@@ -151,10 +151,10 @@ void CustomTableWidget::setSelectionMode(QAbstractItemView::SelectionMode sel_mo
 QTableWidgetItem *CustomTableWidget::getItem(unsigned row_idx, unsigned col_idx)
 {
 	if(row_idx >= static_cast<unsigned>(table_tbw->rowCount()))
-		throw Exception(ErrorCode::RefRowObjectTabInvalidIndex,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::RefRowObjectTabInvalidIndex,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	if(col_idx >= static_cast<unsigned>(table_tbw->columnCount()))
-		throw Exception(ErrorCode::RefColObjectTabInvalidIndex,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::RefColObjectTabInvalidIndex,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	return table_tbw->item(row_idx, col_idx);
 }
@@ -200,7 +200,7 @@ void CustomTableWidget::setAddRowOnTabPress(bool value)
 void CustomTableWidget::addCustomButton(QToolButton *btn)
 {
 	if(!btn)
-		throw Exception(ErrorCode::OprNotAllocatedObject, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+		throw Exception(ErrorCode::OprNotAllocatedObject, PGM_FUNC, PGM_FILE, PGM_LINE);
 
 	buttons_lt->addWidget(btn);
 	btn->setIconSize(add_tb->iconSize());
@@ -234,7 +234,7 @@ void CustomTableWidget::setHeaderLabel(const QString &label, unsigned col_idx)
 	QTableWidgetItem *item=nullptr;
 
 	if(col_idx >= static_cast<unsigned>(table_tbw->columnCount()))
-		throw Exception(ErrorCode::RefColObjectTabInvalidIndex,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::RefColObjectTabInvalidIndex,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	item=table_tbw->horizontalHeaderItem(col_idx);
 	item->setText(label);
@@ -243,7 +243,7 @@ void CustomTableWidget::setHeaderLabel(const QString &label, unsigned col_idx)
 void CustomTableWidget::setHeaderVisible(unsigned col_idx, bool visible)
 {
   if(col_idx >= static_cast<unsigned>(table_tbw->columnCount()))
-		throw Exception(ErrorCode::RefColObjectTabInvalidIndex,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::RefColObjectTabInvalidIndex,PGM_FUNC,PGM_FILE,PGM_LINE);
 
   table_tbw->horizontalHeader()->setSectionHidden(col_idx, !visible);
 }
@@ -253,7 +253,7 @@ void CustomTableWidget::setHeaderIcon(const QIcon &icon, unsigned col_idx)
 	QTableWidgetItem *item=nullptr;
 
 	if(col_idx >= static_cast<unsigned>(table_tbw->columnCount()))
-		throw Exception(ErrorCode::RefColObjectTabInvalidIndex,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::RefColObjectTabInvalidIndex,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	item=table_tbw->horizontalHeaderItem(col_idx);
 	item->setIcon(icon);
@@ -282,14 +282,14 @@ void CustomTableWidget::clearCellText(unsigned row_idx, unsigned col_idx)
 	}
 	catch(Exception &e)
 	{
-		throw Exception(e.getErrorMessage(), e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__, &e);
+		throw Exception(e.getErrorMessage(), e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 	}
 }
 
 void CustomTableWidget::setRowFont(int row_idx, const QFont &font)
 {
 	if(row_idx >= table_tbw->rowCount())
-		throw Exception(ErrorCode::RefRowObjectTabInvalidIndex,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::RefRowObjectTabInvalidIndex,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	int col_count = table_tbw->columnCount();
 
@@ -300,7 +300,7 @@ void CustomTableWidget::setRowFont(int row_idx, const QFont &font)
 void CustomTableWidget::setRowColors(int row_idx, const QColor &fg_color, const QColor &bg_color)
 {
 	if(row_idx >= table_tbw->rowCount())
-		throw Exception(ErrorCode::RefRowObjectTabInvalidIndex,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::RefRowObjectTabInvalidIndex,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	QTableWidgetItem *item=nullptr;
 	int col_count = table_tbw->columnCount();
@@ -322,7 +322,7 @@ void CustomTableWidget::setRowData(const QVariant &data, unsigned row_idx)
 	QTableWidgetItem *item=nullptr;
 
 	if(row_idx >= static_cast<unsigned>(table_tbw->rowCount()))
-		throw Exception(ErrorCode::RefRowObjectTabInvalidIndex,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::RefRowObjectTabInvalidIndex,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	//Gets the vertical header of the row. This header stores the whole row data.
 	item=table_tbw->verticalHeaderItem(row_idx);
@@ -344,7 +344,7 @@ QString CustomTableWidget::getHeaderLabel(unsigned col_idx)
 	QTableWidgetItem *item=nullptr;
 
 	if(col_idx >= static_cast<unsigned>(table_tbw->columnCount()))
-		throw Exception(ErrorCode::RefColObjectTabInvalidIndex,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::RefColObjectTabInvalidIndex,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	item=table_tbw->horizontalHeaderItem(col_idx);
 	return item->text();
@@ -358,7 +358,7 @@ QString CustomTableWidget::getCellText(unsigned row_idx, unsigned col_idx)
 	}
 	catch(Exception &e)
 	{
-		throw Exception(e.getErrorMessage(), e.getErrorCode(), __PRETTY_FUNCTION__, __FILE__, __LINE__, &e);
+		throw Exception(e.getErrorMessage(), e.getErrorCode(), PGM_FUNC, PGM_FILE, PGM_LINE, &e);
 	}
 }
 
@@ -380,7 +380,7 @@ QStringList CustomTableWidget::getCellTexts(unsigned int section_idx, Qt::Orient
 	}
 	catch(Exception &e)
 	{
-		throw Exception(e.getErrorMessage(), e.getErrorCode(), __PRETTY_FUNCTION__, __FILE__, __LINE__, &e);
+		throw Exception(e.getErrorMessage(), e.getErrorCode(), PGM_FUNC, PGM_FILE, PGM_LINE, &e);
 	}
 
 	return texts;
@@ -416,7 +416,7 @@ QVariant CustomTableWidget::getRowData(unsigned row_idx)
 	QTableWidgetItem *item=nullptr;
 
 	if(row_idx >= static_cast<unsigned>(table_tbw->rowCount()))
-		throw Exception(ErrorCode::RefRowObjectTabInvalidIndex,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::RefRowObjectTabInvalidIndex,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	item=table_tbw->verticalHeaderItem(row_idx);
 	return item->data(Qt::UserRole);
@@ -513,7 +513,7 @@ void CustomTableWidget::removeRow(unsigned row_idx)
 	bool conf = false;
 
 	if(row_idx >= static_cast<unsigned>(table_tbw->rowCount()))
-		throw Exception(ErrorCode::RefRowObjectTabInvalidIndex,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::RefRowObjectTabInvalidIndex,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	//Before remove the row, clears the selection
 	table_tbw->clearSelection();
@@ -627,7 +627,7 @@ void CustomTableWidget::removeRows()
 void CustomTableWidget::removeColumn(unsigned col_idx)
 {
 	if(col_idx >= static_cast<unsigned>(table_tbw->columnCount()))
-		throw Exception(ErrorCode::RefColObjectTabInvalidIndex,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::RefColObjectTabInvalidIndex,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	table_tbw->removeColumn(col_idx);
 	table_tbw->clearSelection();

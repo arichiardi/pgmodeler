@@ -57,7 +57,7 @@ set(SOURCES
     src/qtconnectmacros.h
     src/settings/appearanceconfigwidget.cpp src/settings/appearanceconfigwidget.h
     src/settings/baseconfigwidget.cpp src/settings/baseconfigwidget.h
-    src/settings/configurationform.cpp src/settings/configurationform.h
+    #src/settings/configurationform.cpp src/settings/configurationform.h
     src/settings/connectionsconfigwidget.cpp src/settings/connectionsconfigwidget.h
     src/settings/generalconfigwidget.cpp src/settings/generalconfigwidget.h
     src/settings/pluginsconfigwidget.cpp src/settings/pluginsconfigwidget.h
@@ -127,7 +127,8 @@ set(SOURCES
     src/widgets/tabledatawidget.cpp src/widgets/tabledatawidget.h
     src/widgets/taskprogresswidget.cpp src/widgets/taskprogresswidget.h
     src/widgets/updatenotifierwidget.cpp src/widgets/updatenotifierwidget.h
-    src/widgets/welcomewidget.cpp src/widgets/welcomewidget.h)
+    src/widgets/welcomewidget.cpp src/widgets/welcomewidget.h
+    src/settings/configurationwidget.h src/settings/configurationwidget.cpp)
 
 set(FORMS
     ui/baseform.ui
@@ -180,7 +181,7 @@ set(FORMS
     ui/settings/connectionsconfigwidget.ui
     ui/settings/pluginsconfigwidget.ui
     ui/settings/snippetsconfigwidget.ui
-    ui/settings/configurationform.ui
+    #ui/settings/configurationform.ui
     ui/settings/generalconfigwidget.ui
     ui/settings/relationshipconfigwidget.ui
     ui/tools/bugreportform.ui
@@ -224,7 +225,8 @@ set(FORMS
     ui/widgets/customsqlwidget.ui
     ui/widgets/modelnavigationwidget.ui
     ui/widgets/sceneinfowidget.ui
-    ui/widgets/welcomewidget.ui)
+    ui/widgets/welcomewidget.ui
+    ui/settings/configurationwidget.ui)
 
 set(RESOURCES res/resources.qrc)
 

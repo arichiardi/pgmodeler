@@ -30,12 +30,12 @@
 
 int MainWindow::ToolsActionsCount {0};
 bool MainWindow::confirm_validation {true};
+QList<QAction *> MainWindow::view_actions {};
 
 MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags) : QMainWindow(parent, flags)
-{
+{	
 	setupUi(this);
 	pending_op = NoPendingOp;
-	welcome_wgt = nullptr;
 	window_title = tr("pgModeler %1 - PostgreSQL Database Modeler %2");
 
 	#ifdef PRIVATE_PLUGINS_SYMBOLS
@@ -78,7 +78,7 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags) : QMainWindow(par
 	applyConfigurations();
 
 	SQLExecutionWidget::loadSQLHistory();
-	GeneralConfigWidget *conf_wgt=dynamic_cast<GeneralConfigWidget *>(configuration_form->getConfigurationWidget(ConfigurationForm::GeneralConfWgt));
+	GeneralConfigWidget *conf_wgt = configuration_wgt->getConfigurationWidget<GeneralConfigWidget>();
 	std::map<QString, attribs_map >confs = conf_wgt->getConfigurationParams();
 
 	//Restoring the canvas grid options
@@ -139,8 +139,8 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags) : QMainWindow(par
 			QTimer::singleShot(1000, action_donate, &QAction::trigger);
 	#endif
 
-	// Post initilize plug-ins
-	PluginsConfigWidget *plugins_conf_wgt = dynamic_cast<PluginsConfigWidget *>(configuration_form->getConfigurationWidget(ConfigurationForm::PluginsConfWgt));
+	// Post initilize plug-ins	
+	PluginsConfigWidget *plugins_conf_wgt = configuration_wgt->getConfigurationWidget<PluginsConfigWidget>();
 	plugins_conf_wgt->postInitPlugins();
 
 	// Updating drop shadows settings to match the current UI theme
@@ -154,7 +154,6 @@ MainWindow::~MainWindow()
 
 	delete restoration_form;
 	delete overview_wgt;
-	delete configuration_form;
 }
 
 bool MainWindow::mimeDataHasModelFiles(const QMimeData *mime_data)
@@ -225,7 +224,7 @@ void MainWindow::configureMenusActionsWidgets()
 	QAction *act_fix = fix_menu.menuAction();
 	act_fix->setIcon(QIcon(GuiUtilsNs::getIconPath("fix")));
 	act_fix->setText(tr("Fix"));
-	tools_acts_tb->insertAction(action_configuration, fix_menu.menuAction());
+	tools_acts_tb->insertAction(action_configure, fix_menu.menuAction());
 	QToolButton *tool_btn = qobject_cast<QToolButton *>(tools_acts_tb->widgetForAction(fix_menu.menuAction()));
 	tool_btn->setPopupMode(QToolButton::InstantPopup);
 
@@ -268,9 +267,6 @@ void MainWindow::configureMenusActionsWidgets()
 	arrange_menu.addAction(tr("Scattered"), this, &MainWindow::arrangeObjects);
 
 	models_tbw->tabBar()->setVisible(false);
-	action_welcome->setData(WelcomeView);
-	action_design->setData(DesignView);
-	action_manage->setData(ManageView);
 
 	//Enables the action to restore session when there are registered session files
 	action_restore_session->setEnabled(!prev_session_files.isEmpty());
@@ -385,6 +381,7 @@ void MainWindow::configureMenusActionsWidgets()
 		/* Setting a name for the action's tool button so it can
 		 * be uniquely identified when handling styles via Qt Stylesheets */
 		btn->setObjectName(act->objectName() + "_tb");
+		btn->setProperty("view_btn", true);
 		GuiUtilsNs::createDropShadow(btn, 1, 1, 5);
 	}
 
@@ -470,7 +467,7 @@ void MainWindow::createMainWidgets()
 		hbox->setContentsMargins(0, GuiUtilsNs::LtMargin, 0, 0);
 		scene_info_parent->setLayout(hbox);
 
-		welcome_wgt=new WelcomeWidget(views_stw);
+		welcome_wgt = new WelcomeWidget(this);
 		welcome_wgt->setObjectName("welcome_wgt");
 
 		QVBoxLayout *vbox = new QVBoxLayout;
@@ -479,13 +476,21 @@ void MainWindow::createMainWidgets()
 		vbox->addWidget(welcome_wgt);
 		views_stw->widget(WelcomeView)->setLayout(vbox);
 
-		sql_tool_wgt = new SQLToolWidget;
+		sql_tool_wgt = new SQLToolWidget(this);
 		sql_tool_wgt->setObjectName("sql_tool_wgt");
 		vbox = new QVBoxLayout;
 		vbox->setContentsMargins(0,0,0,0);
 		vbox->setSpacing(0);
 		vbox->addWidget(sql_tool_wgt);
 		views_stw->widget(ManageView)->setLayout(vbox);
+
+		configuration_wgt = new ConfigurationWidget(this);
+		sql_tool_wgt->setObjectName("configuration_wgt");
+		vbox = new QVBoxLayout;
+		vbox->setContentsMargins(0,0,0,0);
+		vbox->setSpacing(0);
+		vbox->addWidget(configuration_wgt);
+		views_stw->widget(SettingsView)->setLayout(vbox);
 
 		model_nav_wgt=new ModelNavigationWidget(this);
 		model_nav_wgt->setObjectName("model_nav_wgt");
@@ -510,7 +515,7 @@ void MainWindow::createMainWidgets()
 	catch(Exception &e)
 	{
 		handleInitializationFailure(e);
-		throw Exception(e.getErrorMessage(), e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__, &e);
+		throw Exception(e.getErrorMessage(), e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 	}
 }
 
@@ -518,11 +523,9 @@ void MainWindow::loadConfigurations()
 {
 	try
 	{
-		configuration_form=new ConfigurationForm(nullptr, Qt::WindowTitleHint | Qt::WindowMinMaxButtonsHint | Qt::WindowCloseButtonHint);
-		GuiUtilsNs::resizeDialog(configuration_form);
-		configuration_form->loadConfiguration();
+		configuration_wgt->loadConfiguration();
 
-		PluginsConfigWidget *plugins_conf_wgt = dynamic_cast<PluginsConfigWidget *>(configuration_form->getConfigurationWidget(ConfigurationForm::PluginsConfWgt));
+		PluginsConfigWidget *plugins_conf_wgt = configuration_wgt->getConfigurationWidget<PluginsConfigWidget>();
 		plugins_conf_wgt->initPlugins(this);
 
 		plugins_tb_acts = PgModelerGuiPlugin::getPluginsActions(PgModelerGuiPlugin::ToolbarAction);
@@ -558,7 +561,7 @@ void MainWindow::loadConfigurations()
 	catch(Exception &e)
 	{
 		handleInitializationFailure(e);
-		throw Exception(e.getErrorMessage(), e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__, &e);
+		throw Exception(e.getErrorMessage(), e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 	}
 }
 
@@ -635,26 +638,13 @@ void MainWindow::connectSignalsToSlots()
 
 	connect(action_print, &QAction::triggered, this, &MainWindow::printModel);
 
-	connect(action_configuration, &QAction::triggered, this, [this](){
-		GeneralConfigWidget::restoreWidgetGeometry(configuration_form);
-		configuration_form->exec();
-		GeneralConfigWidget::saveWidgetGeometry(configuration_form);
-	});
-
 	connect(oper_list_wgt, &OperationListWidget::s_operationExecuted, overview_wgt, qOverload<>(&ModelOverviewWidget::updateOverview));
 	connect(oper_list_wgt, &OperationListWidget::s_operationExecuted, layers_cfg_wgt, &LayersConfigWidget::updateLayersRects);
 	connect(layers_cfg_wgt, &LayersConfigWidget::s_activeLayersChanged, overview_wgt, qOverload<>(&ModelOverviewWidget::updateOverview));
 
-	connect(configuration_form, &ConfigurationForm::finished, this, &MainWindow::applyConfigurations);
-
-	connect(configuration_form, &ConfigurationForm::rejected, this, [this]() {
-		updateConnections();
-	});
-
-	connect(configuration_form, &ConfigurationForm::s_invalidateModelsRequested, this, [this](){
-		//Forcing the models code invalidation if the user changes the escape comments option
-		for(int idx = 0; idx < models_tbw->count(); idx++)
-			dynamic_cast<ModelWidget *>(models_tbw->widget(idx))->getDatabaseModel()->setCodesInvalidated();
+	connect(configuration_wgt, &ConfigurationWidget::s_configurationChanged, this, &MainWindow::applyConfigurations);
+	connect(configuration_wgt, &ConfigurationWidget::s_configurationReverted, this, [this]() {
+		updateConnections(true);
 	});
 
 	connect(&model_save_timer, &QTimer::timeout, this, &MainWindow::saveAllModels);
@@ -663,10 +653,25 @@ void MainWindow::connectSignalsToSlots()
 	connect(action_import, &QAction::triggered, this, &MainWindow::importDatabase);
 	connect(action_diff, &QAction::triggered, this, &MainWindow::diffModelDatabase);
 
-	connect(action_welcome, &QAction::triggered, this, &MainWindow::changeCurrentView);
-	connect(action_design, &QAction::triggered, this, &MainWindow::changeCurrentView);
-	connect(action_manage, &QAction::triggered, this, &MainWindow::changeCurrentView);
-	connect(action_manage, &QAction::toggled, this, &MainWindow::changeCurrentView);
+	/* Configuring the view switching actions slots.
+	 * ATTENTION: The order of the actions in the list below
+	 * must match the enum MWViewsId otherwise the views will
+	 * be switched in the wrong order when the user activate
+	 * one of the actions */
+	view_actions.append({
+		action_welcome, action_design,
+		action_manage, action_import,
+		action_export, action_diff,
+		action_configure
+	});
+
+	int vw_id = 0;
+	for(auto &act : view_actions)
+	{
+		act->setData(static_cast<MWViewsId>(vw_id++));
+		//connect(act, &QAction::triggered, this, &MainWindow::changeCurrentView);
+		connect(act, &QAction::toggled, this, &MainWindow::changeCurrentView);
+	}
 
 	connect(action_bug_report, &QAction::triggered, this, &MainWindow::reportBug);
 	connect(action_handle_metadata, &QAction::triggered, this, &MainWindow::handleObjectsMetadata);
@@ -681,28 +686,28 @@ void MainWindow::connectSignalsToSlots()
 
 	connect(action_compact_view, &QAction::triggered, this, &MainWindow::toggleCompactView);
 
-	connect(objects_btn, &QToolButton::toggled, model_objs_parent, &QWidget::setVisible);
-	connect(objects_btn, &QToolButton::toggled, model_objs_wgt, &ModelObjectsWidget::setVisible);
-	connect(objects_btn, &QToolButton::toggled, this, &MainWindow::showRightWidgetsBar);
-	connect(model_objs_wgt, qOverload<bool>(&ModelObjectsWidget::s_visibilityChanged), objects_btn, &QToolButton::setChecked);
+	connect(objects_btn, &QPushButton::toggled, model_objs_parent, &QWidget::setVisible);
+	connect(objects_btn, &QPushButton::toggled, model_objs_wgt, &ModelObjectsWidget::setVisible);
+	connect(objects_btn, &QPushButton::toggled, this, &MainWindow::showRightWidgetsBar);
+	connect(model_objs_wgt, qOverload<bool>(&ModelObjectsWidget::s_visibilityChanged), objects_btn, &QPushButton::setChecked);
 	connect(model_objs_wgt, qOverload<bool>(&ModelObjectsWidget::s_visibilityChanged), this, &MainWindow::showRightWidgetsBar);
 
-	connect(operations_btn, &QToolButton::toggled, oper_list_parent, &QWidget::setVisible);
-	connect(operations_btn, &QToolButton::toggled, oper_list_wgt, &OperationListWidget::setVisible);
-	connect(operations_btn, &QToolButton::toggled, this, &MainWindow::showRightWidgetsBar);
-	connect(oper_list_wgt, &OperationListWidget::s_hideRequested, operations_btn, &QToolButton::toggle);
+	connect(operations_btn, &QPushButton::toggled, oper_list_parent, &QWidget::setVisible);
+	connect(operations_btn, &QPushButton::toggled, oper_list_wgt, &OperationListWidget::setVisible);
+	connect(operations_btn, &QPushButton::toggled, this, &MainWindow::showRightWidgetsBar);
+	connect(oper_list_wgt, &OperationListWidget::s_hideRequested, operations_btn, &QPushButton::toggle);
 	connect(oper_list_wgt, &OperationListWidget::s_hideRequested, this, &MainWindow::showRightWidgetsBar);
 
-	connect(validation_btn, &QToolButton::toggled, model_valid_parent, &QWidget::setVisible);
-	connect(validation_btn, &QToolButton::toggled, model_valid_wgt, &ModelValidationWidget::setVisible);
-	connect(validation_btn, &QToolButton::toggled, this, &MainWindow::showBottomWidgetsBar);
-	connect(model_valid_wgt, &ModelValidationWidget::s_hideRequested, validation_btn, &QToolButton::toggle);
+	connect(validation_btn, &QPushButton::toggled, model_valid_parent, &QWidget::setVisible);
+	connect(validation_btn, &QPushButton::toggled, model_valid_wgt, &ModelValidationWidget::setVisible);
+	connect(validation_btn, &QPushButton::toggled, this, &MainWindow::showBottomWidgetsBar);
+	connect(model_valid_wgt, &ModelValidationWidget::s_hideRequested, validation_btn, &QPushButton::toggle);
 	connect(model_valid_wgt, &ModelValidationWidget::s_hideRequested, this, &MainWindow::showBottomWidgetsBar);
 
-	connect(search_obj_btn, &QToolButton::toggled, obj_search_parent, &QWidget::setVisible);
-	connect(search_obj_btn, &QToolButton::toggled, obj_finder_wgt, &ObjectSearchWidget::setVisible);
-	connect(search_obj_btn, &QToolButton::toggled, this, &MainWindow::showBottomWidgetsBar);
-	connect(obj_finder_wgt, &ObjectSearchWidget::s_hideRequested, search_obj_btn, &QToolButton::toggle);
+	connect(search_obj_btn, &QPushButton::toggled, obj_search_parent, &QWidget::setVisible);
+	connect(search_obj_btn, &QPushButton::toggled, obj_finder_wgt, &ObjectSearchWidget::setVisible);
+	connect(search_obj_btn, &QPushButton::toggled, this, &MainWindow::showBottomWidgetsBar);
+	connect(obj_finder_wgt, &ObjectSearchWidget::s_hideRequested, search_obj_btn, &QPushButton::toggle);
 	connect(obj_finder_wgt, &ObjectSearchWidget::s_hideRequested, this, &MainWindow::showBottomWidgetsBar);
 
 	connect(model_valid_wgt, &ModelValidationWidget::s_validationInProgress, this->main_menu_mb, &QMenu::setDisabled);
@@ -788,7 +793,7 @@ void MainWindow::restoreTemporaryModels()
 					if(!restoration_form->keep_models_chk->isChecked())
 						restoration_form->removeTemporaryModel(model_file);
 
-					Messagebox::error(e, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+					Messagebox::error(e, PGM_FUNC, PGM_FILE, PGM_LINE);
 				}
 			}
 		}
@@ -799,13 +804,13 @@ bool MainWindow::isToolButtonsChecked(QHBoxLayout *layout, const QWidgetList &ig
 {
 	int i = 0;
 	bool show = false;
-	QToolButton * btn = nullptr;
+	QAbstractButton * btn = nullptr;
 
 	//This is currently the only way to enumerate widgets inside a layout.
 	//See https://stackoverflow.com/a/27225570/7359123
 	while(layout && layout->itemAt(i) && !show)
 	{
-		btn = dynamic_cast<QToolButton *>(layout->itemAt(i)->widget());
+		btn = dynamic_cast<QAbstractButton *>(layout->itemAt(i)->widget());
 		i++;
 
 		if(ignored_wgts.contains(btn))
@@ -871,7 +876,7 @@ void MainWindow::restoreLastSession()
 		catch(Exception &e)
 		{
 			//qApp->restoreOverrideCursor();
-			Messagebox::error(e, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+			Messagebox::error(e, PGM_FUNC, PGM_FILE, PGM_LINE);
 		}
 	}
 }
@@ -939,9 +944,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
 		event->ignore();
 	else
 	{
-		GeneralConfigWidget *conf_wgt = dynamic_cast<GeneralConfigWidget *>(configuration_form->getConfigurationWidget(ConfigurationForm::GeneralConfWgt));
-		//std::map<QString, attribs_map > confs = conf_wgt->getConfigurationParams();
-		GeneralConfigWidget::saveWidgetGeometry(this);
+		GeneralConfigWidget *conf_wgt = configuration_wgt->getConfigurationWidget<GeneralConfigWidget>();
 
 		//Stops the saving timers as well the temp. model saving thread before close pgmodeler
 		model_save_timer.stop();
@@ -955,23 +958,19 @@ void MainWindow::closeEvent(QCloseEvent *event)
 		//Checking if there is modified models and ask the user to save them before close the application
 		if(models_tbw->count() > 0)
 		{
-			int i = 0;
 			QStringList model_names;
 			ModelWidget *model = nullptr;
 
 			action_design->trigger();
-			i=0;
-			while(i < models_tbw->count())
-			{
-				model=dynamic_cast<ModelWidget *>(models_tbw->widget(i++));
 
+			for(auto &model : models_tbw->findChildren<ModelWidget *>())
+			{
 				if(model->isModified())
 					model_names.push_back(QString("<strong>%1</strong>").arg(model->getDatabaseModel()->getName()));
 			}
 
 			if(!model_names.isEmpty() &&
-					conf_wgt->getConfigurationParam(Attributes::Configuration, Attributes::AlertUnsavedModels) != Attributes::False
-					/* confs[Attributes::Configuration][Attributes::AlertUnsavedModels] != Attributes::False */)
+					conf_wgt->getConfigurationParam(Attributes::Configuration, Attributes::AlertUnsavedModels) != Attributes::False)
 			{
 				msg_box.setCustomOptionText(tr("Always close without alerting me next time."));
 				msg_box.show(tr("Unsaved model(s)"),
@@ -983,7 +982,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
 																								msg_box.isCustomOptionChecked() ? Attributes::False : Attributes::True }});
 
 				/* If the user rejects the message box the close event will be aborted
-				causing pgModeler not to be finished */
+				 * causing pgModeler not to be finished */
 				if(msg_box.isRejected())
 					event->ignore();
 			}
@@ -991,8 +990,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
 		// Warning the user about non empty sql execution panels
 		if(event->isAccepted() && sql_tool_wgt->hasSQLExecutionPanels() &&
-				conf_wgt->getConfigurationParam(Attributes::Configuration, Attributes::AlertOpenSqlTabs) != Attributes::False
-				/* confs[Attributes::Configuration][Attributes::AlertOpenSqlTabs] != Attributes::False */)
+				conf_wgt->getConfigurationParam(Attributes::Configuration, Attributes::AlertOpenSqlTabs) != Attributes::False)
 		{
 			action_manage->trigger();
 			msg_box.setCustomOptionText(tr("Always close without alerting me next time."));
@@ -1013,6 +1011,11 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
 		if(!event->isAccepted())
 			return;
+
+		/* If we have any uncommited config changes, we discard them
+		 * reloading the original ones */
+		configuration_wgt->discardConfiguration<GeneralConfigWidget>();
+		GeneralConfigWidget::saveWidgetGeometry(this);
 
 		QString param_id;
 		attribs_map attribs;
@@ -1035,16 +1038,16 @@ void MainWindow::closeEvent(QCloseEvent *event)
 		//Saving the session
 		for(auto i = 0; i < models_tbw->count(); i++)
 		{
-			model=dynamic_cast<ModelWidget *>(models_tbw->widget(i));
+			model = dynamic_cast<ModelWidget *>(models_tbw->widget(i));
 
 			if(!model->getFilename().isEmpty() &&
 				 /* Models loaded from temporary dir are not included in the session
 					* since they are removed once pgModeler is closed */
 				 !model->getFilename().contains(GlobalAttributes::getTemporaryPath()))
 			{
-				param_id=QString("%1%2").arg(Attributes::File).arg(i);
-				attribs[Attributes::Id]=param_id;
-				attribs[Attributes::Path]=model->getFilename();
+				param_id = QString("%1%2").arg(Attributes::File).arg(i);
+				attribs[Attributes::Id] = param_id;
+				attribs[Attributes::Path] = model->getFilename();
 				conf_wgt->setConfigurationSection(param_id, attribs);
 				attribs.clear();
 			}
@@ -1053,18 +1056,17 @@ void MainWindow::closeEvent(QCloseEvent *event)
 		//Saving recent models list
 		if(!recent_models.isEmpty())
 		{
-			int i=0;
+			int i = 0;
 			QString param_id;
 			attribs_map attribs;
 
-			while(!recent_models.isEmpty())
+			for(auto &rec_model : recent_models)
 			{
-				param_id=QString("%1%2").arg(Attributes::Recent).arg(QString::number(i++).rightJustified(2, '0'));
-				attribs[Attributes::Id]=param_id;
-				attribs[Attributes::Path]=recent_models.front();
+				param_id = QString("%1%2").arg(Attributes::Recent).arg(QString::number(i++).rightJustified(2, '0'));
+				attribs[Attributes::Id] = param_id;
+				attribs[Attributes::Path] = rec_model;
 				conf_wgt->setConfigurationSection(param_id, attribs);
 				attribs.clear();
-				recent_models.pop_front();
 			}
 
 			recent_models_menu->clear();
@@ -1085,11 +1087,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
 void MainWindow::updateConnections(bool force)
 {
-	ConnectionsConfigWidget *conn_cfg_wgt=
-			dynamic_cast<ConnectionsConfigWidget *>(configuration_form->getConfigurationWidget(ConfigurationForm::ConnectionsConfWgt));
-
-	if(force || (!force && (conn_cfg_wgt->isConfigurationChanged() ||
-													model_valid_wgt->connections_cmb->count() == 0 ||
+	if(force || (!force && (model_valid_wgt->connections_cmb->count() == 0 ||
 													sql_tool_wgt->connections_cmb->count() == 0)))
 	{
 		if(sender() != sql_tool_wgt)
@@ -1140,8 +1138,7 @@ void MainWindow::saveTemporaryModels()
 	}
 	catch(Exception &e)
 	{
-		//qApp->restoreOverrideCursor();
-		Messagebox::error(e, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+		Messagebox::error(e, PGM_FUNC, PGM_FILE, PGM_LINE);
 		tmpmodel_save_timer.start();
 	}
 #endif
@@ -1251,7 +1248,7 @@ void MainWindow::loadModelFromAction()
 			if(QFileInfo(filename).exists())
 				showFixMessage(e, filename);
 			else
-				Messagebox::error(e, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+				Messagebox::error(e, PGM_FUNC, PGM_FILE, PGM_LINE);
 		}
 	}
 }
@@ -1328,7 +1325,7 @@ void MainWindow::addModel(const QString &filename)
 
 				updateToolsState(true);
 
-				throw Exception(e.getErrorMessage(),e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__, &e);
+				throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 			}
 		}
 
@@ -1354,7 +1351,7 @@ void MainWindow::addModel(const QString &filename)
 	}
 	catch(Exception &e)
 	{
-		throw Exception(e.getErrorMessage(),e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__, &e);
+		throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 	}
 }
 
@@ -1372,9 +1369,9 @@ void MainWindow::addModel(ModelWidget *model_wgt)
 	try
 	{
 		if(!model_wgt)
-			throw Exception(ErrorCode::AsgNotAllocattedObject,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+			throw Exception(ErrorCode::AsgNotAllocattedObject,PGM_FUNC,PGM_FILE,PGM_LINE);
 		else if(model_wgt->parent())
-			throw Exception(ErrorCode::AsgWidgetAlreadyHasParent,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+			throw Exception(ErrorCode::AsgWidgetAlreadyHasParent,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 		model_nav_wgt->addModel(model_wgt);
 		models_tbw->blockSignals(true);
@@ -1390,7 +1387,7 @@ void MainWindow::addModel(ModelWidget *model_wgt)
 	}
 	catch(Exception &e)
 	{
-		throw Exception(e.getErrorMessage(),e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__, &e);
+		throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 	}
 }
 
@@ -1402,7 +1399,7 @@ int MainWindow::getModelCount()
 ModelWidget *MainWindow::getModel(int idx)
 {
 	if(idx < 0 || idx > models_tbw->count())
-		throw Exception(ErrorCode::RefObjectInvalidIndex,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::RefObjectInvalidIndex,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	return dynamic_cast<ModelWidget *>(models_tbw->widget(idx));
 }
@@ -1572,7 +1569,7 @@ void MainWindow::setCurrentModel()
 	updateWindowTitle();
 
 	edit_menu->addSeparator();
-	edit_menu->addAction(action_configuration);
+	edit_menu->addAction(action_configure);
 
 	updateToolsState();
 
@@ -1594,7 +1591,7 @@ void MainWindow::setCurrentModel()
 
 void MainWindow::setGridOptions()
 {
-	GeneralConfigWidget *conf_wgt = dynamic_cast<GeneralConfigWidget *>(configuration_form->getConfigurationWidget(ConfigurationForm::GeneralConfWgt));
+	GeneralConfigWidget *conf_wgt = configuration_wgt->getConfigurationWidget<GeneralConfigWidget>();
 	std::map<QString, attribs_map> attribs = conf_wgt->getConfigurationParams();
 
 	ObjectsScene::setShowGrid(action_show_grid->isChecked());
@@ -1738,59 +1735,49 @@ void MainWindow::updateWindowTitle()
 
 void MainWindow::applyConfigurations()
 {
-  if(!sender() ||
-			(sender()==configuration_form && configuration_form->result()==QDialog::Accepted))
+	GeneralConfigWidget *conf_wgt =
+			configuration_wgt->getConfigurationWidget<GeneralConfigWidget>();
+
+	scene_info_wgt->obj_sel_info_frm->setHidden(conf_wgt->hide_obj_sel_info_chk->isChecked());
+	scene_info_wgt->cursor_pos_info_frm->setHidden(conf_wgt->hide_cur_pos_zoom_info_chk->isChecked());
+
+	//Disable the auto save if the option is not checked
+	if(!conf_wgt->autosave_interv_chk->isChecked())
 	{
-		GeneralConfigWidget *conf_wgt=nullptr;
-		int count, i;
-		ModelWidget *model=nullptr;
-
-		conf_wgt = dynamic_cast<GeneralConfigWidget *>(configuration_form->getConfigurationWidget(ConfigurationForm::GeneralConfWgt));
-
-		scene_info_wgt->obj_sel_info_frm->setHidden(conf_wgt->hide_obj_sel_info_chk->isChecked());
-		scene_info_wgt->cursor_pos_info_frm->setHidden(conf_wgt->hide_cur_pos_zoom_info_chk->isChecked());
-
-		//Disable the auto save if the option is not checked
-		if(!conf_wgt->autosave_interv_chk->isChecked())
-		{
-			//Stop the save timer
-			model_save_timer.setInterval(InfinityInterval);
-			model_save_timer.stop();
-		}
-		else
-		{
-			model_save_timer.setInterval(conf_wgt->autosave_interv_spb->value() * 60000);
-			model_save_timer.start();
-		}
-
-		//Temporary models are saved every five minutes
-		tmpmodel_save_timer.setInterval(model_save_timer.interval() < InfinityInterval ? model_save_timer.interval()/2 : 300000);
-		tmpmodel_save_timer.start();
-
-		qApp->setOverrideCursor(Qt::WaitCursor);
-
-		//Force the update of all opened models
-		count=models_tbw->count();
-		for(i=0; i < count; i++)
-		{
-			model=dynamic_cast<ModelWidget *>(models_tbw->widget(i));
-			model->updateObjectsOpacity();
-			model->db_model->setObjectsModified();
-		}
-
-		if(current_model)
-			setGridOptions();
-
-		updateConnections();
-		sql_tool_wgt->configureSnippets();
-		sql_tool_wgt->reloadHighlightConfigs();
-
-		qApp->restoreOverrideCursor();
+		//Stop the save timer
+		model_save_timer.setInterval(InfinityInterval);
+		model_save_timer.stop();
+	}
+	else
+	{
+		model_save_timer.setInterval(conf_wgt->autosave_interv_spb->value() * 60000);
+		model_save_timer.start();
 	}
 
-	sql_tool_wgt->updateTabs();
-}
+	//Temporary models are saved every five minutes
+	tmpmodel_save_timer.setInterval(model_save_timer.interval() < InfinityInterval ? model_save_timer.interval()/2 : 300000);
+	tmpmodel_save_timer.start();
 
+	qApp->setOverrideCursor(Qt::WaitCursor);
+
+	//Force the update of all opened models
+	for(auto &model : models_tbw->findChildren<ModelWidget *>())
+	{
+		model->updateObjectsOpacity();
+		model->db_model->setObjectsModified();
+		model->db_model->setCodesInvalidated();
+	}
+
+	if(current_model)
+		setGridOptions();
+
+	updateConnections(true);
+	sql_tool_wgt->configureSnippets();
+	sql_tool_wgt->reloadHighlightConfigs();
+	sql_tool_wgt->updateTabs();
+
+	qApp->restoreOverrideCursor();
+}
 
 void MainWindow::saveAllModels()
 {
@@ -1807,7 +1794,7 @@ void MainWindow::saveAllModels()
 	}
 	catch(Exception &e)
 	{
-		Messagebox::error(e, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+		Messagebox::error(e, PGM_FUNC, PGM_FILE, PGM_LINE);
 	}
 }
 
@@ -1915,7 +1902,7 @@ void MainWindow::saveModel(ModelWidget *model)
 	catch(Exception &e)
 	{
 		stopTimers(false);
-		throw Exception(e.getErrorMessage(),e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__, &e);
+		throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 	}
 #endif
 }
@@ -2047,7 +2034,7 @@ void MainWindow::printModel()
 		QPrintDialog print_dlg;
 		QPrinter *printer=nullptr;
 		QPageLayout curr_page_lt, orig_page_lt;
-		GeneralConfigWidget *conf_wgt=dynamic_cast<GeneralConfigWidget *>(configuration_form->getConfigurationWidget(ConfigurationForm::GeneralConfWgt));
+		GeneralConfigWidget *conf_wgt = configuration_wgt->getConfigurationWidget<GeneralConfigWidget>();
 
 		print_dlg.setOption(QAbstractPrintDialog::PrintCurrentPage, false);
 		print_dlg.setWindowTitle(tr("Database model printing"));
@@ -2114,7 +2101,7 @@ void MainWindow::loadModel()
 	}
 	catch(Exception &e)
 	{
-		Messagebox::error(e, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+		Messagebox::error(e, PGM_FUNC, PGM_FILE, PGM_LINE);
 	}
 }
 
@@ -2161,7 +2148,7 @@ void MainWindow::loadModels(const QStringList &files)
 			showFixMessage(e, files[i]);
 		else
 		{
-			Messagebox::error(e, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+			Messagebox::error(e, PGM_FUNC, PGM_FILE, PGM_LINE);
 		}
 	}
 }
@@ -2171,7 +2158,7 @@ void MainWindow::showFixMessage(Exception &e, const QString &filename)
 	Messagebox msg_box;
 
 	msg_box.show(Exception(Exception::getErrorMessage(ErrorCode::ModelFileNotLoaded).arg(filename),
-												 ErrorCode::ModelFileNotLoaded ,__PRETTY_FUNCTION__,__FILE__,__LINE__, &e),
+												 ErrorCode::ModelFileNotLoaded ,PGM_FUNC,PGM_FILE,PGM_LINE, &e),
 							 tr("Could not load the database model file `%1'! Check the error stack to see details. You can try to fix it in order to make it loadable again.").arg(filename),
 							 Messagebox::ErrorIcon, Messagebox::YesNoButtons,
 							 tr("Fix model"), tr("Cancel"), "",
@@ -2324,7 +2311,7 @@ void MainWindow::setFloatingWidgetPos(QWidget *widget, QAction *act, QToolBar *t
 	widget->move(pos);
 }
 
-void MainWindow::setBottomFloatingWidgetPos(QWidget *widget, QToolButton *btn)
+void MainWindow::setBottomFloatingWidgetPos(QWidget *widget, QAbstractButton *btn)
 {
 	if(!widget || !btn)
 		return;
@@ -2369,7 +2356,7 @@ void MainWindow::configureSamplesMenu()
 
 void MainWindow::storeDockWidgetsSettings()
 {
-	GeneralConfigWidget *conf_wgt=dynamic_cast<GeneralConfigWidget *>(configuration_form->getConfigurationWidget(ConfigurationForm::GeneralConfWgt));
+	GeneralConfigWidget *conf_wgt = configuration_wgt->getConfigurationWidget<GeneralConfigWidget>();
 	attribs_map params;
 
 	params[Attributes::Validator]=Attributes::True;
@@ -2389,8 +2376,8 @@ void MainWindow::storeDockWidgetsSettings()
 	params.clear();
 
 	params[Attributes::SqlTool]=Attributes::True;
-	params[Attributes::ShowAttributesGrid]=(sql_tool_wgt->attributes_tb->isChecked() ? Attributes::True : "");
-	params[Attributes::ShowSourcePane]=(sql_tool_wgt->source_pane_tb->isChecked() ? Attributes::True : "");
+	params[Attributes::ShowAttributesGrid]=(sql_tool_wgt->attributes_btn->isChecked() ? Attributes::True : "");
+	params[Attributes::ShowSourcePane]=(sql_tool_wgt->source_pane_btn->isChecked() ? Attributes::True : "");
 	conf_wgt->setConfigurationSection(Attributes::SqlTool, params);
 	params.clear();
 
@@ -2402,7 +2389,7 @@ void MainWindow::storeDockWidgetsSettings()
 
 void MainWindow::restoreDockWidgetsSettings()
 {
-	GeneralConfigWidget *conf_wgt=dynamic_cast<GeneralConfigWidget *>(configuration_form->getConfigurationWidget(ConfigurationForm::GeneralConfWgt));
+	GeneralConfigWidget *conf_wgt = configuration_wgt->getConfigurationWidget<GeneralConfigWidget>();
 	std::map<QString, attribs_map> confs=conf_wgt->getConfigurationParams();
 
 #ifndef DEMO_VERSION
@@ -2425,8 +2412,8 @@ void MainWindow::restoreDockWidgetsSettings()
 
 	if(confs.count(Attributes::SqlTool))
 	{
-		sql_tool_wgt->attributes_tb->setChecked(confs[Attributes::SqlTool][Attributes::ShowAttributesGrid]==Attributes::True);
-		sql_tool_wgt->source_pane_tb->setChecked(confs[Attributes::SqlTool][Attributes::ShowSourcePane]==Attributes::True);
+		sql_tool_wgt->attributes_btn->setChecked(confs[Attributes::SqlTool][Attributes::ShowAttributesGrid]==Attributes::True);
+		sql_tool_wgt->source_pane_btn->setChecked(confs[Attributes::SqlTool][Attributes::ShowSourcePane]==Attributes::True);
 	}
 
 	if(confs.count(Attributes::LayersConfig))
@@ -2486,44 +2473,54 @@ void MainWindow::executePendingOperation(bool valid_error)
 
 void MainWindow::changeCurrentView(bool checked)
 {
-	QAction *curr_act=qobject_cast<QAction *>(sender());
+	QAction *curr_act = qobject_cast<QAction *>(sender());
+
+	/* If the user let uncommited configuration changes
+	 * we don't change the view and keep the configuration view open */
+	if(checked && configuration_wgt->checkChangedConfiguration() == Messagebox::Canceled)
+	{
+		curr_act->blockSignals(true);
+		curr_act->setChecked(false);
+		curr_act->blockSignals(false);
+		return;
+	}
 
 	layers_cfg_wgt->setVisible(false);
 	changelog_wgt->setVisible(false);
 
 	if(checked)
 	{
-		bool enable=(curr_act==action_design);
+		bool enable = (curr_act == action_design);
 		QList<QAction *> actions;
 
-		action_welcome->blockSignals(true);
-		action_manage->blockSignals(true);
-		action_design->blockSignals(true);
+		for(auto &vw_act : view_actions)
+		{
+			vw_act->blockSignals(true);
+			vw_act->setChecked(false);
 
-		action_welcome->setChecked(false);
-		action_manage->setChecked(false);
-		action_design->setChecked(false);
+			if(!curr_act->isChecked())
+			{
+				curr_act->setChecked(true);
+				views_stw->setCurrentIndex(curr_act->data().toInt());
+			}
 
-		curr_act->setChecked(true);
-		views_stw->setCurrentIndex(curr_act->data().toInt());
+			vw_act->blockSignals(false);
+		}
 
-		action_welcome->blockSignals(false);
-		action_manage->blockSignals(false);
-		action_design->blockSignals(false);
-
-		actions=tools_acts_tb->actions();
-		for(int i=ToolsActionsCount; i < actions.count(); i++)
+		actions = tools_acts_tb->actions();
+		for(int i = ToolsActionsCount; i < actions.count(); i++)
 			actions[i]->setEnabled(enable);
 
 		if(!enable)
 			overview_wgt->close();
 
-		actions=edit_menu->actions();
-		actions.removeOne(action_configuration);
+		actions = edit_menu->actions();
+		actions.removeOne(action_configure);
+
 		for(auto &act : actions)
 			act->setEnabled(enable);
 
-		actions=show_menu->actions();
+		actions = show_menu->actions();
 		for(auto &act : actions)
 			act->setEnabled(enable);
 
@@ -2600,7 +2597,7 @@ void MainWindow::arrangeObjects()
 void MainWindow::toggleCompactView()
 {
 	ModelWidget *model_wgt = nullptr;
-	GeneralConfigWidget *conf_wgt = dynamic_cast<GeneralConfigWidget *>(configuration_form->getConfigurationWidget(ConfigurationForm::GeneralConfWgt));
+	GeneralConfigWidget *conf_wgt = configuration_wgt->getConfigurationWidget<GeneralConfigWidget>();
 	std::map<QString, attribs_map> attribs = conf_wgt->getConfigurationParams();
 
 	attribs[Attributes::Configuration][Attributes::CompactView] = action_compact_view->isChecked() ? Attributes::True : Attributes::False;
@@ -2680,21 +2677,20 @@ void MainWindow::configureMoreActionsMenu()
 	more_actions_menu.addActions(actions);
 }
 
-void MainWindow::switchView(MWViewsId view)
+/* void MainWindow::switchView(MWViewsId vw_id)
 {
-	switch(view)
-	{
-		case(ManageView):
-			action_manage->toggle();
-		break;
-		case(DesignView):
-			action_design->toggle();
-		break;
-		case(WelcomeView):
-			action_welcome->toggle();
-		break;
-	}
-}
+	static QList<QAction *> vw_acts {
+		action_welcome, action_design,
+		action_manage, action_import,
+		action_export, action_diff,
+		action_settings
+	};
+
+	if(vw_id > SettingsView)
+		return;
+
+	vw_acts.at(vw_id)->toggle();
+} */
 
 void MainWindow::addExecTabInSQLTool(const QString &sql_cmd)
 {
@@ -2705,7 +2701,7 @@ void MainWindow::addExecTabInSQLTool(const QString &sql_cmd)
 	}
 	catch(Exception &e)
 	{
-		Messagebox::error(e, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+		Messagebox::error(e, PGM_FUNC, PGM_FILE, PGM_LINE);
 	}
 }
 

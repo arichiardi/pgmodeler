@@ -91,7 +91,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QToolButton" name="search_btn">
+      <widget class="QPushButton" name="search_btn">
        <property name="enabled">
         <bool>false</bool>
        </property>
@@ -123,13 +123,10 @@
        <property name="shortcut">
         <string>Return, Enter</string>
        </property>
-       <property name="toolButtonStyle">
-        <enum>Qt::ToolButtonStyle::ToolButtonTextBesideIcon</enum>
-       </property>
       </widget>
      </item>
      <item>
-      <widget class="QToolButton" name="filter_btn">
+      <widget class="QPushButton" name="filter_btn">
        <property name="enabled">
         <bool>true</bool>
        </property>
@@ -164,16 +161,10 @@
        <property name="checkable">
         <bool>false</bool>
        </property>
-       <property name="popupMode">
-        <enum>QToolButton::ToolButtonPopupMode::InstantPopup</enum>
-       </property>
-       <property name="toolButtonStyle">
-        <enum>Qt::ToolButtonStyle::ToolButtonTextBesideIcon</enum>
-       </property>
       </widget>
      </item>
      <item>
-      <widget class="QToolButton" name="clear_res_btn">
+      <widget class="QPushButton" name="clear_res_btn">
        <property name="enabled">
         <bool>false</bool>
        </property>
@@ -205,13 +196,10 @@
          <height>25</height>
         </size>
        </property>
-       <property name="toolButtonStyle">
-        <enum>Qt::ToolButtonStyle::ToolButtonTextBesideIcon</enum>
-       </property>
       </widget>
      </item>
      <item>
-      <widget class="QToolButton" name="select_btn">
+      <widget class="QPushButton" name="select_btn">
        <property name="enabled">
         <bool>false</bool>
        </property>
@@ -246,16 +234,10 @@
        <property name="checkable">
         <bool>false</bool>
        </property>
-       <property name="popupMode">
-        <enum>QToolButton::ToolButtonPopupMode::InstantPopup</enum>
-       </property>
-       <property name="toolButtonStyle">
-        <enum>Qt::ToolButtonStyle::ToolButtonTextBesideIcon</enum>
-       </property>
       </widget>
      </item>
      <item>
-      <widget class="QToolButton" name="fade_btn">
+      <widget class="QPushButton" name="fade_btn">
        <property name="enabled">
         <bool>false</bool>
        </property>
@@ -289,12 +271,6 @@
        </property>
        <property name="checkable">
         <bool>false</bool>
-       </property>
-       <property name="popupMode">
-        <enum>QToolButton::ToolButtonPopupMode::InstantPopup</enum>
-       </property>
-       <property name="toolButtonStyle">
-        <enum>Qt::ToolButtonStyle::ToolButtonTextBesideIcon</enum>
        </property>
       </widget>
      </item>

@@ -45,8 +45,7 @@ class __libcore EventTrigger: public BaseObject {
 
 	public:
 		EventTrigger();
-
-		virtual ~EventTrigger(){}
+		~EventTrigger() = default;
 
 		void setEvent(EventTriggerType evnt_type);
 		void setFunction(Function *func);

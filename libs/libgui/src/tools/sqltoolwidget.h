@@ -39,7 +39,7 @@ class __libgui SQLToolWidget: public QWidget, public Ui::SQLToolWidget {
 
 		QList<QToolButton *> plugins_btns;
 
-		QToolButton *sql_exec_corner_btn;
+		QToolButton *sql_exec_corner_tb;
 
 		NumberedTextEditor *sourcecode_txt;
 

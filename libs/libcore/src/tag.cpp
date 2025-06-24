@@ -38,9 +38,9 @@ Tag::Tag()
 void Tag::setName(const QString &name)
 {
 	if(name.isEmpty())
-		throw Exception(ErrorCode::AsgEmptyNameObject,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::AsgEmptyNameObject,PGM_FUNC,PGM_FILE,PGM_LINE);
 	else if(name.size() > BaseObject::ObjectNameMaxLength)
-		throw Exception(ErrorCode::AsgLongNameObject ,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::AsgLongNameObject ,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	this->obj_name=name;
 }
@@ -60,7 +60,7 @@ void Tag::setElementColor(const QString &elem_id, const QColor &color, ColorId c
 	}
 	catch(Exception &e)
 	{
-		throw Exception(e.getErrorMessage(), e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__, &e);
+		throw Exception(e.getErrorMessage(), e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 	}
 }
 
@@ -82,7 +82,7 @@ void Tag::setElementColors(const QString &elem_id, const QString &colors)
 	}
 	catch(Exception &e)
 	{
-		throw Exception(e.getErrorMessage(), e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__, &e);
+		throw Exception(e.getErrorMessage(), e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 	}
 }
 
@@ -95,7 +95,7 @@ QColor Tag::getElementColor(const QString &elem_id, ColorId color_id)
 	}
 	catch(Exception &e)
 	{
-		throw Exception(e.getErrorMessage(), e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__, &e);
+		throw Exception(e.getErrorMessage(), e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 	}
 }
 
@@ -103,12 +103,12 @@ void Tag::validateElementId(const QString &id, ColorId color_id)
 {
 	if(color_config.count(id) == 0)
 		throw Exception(Exception::getErrorMessage(ErrorCode::OprInvalidElementId).arg(id),
-										ErrorCode::OprInvalidElementId ,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+										ErrorCode::OprInvalidElementId ,PGM_FUNC,PGM_FILE,PGM_LINE);
 	else if((color_id > ColorId::BorderColor) ||
 					(color_id > ColorId::FillColor1 &&
 					 (id==Attributes::TableName || id==Attributes::TableSchemaName)))
 		throw Exception(Exception::getErrorMessage(ErrorCode::RefInvalidElementColorId).arg(id).arg(enum_t(color_id)),
-										ErrorCode::RefInvalidElementColorId ,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+										ErrorCode::RefInvalidElementColorId ,PGM_FUNC,PGM_FILE,PGM_LINE);
 }
 
 QLinearGradient Tag::getFillStyle(const QString &elem_id)
@@ -126,7 +126,7 @@ QLinearGradient Tag::getFillStyle(const QString &elem_id)
 	}
 	catch(Exception &e)
 	{
-		throw Exception(e.getErrorMessage(), e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__, &e);
+		throw Exception(e.getErrorMessage(), e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 	}
 }
 
@@ -165,7 +165,7 @@ QString Tag::getSourceCode(SchemaParser::CodeType def_type, bool reduced_form)
 		}
 		catch(Exception &e)
 		{
-			throw Exception(e.getErrorMessage(), e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__, &e);
+			throw Exception(e.getErrorMessage(), e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 		}
 
 		return BaseObject::getSourceCode(def_type, reduced_form);

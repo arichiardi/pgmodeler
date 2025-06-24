@@ -101,8 +101,7 @@ class __libcore Permission: public BaseObject {
 		 the permissions this can not be changed after the object instance of
 		 the class is created. */
 		Permission(BaseObject *obj);
-
-		virtual ~Permission(){}
+		~Permission() = default;
 
 		//! \brief Adds a role that will have privileges over the object
 		void addRole(Role *role);

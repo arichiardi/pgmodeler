@@ -18,10 +18,11 @@
 
 #include "pgmodelerapp.h"
 #include "mainwindow.h"
+#include <signal.h>
 #include <QSplashScreen>
 
 #ifndef Q_OS_WIN
-#include "execinfo.h"
+	#include "execinfo.h"
 #endif
 
 void startCrashHandler(int signal)

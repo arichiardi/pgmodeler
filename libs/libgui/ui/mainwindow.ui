@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>1000</width>
-    <height>480</height>
+    <height>830</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -61,6 +61,9 @@
   </property>
   <widget class="QWidget" name="bg_widget">
    <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="autoFillBackground">
     <bool>true</bool>
    </property>
    <layout class="QGridLayout" name="gridLayout_6">
@@ -409,7 +412,7 @@
                 <number>0</number>
                </property>
                <item>
-                <widget class="QToolButton" name="validation_btn">
+                <widget class="QPushButton" name="validation_btn">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                    <horstretch>0</horstretch>
@@ -441,16 +444,10 @@
                  <property name="checkable">
                   <bool>true</bool>
                  </property>
-                 <property name="toolButtonStyle">
-                  <enum>Qt::ToolButtonStyle::ToolButtonTextBesideIcon</enum>
-                 </property>
-                 <property name="autoRaise">
-                  <bool>false</bool>
-                 </property>
                 </widget>
                </item>
                <item>
-                <widget class="QToolButton" name="search_obj_btn">
+                <widget class="QPushButton" name="search_obj_btn">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                    <horstretch>0</horstretch>
@@ -482,16 +479,10 @@
                  <property name="checkable">
                   <bool>true</bool>
                  </property>
-                 <property name="toolButtonStyle">
-                  <enum>Qt::ToolButtonStyle::ToolButtonTextBesideIcon</enum>
-                 </property>
-                 <property name="autoRaise">
-                  <bool>false</bool>
-                 </property>
                 </widget>
                </item>
                <item>
-                <widget class="QToolButton" name="layers_btn">
+                <widget class="QPushButton" name="layers_btn">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                    <horstretch>0</horstretch>
@@ -523,16 +514,10 @@
                  <property name="checkable">
                   <bool>true</bool>
                  </property>
-                 <property name="toolButtonStyle">
-                  <enum>Qt::ToolButtonStyle::ToolButtonTextBesideIcon</enum>
-                 </property>
-                 <property name="autoRaise">
-                  <bool>false</bool>
-                 </property>
                 </widget>
                </item>
                <item>
-                <widget class="QToolButton" name="changelog_btn">
+                <widget class="QPushButton" name="changelog_btn">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                    <horstretch>0</horstretch>
@@ -563,15 +548,6 @@
                  </property>
                  <property name="checkable">
                   <bool>true</bool>
-                 </property>
-                 <property name="popupMode">
-                  <enum>QToolButton::ToolButtonPopupMode::DelayedPopup</enum>
-                 </property>
-                 <property name="toolButtonStyle">
-                  <enum>Qt::ToolButtonStyle::ToolButtonTextBesideIcon</enum>
-                 </property>
-                 <property name="autoRaise">
-                  <bool>false</bool>
                  </property>
                 </widget>
                </item>
@@ -605,7 +581,7 @@
                 <number>0</number>
                </property>
                <item>
-                <widget class="QToolButton" name="objects_btn">
+                <widget class="QPushButton" name="objects_btn">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                    <horstretch>0</horstretch>
@@ -637,16 +613,10 @@
                  <property name="checkable">
                   <bool>true</bool>
                  </property>
-                 <property name="toolButtonStyle">
-                  <enum>Qt::ToolButtonStyle::ToolButtonTextBesideIcon</enum>
-                 </property>
-                 <property name="autoRaise">
-                  <bool>false</bool>
-                 </property>
                 </widget>
                </item>
                <item>
-                <widget class="QToolButton" name="operations_btn">
+                <widget class="QPushButton" name="operations_btn">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                    <horstretch>0</horstretch>
@@ -677,12 +647,6 @@
                  </property>
                  <property name="checkable">
                   <bool>true</bool>
-                 </property>
-                 <property name="toolButtonStyle">
-                  <enum>Qt::ToolButtonStyle::ToolButtonTextBesideIcon</enum>
-                 </property>
-                 <property name="autoRaise">
-                  <bool>false</bool>
                  </property>
                 </widget>
                </item>
@@ -782,6 +746,10 @@
        </layout>
       </widget>
       <widget class="QWidget" name="manage_pg"/>
+      <widget class="QWidget" name="import_pg"/>
+      <widget class="QWidget" name="export_pg"/>
+      <widget class="QWidget" name="diff_pg"/>
+      <widget class="QWidget" name="settings_pg"/>
      </widget>
     </item>
    </layout>
@@ -833,7 +801,7 @@
     <addaction name="action_undo"/>
     <addaction name="action_redo"/>
     <addaction name="separator"/>
-    <addaction name="action_configuration"/>
+    <addaction name="action_configure"/>
     <addaction name="separator"/>
    </widget>
    <widget class="QMenu" name="about_menu">
@@ -925,7 +893,7 @@
    <addaction name="action_import"/>
    <addaction name="action_export"/>
    <addaction name="action_diff"/>
-   <addaction name="action_configuration"/>
+   <addaction name="action_configure"/>
   </widget>
   <widget class="QToolBar" name="model_acts_tb">
    <property name="enabled">
@@ -1191,6 +1159,9 @@
    </property>
   </action>
   <action name="action_export">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="enabled">
     <bool>false</bool>
    </property>
@@ -1313,13 +1284,19 @@
     <string>Ctrl+L</string>
    </property>
   </action>
-  <action name="action_configuration">
+  <action name="action_configure">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="icon">
     <iconset resource="../res/resources.qrc">
      <normaloff>:/icons/icons/config.png</normaloff>:/icons/icons/config.png</iconset>
    </property>
    <property name="text">
-    <string>Settings</string>
+    <string>Configure</string>
+   </property>
+   <property name="iconText">
+    <string>Configure</string>
    </property>
    <property name="toolTip">
     <string>Edit pgModeler settings</string>
@@ -1389,6 +1366,9 @@
    </property>
   </action>
   <action name="action_import">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="icon">
     <iconset resource="../res/resources.qrc">
      <normaloff>:/icons/icons/import.png</normaloff>:/icons/icons/import.png</iconset>
@@ -1471,6 +1451,9 @@
    </property>
   </action>
   <action name="action_diff">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="enabled">
     <bool>true</bool>
    </property>

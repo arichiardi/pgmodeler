@@ -1264,7 +1264,7 @@
                     <number>0</number>
                    </property>
                    <item>
-                    <widget class="QToolButton" name="forced_objs_types_tb">
+                    <widget class="QPushButton" name="forced_objs_types_btn">
                      <property name="enabled">
                       <bool>true</bool>
                      </property>
@@ -1300,15 +1300,6 @@
                       <bool>true</bool>
                      </property>
                      <property name="checked">
-                      <bool>false</bool>
-                     </property>
-                     <property name="popupMode">
-                      <enum>QToolButton::ToolButtonPopupMode::InstantPopup</enum>
-                     </property>
-                     <property name="toolButtonStyle">
-                      <enum>Qt::ToolButtonStyle::ToolButtonTextBesideIcon</enum>
-                     </property>
-                     <property name="autoRaise">
                       <bool>false</bool>
                      </property>
                     </widget>

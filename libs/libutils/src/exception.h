@@ -28,9 +28,20 @@
 
 #include "utilsglobal.h"
 #include <QObject>
-#include <exception>
-#include <signal.h>
 #include <vector>
+#include <QFileInfo>
+
+#if !defined(PGM_FILE)
+	#define PGM_FILE QFileInfo(__FILE__).fileName()
+#endif
+
+#if !defined(PGM_LINE)
+	#define PGM_LINE __LINE__
+#endif
+
+#if !defined(PGM_FUNC)
+	#define PGM_FUNC __PRETTY_FUNCTION__
+#endif
 
 //! \brief This enum defines the global error codes used throughout the application
 enum class ErrorCode: unsigned {
@@ -338,7 +349,7 @@ class __libutils Exception {
 				type of information that is interesting on attempt to resolve the error */
 				extra_info;
 
-		//! \brief Line of file where the exception were generated (Macro __LINE__)
+		//! \brief Line of file where the exception were generated (Macro PGM_LINE)
 		int line;
 
 		//! \brief Configures the basic attributes of exception

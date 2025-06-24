@@ -124,8 +124,7 @@ class __libcore Type: public BaseObject {
 
 	public:
 		Type();
-
-		virtual ~Type(){}
+		~Type() = default;
 
 		//! \brief Sets the type name
 		virtual void setName(const QString &name) override;

@@ -30,7 +30,7 @@ RelationshipView::LineConnectionMode RelationshipView::line_conn_mode { Relation
 RelationshipView::RelationshipView(BaseRelationship *rel) : BaseObjectView(rel)
 {
 	if(!rel)
-		throw Exception(ErrorCode::AsgNotAllocattedObject, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+		throw Exception(ErrorCode::AsgNotAllocattedObject, PGM_FUNC, PGM_FILE, PGM_LINE);
 
 	for(unsigned i=BaseRelationship::SrcCardLabel; i <= BaseRelationship::RelNameLabel; i++)
 	{
@@ -201,7 +201,7 @@ unsigned RelationshipView::getLineConnectinMode()
 QPointF RelationshipView::getConnectionPoint(BaseRelationship::TableId table_idx)
 {
 	if(table_idx > 2)
-		throw Exception(ErrorCode::RefElementInvalidIndex ,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::RefElementInvalidIndex ,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	return conn_points[table_idx];
 }
@@ -222,7 +222,7 @@ TextboxView *RelationshipView::getLabel(BaseRelationship::LabelId lab_idx)
 bool RelationshipView::isTableVisible(BaseRelationship::TableId table_idx)
 {
 	if(table_idx > 2)
-		throw Exception(ErrorCode::RefElementInvalidIndex ,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::RefElementInvalidIndex ,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	return tables[table_idx]->isVisible();
 }
@@ -2011,7 +2011,7 @@ void RelationshipView::configureLabels()
 void RelationshipView::configureLabelPosition(BaseRelationship::LabelId label_id, double x, double y)
 {
 	if(label_id > BaseRelationship::RelNameLabel)
-		throw Exception(ErrorCode::RefObjectInvalidIndex ,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::RefObjectInvalidIndex ,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	if(labels[label_id])
 	{

@@ -33,15 +33,15 @@ UpdateNotifierWidget::UpdateNotifierWidget(QWidget *parent) : QWidget(parent)
 
 	connect(&update_chk_manager, &QNetworkAccessManager::finished, this, &UpdateNotifierWidget::handleUpdateChecked);
 
-	connect(get_source_tb, &QToolButton::clicked, this, [this](){
+	connect(get_source_btn, &QPushButton::clicked, this, [this](){
 		activateLink(GlobalAttributes::PgModelerSourceURL);
 	});
 
-	connect(get_binary_tb, &QToolButton::clicked, this, [this](){
+	connect(get_binary_btn, &QPushButton::clicked, this, [this](){
 		activateLink(GlobalAttributes::PgModelerDownloadURL);
 	});
 
-	connect(blog_post_tb, &QToolButton::clicked, this, [this](){
+	connect(blog_post_btn, &QPushButton::clicked, this, [this](){
 		activateLink(blogpost);
 	});
 
@@ -140,7 +140,7 @@ void UpdateNotifierWidget::handleUpdateChecked(QNetworkReply *reply)
 				if(upd_found)
 				{
 					blogpost = json_obj.value(Attributes::BlogPost).toString();
-					blog_post_tb->setVisible(!blogpost.isEmpty());
+					blog_post_btn->setVisible(!blogpost.isEmpty());
 					ver_num_lbl->setText(version);
 					changelog_txt->setText(changelog);
 					ver_date_lbl->setText(date);

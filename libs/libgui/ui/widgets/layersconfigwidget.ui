@@ -80,7 +80,7 @@
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout_2">
         <item>
-         <widget class="QToolButton" name="add_tb">
+         <widget class="QPushButton" name="add_btn">
           <property name="enabled">
            <bool>true</bool>
           </property>
@@ -115,16 +115,10 @@
           <property name="shortcut">
            <string>Ins</string>
           </property>
-          <property name="toolButtonStyle">
-           <enum>Qt::ToolButtonStyle::ToolButtonTextBesideIcon</enum>
-          </property>
-          <property name="autoRaise">
-           <bool>false</bool>
-          </property>
          </widget>
         </item>
         <item>
-         <widget class="QToolButton" name="remove_tb">
+         <widget class="QPushButton" name="remove_btn">
           <property name="enabled">
            <bool>false</bool>
           </property>
@@ -159,16 +153,10 @@
           <property name="shortcut">
            <string>Del</string>
           </property>
-          <property name="toolButtonStyle">
-           <enum>Qt::ToolButtonStyle::ToolButtonTextBesideIcon</enum>
-          </property>
-          <property name="autoRaise">
-           <bool>false</bool>
-          </property>
          </widget>
         </item>
         <item>
-         <widget class="QToolButton" name="remove_all_tb">
+         <widget class="QPushButton" name="remove_all_btn">
           <property name="enabled">
            <bool>false</bool>
           </property>
@@ -203,16 +191,10 @@
           <property name="shortcut">
            <string>Shift+Del</string>
           </property>
-          <property name="toolButtonStyle">
-           <enum>Qt::ToolButtonStyle::ToolButtonTextBesideIcon</enum>
-          </property>
-          <property name="autoRaise">
-           <bool>false</bool>
-          </property>
          </widget>
         </item>
         <item>
-         <widget class="QToolButton" name="visibility_tb">
+         <widget class="QPushButton" name="visibility_btn">
           <property name="enabled">
            <bool>true</bool>
           </property>
@@ -248,15 +230,6 @@
            <bool>false</bool>
           </property>
           <property name="checked">
-           <bool>false</bool>
-          </property>
-          <property name="popupMode">
-           <enum>QToolButton::ToolButtonPopupMode::InstantPopup</enum>
-          </property>
-          <property name="toolButtonStyle">
-           <enum>Qt::ToolButtonStyle::ToolButtonTextBesideIcon</enum>
-          </property>
-          <property name="autoRaise">
            <bool>false</bool>
           </property>
          </widget>
@@ -427,10 +400,10 @@
   </layout>
  </widget>
  <tabstops>
-  <tabstop>add_tb</tabstop>
-  <tabstop>remove_tb</tabstop>
-  <tabstop>remove_all_tb</tabstop>
-  <tabstop>visibility_tb</tabstop>
+  <tabstop>add_btn</tabstop>
+  <tabstop>remove_btn</tabstop>
+  <tabstop>remove_all_btn</tabstop>
+  <tabstop>visibility_btn</tabstop>
   <tabstop>toggle_layers_rects_chk</tabstop>
   <tabstop>toggle_layers_names_chk</tabstop>
   <tabstop>layers_tab</tabstop>

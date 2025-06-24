@@ -53,7 +53,7 @@ class __libgui ConnectionsConfigWidget: public BaseConfigWidget, public Ui::Conn
 		
 	public:
 		ConnectionsConfigWidget(QWidget * parent = nullptr);
-		virtual ~ConnectionsConfigWidget();
+		~ConnectionsConfigWidget() = default;
 		
 		virtual void saveConfiguration() override;
 
@@ -120,7 +120,7 @@ class __libgui ConnectionsConfigWidget: public BaseConfigWidget, public Ui::Conn
 		void enableConnectionTest();
 		virtual void applyConfiguration(void) override {}
 		
-		friend class ConfigurationForm;
+		friend class ConfigurationWidget;
 };
 
 #endif

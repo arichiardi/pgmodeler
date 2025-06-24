@@ -81,7 +81,7 @@ void XmlParser::loadXMLFile(const QString &filename)
 	}
 	catch(Exception &e)
 	{
-		throw Exception(e.getErrorMessage(), e.getErrorCode(), __PRETTY_FUNCTION__,__FILE__,__LINE__, &e, filename);
+		throw Exception(e.getErrorMessage(), e.getErrorCode(), PGM_FUNC,PGM_FILE,PGM_LINE, &e, filename);
 	}
 }
 
@@ -92,7 +92,7 @@ void XmlParser::loadXMLBuffer(const QString &xml_buf)
 		int pos1=-1, pos2=-1, tam=0;
 
 		if(xml_buf.isEmpty())
-			throw Exception(ErrorCode::AsgEmptyXMLBuffer,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+			throw Exception(ErrorCode::AsgEmptyXMLBuffer,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 		pos1=xml_buf.indexOf(QLatin1String("<?xml"));
 		pos2=xml_buf.indexOf(QLatin1String("?>"));
@@ -112,7 +112,7 @@ void XmlParser::loadXMLBuffer(const QString &xml_buf)
 	}
 	catch(Exception &e)
 	{
-		throw Exception(e.getErrorMessage(), e.getErrorCode(), __PRETTY_FUNCTION__,__FILE__,__LINE__, &e);
+		throw Exception(e.getErrorMessage(), e.getErrorCode(), PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 	}
 }
 
@@ -121,10 +121,10 @@ void XmlParser::setDTDFile(const QString &dtd_file, const QString &dtd_name)
 	QString fmt_dtd_file;
 
 	if(dtd_file.isEmpty())
-		throw Exception(ErrorCode::AsgEmptyDTDFile,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::AsgEmptyDTDFile,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	if(dtd_name.isEmpty())
-		throw Exception(ErrorCode::AsgEmptyDTDName,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::AsgEmptyDTDName,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 #ifndef Q_OS_WIN
 	fmt_dtd_file="file://";
@@ -185,7 +185,7 @@ void XmlParser::readBuffer()
 			//Raise an exception with the error massege from the parser xml
 			throw Exception(Exception::getErrorMessage(ErrorCode::LibXMLError)
 							.arg(xml_error->line).arg(xml_error->int2).arg(msg).arg(file),
-							ErrorCode::LibXMLError,__PRETTY_FUNCTION__,__FILE__,__LINE__,nullptr, xml_doc_filename);
+							ErrorCode::LibXMLError,PGM_FUNC,PGM_FILE,PGM_LINE,nullptr, xml_doc_filename);
 		}
 
 		//Gets the referênce to the root element on the document
@@ -196,7 +196,7 @@ void XmlParser::readBuffer()
 void XmlParser::savePosition()
 {
 	if(!root_elem)
-		throw Exception(ErrorCode::OprNotAllocatedElementTree,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::OprNotAllocatedElementTree,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	elems_stack.push(curr_elem);
 }
@@ -204,7 +204,7 @@ void XmlParser::savePosition()
 void XmlParser::restorePosition()
 {
 	if(!root_elem)
-		throw Exception(ErrorCode::OprNotAllocatedElementTree,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::OprNotAllocatedElementTree,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	if(elems_stack.empty())
 		curr_elem=root_elem;
@@ -218,9 +218,9 @@ void XmlParser::restorePosition()
 void XmlParser::restorePosition(const xmlNode *elem)
 {
 	if(!elem)
-		throw Exception(ErrorCode::OprNotAllocatedElement,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::OprNotAllocatedElement,PGM_FUNC,PGM_FILE,PGM_LINE);
 	else if(elem->doc!=xml_doc)
-		throw Exception(ErrorCode::OprInexistentElement,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::OprInexistentElement,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	restartNavigation();
 	curr_elem=const_cast<xmlNode *>(elem);
@@ -229,7 +229,7 @@ void XmlParser::restorePosition(const xmlNode *elem)
 void XmlParser::restartNavigation()
 {
 	if(!root_elem)
-		throw Exception(ErrorCode::OprNotAllocatedElementTree,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::OprNotAllocatedElementTree,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	curr_elem=root_elem;
 
@@ -262,7 +262,7 @@ bool XmlParser::accessElement(ElementType elem_type)
 	xmlNode *elems[4];
 
 	if(!root_elem)
-		throw Exception(ErrorCode::OprNotAllocatedElementTree,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::OprNotAllocatedElementTree,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	elems[RootElement]=curr_elem->parent;
 	elems[ChildElement]=curr_elem->children;
@@ -302,7 +302,7 @@ bool XmlParser::accessElement(ElementType elem_type)
 bool XmlParser::hasElement(ElementType elem_type, xmlElementType xml_node_type)
 {
 	if(!root_elem)
-		throw Exception(ErrorCode::OprNotAllocatedElementTree,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::OprNotAllocatedElementTree,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	if(elem_type==RootElement)
 	{
@@ -333,7 +333,7 @@ bool XmlParser::hasElement(ElementType elem_type, xmlElementType xml_node_type)
 bool XmlParser::hasAttributes()
 {
 	if(!root_elem)
-		throw Exception(ErrorCode::OprNotAllocatedElementTree,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::OprNotAllocatedElementTree,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	return (curr_elem->properties != nullptr);
 }
@@ -341,7 +341,7 @@ bool XmlParser::hasAttributes()
 QString XmlParser::getElementContent()
 {
 	if(!root_elem)
-		throw Exception(ErrorCode::OprNotAllocatedElementTree,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::OprNotAllocatedElementTree,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	/* If the current element has  <![CDATA[]]> node returns the content of the CDATA instead
 	of return the content of the element itself */
@@ -355,7 +355,7 @@ QString XmlParser::getElementContent()
 QString XmlParser::getElementName()
 {
 	if(!root_elem)
-		throw Exception(ErrorCode::OprNotAllocatedElementTree,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::OprNotAllocatedElementTree,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	return QString(reinterpret_cast<const char *>(curr_elem->name));
 }
@@ -363,7 +363,7 @@ QString XmlParser::getElementName()
 xmlElementType XmlParser::getElementType()
 {
 	if(!root_elem)
-		throw Exception(ErrorCode::OprNotAllocatedElementTree,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::OprNotAllocatedElementTree,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	return curr_elem->type;
 }
@@ -379,7 +379,7 @@ void XmlParser::getElementAttributes(attribs_map &attributes)
 	QString attrib, value;
 
 	if(!root_elem)
-		throw Exception(ErrorCode::OprNotAllocatedElementTree,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::OprNotAllocatedElementTree,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	//Always clears the passed attributes maps
 	attributes.clear();

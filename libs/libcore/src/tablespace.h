@@ -37,8 +37,7 @@ class __libcore Tablespace: public BaseObject{
 
 	public:
 		Tablespace();
-
-		virtual ~Tablespace(){}
+		~Tablespace() = default;
 
 		virtual void setName(const QString &name) override;
 
