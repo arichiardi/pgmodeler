@@ -35,7 +35,7 @@ SwapObjectsIdsWidget::SwapObjectsIdsWidget(QWidget *parent, Qt::WindowFlags f) :
 	setModel(nullptr);
 	filter_wgt->setVisible(false);
 
-	connect(filter_btn, &QToolButton::toggled, filter_wgt, &QWidget::setVisible);
+	connect(filter_btn, &QPushButton::toggled, filter_wgt, &QWidget::setVisible);
 
 	connect(src_object_sel, &ObjectSelectorWidget::s_objectSelected, this, &SwapObjectsIdsWidget::showObjectId);
 	connect(dst_object_sel, &ObjectSelectorWidget::s_objectSelected, this, &SwapObjectsIdsWidget::showObjectId);

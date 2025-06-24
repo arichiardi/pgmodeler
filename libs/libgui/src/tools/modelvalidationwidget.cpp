@@ -46,15 +46,15 @@ ModelValidationWidget::ModelValidationWidget(QWidget *parent): QWidget(parent)
 	this->setModel(nullptr);
 
 	connect(hide_tb, &QToolButton::clicked, this, &ModelValidationWidget::hide);
-	connect(options_btn, &QToolButton::toggled, options_frm, &QFrame::setVisible);
+	connect(options_btn, &QPushButton::toggled, options_frm, &QFrame::setVisible);
 	connect(sql_validation_chk, &QCheckBox::toggled, connections_cmb, &QComboBox::setEnabled);
 	connect(sql_validation_chk, &QCheckBox::toggled, version_cmb, &QComboBox::setEnabled);
 	connect(sql_validation_chk, &QCheckBox::toggled, use_tmp_names_chk, &QCheckBox::setEnabled);
-	connect(validate_btn, &QToolButton::clicked, this, &ModelValidationWidget::validateModel);
-	connect(fix_btn, &QToolButton::clicked, this, &ModelValidationWidget::applyFixes);
-	connect(cancel_btn, &QToolButton::clicked, this, &ModelValidationWidget::cancelValidation);
+	connect(validate_btn, &QPushButton::clicked, this, &ModelValidationWidget::validateModel);
+	connect(fix_btn, &QPushButton::clicked, this, &ModelValidationWidget::applyFixes);
+	connect(cancel_btn, &QPushButton::clicked, this, &ModelValidationWidget::cancelValidation);
 	connect(connections_cmb, &QComboBox::activated, this, &ModelValidationWidget::editConnections);
-	connect(swap_ids_btn, &QToolButton::clicked, this, &ModelValidationWidget::swapObjectsIds);
+	connect(swap_ids_btn, &QPushButton::clicked, this, &ModelValidationWidget::swapObjectsIds);
 
 	connect(sql_validation_chk, &QCheckBox::toggled, this, [this](){
 		configureValidation();
@@ -506,9 +506,7 @@ void ModelValidationWidget::updateProgress(int prog, QString msg, ObjectType obj
 
 	validation_prog_pb->setValue(prog);
 
-	if(prog >= 100/* &&
-			validation_helper->getErrorCount() == 0 &&
-			validation_helper->getWarningCount() == 0*/)
+	if(prog >= 100)
 	{
 		int err_cnt = validation_helper->getErrorCount(),
 				warn_cnt = validation_helper->getWarningCount();

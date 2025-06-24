@@ -32,11 +32,11 @@ ObjectRenameWidget::ObjectRenameWidget(QWidget * parent) : QDialog(parent)
 	setWindowFlags(Qt::Dialog | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
 	setAttribute(Qt::WA_TranslucentBackground, true);
 
-	connect(new_name_edt, &QLineEdit::returnPressed, apply_tb, &QToolButton::click);
-	connect(cancel_tb, &QToolButton::clicked, this, &ObjectRenameWidget::reject);
+	connect(new_name_edt, &QLineEdit::returnPressed, apply_btn, &QPushButton::click);
+	connect(cancel_btn, &QPushButton::clicked, this, &ObjectRenameWidget::reject);
 
 	connect(new_name_edt, &QLineEdit::textChanged, this, [this](){
-		apply_tb->setEnabled(!new_name_edt->text().isEmpty());
+		apply_btn->setEnabled(!new_name_edt->text().isEmpty());
 	});
 
 	handle_lbl->installEventFilter(this);
@@ -97,19 +97,19 @@ void ObjectRenameWidget::updateLabelsButtons()
 
 	if(!paste_mode)
 	{
-		cancel_tb->setText(tr("Cancel"));
-		cancel_tb->setIcon(QIcon(GuiUtilsNs::getIconPath("close1")));
+		cancel_btn->setText(tr("Cancel"));
+		cancel_btn->setIcon(QIcon(GuiUtilsNs::getIconPath("close1")));
 
-		disconnect(apply_tb, nullptr, this, nullptr);
-		connect(apply_tb, &QToolButton::clicked, this, &ObjectRenameWidget::applyRenaming, Qt::UniqueConnection);
+		disconnect(apply_btn, nullptr, this, nullptr);
+		connect(apply_btn, &QPushButton::clicked, this, &ObjectRenameWidget::applyRenaming, Qt::UniqueConnection);
 	}
 	else
 	{
-		cancel_tb->setText(tr("Ignore"));
-		cancel_tb->setIcon(QIcon(GuiUtilsNs::getIconPath("cancel")));
+		cancel_btn->setText(tr("Ignore"));
+		cancel_btn->setIcon(QIcon(GuiUtilsNs::getIconPath("cancel")));
 
-		disconnect(apply_tb, nullptr, this, nullptr);
-		connect(apply_tb, &QToolButton::clicked, this, &ObjectRenameWidget::validateName, Qt::UniqueConnection);
+		disconnect(apply_btn, nullptr, this, nullptr);
+		connect(apply_btn, &QPushButton::clicked, this, &ObjectRenameWidget::validateName, Qt::UniqueConnection);
 	}
 }
 

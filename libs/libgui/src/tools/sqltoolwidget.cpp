@@ -38,13 +38,13 @@ SQLToolWidget::SQLToolWidget(QWidget * parent) : QWidget(parent)
 	h_splitter->handle(1)->installEventFilter(this);
 	v_splitter->setSizes({1000, 400});
 
-	sql_exec_corner_btn = new QToolButton(sql_exec_tbw);
-	sql_exec_corner_btn->setObjectName("sql_exec_corner_btn");
-	sql_exec_corner_btn->setIcon(QIcon(GuiUtilsNs::getIconPath("newtab")));
-	sql_exec_corner_btn->setToolTip(tr("Add a new execution tab for the current database (%1)").arg(QKeySequence("Ctrl+T").toString()));
+	sql_exec_corner_tb = new QToolButton(sql_exec_tbw);
+	sql_exec_corner_tb->setObjectName("sql_exec_corner_btn");
+	sql_exec_corner_tb->setIcon(QIcon(GuiUtilsNs::getIconPath("newtab")));
+	sql_exec_corner_tb->setToolTip(tr("Add a new execution tab for the current database (%1)").arg(QKeySequence("Ctrl+T").toString()));
 
 	corner_wgt = new QWidget(sql_exec_tbw);
-	corner_wgt->setFixedSize(sql_exec_corner_btn->size());
+	corner_wgt->setFixedSize(sql_exec_corner_tb->size());
 	corner_wgt->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Preferred);
 	sql_exec_tbw->setCornerWidget(corner_wgt);
 
@@ -76,7 +76,7 @@ SQLToolWidget::SQLToolWidget(QWidget * parent) : QWidget(parent)
 	connect(database_cmb, &QComboBox::activated, this, __slot(this, SQLToolWidget::browseDatabase));
 
 	connect(disconnect_tb, &QToolButton::clicked, this, &SQLToolWidget::disconnectFromDatabases);
-	connect(source_pane_tb, &QToolButton::toggled, sourcecode_gb, &QGroupBox::setVisible);
+	connect(source_pane_btn, &QPushButton::toggled, sourcecode_gb, &QGroupBox::setVisible);
 
 	connect(databases_tbw, &QTabWidget::tabCloseRequested, this, [this](int idx){
 		closeDatabaseExplorer(idx, true);
@@ -86,7 +86,7 @@ SQLToolWidget::SQLToolWidget(QWidget * parent) : QWidget(parent)
 		closeSQLExecutionTab(idx, true);
 	});
 
-	connect(sql_exec_corner_btn, &QToolButton::clicked, this, __slot(this, SQLToolWidget::addSQLExecutionTab));
+	connect(sql_exec_corner_tb, &QToolButton::clicked, this, __slot(this, SQLToolWidget::addSQLExecutionTab));
 
 	connect(databases_tbw, &QTabWidget::currentChanged,	this, [this](){
 		DatabaseExplorerWidget *dbexplorer=qobject_cast<DatabaseExplorerWidget *>(databases_tbw->currentWidget());
@@ -183,14 +183,14 @@ void SQLToolWidget::setCornerButtonPos()
 		else
 			px = tab_bar->tabRect(idx).right() + 1;
 
-		py = tab_bar->height() - sql_exec_corner_btn->height() - 2;
+		py = tab_bar->height() - sql_exec_corner_tb->height() - 2;
 
-		sql_exec_corner_btn->raise();
-		sql_exec_corner_btn->move(px, py);
-		sql_exec_corner_btn->setVisible(true);
+		sql_exec_corner_tb->raise();
+		sql_exec_corner_tb->move(px, py);
+		sql_exec_corner_tb->setVisible(true);
 	}
 	else
-		sql_exec_corner_btn->setVisible(false);
+		sql_exec_corner_tb->setVisible(false);
 }
 
 void SQLToolWidget::updateTabs()
@@ -316,9 +316,6 @@ DatabaseExplorerWidget *SQLToolWidget::browseDatabase()
 			db_explorer_wgt->setConnection(conn, maintainance_db);
 			db_explorer_wgt->listObjects();
 
-			//for(auto &btn : plugins_btns)
-			//	db_explorer_wgt->addPluginButton(btn);
-
 			databases_tbw->addTab(db_explorer_wgt, database_cmb->currentText());
 			databases_tbw->setTabToolTip(databases_tbw->count() - 1, db_explorer_wgt->getConnection().getConnectionId(true, true));
 			databases_tbw->setCurrentWidget(db_explorer_wgt);
@@ -328,9 +325,9 @@ DatabaseExplorerWidget *SQLToolWidget::browseDatabase()
 			connect(db_explorer_wgt, &DatabaseExplorerWidget::s_sourceCodeShowRequested, this, &SQLToolWidget::showSourceCode);
 			connect(db_explorer_wgt, &DatabaseExplorerWidget::s_databaseDropRequested, this, qOverload<const QString &>(&SQLToolWidget::dropDatabase));
 
-			connect(attributes_tb, &QToolButton::toggled, db_explorer_wgt->attributes_wgt, &QWidget::setVisible);
+			connect(attributes_btn, &QPushButton::toggled, db_explorer_wgt->attributes_wgt, &QWidget::setVisible);
 
-			db_explorer_wgt->attributes_wgt->setVisible(attributes_tb->isChecked());
+			db_explorer_wgt->attributes_wgt->setVisible(attributes_btn->isChecked());
 
 			/* Forcing the signal s_sqlExecutionRequested to be emitted to properly register the
 			new tab on the map of sql panes related to the database explorer */
@@ -541,8 +538,8 @@ void SQLToolWidget::showSourceCode(const QString &source, bool force_display)
 	sourcecode_txt->setPlainText(source);
 #endif
 
-	if(force_display && !source_pane_tb->isChecked())
-		source_pane_tb->setChecked(true);
+	if(force_display && !source_pane_btn->isChecked())
+		source_pane_btn->setChecked(true);
 }
 
 bool SQLToolWidget::hasDatabasesBrowsed()

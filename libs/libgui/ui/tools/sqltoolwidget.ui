@@ -295,7 +295,7 @@
              </spacer>
             </item>
             <item>
-             <widget class="QToolButton" name="attributes_tb">
+             <widget class="QPushButton" name="attributes_btn">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                 <horstretch>0</horstretch>
@@ -330,13 +330,10 @@
               <property name="checked">
                <bool>true</bool>
               </property>
-              <property name="toolButtonStyle">
-               <enum>Qt::ToolButtonStyle::ToolButtonTextBesideIcon</enum>
-              </property>
              </widget>
             </item>
             <item>
-             <widget class="QToolButton" name="source_pane_tb">
+             <widget class="QPushButton" name="source_pane_btn">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                 <horstretch>0</horstretch>
@@ -367,9 +364,6 @@
               </property>
               <property name="checked">
                <bool>true</bool>
-              </property>
-              <property name="toolButtonStyle">
-               <enum>Qt::ToolButtonStyle::ToolButtonTextBesideIcon</enum>
               </property>
              </widget>
             </item>
@@ -487,8 +481,8 @@
   <tabstop>database_cmb</tabstop>
   <tabstop>refresh_tb</tabstop>
   <tabstop>databases_tbw</tabstop>
-  <tabstop>attributes_tb</tabstop>
-  <tabstop>source_pane_tb</tabstop>
+  <tabstop>attributes_btn</tabstop>
+  <tabstop>source_pane_btn</tabstop>
   <tabstop>sql_exec_tbw</tabstop>
  </tabstops>
  <resources>

@@ -72,11 +72,11 @@ CustomSQLWidget::CustomSQLWidget(QWidget *parent) : BaseObjectWidget(parent)
 	delete_menu.addAction(action_tab_delete);
 	delete_menu.addAction(action_gen_delete);
 
-	connect(clear_tb, &QToolButton::clicked, this, &CustomSQLWidget::clearCode);
-	connect(insert_tb, &QToolButton::clicked, this, &CustomSQLWidget::addCommand);
-	connect(select_tb, &QToolButton::clicked, this, &CustomSQLWidget::addCommand);
-	connect(update_tb, &QToolButton::clicked, this, &CustomSQLWidget::addCommand);
-	connect(delete_tb, &QToolButton::clicked, this, &CustomSQLWidget::addCommand);
+	connect(clear_btn, &QPushButton::clicked, this, &CustomSQLWidget::clearCode);
+	connect(insert_btn, &QPushButton::clicked, this, &CustomSQLWidget::addCommand);
+	connect(select_btn, &QPushButton::clicked, this, &CustomSQLWidget::addCommand);
+	connect(update_btn, &QPushButton::clicked, this, &CustomSQLWidget::addCommand);
+	connect(delete_btn, &QPushButton::clicked, this, &CustomSQLWidget::addCommand);
 	connect(action_gen_insert, &QAction::triggered, this, &CustomSQLWidget::addCommand);
 	connect(action_inc_serials, &QAction::triggered, this, &CustomSQLWidget::addCommand);
 	connect(action_exc_serials, &QAction::triggered, this, &CustomSQLWidget::addCommand);
@@ -92,8 +92,8 @@ CustomSQLWidget::CustomSQLWidget(QWidget *parent) : BaseObjectWidget(parent)
 
 void CustomSQLWidget::configureMenus()
 {
-	ObjectType obj_type=this->object->getObjectType();
-	QToolButton *btns[]={ insert_tb, select_tb , delete_tb, update_tb };
+	ObjectType obj_type = this->object->getObjectType();
+	QPushButton *btns[] { insert_btn, select_btn, delete_btn, update_btn };
 
 	for(auto &btn : btns)
 		btn->setMenu(nullptr);
@@ -102,12 +102,12 @@ void CustomSQLWidget::configureMenus()
 	{
 		if(PhysicalTable::isPhysicalTable(obj_type))
 		{
-			insert_tb->setMenu(&insert_menu);
-			delete_tb->setMenu(&delete_menu);
-			update_tb->setMenu(&update_menu);
+			insert_btn->setMenu(&insert_menu);
+			delete_btn->setMenu(&delete_menu);
+			update_btn->setMenu(&update_menu);
 		}
 
-		select_tb->setMenu(&select_menu);
+		select_btn->setMenu(&select_menu);
 	}
 }
 
