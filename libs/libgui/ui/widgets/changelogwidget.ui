@@ -146,7 +146,7 @@
          </widget>
         </item>
         <item>
-         <widget class="QToolButton" name="clear_tb">
+         <widget class="QPushButton" name="clear_tb">
           <property name="enabled">
            <bool>false</bool>
           </property>
@@ -180,12 +180,6 @@
           </property>
           <property name="shortcut">
            <string>Shift+Del</string>
-          </property>
-          <property name="toolButtonStyle">
-           <enum>Qt::ToolButtonStyle::ToolButtonTextBesideIcon</enum>
-          </property>
-          <property name="autoRaise">
-           <bool>false</bool>
           </property>
          </widget>
         </item>

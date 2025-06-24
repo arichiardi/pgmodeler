@@ -142,7 +142,7 @@
          </widget>
         </item>
         <item>
-         <widget class="QToolButton" name="cancel_btn">
+         <widget class="QPushButton" name="cancel_btn">
           <property name="enabled">
            <bool>false</bool>
           </property>
@@ -164,9 +164,6 @@
             <width>25</width>
             <height>25</height>
            </size>
-          </property>
-          <property name="toolButtonStyle">
-           <enum>Qt::ToolButtonStyle::ToolButtonTextBesideIcon</enum>
           </property>
          </widget>
         </item>

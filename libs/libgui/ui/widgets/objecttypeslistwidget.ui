@@ -29,7 +29,7 @@
    <item row="0" column="0" colspan="4">
     <widget class="QListWidget" name="obj_types_lst">
      <property name="sizeAdjustPolicy">
-      <enum>QAbstractScrollArea::AdjustIgnored</enum>
+      <enum>QAbstractScrollArea::SizeAdjustPolicy::AdjustIgnored</enum>
      </property>
      <property name="alternatingRowColors">
       <bool>true</bool>
@@ -42,47 +42,6 @@
      </property>
      <property name="sortingEnabled">
       <bool>true</bool>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="3">
-    <widget class="QToolButton" name="uncheck_all_tb">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="minimumSize">
-      <size>
-       <width>0</width>
-       <height>0</height>
-      </size>
-     </property>
-     <property name="toolTip">
-      <string>Clear object selection</string>
-     </property>
-     <property name="text">
-      <string>Uncheck all</string>
-     </property>
-     <property name="icon">
-      <iconset resource="../../res/resources.qrc">
-       <normaloff>:/icons/icons/clearobjsel.png</normaloff>:/icons/icons/clearobjsel.png</iconset>
-     </property>
-     <property name="iconSize">
-      <size>
-       <width>25</width>
-       <height>25</height>
-      </size>
-     </property>
-     <property name="checkable">
-      <bool>false</bool>
-     </property>
-     <property name="toolButtonStyle">
-      <enum>Qt::ToolButtonTextBesideIcon</enum>
      </property>
     </widget>
    </item>
@@ -123,14 +82,14 @@
       <bool>false</bool>
      </property>
      <property name="toolButtonStyle">
-      <enum>Qt::ToolButtonTextBesideIcon</enum>
+      <enum>Qt::ToolButtonStyle::ToolButtonTextBesideIcon</enum>
      </property>
     </widget>
    </item>
    <item row="2" column="0" colspan="2">
     <spacer name="horizontalSpacer">
      <property name="orientation">
-      <enum>Qt::Horizontal</enum>
+      <enum>Qt::Orientation::Horizontal</enum>
      </property>
      <property name="sizeHint" stdset="0">
       <size>
@@ -140,10 +99,47 @@
      </property>
     </spacer>
    </item>
+   <item row="2" column="3">
+    <widget class="QPushButton" name="uncheck_all_tb">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="toolTip">
+      <string>Clear object selection</string>
+     </property>
+     <property name="text">
+      <string>Uncheck all</string>
+     </property>
+     <property name="icon">
+      <iconset resource="../../res/resources.qrc">
+       <normaloff>:/icons/icons/clearobjsel.png</normaloff>:/icons/icons/clearobjsel.png</iconset>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>25</width>
+       <height>25</height>
+      </size>
+     </property>
+     <property name="checkable">
+      <bool>false</bool>
+     </property>
+    </widget>
+   </item>
   </layout>
  </widget>
  <resources>
-  <include location="../../res/resources.qrc"/>
   <include location="../../res/resources.qrc"/>
  </resources>
  <connections/>

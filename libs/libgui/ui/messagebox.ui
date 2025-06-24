@@ -551,7 +551,7 @@
          </widget>
         </item>
         <item row="0" column="2">
-         <widget class="QToolButton" name="show_errors_tb">
+         <widget class="QPushButton" name="show_errors_btn">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
             <horstretch>0</horstretch>
@@ -583,12 +583,6 @@
           <property name="checkable">
            <bool>true</bool>
           </property>
-          <property name="popupMode">
-           <enum>QToolButton::ToolButtonPopupMode::InstantPopup</enum>
-          </property>
-          <property name="toolButtonStyle">
-           <enum>Qt::ToolButtonStyle::ToolButtonTextBesideIcon</enum>
-          </property>
          </widget>
         </item>
        </layout>
@@ -600,7 +594,7 @@
  </widget>
  <tabstops>
   <tabstop>custom_option_chk</tabstop>
-  <tabstop>show_errors_tb</tabstop>
+  <tabstop>show_errors_btn</tabstop>
   <tabstop>yes_ok_btn</tabstop>
   <tabstop>no_btn</tabstop>
   <tabstop>cancel_btn</tabstop>

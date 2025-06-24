@@ -686,28 +686,28 @@ void MainWindow::connectSignalsToSlots()
 
 	connect(action_compact_view, &QAction::triggered, this, &MainWindow::toggleCompactView);
 
-	connect(objects_btn, &QToolButton::toggled, model_objs_parent, &QWidget::setVisible);
-	connect(objects_btn, &QToolButton::toggled, model_objs_wgt, &ModelObjectsWidget::setVisible);
-	connect(objects_btn, &QToolButton::toggled, this, &MainWindow::showRightWidgetsBar);
-	connect(model_objs_wgt, qOverload<bool>(&ModelObjectsWidget::s_visibilityChanged), objects_btn, &QToolButton::setChecked);
+	connect(objects_btn, &QPushButton::toggled, model_objs_parent, &QWidget::setVisible);
+	connect(objects_btn, &QPushButton::toggled, model_objs_wgt, &ModelObjectsWidget::setVisible);
+	connect(objects_btn, &QPushButton::toggled, this, &MainWindow::showRightWidgetsBar);
+	connect(model_objs_wgt, qOverload<bool>(&ModelObjectsWidget::s_visibilityChanged), objects_btn, &QPushButton::setChecked);
 	connect(model_objs_wgt, qOverload<bool>(&ModelObjectsWidget::s_visibilityChanged), this, &MainWindow::showRightWidgetsBar);
 
-	connect(operations_btn, &QToolButton::toggled, oper_list_parent, &QWidget::setVisible);
-	connect(operations_btn, &QToolButton::toggled, oper_list_wgt, &OperationListWidget::setVisible);
-	connect(operations_btn, &QToolButton::toggled, this, &MainWindow::showRightWidgetsBar);
-	connect(oper_list_wgt, &OperationListWidget::s_hideRequested, operations_btn, &QToolButton::toggle);
+	connect(operations_btn, &QPushButton::toggled, oper_list_parent, &QWidget::setVisible);
+	connect(operations_btn, &QPushButton::toggled, oper_list_wgt, &OperationListWidget::setVisible);
+	connect(operations_btn, &QPushButton::toggled, this, &MainWindow::showRightWidgetsBar);
+	connect(oper_list_wgt, &OperationListWidget::s_hideRequested, operations_btn, &QPushButton::toggle);
 	connect(oper_list_wgt, &OperationListWidget::s_hideRequested, this, &MainWindow::showRightWidgetsBar);
 
-	connect(validation_btn, &QToolButton::toggled, model_valid_parent, &QWidget::setVisible);
-	connect(validation_btn, &QToolButton::toggled, model_valid_wgt, &ModelValidationWidget::setVisible);
-	connect(validation_btn, &QToolButton::toggled, this, &MainWindow::showBottomWidgetsBar);
-	connect(model_valid_wgt, &ModelValidationWidget::s_hideRequested, validation_btn, &QToolButton::toggle);
+	connect(validation_btn, &QPushButton::toggled, model_valid_parent, &QWidget::setVisible);
+	connect(validation_btn, &QPushButton::toggled, model_valid_wgt, &ModelValidationWidget::setVisible);
+	connect(validation_btn, &QPushButton::toggled, this, &MainWindow::showBottomWidgetsBar);
+	connect(model_valid_wgt, &ModelValidationWidget::s_hideRequested, validation_btn, &QPushButton::toggle);
 	connect(model_valid_wgt, &ModelValidationWidget::s_hideRequested, this, &MainWindow::showBottomWidgetsBar);
 
-	connect(search_obj_btn, &QToolButton::toggled, obj_search_parent, &QWidget::setVisible);
-	connect(search_obj_btn, &QToolButton::toggled, obj_finder_wgt, &ObjectSearchWidget::setVisible);
-	connect(search_obj_btn, &QToolButton::toggled, this, &MainWindow::showBottomWidgetsBar);
-	connect(obj_finder_wgt, &ObjectSearchWidget::s_hideRequested, search_obj_btn, &QToolButton::toggle);
+	connect(search_obj_btn, &QPushButton::toggled, obj_search_parent, &QWidget::setVisible);
+	connect(search_obj_btn, &QPushButton::toggled, obj_finder_wgt, &ObjectSearchWidget::setVisible);
+	connect(search_obj_btn, &QPushButton::toggled, this, &MainWindow::showBottomWidgetsBar);
+	connect(obj_finder_wgt, &ObjectSearchWidget::s_hideRequested, search_obj_btn, &QPushButton::toggle);
 	connect(obj_finder_wgt, &ObjectSearchWidget::s_hideRequested, this, &MainWindow::showBottomWidgetsBar);
 
 	connect(model_valid_wgt, &ModelValidationWidget::s_validationInProgress, this->main_menu_mb, &QMenu::setDisabled);
@@ -804,13 +804,13 @@ bool MainWindow::isToolButtonsChecked(QHBoxLayout *layout, const QWidgetList &ig
 {
 	int i = 0;
 	bool show = false;
-	QToolButton * btn = nullptr;
+	QAbstractButton * btn = nullptr;
 
 	//This is currently the only way to enumerate widgets inside a layout.
 	//See https://stackoverflow.com/a/27225570/7359123
 	while(layout && layout->itemAt(i) && !show)
 	{
-		btn = dynamic_cast<QToolButton *>(layout->itemAt(i)->widget());
+		btn = dynamic_cast<QAbstractButton *>(layout->itemAt(i)->widget());
 		i++;
 
 		if(ignored_wgts.contains(btn))
@@ -2311,7 +2311,7 @@ void MainWindow::setFloatingWidgetPos(QWidget *widget, QAction *act, QToolBar *t
 	widget->move(pos);
 }
 
-void MainWindow::setBottomFloatingWidgetPos(QWidget *widget, QToolButton *btn)
+void MainWindow::setBottomFloatingWidgetPos(QWidget *widget, QAbstractButton *btn)
 {
 	if(!widget || !btn)
 		return;

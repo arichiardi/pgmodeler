@@ -255,7 +255,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QToolButton" name="fade_btn">
+      <widget class="QPushButton" name="fade_btn">
        <property name="enabled">
         <bool>false</bool>
        </property>
@@ -289,12 +289,6 @@
        </property>
        <property name="checkable">
         <bool>false</bool>
-       </property>
-       <property name="popupMode">
-        <enum>QToolButton::ToolButtonPopupMode::InstantPopup</enum>
-       </property>
-       <property name="toolButtonStyle">
-        <enum>Qt::ToolButtonStyle::ToolButtonTextBesideIcon</enum>
        </property>
       </widget>
      </item>

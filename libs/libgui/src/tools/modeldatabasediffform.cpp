@@ -45,7 +45,7 @@ ModelDatabaseDiffForm::ModelDatabaseDiffForm(QWidget *parent, Qt::WindowFlags fl
 
 	QMenu *forced_obj_types_menu = new QMenu(this);
 	forced_obj_types_menu->addAction(wgt_act);
-	forced_objs_types_tb->setMenu(forced_obj_types_menu);
+	forced_objs_types_btn->setMenu(forced_obj_types_menu);
 
 	src_server_supported = server_supported = true;
 	pg_version_alert_frm->setVisible(false);
@@ -200,13 +200,13 @@ ModelDatabaseDiffForm::ModelDatabaseDiffForm(QWidget *parent, Qt::WindowFlags fl
 	});
 
 	connect(forced_obj_types_wgt, &ObjectTypesListWidget::s_typesCheckStateChanged, this, [this](Qt::CheckState) {
-		forced_objs_types_tb->setText(ForceObjsBtnLabel
+		forced_objs_types_btn->setText(ForceObjsBtnLabel
 																	.arg(forced_obj_types_wgt->
 																			 getTypesCountPerCheckState(Qt::Checked)));
 	});
 
 	connect(forced_obj_types_wgt, &ObjectTypesListWidget::s_typeCheckStateChanged, this, [this](ObjectType, Qt::CheckState) {
-		forced_objs_types_tb->setText(ForceObjsBtnLabel
+		forced_objs_types_btn->setText(ForceObjsBtnLabel
 																	.arg(forced_obj_types_wgt->
 																			 getTypesCountPerCheckState(Qt::Checked)));
 	});

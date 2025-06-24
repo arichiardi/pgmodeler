@@ -412,7 +412,7 @@
                 <number>0</number>
                </property>
                <item>
-                <widget class="QToolButton" name="validation_btn">
+                <widget class="QPushButton" name="validation_btn">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                    <horstretch>0</horstretch>
@@ -444,16 +444,10 @@
                  <property name="checkable">
                   <bool>true</bool>
                  </property>
-                 <property name="toolButtonStyle">
-                  <enum>Qt::ToolButtonStyle::ToolButtonTextBesideIcon</enum>
-                 </property>
-                 <property name="autoRaise">
-                  <bool>false</bool>
-                 </property>
                 </widget>
                </item>
                <item>
-                <widget class="QToolButton" name="search_obj_btn">
+                <widget class="QPushButton" name="search_obj_btn">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                    <horstretch>0</horstretch>
@@ -485,16 +479,10 @@
                  <property name="checkable">
                   <bool>true</bool>
                  </property>
-                 <property name="toolButtonStyle">
-                  <enum>Qt::ToolButtonStyle::ToolButtonTextBesideIcon</enum>
-                 </property>
-                 <property name="autoRaise">
-                  <bool>false</bool>
-                 </property>
                 </widget>
                </item>
                <item>
-                <widget class="QToolButton" name="layers_btn">
+                <widget class="QPushButton" name="layers_btn">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                    <horstretch>0</horstretch>
@@ -526,16 +514,10 @@
                  <property name="checkable">
                   <bool>true</bool>
                  </property>
-                 <property name="toolButtonStyle">
-                  <enum>Qt::ToolButtonStyle::ToolButtonTextBesideIcon</enum>
-                 </property>
-                 <property name="autoRaise">
-                  <bool>false</bool>
-                 </property>
                 </widget>
                </item>
                <item>
-                <widget class="QToolButton" name="changelog_btn">
+                <widget class="QPushButton" name="changelog_btn">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                    <horstretch>0</horstretch>
@@ -566,15 +548,6 @@
                  </property>
                  <property name="checkable">
                   <bool>true</bool>
-                 </property>
-                 <property name="popupMode">
-                  <enum>QToolButton::ToolButtonPopupMode::DelayedPopup</enum>
-                 </property>
-                 <property name="toolButtonStyle">
-                  <enum>Qt::ToolButtonStyle::ToolButtonTextBesideIcon</enum>
-                 </property>
-                 <property name="autoRaise">
-                  <bool>false</bool>
                  </property>
                 </widget>
                </item>
@@ -608,7 +581,7 @@
                 <number>0</number>
                </property>
                <item>
-                <widget class="QToolButton" name="objects_btn">
+                <widget class="QPushButton" name="objects_btn">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                    <horstretch>0</horstretch>
@@ -640,16 +613,10 @@
                  <property name="checkable">
                   <bool>true</bool>
                  </property>
-                 <property name="toolButtonStyle">
-                  <enum>Qt::ToolButtonStyle::ToolButtonTextBesideIcon</enum>
-                 </property>
-                 <property name="autoRaise">
-                  <bool>false</bool>
-                 </property>
                 </widget>
                </item>
                <item>
-                <widget class="QToolButton" name="operations_btn">
+                <widget class="QPushButton" name="operations_btn">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                    <horstretch>0</horstretch>
@@ -680,12 +647,6 @@
                  </property>
                  <property name="checkable">
                   <bool>true</bool>
-                 </property>
-                 <property name="toolButtonStyle">
-                  <enum>Qt::ToolButtonStyle::ToolButtonTextBesideIcon</enum>
-                 </property>
-                 <property name="autoRaise">
-                  <bool>false</bool>
                  </property>
                 </widget>
                </item>

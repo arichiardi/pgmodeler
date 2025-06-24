@@ -69,8 +69,8 @@ GeneralConfigWidget::GeneralConfigWidget(QWidget * parent) : BaseConfigWidget(pa
 	connect(unity_cmb, &QComboBox::currentIndexChanged, this, &GeneralConfigWidget::convertMarginUnity);
 	connect(autosave_interv_chk, &QCheckBox::toggled, autosave_interv_spb, &QSpinBox::setEnabled);
 	connect(paper_cmb, &QComboBox::currentIndexChanged, this,  &GeneralConfigWidget::selectPaperSize);
-	connect(save_restore_geometry_chk, &QCheckBox::toggled, reset_sizes_tb, &QToolButton::setEnabled);
-	connect(reset_sizes_tb, &QToolButton::clicked, this, &GeneralConfigWidget::resetDialogsSizes);
+	connect(save_restore_geometry_chk, &QCheckBox::toggled, reset_sizes_btn, &QPushButton::setEnabled);
+	connect(reset_sizes_btn, &QPushButton::clicked, this, &GeneralConfigWidget::resetDialogsSizes);
 
 	connect(trunc_columns_data_chk, &QCheckBox::toggled, trunc_columns_data_spb, &QComboBox::setEnabled);
 	connect(trunc_columns_data_chk, &QCheckBox::toggled, disable_inline_editor_chk, &QComboBox::setEnabled);
@@ -176,16 +176,16 @@ GeneralConfigWidget::GeneralConfigWidget(QWidget * parent) : BaseConfigWidget(pa
 
 	connect(source_editor_sel, &FileSelectorWidget::s_selectorChanged, this, &GeneralConfigWidget::setConfigurationChanged);
 
-	connect(clear_sql_history_tb, &QToolButton::clicked, this, [](){
+	connect(clear_sql_history_btn, &QPushButton::clicked, this, [](){
 		SQLExecutionWidget::destroySQLHistory();
 	});
 
-	connect(reset_alerts_choices_tb, &QToolButton::clicked, this, &GeneralConfigWidget::resetAlertChoices);
+	connect(reset_alerts_choices_btn, &QPushButton::clicked, this, &GeneralConfigWidget::resetAlertChoices);
 }
 
 void GeneralConfigWidget::showEvent(QShowEvent *)
 {
-	reset_alerts_choices_tb->setEnabled(config_params[Attributes::Configuration][Attributes::AlertUnsavedModels] != Attributes::True ||
+	reset_alerts_choices_btn->setEnabled(config_params[Attributes::Configuration][Attributes::AlertUnsavedModels] != Attributes::True ||
 																			 config_params[Attributes::Configuration][Attributes::AlertOpenSqlTabs] != Attributes::True ||
 																			 config_params[Attributes::Configuration][Attributes::UseDefDisambiguation] == Attributes::True);
 
@@ -263,7 +263,7 @@ void GeneralConfigWidget::loadConfiguration()
 		source_editor_args_edt->setText(config_params[Attributes::Configuration][Attributes::SourceEditorArgs]);
 
 		save_restore_geometry_chk->setChecked(config_params[Attributes::Configuration][Attributes::SaveRestoreGeometry]==Attributes::True);
-		reset_sizes_tb->setEnabled(save_restore_geometry_chk->isChecked());
+		reset_sizes_btn->setEnabled(save_restore_geometry_chk->isChecked());
 		low_verbosity_chk->setChecked(config_params[Attributes::Configuration][Attributes::LowVerbosity]==Attributes::True);
 		escape_comments_chk->setChecked(config_params[Attributes::Configuration][Attributes::EscapeComment]==Attributes::True);
 
@@ -700,5 +700,5 @@ void GeneralConfigWidget::resetAlertChoices()
 	config_params[Attributes::Configuration][Attributes::AlertUnsavedModels] = Attributes::True;
 	config_params[Attributes::Configuration][Attributes::AlertOpenSqlTabs] = Attributes::True;
 	config_params[Attributes::Configuration][Attributes::UseDefDisambiguation] = Attributes::False;
-	reset_alerts_choices_tb->setEnabled(false);
+	reset_alerts_choices_btn->setEnabled(false);
 }

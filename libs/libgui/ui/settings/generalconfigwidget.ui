@@ -133,7 +133,7 @@
       <item row="5" column="1">
        <layout class="QHBoxLayout" name="horizontalLayout_6">
         <item>
-         <widget class="QToolButton" name="reset_sizes_tb">
+         <widget class="QToolButton" name="reset_sizes_btn">
           <property name="enabled">
            <bool>false</bool>
           </property>
@@ -174,7 +174,7 @@
          </widget>
         </item>
         <item>
-         <widget class="QToolButton" name="reset_alerts_choices_tb">
+         <widget class="QPushButton" name="reset_alerts_choices_btn">
           <property name="enabled">
            <bool>true</bool>
           </property>
@@ -208,9 +208,6 @@
             <width>25</width>
             <height>25</height>
            </size>
-          </property>
-          <property name="toolButtonStyle">
-           <enum>Qt::ToolButtonStyle::ToolButtonTextBesideIcon</enum>
           </property>
          </widget>
         </item>
@@ -471,7 +468,7 @@
          </widget>
         </item>
         <item>
-         <widget class="QToolButton" name="clear_sql_history_tb">
+         <widget class="QToolButton" name="clear_sql_history_btn">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
             <horstretch>0</horstretch>
@@ -1691,7 +1688,7 @@
   <tabstop>ui_language_cmb</tabstop>
   <tabstop>source_editor_args_edt</tabstop>
   <tabstop>history_max_length_spb</tabstop>
-  <tabstop>clear_sql_history_tb</tabstop>
+  <tabstop>clear_sql_history_btn</tabstop>
   <tabstop>print_grid_chk</tabstop>
   <tabstop>print_pg_num_chk</tabstop>
   <tabstop>paper_cmb</tabstop>

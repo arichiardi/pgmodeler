@@ -173,7 +173,7 @@ class __libgui MainWindow: public QMainWindow, public Ui::MainWindow {
 		//! \brief Set the postion of a floating widget based upon an action at a tool bar
 		void setFloatingWidgetPos(QWidget *widget, QAction *act, QToolBar *toolbar, bool map_to_window);
 
-		void setBottomFloatingWidgetPos(QWidget *widget, QToolButton *btn);
+		void setBottomFloatingWidgetPos(QWidget *widget, QAbstractButton *btn);
 
 		void configureSamplesMenu();
 

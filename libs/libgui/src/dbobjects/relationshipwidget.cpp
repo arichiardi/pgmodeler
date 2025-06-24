@@ -191,7 +191,7 @@ RelationshipWidget::RelationshipWidget(QWidget *parent): BaseObjectWidget(parent
 
 	connect(fk_gconf_chk, &QCheckBox::toggled, this, &RelationshipWidget::useFKGlobalSettings);
 	connect(patterns_gconf_chk, &QCheckBox::toggled, this, &RelationshipWidget::usePatternGlobalSettings);
-	connect(gen_bound_expr_tb, &QToolButton::clicked, this, &RelationshipWidget::generateBoundingExpr);
+	connect(gen_bound_expr_btn, &QPushButton::clicked, this, &RelationshipWidget::generateBoundingExpr);
 	connect(default_part_chk, &QCheckBox::toggled, part_bound_expr_txt, &NumberedTextEditor::setDisabled);
 
 	setMinimumSize(600, 380);
