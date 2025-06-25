@@ -60,7 +60,6 @@ DatabaseImportForm::DatabaseImportForm(QWidget *parent, Qt::WindowFlags f) : QDi
 
 	objs_parent_wgt->setEnabled(false);
 	buttons_wgt->setEnabled(false);
-	connection_gb->setFocusProxy(connections_cmb);
 
 	connect(close_btn, &QPushButton::clicked, this, &DatabaseImportForm::close);
 	connect(by_oid_chk,  &QCheckBox::toggled, this, qOverload<>(&DatabaseImportForm::filterObjects));
