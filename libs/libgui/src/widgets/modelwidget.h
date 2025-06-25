@@ -710,6 +710,7 @@ class __libgui ModelWidget: public QWidget {
 		friend class NewObjectOverlayWidget;
 		friend class LayersConfigWidget;
 		friend class MetadataHandlingForm;
+		friend class DatabaseImportWidget;
 };
 
 #endif

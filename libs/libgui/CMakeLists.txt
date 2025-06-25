@@ -66,6 +66,7 @@ set(SOURCES
     src/tools/bugreportform.cpp src/tools/bugreportform.h
     src/tools/databaseexplorerwidget.cpp src/tools/databaseexplorerwidget.h
     src/tools/databaseimportform.cpp src/tools/databaseimportform.h
+    src/tools/databaseimportwidget.cpp src/tools/databaseimportwidget.h
     src/tools/databaseimporthelper.cpp src/tools/databaseimporthelper.h
     src/tools/datagridwidget.cpp src/tools/datagridwidget.h
     src/tools/datahandlingform.cpp src/tools/datahandlingform.h
@@ -181,7 +182,6 @@ set(FORMS
     ui/settings/connectionsconfigwidget.ui
     ui/settings/pluginsconfigwidget.ui
     ui/settings/snippetsconfigwidget.ui
-    #ui/settings/configurationform.ui
     ui/settings/generalconfigwidget.ui
     ui/settings/relationshipconfigwidget.ui
     ui/tools/bugreportform.ui
@@ -198,6 +198,7 @@ set(FORMS
     ui/tools/modelrestorationform.ui
     ui/tools/swapobjectsidswidget.ui
     ui/tools/modelvalidationwidget.ui
+    ui/tools/databaseimportwidget.ui
     ui/widgets/aboutwidget.ui
     ui/widgets/customtablewidget.ui
     ui/widgets/donatewidget.ui

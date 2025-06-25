@@ -490,7 +490,15 @@ void MainWindow::createMainWidgets()
 		vbox->setContentsMargins(0,0,0,0);
 		vbox->setSpacing(0);
 		vbox->addWidget(configuration_wgt);
-		views_stw->widget(SettingsView)->setLayout(vbox);
+		views_stw->widget(ConfigureView)->setLayout(vbox);
+
+		db_import_wgt = new DatabaseImportWidget(this);
+		db_import_wgt->setObjectName("db_import_wgt");
+		vbox = new QVBoxLayout;
+		vbox->setContentsMargins(0,0,0,0);
+		vbox->setSpacing(0);
+		vbox->addWidget(db_import_wgt);
+		views_stw->widget(ImportView)->setLayout(vbox);
 
 		model_nav_wgt=new ModelNavigationWidget(this);
 		model_nav_wgt->setObjectName("model_nav_wgt");
@@ -650,7 +658,7 @@ void MainWindow::connectSignalsToSlots()
 	connect(&model_save_timer, &QTimer::timeout, this, &MainWindow::saveAllModels);
 
 	connect(action_export, &QAction::triggered, this, &MainWindow::exportModel);
-	connect(action_import, &QAction::triggered, this, &MainWindow::importDatabase);
+	//connect(action_import, &QAction::triggered, this, &MainWindow::importDatabase);
 	connect(action_diff, &QAction::triggered, this, &MainWindow::diffModelDatabase);
 
 	/* Configuring the view switching actions slots.
@@ -669,7 +677,6 @@ void MainWindow::connectSignalsToSlots()
 	for(auto &act : view_actions)
 	{
 		act->setData(static_cast<MWViewsId>(vw_id++));
-		//connect(act, &QAction::triggered, this, &MainWindow::changeCurrentView);
 		connect(act, &QAction::toggled, this, &MainWindow::changeCurrentView);
 	}
 
@@ -2676,21 +2683,6 @@ void MainWindow::configureMoreActionsMenu()
 	actions.removeOne(current_model->action_source_code);
 	more_actions_menu.addActions(actions);
 }
-
-/* void MainWindow::switchView(MWViewsId vw_id)
-{
-	static QList<QAction *> vw_acts {
-		action_welcome, action_design,
-		action_manage, action_import,
-		action_export, action_diff,
-		action_settings
-	};
-
-	if(vw_id > SettingsView)
-		return;
-
-	vw_acts.at(vw_id)->toggle();
-} */
 
 void MainWindow::addExecTabInSQLTool(const QString &sql_cmd)
 {

@@ -45,6 +45,7 @@
 #include "widgets/layersconfigwidget.h"
 #include "widgets/changelogwidget.h"
 #include "settings/configurationwidget.h"
+#include "databaseimportwidget.h"
 
 class __libgui MainWindow: public QMainWindow, public Ui::MainWindow {
 	Q_OBJECT
@@ -101,7 +102,11 @@ class __libgui MainWindow: public QMainWindow, public Ui::MainWindow {
 		//! \brief SQL tool widget widget
 		SQLToolWidget *sql_tool_wgt;
 
+		//! \brief pgModeler configuration widget
 		ConfigurationWidget *configuration_wgt;
+
+		//! \brief Reverse engineering widget
+		DatabaseImportWidget *db_import_wgt;
 
 		//! \brief Operation list dock widget
 		OperationListWidget *oper_list_wgt;
@@ -219,7 +224,7 @@ public:
 			ImportView,
 			ExportView,
 			DiffView,
-			SettingsView,
+			ConfigureView,
 		};
 
 		MainWindow(QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::Widget);
