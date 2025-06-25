@@ -65,7 +65,7 @@ std::map<QPalette::ColorRole, QStringList> AppearanceConfigWidget::light_ui_colo
 	{ QPalette::BrightText, {"#ffffff", "#ffffff", "#ffffff"} },
 	{ QPalette::ButtonText, {"#232627", "#232627", "#777878"} },
 	{ QPalette::Base, {"#fcfcfc", "#fcfcfc", "#eff0f1"} },
-	{ QPalette::Window, {"#ebeced", "#ebeced", "#ebeced"} },
+	{ QPalette::Window, {"#e4e5e6", "#e4e5e6", "#e4e5e6"} },
 	{ QPalette::Shadow, {"#404040", "#404040", "#7d7d7d"} },
 	{ QPalette::Highlight, {"#6ec7ff", "#6ec7ff", "#9fa0a1"} },
 	{ QPalette::HighlightedText, {"#fcfcfc", "#fcfcfc", "#fcfcfc"} },
