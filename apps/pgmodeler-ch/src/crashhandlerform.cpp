@@ -39,7 +39,8 @@ CrashHandlerForm::CrashHandlerForm(bool analysis_mode, QWidget *parent, Qt::Wind
 	stack_txt->setLineWrapMode(QPlainTextEdit::NoWrap);
 
 	layout->addWidget(stack_txt);
-	layout->setContentsMargins(GuiUtilsNs::LtMargin,GuiUtilsNs::LtMargin,GuiUtilsNs::LtMargin,GuiUtilsNs::LtMargin);
+	layout->setContentsMargins(GuiUtilsNs::LtMargin, GuiUtilsNs::LtMargin,
+														 GuiUtilsNs::LtMargin, GuiUtilsNs::LtMargin);
 	wgt->setLayout(layout);
 
 	logo_lbl->setPixmap(QPixmap(":/images/images/crashhandler.png"));

@@ -122,7 +122,7 @@ class __libgui DatabaseImportWidget: public QWidget, public Ui::DatabaseImportWi
 
 		virtual ~DatabaseImportWidget();
 		
-		void setModelWidget(ModelWidget *model);
+		void setModel(ModelWidget *model);
 
 		//! \brief Defines if all the output generated during the import process should be displayed
 		static void setLowVerbosity(bool value);
@@ -188,6 +188,9 @@ class __libgui DatabaseImportWidget: public QWidget, public Ui::DatabaseImportWi
 
 		//! \brief This signal is emitted whenever the import has successfully finished
 		void s_importFinished();
+
+		//! \brief This signal is emitted whenever the import has started
+		void s_importStarted();
 };
 
 #endif

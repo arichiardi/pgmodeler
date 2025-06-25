@@ -261,9 +261,6 @@ public:
 		//! \brief Returns the model at given index
 		ModelWidget *getModel(int idx);
 
-		//! \brief Switches the currently opened view (Design, Manage, Welcome)
-		//void switchView(MWViewsId view);
-
 		/*! \brief This is a convenience method to make able the addition of execution tabs in SQL tool without
 		 *  expose the SQL Tool widget itself (useful for plugin developers) */
 		void addExecTabInSQLTool(const QString &sql_cmd);
@@ -387,7 +384,6 @@ public:
 		void toggleCompactView();
 		void toggleLayersWidget(bool show);
 		void toggleChangelogWidget(bool show);
-
 		void expandSceneRect();
 
 		#ifdef	DEMO_VERSION
@@ -397,6 +393,9 @@ public:
 		bool mimeDataHasModelFiles(const QMimeData *mime_data);
 		void loadModelsFromMimeData(const QMimeData *mime_data);
 		void addNewLayer(const QString &layer_name);
+
+		void handleImportStarted();
+		void handleImportFinished();
 
 	signals:
 		void s_currentModelChanged(ModelWidget *model_wgt);

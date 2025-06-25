@@ -206,6 +206,23 @@ void MainWindow::addNewLayer(const QString &layer_name)
 	current_model->layers_wgt->setAttributes(current_model);
 }
 
+void MainWindow::handleImportStarted()
+{
+	stopTimers(true);
+	//db_import_wgt->setModelWidget(current_model);
+}
+
+void MainWindow::handleImportFinished()
+{
+	if(db_import_wgt->getModelWidget())
+		addModel(db_import_wgt->getModelWidget());
+	else if(current_model)
+		updateDockWidgets();
+
+	stopTimers(true);
+	action_design->setChecked(true);
+}
+
 void MainWindow::dropEvent(QDropEvent *event)
 {
 	loadModelsFromMimeData(event->mimeData());
@@ -682,15 +699,6 @@ void MainWindow::connectSignalsToSlots()
 
 	connect(action_bug_report, &QAction::triggered, this, &MainWindow::reportBug);
 	connect(action_handle_metadata, &QAction::triggered, this, &MainWindow::handleObjectsMetadata);
-
-	connect(model_valid_wgt, &ModelValidationWidget::s_connectionsUpdateRequest, this, [this](){
-		updateConnections(true);
-	});
-
-	connect(sql_tool_wgt, &SQLToolWidget::s_connectionsUpdateRequest, this, [this](){
-		updateConnections(true);
-	});
-
 	connect(action_compact_view, &QAction::triggered, this, &MainWindow::toggleCompactView);
 
 	connect(objects_btn, &QPushButton::toggled, model_objs_parent, &QWidget::setVisible);
@@ -746,6 +754,21 @@ void MainWindow::connectSignalsToSlots()
 	connect(changelog_wgt, &ChangelogWidget::s_visibilityChanged, changelog_btn, &QToolButton::setChecked);
 
 	connect(&tmpmodel_save_timer, &QTimer::timeout, this, &MainWindow::saveTemporaryModels);
+
+	connect(model_valid_wgt, &ModelValidationWidget::s_connectionsUpdateRequest, this, [this](){
+		updateConnections(true);
+	});
+
+	connect(sql_tool_wgt, &SQLToolWidget::s_connectionsUpdateRequest, this, [this](){
+		updateConnections(true);
+	});
+
+	connect(db_import_wgt, &DatabaseImportWidget::s_connectionsUpdateRequest, this, [this](){
+		updateConnections(true);
+	});
+
+	connect(db_import_wgt, &DatabaseImportWidget::s_importStarted, this, &MainWindow::handleImportStarted);
+	connect(db_import_wgt, &DatabaseImportWidget::s_importFinished, this, &MainWindow::handleImportFinished);
 
 #ifndef Q_OS_MACOS
 	connect(action_show_main_menu, &QAction::triggered, this, &MainWindow::showMainMenu);
@@ -1095,7 +1118,8 @@ void MainWindow::closeEvent(QCloseEvent *event)
 void MainWindow::updateConnections(bool force)
 {
 	if(force || (!force && (model_valid_wgt->connections_cmb->count() == 0 ||
-													sql_tool_wgt->connections_cmb->count() == 0)))
+													sql_tool_wgt->connections_cmb->count() == 0 ||
+													db_import_wgt->connections_cmb->count() == 0)))
 	{
 		if(sender() != sql_tool_wgt)
 		{
@@ -1105,6 +1129,9 @@ void MainWindow::updateConnections(bool force)
 
 		if(sender() != model_valid_wgt)
 			ConnectionsConfigWidget::fillConnectionsComboBox(model_valid_wgt->connections_cmb, true, Connection::OpValidation);
+
+		if(sender() != db_import_wgt)
+			ConnectionsConfigWidget::fillConnectionsComboBox(db_import_wgt->connections_cmb, true, Connection::OpImport);
 	}
 }
 
@@ -1585,6 +1612,7 @@ void MainWindow::setCurrentModel()
 	model_valid_wgt->setModel(current_model);
 	obj_finder_wgt->setModel(current_model);
 	changelog_wgt->setModel(current_model);
+	db_import_wgt->setModel(current_model);
 
 	if(current_model)
 		model_objs_wgt->restoreTreeState(model_tree_states[current_model],

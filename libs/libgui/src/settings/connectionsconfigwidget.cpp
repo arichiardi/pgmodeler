@@ -551,7 +551,7 @@ void ConnectionsConfigWidget::saveConfiguration()
 		schparser.ignoreUnkownAttributes(true);
 		BaseConfigWidget::saveConfiguration(GlobalAttributes::ConnectionsConf, config_params);
 		schparser.ignoreUnkownAttributes(false);
-		//setConfigurationChanged(false);
+		setConfigurationChanged(false);
 	}
 	catch(Exception &e)
 	{

@@ -34,14 +34,17 @@ DatabaseImportWidget::DatabaseImportWidget(QWidget *parent) : QWidget(parent)
 
 	setupUi(this);
 
-	model_wgt=nullptr;
-	create_model=true;
+	model_wgt = nullptr;
+	create_model = true;
 	scene_size_incr = 0;
+	import_helper = nullptr;
+	import_thread = nullptr;
 
 	pg_version_alert_frm->setVisible(false);
+	tree_filter_wgt->setVisible(false);
 
-	objs_filter_wgt = new ObjectsFilterWidget(options_tbw->widget(1));
-	QVBoxLayout *vbox = new QVBoxLayout(options_tbw->widget(1));
+	objs_filter_wgt = new ObjectsFilterWidget(this);
+	QVBoxLayout *vbox = new QVBoxLayout(filter_gb);
 	vbox->setContentsMargins(GuiUtilsNs::LtMargin, GuiUtilsNs::LtMargin,
 													 GuiUtilsNs::LtMargin, GuiUtilsNs::LtMargin);
 	vbox->addWidget(objs_filter_wgt);
@@ -61,7 +64,8 @@ DatabaseImportWidget::DatabaseImportWidget(QWidget *parent) : QWidget(parent)
 	objs_parent_wgt->setEnabled(false);
 	buttons_wgt->setEnabled(false);
 
-	connect(close_btn, &QPushButton::clicked, this, &DatabaseImportWidget::close);
+	splitter->setSizes({ 500, 500 });
+
 	connect(by_oid_chk,  &QCheckBox::toggled, this, qOverload<>(&DatabaseImportWidget::filterObjects));
 
 	connect(connections_cmb, &QComboBox::activated, this, [this](){
@@ -84,6 +88,7 @@ DatabaseImportWidget::DatabaseImportWidget(QWidget *parent) : QWidget(parent)
 		__trycatch( listObjects(); )
 	});
 
+	connect(tree_filter_tb, &QToolButton::toggled, tree_filter_wgt, &QWidget::setVisible);
 	connect(db_objects_tw, &QTreeWidget::itemChanged, this, qOverload<QTreeWidgetItem *, int>(&DatabaseImportWidget::setItemCheckState));
 	connect(select_all_tb, &QToolButton::clicked, this, &DatabaseImportWidget::setItemsCheckState);
 	connect(clear_all_tb, &QToolButton::clicked, this, &DatabaseImportWidget::setItemsCheckState);
@@ -157,10 +162,13 @@ DatabaseImportWidget::~DatabaseImportWidget()
 	destroyThread();
 }
 
-void DatabaseImportWidget::setModelWidget(ModelWidget *model)
+void DatabaseImportWidget::setModel(ModelWidget *model)
 {
-	model_wgt=model;
-	import_to_model_chk->setEnabled(model!=nullptr);
+	model_wgt = model;
+	import_to_model_chk->setEnabled(model != nullptr);
+
+	if(!model)
+		import_to_model_chk->setChecked(false);
 }
 
 void DatabaseImportWidget::setLowVerbosity(bool value)
@@ -170,9 +178,9 @@ void DatabaseImportWidget::setLowVerbosity(bool value)
 
 void DatabaseImportWidget::createThread()
 {
-	import_thread=new QThread;
+	import_thread = new QThread;
 
-	import_helper=new DatabaseImportHelper;
+	import_helper = new DatabaseImportHelper;
 	import_helper->moveToThread(import_thread);
 
 	connect(import_thread, &QThread::started, this, [this](){
@@ -367,10 +375,13 @@ void DatabaseImportWidget::importDatabase()
 		cancel_btn->setEnabled(true);
 		import_btn->setEnabled(false);
 		database_gb->setEnabled(false);
-		options_tbw->setEnabled(false);
+		options_gb->setEnabled(false);
+		filter_gb->setEnabled(false);
 
 		if(!create_model && rand_obj_pos_chk->isChecked())
 			connect(model_wgt, &ModelWidget::s_objectAdded, this, &DatabaseImportWidget::setObjectPosition);
+
+		emit s_importStarted();
 	}
 	catch(Exception &e)
 	{
@@ -788,7 +799,8 @@ void DatabaseImportWidget::finishImport(const QString &msg)
 		import_thread->quit();
 
 	cancel_btn->setEnabled(false);
-	options_tbw->setEnabled(true);
+	options_gb->setEnabled(true);
+	filter_gb->setEnabled(true);
 	database_gb->setEnabled(true);
 	progress_pb->setValue(100);
 	progress_lbl->setText(msg);
@@ -818,8 +830,13 @@ void DatabaseImportWidget::showEvent(QShowEvent *event)
 	if(event->spontaneous())
 		return;
 
-	ConnectionsConfigWidget::fillConnectionsComboBox(connections_cmb, true, Connection::OpImport);
-	createThread();
+	/* Selecting the default connection for import
+	 * if it there's no selected connection */
+	if(connections_cmb->currentIndex() <= 0)
+		ConnectionsConfigWidget::fillConnectionsComboBox(connections_cmb, true, Connection::OpImport);
+
+	if(!import_thread)
+		createThread();
 
 	/* In case the current connection is the default for import
 	 * and the auto browse flag is set for the connected database */
