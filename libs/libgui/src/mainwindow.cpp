@@ -214,8 +214,8 @@ void MainWindow::handleImportStarted()
 
 void MainWindow::handleImportFinished()
 {
-	if(db_import_wgt->getModelWidget())
-		addModel(db_import_wgt->getModelWidget());
+	if(db_import_wgt->getModel())
+		addModel(db_import_wgt->getModel());
 	else if(current_model)
 		updateDockWidgets();
 
@@ -969,8 +969,11 @@ void MainWindow::resizeEvent(QResizeEvent *)
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-	//pgModeler will not close when the validation thread is still running
-	if(model_valid_wgt->isValidationRunning())
+	/* pgModeler will not close when one of the
+	 * threaded operations (validation, import, diff, export)
+	 * is still running */
+	if(model_valid_wgt->isValidationRunning() ||
+		 db_import_wgt->isImportRunning())
 		event->ignore();
 	else
 	{

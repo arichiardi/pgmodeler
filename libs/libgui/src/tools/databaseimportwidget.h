@@ -128,8 +128,11 @@ class __libgui DatabaseImportWidget: public QWidget, public Ui::DatabaseImportWi
 		static void setLowVerbosity(bool value);
 		
 		//! \brief Returns the configured model widget
-		ModelWidget *getModelWidget();
+		ModelWidget *getModel();
 		
+		//! \brief Returns if the importing thread is running
+		bool isImportRunning();
+
 		//! \brief Fills a combo box with all available databases according to the configurations of the specified import helper
 		static void listDatabases(DatabaseImportHelper &import_helper, QComboBox *dbcombo);
 

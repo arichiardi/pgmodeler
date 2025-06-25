@@ -494,6 +494,9 @@ void DatabaseImportWidget::listObjects()
 			Connection *conn=reinterpret_cast<Connection *>(connections_cmb->itemData(connections_cmb->currentIndex()).value<void *>());
 			QStringList obj_filter = objs_filter_wgt->getObjectFilters();
 
+			dbg_output_wgt->showActionButtons(false);
+			dbg_output_wgt->clear();
+
 			//Set the working database on import helper
 			import_helper->closeConnection();
 			import_helper->setConnection(*conn);
@@ -580,10 +583,7 @@ void DatabaseImportWidget::listDatabases()
 		import_helper->closeConnection();
 		db_objects_tw->clear();
 
-		dbg_output_wgt->showActionButtons(false);
-		dbg_output_wgt->clear();
-
-		if(connections_cmb->currentIndex()==connections_cmb->count()-1)
+		if(connections_cmb->currentIndex() == connections_cmb->count()-1)
 		{
 			if(ConnectionsConfigWidget::openConnectionsConfiguration(connections_cmb, true))
 				emit s_connectionsUpdateRequest();
@@ -633,10 +633,6 @@ void DatabaseImportWidget::closeEvent(QCloseEvent *event)
 		event->ignore();
 	else
 	{
-		#warning "Fix me!"
-		//if(create_model && !model_wgt)
-		//	this->setResult(QDialog::Rejected);
-
 		import_helper->closeConnection();
 	}
 }
@@ -787,10 +783,6 @@ void DatabaseImportWidget::handleImportFinished(Exception e)
 	import_thread->wait();
 
 	emit s_importFinished();
-
-	#warning "Fix me!"
-	//if(!debug_mode_chk->isChecked())
-	//	this->accept();
 }
 
 void DatabaseImportWidget::finishImport(const QString &msg)
@@ -851,12 +843,17 @@ void DatabaseImportWidget::showEvent(QShowEvent *event)
 	}
 }
 
-ModelWidget *DatabaseImportWidget::getModelWidget()
+ModelWidget *DatabaseImportWidget::getModel()
 {
 	if(create_model)
 		return model_wgt;
 
 	return nullptr;
+}
+
+bool DatabaseImportWidget::isImportRunning()
+{
+	return import_thread && import_thread->isRunning();
 }
 
 void DatabaseImportWidget::listDatabases(Connection conn, QComboBox *dbcombo)
