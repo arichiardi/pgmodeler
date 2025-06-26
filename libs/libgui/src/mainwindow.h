@@ -45,6 +45,7 @@
 #include "widgets/layersconfigwidget.h"
 #include "widgets/changelogwidget.h"
 #include "settings/configurationwidget.h"
+#include "databaseimportwidget.h"
 
 class __libgui MainWindow: public QMainWindow, public Ui::MainWindow {
 	Q_OBJECT
@@ -101,7 +102,11 @@ class __libgui MainWindow: public QMainWindow, public Ui::MainWindow {
 		//! \brief SQL tool widget widget
 		SQLToolWidget *sql_tool_wgt;
 
+		//! \brief pgModeler configuration widget
 		ConfigurationWidget *configuration_wgt;
+
+		//! \brief Reverse engineering widget
+		DatabaseImportWidget *db_import_wgt;
 
 		//! \brief Operation list dock widget
 		OperationListWidget *oper_list_wgt;
@@ -219,7 +224,7 @@ public:
 			ImportView,
 			ExportView,
 			DiffView,
-			SettingsView,
+			ConfigureView,
 		};
 
 		MainWindow(QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::Widget);
@@ -255,9 +260,6 @@ public:
 
 		//! \brief Returns the model at given index
 		ModelWidget *getModel(int idx);
-
-		//! \brief Switches the currently opened view (Design, Manage, Welcome)
-		//void switchView(MWViewsId view);
 
 		/*! \brief This is a convenience method to make able the addition of execution tabs in SQL tool without
 		 *  expose the SQL Tool widget itself (useful for plugin developers) */
@@ -320,9 +322,6 @@ public:
 		//! \brief Executes the export of the currently focused model
 		void exportModel();
 
-		//! \brief Executes the reverse engineering
-		void importDatabase();
-
 		//! \brief Executes the model <> database comparison
 		void diffModelDatabase();
 
@@ -382,7 +381,6 @@ public:
 		void toggleCompactView();
 		void toggleLayersWidget(bool show);
 		void toggleChangelogWidget(bool show);
-
 		void expandSceneRect();
 
 		#ifdef	DEMO_VERSION
@@ -392,6 +390,8 @@ public:
 		bool mimeDataHasModelFiles(const QMimeData *mime_data);
 		void loadModelsFromMimeData(const QMimeData *mime_data);
 		void addNewLayer(const QString &layer_name);
+
+		void handleImportFinished();
 
 	signals:
 		void s_currentModelChanged(ModelWidget *model_wgt);

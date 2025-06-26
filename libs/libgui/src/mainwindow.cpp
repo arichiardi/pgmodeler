@@ -23,7 +23,6 @@
 #include "tools/sqlexecutionwidget.h"
 #include "tools/modelfixform.h"
 #include "tools/modelexportform.h"
-#include "tools/databaseimportform.h"
 #include "tools/modeldatabasediffform.h"
 #include <QMimeData>
 #include <QDesktopServices>
@@ -204,6 +203,17 @@ void MainWindow::addNewLayer(const QString &layer_name)
 {
 	layers_cfg_wgt->addLayer(layer_name, false);
 	current_model->layers_wgt->setAttributes(current_model);
+}
+
+void MainWindow::handleImportFinished()
+{
+	if(db_import_wgt->getModel())
+		addModel(db_import_wgt->getModel());
+	else if(current_model)
+		updateDockWidgets();
+
+	stopTimers(true);
+	action_design->setChecked(true);
 }
 
 void MainWindow::dropEvent(QDropEvent *event)
@@ -490,7 +500,15 @@ void MainWindow::createMainWidgets()
 		vbox->setContentsMargins(0,0,0,0);
 		vbox->setSpacing(0);
 		vbox->addWidget(configuration_wgt);
-		views_stw->widget(SettingsView)->setLayout(vbox);
+		views_stw->widget(ConfigureView)->setLayout(vbox);
+
+		db_import_wgt = new DatabaseImportWidget(this);
+		db_import_wgt->setObjectName("db_import_wgt");
+		vbox = new QVBoxLayout;
+		vbox->setContentsMargins(0,0,0,0);
+		vbox->setSpacing(0);
+		vbox->addWidget(db_import_wgt);
+		views_stw->widget(ImportView)->setLayout(vbox);
 
 		model_nav_wgt=new ModelNavigationWidget(this);
 		model_nav_wgt->setObjectName("model_nav_wgt");
@@ -650,7 +668,7 @@ void MainWindow::connectSignalsToSlots()
 	connect(&model_save_timer, &QTimer::timeout, this, &MainWindow::saveAllModels);
 
 	connect(action_export, &QAction::triggered, this, &MainWindow::exportModel);
-	connect(action_import, &QAction::triggered, this, &MainWindow::importDatabase);
+	//connect(action_import, &QAction::triggered, this, &MainWindow::importDatabase);
 	connect(action_diff, &QAction::triggered, this, &MainWindow::diffModelDatabase);
 
 	/* Configuring the view switching actions slots.
@@ -669,21 +687,11 @@ void MainWindow::connectSignalsToSlots()
 	for(auto &act : view_actions)
 	{
 		act->setData(static_cast<MWViewsId>(vw_id++));
-		//connect(act, &QAction::triggered, this, &MainWindow::changeCurrentView);
 		connect(act, &QAction::toggled, this, &MainWindow::changeCurrentView);
 	}
 
 	connect(action_bug_report, &QAction::triggered, this, &MainWindow::reportBug);
 	connect(action_handle_metadata, &QAction::triggered, this, &MainWindow::handleObjectsMetadata);
-
-	connect(model_valid_wgt, &ModelValidationWidget::s_connectionsUpdateRequest, this, [this](){
-		updateConnections(true);
-	});
-
-	connect(sql_tool_wgt, &SQLToolWidget::s_connectionsUpdateRequest, this, [this](){
-		updateConnections(true);
-	});
-
 	connect(action_compact_view, &QAction::triggered, this, &MainWindow::toggleCompactView);
 
 	connect(objects_btn, &QPushButton::toggled, model_objs_parent, &QWidget::setVisible);
@@ -739,6 +747,24 @@ void MainWindow::connectSignalsToSlots()
 	connect(changelog_wgt, &ChangelogWidget::s_visibilityChanged, changelog_btn, &QToolButton::setChecked);
 
 	connect(&tmpmodel_save_timer, &QTimer::timeout, this, &MainWindow::saveTemporaryModels);
+
+	connect(model_valid_wgt, &ModelValidationWidget::s_connectionsUpdateRequest, this, [this](){
+		updateConnections(true);
+	});
+
+	connect(sql_tool_wgt, &SQLToolWidget::s_connectionsUpdateRequest, this, [this](){
+		updateConnections(true);
+	});
+
+	connect(db_import_wgt, &DatabaseImportWidget::s_connectionsUpdateRequest, this, [this](){
+		updateConnections(true);
+	});
+
+	connect(db_import_wgt, &DatabaseImportWidget::s_importStarted, this, [this](){
+		stopTimers(true);
+	});
+
+	connect(db_import_wgt, &DatabaseImportWidget::s_importFinished, this, &MainWindow::handleImportFinished);
 
 #ifndef Q_OS_MACOS
 	connect(action_show_main_menu, &QAction::triggered, this, &MainWindow::showMainMenu);
@@ -875,7 +901,6 @@ void MainWindow::restoreLastSession()
 		}
 		catch(Exception &e)
 		{
-			//qApp->restoreOverrideCursor();
 			Messagebox::error(e, PGM_FUNC, PGM_FILE, PGM_LINE);
 		}
 	}
@@ -939,8 +964,11 @@ void MainWindow::resizeEvent(QResizeEvent *)
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-	//pgModeler will not close when the validation thread is still running
-	if(model_valid_wgt->isValidationRunning())
+	/* pgModeler will not close when one of the
+	 * threaded operations (validation, import, diff, export)
+	 * is still running */
+	if(model_valid_wgt->isValidationRunning() ||
+		 db_import_wgt->isImportRunning())
 		event->ignore();
 	else
 	{
@@ -1088,7 +1116,8 @@ void MainWindow::closeEvent(QCloseEvent *event)
 void MainWindow::updateConnections(bool force)
 {
 	if(force || (!force && (model_valid_wgt->connections_cmb->count() == 0 ||
-													sql_tool_wgt->connections_cmb->count() == 0)))
+													sql_tool_wgt->connections_cmb->count() == 0 ||
+													db_import_wgt->connections_cmb->count() == 0)))
 	{
 		if(sender() != sql_tool_wgt)
 		{
@@ -1098,6 +1127,9 @@ void MainWindow::updateConnections(bool force)
 
 		if(sender() != model_valid_wgt)
 			ConnectionsConfigWidget::fillConnectionsComboBox(model_valid_wgt->connections_cmb, true, Connection::OpValidation);
+
+		if(sender() != db_import_wgt)
+			ConnectionsConfigWidget::fillConnectionsComboBox(db_import_wgt->connections_cmb, true, Connection::OpImport);
 	}
 }
 
@@ -1578,6 +1610,7 @@ void MainWindow::setCurrentModel()
 	model_valid_wgt->setModel(current_model);
 	obj_finder_wgt->setModel(current_model);
 	changelog_wgt->setModel(current_model);
+	db_import_wgt->setModel(current_model);
 
 	if(current_model)
 		model_objs_wgt->restoreTreeState(model_tree_states[current_model],
@@ -1947,33 +1980,6 @@ void MainWindow::exportModel()
 
 		stopTimers(false);
 	}
-}
-
-void MainWindow::importDatabase()
-{
-	DatabaseImportForm db_import_form(nullptr, Qt::Dialog | Qt::WindowMinMaxButtonsHint | Qt::WindowCloseButtonHint);
-
-	stopTimers(true);
-
-	connect(&db_import_form, &DatabaseImportForm::s_connectionsUpdateRequest, this, [this](){
-		updateConnections(true);
-	});
-
-	connect(&db_import_form, &DatabaseImportForm::s_importFinished, this, [this, &db_import_form](){
-		if(db_import_form.getModelWidget())
-			this->addModel(db_import_form.getModelWidget());
-		else if(current_model)
-			updateDockWidgets();
-	}, Qt::DirectConnection);
-
-	db_import_form.setModelWidget(current_model);
-	GuiUtilsNs::resizeDialog(&db_import_form);
-
-	GeneralConfigWidget::restoreWidgetGeometry(&db_import_form);
-	db_import_form.exec();
-	GeneralConfigWidget::saveWidgetGeometry(&db_import_form);
-
-	stopTimers(false);
 }
 
 void MainWindow::diffModelDatabase()
@@ -2676,21 +2682,6 @@ void MainWindow::configureMoreActionsMenu()
 	actions.removeOne(current_model->action_source_code);
 	more_actions_menu.addActions(actions);
 }
-
-/* void MainWindow::switchView(MWViewsId vw_id)
-{
-	static QList<QAction *> vw_acts {
-		action_welcome, action_design,
-		action_manage, action_import,
-		action_export, action_diff,
-		action_settings
-	};
-
-	if(vw_id > SettingsView)
-		return;
-
-	vw_acts.at(vw_id)->toggle();
-} */
 
 void MainWindow::addExecTabInSQLTool(const QString &sql_cmd)
 {

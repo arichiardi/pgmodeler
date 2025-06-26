@@ -705,11 +705,11 @@ class __libgui ModelWidget: public QWidget {
 		friend class ModelObjectsWidget;
 		friend class ModelOverviewWidget;
 		friend class ModelValidationWidget;
-		friend class DatabaseImportForm;
 		friend class ObjectSearchWidget;
 		friend class NewObjectOverlayWidget;
 		friend class LayersConfigWidget;
 		friend class MetadataHandlingForm;
+		friend class DatabaseImportWidget;
 };
 
 #endif

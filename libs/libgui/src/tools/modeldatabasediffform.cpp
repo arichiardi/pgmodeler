@@ -17,7 +17,7 @@
 */
 
 #include "modeldatabasediffform.h"
-#include "databaseimportform.h"
+#include "databaseimportwidget.h"
 #include "guiutilsns.h"
 #include <QTemporaryFile>
 #include "utilsns.h"
@@ -520,7 +520,7 @@ void ModelDatabaseDiffForm::listDatabases()
 		{
 			DatabaseImportHelper imp_helper;
 			imp_helper.setConnection(*conn);
-			DatabaseImportForm::listDatabases(imp_helper, db_cmb);
+			DatabaseImportWidget::listDatabases(imp_helper, db_cmb);
 			(*srv_supp) = imp_helper.getCatalog().isServerSupported();
 
 			if(conn->isAutoBrowseDB())
@@ -1543,7 +1543,7 @@ void ModelDatabaseDiffForm::applyPartialDiffFilters()
 																			pd_filter_wgt->isMatchBySignature(),
 																			pd_filter_wgt->getForceObjectsFilter());
 
-			DatabaseImportForm::listFilteredObjects(import_helper, filtered_objs_view);
+			DatabaseImportWidget::listFilteredObjects(import_helper, filtered_objs_view);
 		}
 	}
 	catch(Exception &e)

@@ -18,14 +18,14 @@
 
 /**
 \ingroup libgui
-\class DatabaseImportForm
-\brief Implements the form to execute the reverse engineering operations
+\class DatabaseImportWidget
+\brief Implements the widget to execute the reverse engineering operations
 */
 
-#ifndef DATABASE_IMPORT_FORM_H
-#define DATABASE_IMPORT_FORM_H
+#ifndef DATABASE_IMPORT_WIDGET_H
+#define DATABASE_IMPORT_WIDGET_H
 
-#include "ui_databaseimportform.h"
+#include "ui_databaseimportwidget.h"
 #include "databaseimporthelper.h"
 #include "widgets/modelwidget.h"
 #include "utils/htmlitemdelegate.h"
@@ -34,7 +34,7 @@
 #include <QTimer>
 #include <random>
 
-class __libgui DatabaseImportForm: public QDialog, public Ui::DatabaseImportForm {
+class __libgui DatabaseImportWidget: public QWidget, public Ui::DatabaseImportWidget {
 	Q_OBJECT
 
 	private:
@@ -82,9 +82,9 @@ class __libgui DatabaseImportForm: public QDialog, public Ui::DatabaseImportForm
 		void getObjectToImport(std::map<ObjectType, std::vector<unsigned>> &obj_oids, std::map<unsigned, std::vector<unsigned>> &col_oids);
 		
 		void finishImport(const QString &msg);
-		void showEvent(QShowEvent *event);
-		void closeEvent(QCloseEvent *event);
-		void destroyModelWidget();
+		void showEvent(QShowEvent *event) override;
+		void closeEvent(QCloseEvent *event) override;
+		void destroyModel();
 		
 		//! \brief Allocates the import thread and helper
 		void createThread();
@@ -94,6 +94,8 @@ class __libgui DatabaseImportForm: public QDialog, public Ui::DatabaseImportForm
 
 		//! \brief Filters and list in a different way the objects that matches the user provided filters
 		void listFilteredObjects();
+
+
 
 	public:
 		//! \brief Constants used to access the tree widget items data
@@ -118,17 +120,21 @@ class __libgui DatabaseImportForm: public QDialog, public Ui::DatabaseImportForm
 		 * if all objects are imported without using filters */
 		static constexpr unsigned ObjectCountThreshould=2000;
 		
-		DatabaseImportForm(QWidget * parent = nullptr, Qt::WindowFlags f = Qt::Widget);
-		virtual ~DatabaseImportForm();
+		DatabaseImportWidget(QWidget * parent = nullptr);
+
+		virtual ~DatabaseImportWidget();
 		
-		void setModelWidget(ModelWidget *model);
+		void setModel(ModelWidget *model);
 
 		//! \brief Defines if all the output generated during the import process should be displayed
 		static void setLowVerbosity(bool value);
 		
 		//! \brief Returns the configured model widget
-		ModelWidget *getModelWidget();
+		ModelWidget *getModel();
 		
+		//! \brief Returns if the importing thread is running
+		bool isImportRunning();
+
 		//! \brief Fills a combo box with all available databases according to the configurations of the specified import helper
 		static void listDatabases(DatabaseImportHelper &import_helper, QComboBox *dbcombo);
 
@@ -187,6 +193,9 @@ class __libgui DatabaseImportForm: public QDialog, public Ui::DatabaseImportForm
 
 		//! \brief This signal is emitted whenever the import has successfully finished
 		void s_importFinished();
+
+		//! \brief This signal is emitted whenever the import has started
+		void s_importStarted();
 };
 
 #endif

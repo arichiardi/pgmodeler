@@ -21,7 +21,7 @@
 #include "guiutilsns.h"
 #include "utils/deletableitemdelegate.h"
 #include "utilsns.h"
-#include "tools/databaseimportform.h"
+#include "tools/databaseimportwidget.h"
 #include "pgsqlversions.h"
 
 SQLToolWidget::SQLToolWidget(QWidget * parent) : QWidget(parent)
@@ -96,7 +96,7 @@ SQLToolWidget::SQLToolWidget(QWidget * parent) : QWidget(parent)
 
 		if(dbexplorer && dbexplorer->objects_trw->currentItem())
 			sourcecode_txt->setPlainText(dbexplorer->objects_trw->currentItem()->
-																	 data(DatabaseImportForm::ObjectSource, Qt::UserRole).toString());
+																	 data(DatabaseImportWidget::ObjectSource, Qt::UserRole).toString());
 
 		while(itr != sql_exec_wgts.end())
 		{
@@ -244,7 +244,7 @@ void SQLToolWidget::connectToServer()
 
 			if(conn)
 			{
-				DatabaseImportForm::listDatabases(*conn, database_cmb);
+				DatabaseImportWidget::listDatabases(*conn, database_cmb);
 
 				if(sender()==connections_cmb && conn->isAutoBrowseDB() && !ignore_auto_browse_flag)
 				{
