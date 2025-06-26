@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>982</width>
-    <height>641</height>
+    <height>594</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -119,8 +119,8 @@
         </property>
        </widget>
       </item>
-      <item row="0" column="0">
-       <widget class="QToolButton" name="general_tb">
+      <item row="6" column="0">
+       <widget class="QToolButton" name="snippets_tb">
         <property name="enabled">
          <bool>true</bool>
         </property>
@@ -137,11 +137,11 @@
          </size>
         </property>
         <property name="text">
-         <string>General</string>
+         <string>Snippets</string>
         </property>
         <property name="icon">
          <iconset resource="../../res/resources.qrc">
-          <normaloff>:/icons/icons/config.png</normaloff>:/icons/icons/config.png</iconset>
+          <normaloff>:/icons/icons/codesnippet.png</normaloff>:/icons/icons/codesnippet.png</iconset>
         </property>
         <property name="iconSize">
          <size>
@@ -150,9 +150,6 @@
          </size>
         </property>
         <property name="checkable">
-         <bool>true</bool>
-        </property>
-        <property name="checked">
          <bool>true</bool>
         </property>
         <property name="toolButtonStyle">
@@ -204,47 +201,6 @@
         </property>
        </widget>
       </item>
-      <item row="6" column="0">
-       <widget class="QToolButton" name="snippets_tb">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="minimumSize">
-         <size>
-          <width>0</width>
-          <height>0</height>
-         </size>
-        </property>
-        <property name="text">
-         <string>Snippets</string>
-        </property>
-        <property name="icon">
-         <iconset resource="../../res/resources.qrc">
-          <normaloff>:/icons/icons/codesnippet.png</normaloff>:/icons/icons/codesnippet.png</iconset>
-        </property>
-        <property name="iconSize">
-         <size>
-          <width>32</width>
-          <height>32</height>
-         </size>
-        </property>
-        <property name="checkable">
-         <bool>true</bool>
-        </property>
-        <property name="toolButtonStyle">
-         <enum>Qt::ToolButtonStyle::ToolButtonTextUnderIcon</enum>
-        </property>
-        <property name="autoRaise">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
       <item row="2" column="0">
        <widget class="QToolButton" name="relationships_tb">
         <property name="enabled">
@@ -276,6 +232,50 @@
          </size>
         </property>
         <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <property name="toolButtonStyle">
+         <enum>Qt::ToolButtonStyle::ToolButtonTextUnderIcon</enum>
+        </property>
+        <property name="autoRaise">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="QToolButton" name="general_tb">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>General</string>
+        </property>
+        <property name="icon">
+         <iconset resource="../../res/resources.qrc">
+          <normaloff>:/icons/icons/config.png</normaloff>:/icons/icons/config.png</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>32</width>
+          <height>32</height>
+         </size>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <property name="checked">
          <bool>true</bool>
         </property>
         <property name="toolButtonStyle">
@@ -344,12 +344,18 @@
     </widget>
    </item>
    <item>
-    <widget class="QFrame" name="bg_frame">
+    <widget class="QStackedWidget" name="confs_stw">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>500</width>
+       <height>0</height>
+      </size>
      </property>
      <property name="maximumSize">
       <size>
@@ -357,57 +363,12 @@
        <height>16777215</height>
       </size>
      </property>
-     <property name="frameShape">
-      <enum>QFrame::Shape::StyledPanel</enum>
+     <property name="layoutDirection">
+      <enum>Qt::LayoutDirection::LeftToRight</enum>
      </property>
-     <property name="frameShadow">
-      <enum>QFrame::Shadow::Raised</enum>
+     <property name="currentIndex">
+      <number>-1</number>
      </property>
-     <layout class="QVBoxLayout" name="verticalLayout">
-      <property name="spacing">
-       <number>0</number>
-      </property>
-      <property name="leftMargin">
-       <number>0</number>
-      </property>
-      <property name="topMargin">
-       <number>0</number>
-      </property>
-      <property name="rightMargin">
-       <number>0</number>
-      </property>
-      <property name="bottomMargin">
-       <number>0</number>
-      </property>
-      <item>
-       <widget class="QStackedWidget" name="confs_stw">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="minimumSize">
-         <size>
-          <width>500</width>
-          <height>0</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>1000</width>
-          <height>16777215</height>
-         </size>
-        </property>
-        <property name="layoutDirection">
-         <enum>Qt::LayoutDirection::LeftToRight</enum>
-        </property>
-        <property name="currentIndex">
-         <number>-1</number>
-        </property>
-       </widget>
-      </item>
-     </layout>
     </widget>
    </item>
    <item>
