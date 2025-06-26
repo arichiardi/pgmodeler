@@ -468,7 +468,6 @@ class __libcanvas ObjectsScene: public QGraphicsScene {
 
 		friend class ModelWidget;
 		friend class PgModelerCliApp;
-		friend class DatabaseImportForm;
 		friend class DatabaseImportWidget;
 };
 

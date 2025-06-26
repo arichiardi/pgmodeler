@@ -64,6 +64,7 @@ namespace GuiUtilsNs {
 
 	extern __libgui void configureWidgetFont(QWidget *widget, FontFactorId factor_id);
 	extern __libgui void __configureWidgetFont(QWidget *widget, double factor);
+	extern __libgui void configureWidgetsFont(const QWidgetList widgets, FontFactorId factor_id);
 
 	/*! \brief Creates a NumberedTextEditor instance automatically assigning it to 'parent'.
 		This function will create a layout if 'parent' doesn't has one. If parent has a layout

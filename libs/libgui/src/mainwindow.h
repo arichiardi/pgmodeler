@@ -322,9 +322,6 @@ public:
 		//! \brief Executes the export of the currently focused model
 		void exportModel();
 
-		//! \brief Executes the reverse engineering
-		void importDatabase();
-
 		//! \brief Executes the model <> database comparison
 		void diffModelDatabase();
 
@@ -394,7 +391,6 @@ public:
 		void loadModelsFromMimeData(const QMimeData *mime_data);
 		void addNewLayer(const QString &layer_name);
 
-		void handleImportStarted();
 		void handleImportFinished();
 
 	signals:

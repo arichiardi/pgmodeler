@@ -57,7 +57,6 @@ set(SOURCES
     src/qtconnectmacros.h
     src/settings/appearanceconfigwidget.cpp src/settings/appearanceconfigwidget.h
     src/settings/baseconfigwidget.cpp src/settings/baseconfigwidget.h
-    #src/settings/configurationform.cpp src/settings/configurationform.h
     src/settings/connectionsconfigwidget.cpp src/settings/connectionsconfigwidget.h
     src/settings/generalconfigwidget.cpp src/settings/generalconfigwidget.h
     src/settings/pluginsconfigwidget.cpp src/settings/pluginsconfigwidget.h
@@ -65,7 +64,6 @@ set(SOURCES
     src/settings/snippetsconfigwidget.cpp src/settings/snippetsconfigwidget.h
     src/tools/bugreportform.cpp src/tools/bugreportform.h
     src/tools/databaseexplorerwidget.cpp src/tools/databaseexplorerwidget.h
-    src/tools/databaseimportform.cpp src/tools/databaseimportform.h
     src/tools/databaseimportwidget.cpp src/tools/databaseimportwidget.h
     src/tools/databaseimporthelper.cpp src/tools/databaseimporthelper.h
     src/tools/datagridwidget.cpp src/tools/datagridwidget.h
@@ -193,7 +191,6 @@ set(FORMS
     ui/tools/metadatahandlingform.ui
     ui/tools/modelfixform.ui
     ui/tools/sqltoolwidget.ui
-    ui/tools/databaseimportform.ui
     ui/tools/modeldatabasediffform.ui
     ui/tools/modelrestorationform.ui
     ui/tools/swapobjectsidswidget.ui

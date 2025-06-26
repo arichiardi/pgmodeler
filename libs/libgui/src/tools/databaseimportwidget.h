@@ -82,9 +82,9 @@ class __libgui DatabaseImportWidget: public QWidget, public Ui::DatabaseImportWi
 		void getObjectToImport(std::map<ObjectType, std::vector<unsigned>> &obj_oids, std::map<unsigned, std::vector<unsigned>> &col_oids);
 		
 		void finishImport(const QString &msg);
-		void showEvent(QShowEvent *event);
-		void closeEvent(QCloseEvent *event);
-		void destroyModelWidget();
+		void showEvent(QShowEvent *event) override;
+		void closeEvent(QCloseEvent *event) override;
+		void destroyModel();
 		
 		//! \brief Allocates the import thread and helper
 		void createThread();
@@ -94,6 +94,8 @@ class __libgui DatabaseImportWidget: public QWidget, public Ui::DatabaseImportWi
 
 		//! \brief Filters and list in a different way the objects that matches the user provided filters
 		void listFilteredObjects();
+
+
 
 	public:
 		//! \brief Constants used to access the tree widget items data

@@ -23,7 +23,6 @@
 #include "tools/sqlexecutionwidget.h"
 #include "tools/modelfixform.h"
 #include "tools/modelexportform.h"
-#include "tools/databaseimportform.h"
 #include "tools/modeldatabasediffform.h"
 #include <QMimeData>
 #include <QDesktopServices>
@@ -204,12 +203,6 @@ void MainWindow::addNewLayer(const QString &layer_name)
 {
 	layers_cfg_wgt->addLayer(layer_name, false);
 	current_model->layers_wgt->setAttributes(current_model);
-}
-
-void MainWindow::handleImportStarted()
-{
-	stopTimers(true);
-	//db_import_wgt->setModelWidget(current_model);
 }
 
 void MainWindow::handleImportFinished()
@@ -767,7 +760,10 @@ void MainWindow::connectSignalsToSlots()
 		updateConnections(true);
 	});
 
-	connect(db_import_wgt, &DatabaseImportWidget::s_importStarted, this, &MainWindow::handleImportStarted);
+	connect(db_import_wgt, &DatabaseImportWidget::s_importStarted, this, [this](){
+		stopTimers(true);
+	});
+
 	connect(db_import_wgt, &DatabaseImportWidget::s_importFinished, this, &MainWindow::handleImportFinished);
 
 #ifndef Q_OS_MACOS
@@ -905,7 +901,6 @@ void MainWindow::restoreLastSession()
 		}
 		catch(Exception &e)
 		{
-			//qApp->restoreOverrideCursor();
 			Messagebox::error(e, PGM_FUNC, PGM_FILE, PGM_LINE);
 		}
 	}
@@ -1985,33 +1980,6 @@ void MainWindow::exportModel()
 
 		stopTimers(false);
 	}
-}
-
-void MainWindow::importDatabase()
-{
-	DatabaseImportForm db_import_form(nullptr, Qt::Dialog | Qt::WindowMinMaxButtonsHint | Qt::WindowCloseButtonHint);
-
-	stopTimers(true);
-
-	connect(&db_import_form, &DatabaseImportForm::s_connectionsUpdateRequest, this, [this](){
-		updateConnections(true);
-	});
-
-	connect(&db_import_form, &DatabaseImportForm::s_importFinished, this, [this, &db_import_form](){
-		if(db_import_form.getModelWidget())
-			this->addModel(db_import_form.getModelWidget());
-		else if(current_model)
-			updateDockWidgets();
-	}, Qt::DirectConnection);
-
-	db_import_form.setModelWidget(current_model);
-	GuiUtilsNs::resizeDialog(&db_import_form);
-
-	GeneralConfigWidget::restoreWidgetGeometry(&db_import_form);
-	db_import_form.exec();
-	GeneralConfigWidget::saveWidgetGeometry(&db_import_form);
-
-	stopTimers(false);
 }
 
 void MainWindow::diffModelDatabase()

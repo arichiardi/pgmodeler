@@ -17,7 +17,7 @@
 */
 
 #include "modelobjectswidget.h"
-#include "tools/databaseimportform.h"
+#include "tools/databaseimportwidget.h"
 #include "guiutilsns.h"
 #include "settings/generalconfigwidget.h"
 #include "customtablewidget.h"
@@ -416,7 +416,7 @@ void ModelObjectsWidget::collapseAll()
 
 void ModelObjectsWidget::filterObjects()
 {
-	DatabaseImportForm::filterObjects(objectstree_tw, filter_edt->text(), (by_id_chk->isChecked() ? 1 : 0), simplified_view);
+	DatabaseImportWidget::filterObjects(objectstree_tw, filter_edt->text(), (by_id_chk->isChecked() ? 1 : 0), simplified_view);
 }
 
 void ModelObjectsWidget::updateObjectsView()

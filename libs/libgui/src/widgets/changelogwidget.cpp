@@ -19,7 +19,6 @@
 #include "changelogwidget.h"
 #include "settings/generalconfigwidget.h"
 #include "guiutilsns.h"
-#include "columndatawidget.h"
 #include "baseform.h"
 #include "csvparser.h"
 
@@ -30,10 +29,9 @@ ChangelogWidget::ChangelogWidget(QWidget *parent) : QWidget(parent)
 	setModel(nullptr);
 	GuiUtilsNs::createDropShadow(this, 5, 5, 30);
 
-	GuiUtilsNs::configureWidgetFont(added_cnt_lbl, GuiUtilsNs::HugeFontFactor);
-	GuiUtilsNs::configureWidgetFont(removed_cnt_lbl, GuiUtilsNs::HugeFontFactor);
-	GuiUtilsNs::configureWidgetFont(updated_cnt_lbl, GuiUtilsNs::HugeFontFactor);
-	GuiUtilsNs::configureWidgetFont(total_cnt_lbl, GuiUtilsNs::HugeFontFactor);
+	GuiUtilsNs::configureWidgetsFont({ added_cnt_lbl, removed_cnt_lbl,
+																		 updated_cnt_lbl, total_cnt_lbl },
+																	 GuiUtilsNs::HugeFontFactor);
 
 	connect(inspect_btn, &QPushButton::clicked, this, &ChangelogWidget::inspectChangelog);
 	connect(hide_tb, &QToolButton::clicked, this, &ChangelogWidget::s_visibilityChanged);

@@ -6,15 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>746</width>
-    <height>753</height>
+    <width>908</width>
+    <height>1876</height>
    </rect>
   </property>
-  <property name="minimumSize">
-   <size>
-    <width>0</width>
-    <height>410</height>
-   </size>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
   </property>
   <property name="windowTitle">
    <string>Form</string>
@@ -243,12 +243,6 @@
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
-       <property name="maximumSize">
-        <size>
-         <width>600</width>
-         <height>16777215</height>
-        </size>
-       </property>
        <property name="focusPolicy">
         <enum>Qt::FocusPolicy::TabFocus</enum>
        </property>
@@ -461,12 +455,6 @@
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>600</width>
-         <height>16777215</height>
-        </size>
        </property>
        <property name="font">
         <font>
@@ -820,19 +808,6 @@
       </widget>
      </item>
     </layout>
-   </item>
-   <item row="0" column="2">
-    <spacer name="horizontalSpacer">
-     <property name="orientation">
-      <enum>Qt::Orientation::Horizontal</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>7</width>
-       <height>535</height>
-      </size>
-     </property>
-    </spacer>
    </item>
    <item row="1" column="0" colspan="2">
     <spacer name="verticalSpacer_2">

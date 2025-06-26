@@ -31,6 +31,9 @@ ConfigurationWidget::ConfigurationWidget(QWidget *parent) : QWidget(parent)
 	snippets_conf = new SnippetsConfigWidget;
 	plugins_conf = new PluginsConfigWidget;
 
+	GuiUtilsNs::configureWidgetsFont({ apply_btn, revert_btn, defaults_btn },
+																	 GuiUtilsNs::BigFontFactor);
+
 	QList<BaseConfigWidget *> wgt_list={ general_conf, appearance_conf, relationships_conf,
 																			 connections_conf, snippets_conf, plugins_conf };
 
@@ -54,7 +57,8 @@ ConfigurationWidget::ConfigurationWidget(QWidget *parent) : QWidget(parent)
 	QButtonGroup *btn_group { new QButtonGroup(this) };
 	btn_group->setExclusive(true);
 
-	for(auto &btn : btns_parent_wgt->findChildren<QToolButton *>())
+	for(auto &btn : { general_tb, appearance_tb, relationships_tb,
+										connections_tb, snippets_tb, plugins_tb  })
 	{
 		btn_group->addButton(btn);
 

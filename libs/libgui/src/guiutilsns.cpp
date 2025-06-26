@@ -250,6 +250,12 @@ namespace GuiUtilsNs {
 		widget->setFont(font);
 	}
 
+	void configureWidgetsFont(const QWidgetList widgets, FontFactorId factor_id)
+	{
+		for(auto &wgt : widgets)
+			configureWidgetFont(wgt, factor_id);
+	}
+
 	void createExceptionsTree(QTreeWidget *exceptions_trw, Exception &e, QTreeWidgetItem *root)
 	{
 		std::vector<Exception> list;

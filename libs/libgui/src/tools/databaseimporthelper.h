@@ -345,7 +345,6 @@ class __libgui DatabaseImportHelper: public QObject {
 		void importDatabase();
 		void setObjectFilters(QStringList filter, bool only_matching, bool match_signature, QStringList force_tab_obj_types = {});
 		
-		friend class DatabaseImportForm;
 		friend class ModelDatabaseDiffForm;
 		friend class DatabaseImportWidget;
 };

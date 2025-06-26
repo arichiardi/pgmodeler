@@ -40,6 +40,8 @@ DatabaseImportWidget::DatabaseImportWidget(QWidget *parent) : QWidget(parent)
 	import_helper = nullptr;
 	import_thread = nullptr;
 
+	GuiUtilsNs::configureWidgetsFont({ import_btn, cancel_btn }, GuiUtilsNs::BigFontFactor);
+
 	pg_version_alert_frm->setVisible(false);
 	tree_filter_wgt->setVisible(false);
 
@@ -208,9 +210,9 @@ void DatabaseImportWidget::destroyThread()
 		import_thread->quit();
 		import_thread->wait();
 		delete import_thread;
-		import_thread=nullptr;
+		import_thread = nullptr;
 		delete import_helper;
-		import_helper=nullptr;
+		import_helper = nullptr;
 	}
 }
 
@@ -642,7 +644,7 @@ void DatabaseImportWidget::captureThreadError(Exception e)
 	QPixmap ico;
 	QTreeWidgetItem *item=nullptr;
 
-	destroyModelWidget();
+	destroyModel();
 	finishImport(tr("Importing process aborted!"));
 
 	ico=QPixmap(GuiUtilsNs::getIconPath("error"));
@@ -743,7 +745,7 @@ void DatabaseImportWidget::cancelImport()
 	database_cmb->setCurrentIndex(0);
 }
 
-void DatabaseImportWidget::destroyModelWidget()
+void DatabaseImportWidget::destroyModel()
 {
 	if(create_model && model_wgt)
 	{
@@ -757,7 +759,7 @@ void DatabaseImportWidget::handleImportCanceled()
 	QPixmap ico=QPixmap(GuiUtilsNs::getIconPath("alert"));
 	QString msg=tr("Importing process canceled by user!");
 
-	destroyModelWidget();
+	destroyModel();
 	finishImport(msg);
 	ico_lbl->setPixmap(ico);
 
@@ -781,6 +783,7 @@ void DatabaseImportWidget::handleImportFinished(Exception e)
 	import_helper->closeConnection();
 	import_thread->quit();
 	import_thread->wait();
+	settings_tbw->setCurrentIndex(0);
 
 	emit s_importFinished();
 }

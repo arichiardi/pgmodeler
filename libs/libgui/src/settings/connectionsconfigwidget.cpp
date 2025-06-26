@@ -652,7 +652,6 @@ bool ConnectionsConfigWidget::openConnectionsConfiguration(bool one_time_edit,
 	});
 
 	// Ajusting the layout when using in standalone mode
-	conn_cfg_wgt.conn_cfg_grid->removeItem(conn_cfg_wgt.grid_horiz_spacer);
 	conn_cfg_wgt.conn_cfg_grid->setContentsMargins(GuiUtilsNs::LtMargin, GuiUtilsNs::LtMargin,
 																								 1, GuiUtilsNs::LtMargin);
 
