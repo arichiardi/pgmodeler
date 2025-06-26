@@ -651,10 +651,6 @@ bool ConnectionsConfigWidget::openConnectionsConfiguration(bool one_time_edit,
 		)
 	});
 
-	// Ajusting the layout when using in standalone mode
-	conn_cfg_wgt.conn_cfg_grid->setContentsMargins(GuiUtilsNs::LtMargin, GuiUtilsNs::LtMargin,
-																								 1, GuiUtilsNs::LtMargin);
-
 	conn_cfg_wgt.setOneTimeEditMode(one_time_edit, conn_alias, dbname, host, port, username, password);
 	parent_form.setWindowTitle(tr("Edit database connections"));
 	parent_form.setWindowFlags(Qt::Dialog | Qt::WindowMinimizeButtonHint | Qt::WindowCloseButtonHint);
