@@ -26,7 +26,7 @@
 #include "tools/sqlexecutionwidget.h"
 #include "tools/modeldatabasediffform.h"
 #include "tools/databaseimportwidget.h"
-#include "tools/modelexportform.h"
+#include "tools/modelexportwidget.h"
 
 std::map<QString, GeneralConfigWidget::WidgetState> GeneralConfigWidget::widgets_geom;
 std::map<QString, attribs_map> GeneralConfigWidget::config_params;
@@ -618,7 +618,7 @@ void GeneralConfigWidget::applyConfiguration()
 	SQLExecutionWidget::setSQLHistoryMaxLength(history_max_length_spb->value());
 	ModelDatabaseDiffForm::setLowVerbosity(low_verbosity_chk->isChecked());
 	DatabaseImportWidget::setLowVerbosity(low_verbosity_chk->isChecked());
-	ModelExportForm::setLowVerbosity(low_verbosity_chk->isChecked());
+	ModelExportWidget::setLowVerbosity(low_verbosity_chk->isChecked());
 	Connection::setIgnoreDbVersion(old_pgsql_versions_chk->isChecked());
 
 	PlainTextItemDelegate::setMaxDisplayLength(trunc_columns_data_chk->isChecked() ? trunc_columns_data_spb->value() : 0);

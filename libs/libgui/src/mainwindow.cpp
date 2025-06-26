@@ -22,7 +22,7 @@
 #include "tools/metadatahandlingform.h"
 #include "tools/sqlexecutionwidget.h"
 #include "tools/modelfixform.h"
-#include "tools/modelexportform.h"
+#include "tools/modelexportwidget.h"
 #include "tools/modeldatabasediffform.h"
 #include <QMimeData>
 #include <QDesktopServices>
@@ -510,6 +510,14 @@ void MainWindow::createMainWidgets()
 		vbox->addWidget(db_import_wgt);
 		views_stw->widget(ImportView)->setLayout(vbox);
 
+		model_export_wgt = new ModelExportWidget(this);
+		db_import_wgt->setObjectName("model_export_wgt");
+		vbox = new QVBoxLayout;
+		vbox->setContentsMargins(0,0,0,0);
+		vbox->setSpacing(0);
+		vbox->addWidget(model_export_wgt);
+		views_stw->widget(ExportView)->setLayout(vbox);
+
 		model_nav_wgt=new ModelNavigationWidget(this);
 		model_nav_wgt->setObjectName("model_nav_wgt");
 
@@ -667,7 +675,7 @@ void MainWindow::connectSignalsToSlots()
 
 	connect(&model_save_timer, &QTimer::timeout, this, &MainWindow::saveAllModels);
 
-	connect(action_export, &QAction::triggered, this, &MainWindow::exportModel);
+	//connect(action_export, &QAction::triggered, this, &MainWindow::exportModel);
 	//connect(action_import, &QAction::triggered, this, &MainWindow::importDatabase);
 	connect(action_diff, &QAction::triggered, this, &MainWindow::diffModelDatabase);
 
@@ -1942,7 +1950,7 @@ void MainWindow::saveModel(ModelWidget *model)
 
 void MainWindow::exportModel()
 {
-	ModelExportForm model_export_form(nullptr, Qt::Dialog | Qt::WindowMinMaxButtonsHint | Qt::WindowCloseButtonHint);
+	ModelExportWidget model_export_form(nullptr);
 	Messagebox msg_box;
 	DatabaseModel *db_model=current_model->getDatabaseModel();
 
@@ -1969,7 +1977,7 @@ void MainWindow::exportModel()
 	{
 		stopTimers(true);
 
-		connect(&model_export_form, &ModelExportForm::s_connectionsUpdateRequest, this, [this](){
+		connect(&model_export_form, &ModelExportWidget::s_connectionsUpdateRequest, this, [this](){
 			updateConnections(true);
 		});
 

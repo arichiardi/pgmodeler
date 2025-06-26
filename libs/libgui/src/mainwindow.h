@@ -45,7 +45,8 @@
 #include "widgets/layersconfigwidget.h"
 #include "widgets/changelogwidget.h"
 #include "settings/configurationwidget.h"
-#include "databaseimportwidget.h"
+#include "tools/databaseimportwidget.h"
+#include "tools/modelexportwidget.h"
 
 class __libgui MainWindow: public QMainWindow, public Ui::MainWindow {
 	Q_OBJECT
@@ -107,6 +108,9 @@ class __libgui MainWindow: public QMainWindow, public Ui::MainWindow {
 
 		//! \brief Reverse engineering widget
 		DatabaseImportWidget *db_import_wgt;
+
+		//! \brief Model export widget
+		ModelExportWidget *model_export_wgt;
 
 		//! \brief Operation list dock widget
 		OperationListWidget *oper_list_wgt;
