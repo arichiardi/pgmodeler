@@ -1125,7 +1125,8 @@ void MainWindow::updateConnections(bool force)
 {
 	if(force || (!force && (model_valid_wgt->connections_cmb->count() == 0 ||
 													sql_tool_wgt->connections_cmb->count() == 0 ||
-													db_import_wgt->connections_cmb->count() == 0)))
+													db_import_wgt->connections_cmb->count() == 0 ||
+													model_export_wgt->connections_cmb->count() == 0)))
 	{
 		if(sender() != sql_tool_wgt)
 		{
@@ -1138,6 +1139,9 @@ void MainWindow::updateConnections(bool force)
 
 		if(sender() != db_import_wgt)
 			ConnectionsConfigWidget::fillConnectionsComboBox(db_import_wgt->connections_cmb, true, Connection::OpImport);
+
+		if(sender() != model_export_wgt)
+			ConnectionsConfigWidget::fillConnectionsComboBox(model_export_wgt->connections_cmb, true, Connection::OpExport);
 	}
 }
 
@@ -1619,6 +1623,7 @@ void MainWindow::setCurrentModel()
 	obj_finder_wgt->setModel(current_model);
 	changelog_wgt->setModel(current_model);
 	db_import_wgt->setModel(current_model);
+	model_export_wgt->setModel(current_model);
 
 	if(current_model)
 		model_objs_wgt->restoreTreeState(model_tree_states[current_model],
@@ -1983,7 +1988,7 @@ void MainWindow::exportModel()
 
 		GuiUtilsNs::resizeDialog(&model_export_form);
 		GeneralConfigWidget::restoreWidgetGeometry(&model_export_form);
-		model_export_form.exec(current_model);
+		model_export_form.setModel(current_model);
 		GeneralConfigWidget::saveWidgetGeometry(&model_export_form);
 
 		stopTimers(false);

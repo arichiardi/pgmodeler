@@ -71,7 +71,7 @@ class __libgui ModelExportWidget: public QWidget, public Ui::ModelExportWidget {
 		static void setLowVerbosity(bool value);
 
 	public slots:
-		void exec(ModelWidget *model);
+		void setModel(ModelWidget *model);
 
 	private slots:
 		void selectExportMode();

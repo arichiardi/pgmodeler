@@ -162,11 +162,9 @@ void ModelExportWidget::setLowVerbosity(bool value)
 	low_verbosity = value;
 }
 
-void ModelExportWidget::exec(ModelWidget *model)
+void ModelExportWidget::setModel(ModelWidget *model)
 {
-	if(!model)
-		return;
-
+	setEnabled(model != nullptr);
 	this->model = model;
 	ConnectionsConfigWidget::fillConnectionsComboBox(connections_cmb, true, Connection::OpExport);
 
@@ -195,9 +193,6 @@ void ModelExportWidget::exec(ModelWidget *model)
 
 	export_to_file_rb->setChecked(true);
 #endif
-
-	#warning "Fix me!"
-	//QDialog::exec();
 }
 
 void ModelExportWidget::handleErrorIgnored(QString err_code, QString err_msg, QString cmd)
@@ -347,7 +342,7 @@ void ModelExportWidget::selectExportMode()
 {
 	QList<QRadioButton *> radios={ export_to_dbms_rb, export_to_img_rb, export_to_file_rb, export_to_dict_rb};
 	QWidgetList wgts={ export_to_dbms_wgt, export_to_img_wgt, export_to_file_wgt, export_to_dict_wgt };
-	int i=0;
+	int i = 0;
 
 	for(QRadioButton *rb : radios)
 	{
