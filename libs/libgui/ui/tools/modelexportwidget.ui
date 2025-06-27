@@ -9,7 +9,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>995</width>
+    <width>1272</width>
     <height>1009</height>
    </rect>
   </property>
@@ -167,38 +167,6 @@
              <property name="spacing">
               <number>5</number>
              </property>
-             <item row="0" column="0">
-              <widget class="QRadioButton" name="export_to_dbms_rb">
-               <property name="enabled">
-                <bool>true</bool>
-               </property>
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="text">
-                <string/>
-               </property>
-               <property name="icon">
-                <iconset resource="../../res/resources.qrc">
-                 <normaloff>:/images/images/exporttodbms.png</normaloff>:/images/images/exporttodbms.png</iconset>
-               </property>
-               <property name="iconSize">
-                <size>
-                 <width>37</width>
-                 <height>90</height>
-                </size>
-               </property>
-               <property name="checked">
-                <bool>true</bool>
-               </property>
-               <property name="autoExclusive">
-                <bool>false</bool>
-               </property>
-              </widget>
-             </item>
              <item row="0" column="2">
               <widget class="QWidget" name="export_to_dbms_wgt" native="true">
                <property name="sizePolicy">
@@ -524,6 +492,44 @@
                </layout>
               </widget>
              </item>
+             <item row="0" column="0">
+              <widget class="QToolButton" name="export_to_dbms_tb">
+               <property name="enabled">
+                <bool>true</bool>
+               </property>
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+               <property name="icon">
+                <iconset resource="../../res/resources.qrc">
+                 <normaloff>:/images/images/exporttodbms.png</normaloff>:/images/images/exporttodbms.png</iconset>
+               </property>
+               <property name="iconSize">
+                <size>
+                 <width>37</width>
+                 <height>90</height>
+                </size>
+               </property>
+               <property name="checkable">
+                <bool>true</bool>
+               </property>
+               <property name="checked">
+                <bool>true</bool>
+               </property>
+               <property name="autoExclusive">
+                <bool>false</bool>
+               </property>
+               <property name="autoRaise">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
             </layout>
            </widget>
           </item>
@@ -551,35 +557,6 @@
              <property name="spacing">
               <number>5</number>
              </property>
-             <item row="0" column="0" rowspan="2">
-              <widget class="QRadioButton" name="export_to_file_rb">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="text">
-                <string/>
-               </property>
-               <property name="icon">
-                <iconset resource="../../res/resources.qrc">
-                 <normaloff>:/images/images/exporttosql.png</normaloff>:/images/images/exporttosql.png</iconset>
-               </property>
-               <property name="iconSize">
-                <size>
-                 <width>37</width>
-                 <height>90</height>
-                </size>
-               </property>
-               <property name="checked">
-                <bool>false</bool>
-               </property>
-               <property name="autoExclusive">
-                <bool>false</bool>
-               </property>
-              </widget>
-             </item>
              <item row="0" column="1" rowspan="2">
               <widget class="QWidget" name="export_to_file_wgt" native="true">
                <property name="enabled">
@@ -851,6 +828,41 @@
                  </widget>
                 </item>
                </layout>
+              </widget>
+             </item>
+             <item row="0" column="0" rowspan="2">
+              <widget class="QToolButton" name="export_to_file_tb">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+               <property name="icon">
+                <iconset resource="../../res/resources.qrc">
+                 <normaloff>:/images/images/exporttosql.png</normaloff>:/images/images/exporttosql.png</iconset>
+               </property>
+               <property name="iconSize">
+                <size>
+                 <width>37</width>
+                 <height>90</height>
+                </size>
+               </property>
+               <property name="checkable">
+                <bool>true</bool>
+               </property>
+               <property name="checked">
+                <bool>false</bool>
+               </property>
+               <property name="autoExclusive">
+                <bool>false</bool>
+               </property>
+               <property name="autoRaise">
+                <bool>true</bool>
+               </property>
               </widget>
              </item>
             </layout>
@@ -1155,7 +1167,7 @@
               </widget>
              </item>
              <item row="0" column="0" rowspan="2">
-              <widget class="QRadioButton" name="export_to_img_rb">
+              <widget class="QToolButton" name="export_to_img_tb">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
                  <horstretch>0</horstretch>
@@ -1175,11 +1187,17 @@
                  <height>90</height>
                 </size>
                </property>
+               <property name="checkable">
+                <bool>true</bool>
+               </property>
                <property name="checked">
                 <bool>false</bool>
                </property>
                <property name="autoExclusive">
                 <bool>false</bool>
+               </property>
+               <property name="autoRaise">
+                <bool>true</bool>
                </property>
               </widget>
              </item>
@@ -1216,35 +1234,6 @@
              <property name="spacing">
               <number>5</number>
              </property>
-             <item row="0" column="0" rowspan="2">
-              <widget class="QRadioButton" name="export_to_dict_rb">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="text">
-                <string/>
-               </property>
-               <property name="icon">
-                <iconset resource="../../res/resources.qrc">
-                 <normaloff>:/images/images/exporttodatadict.png</normaloff>:/images/images/exporttodatadict.png</iconset>
-               </property>
-               <property name="iconSize">
-                <size>
-                 <width>37</width>
-                 <height>90</height>
-                </size>
-               </property>
-               <property name="checked">
-                <bool>false</bool>
-               </property>
-               <property name="autoExclusive">
-                <bool>false</bool>
-               </property>
-              </widget>
-             </item>
              <item row="0" column="2" rowspan="2">
               <widget class="QWidget" name="export_to_dict_wgt" native="true">
                <property name="enabled">
@@ -1405,6 +1394,41 @@
                  </layout>
                 </item>
                </layout>
+              </widget>
+             </item>
+             <item row="0" column="0" rowspan="2">
+              <widget class="QToolButton" name="export_to_dict_tb">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+               <property name="icon">
+                <iconset resource="../../res/resources.qrc">
+                 <normaloff>:/images/images/exporttodatadict.png</normaloff>:/images/images/exporttodatadict.png</iconset>
+               </property>
+               <property name="iconSize">
+                <size>
+                 <width>37</width>
+                 <height>90</height>
+                </size>
+               </property>
+               <property name="checkable">
+                <bool>true</bool>
+               </property>
+               <property name="checked">
+                <bool>false</bool>
+               </property>
+               <property name="autoExclusive">
+                <bool>false</bool>
+               </property>
+               <property name="autoRaise">
+                <bool>true</bool>
+               </property>
               </widget>
              </item>
             </layout>
@@ -1677,22 +1701,22 @@
  </widget>
  <tabstops>
   <tabstop>settings_tbw</tabstop>
-  <tabstop>export_to_dbms_rb</tabstop>
+  <tabstop>export_to_dbms_tb</tabstop>
   <tabstop>connections_cmb</tabstop>
   <tabstop>pgsqlvers_chk</tabstop>
   <tabstop>pgsqlvers1_cmb</tabstop>
   <tabstop>drop_db_rb</tabstop>
   <tabstop>drop_objs_rb</tabstop>
-  <tabstop>export_to_file_rb</tabstop>
+  <tabstop>export_to_file_tb</tabstop>
   <tabstop>sql_standalone_rb</tabstop>
   <tabstop>sql_split_rb</tabstop>
   <tabstop>code_options_cmb</tabstop>
   <tabstop>pgsqlvers_cmb</tabstop>
-  <tabstop>export_to_img_rb</tabstop>
+  <tabstop>export_to_img_tb</tabstop>
   <tabstop>show_grid_chk</tabstop>
   <tabstop>show_delim_chk</tabstop>
   <tabstop>page_by_page_chk</tabstop>
-  <tabstop>export_to_dict_rb</tabstop>
+  <tabstop>export_to_dict_tb</tabstop>
   <tabstop>output_trw</tabstop>
  </tabstops>
  <resources>
