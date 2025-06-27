@@ -35,6 +35,7 @@
 #include "csvdocument.h"
 #include "roundedrectitem.h"
 #include "settings/appearanceconfigwidget.h"
+#include <QMargins>
 
 namespace GuiUtilsNs {
 	/*! \brief WidgetCornerId used by resizeFloatingWidget() to determine
@@ -54,6 +55,8 @@ namespace GuiUtilsNs {
 
 	static constexpr int LtMargin = 5,
 	LtSpacing = 5;
+
+	static const QMargins LtMargins { LtMargin, LtMargin, LtMargin, LtMargin };
 
 	enum FontFactorId: unsigned {
 		SmallFontFactor,
