@@ -814,14 +814,14 @@
     <addaction name="separator"/>
     <addaction name="action_about"/>
    </widget>
-   <widget class="QMenu" name="show_menu">
+   <widget class="QMenu" name="canvas_menu">
     <property name="title">
-     <string>Sho&amp;w</string>
+     <string>Ca&amp;nvas</string>
     </property>
     <addaction name="action_show_grid"/>
     <addaction name="action_show_delimiters"/>
     <addaction name="action_lock_delim"/>
-    <addaction name="action_alin_objs_grade"/>
+    <addaction name="action_align_grid"/>
     <addaction name="separator"/>
     <addaction name="action_normal_zoom"/>
     <addaction name="action_inc_zoom"/>
@@ -833,7 +833,7 @@
    </widget>
    <addaction name="file_menu"/>
    <addaction name="edit_menu"/>
-   <addaction name="show_menu"/>
+   <addaction name="canvas_menu"/>
    <addaction name="about_menu"/>
   </widget>
   <widget class="QToolBar" name="tools_acts_tb">
@@ -959,7 +959,7 @@
    <addaction name="action_show_grid"/>
    <addaction name="action_show_delimiters"/>
    <addaction name="action_lock_delim"/>
-   <addaction name="action_alin_objs_grade"/>
+   <addaction name="action_align_grid"/>
    <addaction name="action_compact_view"/>
    <addaction name="separator"/>
   </widget>
@@ -1236,7 +1236,7 @@
     <string>Ctrl+0</string>
    </property>
   </action>
-  <action name="action_alin_objs_grade">
+  <action name="action_align_grid">
    <property name="checkable">
     <bool>true</bool>
    </property>

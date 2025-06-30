@@ -82,14 +82,14 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags) : QMainWindow(par
 
 	//Restoring the canvas grid options
 	action_show_grid->setChecked(confs[Attributes::Configuration][Attributes::ShowCanvasGrid]==Attributes::True);
-	action_alin_objs_grade->setChecked(confs[Attributes::Configuration][Attributes::AlignObjsToGrid]==Attributes::True);
+	action_align_grid->setChecked(confs[Attributes::Configuration][Attributes::AlignObjsToGrid]==Attributes::True);
 	action_show_delimiters->setChecked(confs[Attributes::Configuration][Attributes::ShowPageDelimiters]==Attributes::True);
 	action_lock_delim->setChecked(confs[Attributes::Configuration][Attributes::LockPageDelimResize]==Attributes::True);
 	action_compact_view->setChecked(confs[Attributes::Configuration][Attributes::CompactView]==Attributes::True);
 
 	ObjectsScene::setShowGrid(action_show_grid->isChecked());
 	ObjectsScene::setShowPageDelimiters(action_show_delimiters->isChecked());
-	ObjectsScene::setAlignObjectsToGrid(action_alin_objs_grade->isChecked());
+	ObjectsScene::setAlignObjectsToGrid(action_align_grid->isChecked());
 
 	#ifndef Q_OS_MACOS
 		//Hiding/showing the main menu bar depending on the retrieved conf
@@ -238,7 +238,7 @@ void MainWindow::configureMenusActionsWidgets()
 	QToolButton *tool_btn = qobject_cast<QToolButton *>(tools_acts_tb->widgetForAction(fix_menu.menuAction()));
 	tool_btn->setPopupMode(QToolButton::InstantPopup);
 
-	QAction *act_arrange_objs = show_menu->insertMenu(action_compact_view, &arrange_menu);
+	QAction *act_arrange_objs = canvas_menu->insertMenu(action_compact_view, &arrange_menu);
 	act_arrange_objs->setText(tr("Arrange objects"));
 	act_arrange_objs->setToolTip(tr("Rearrange objects over the canvas"));
 	act_arrange_objs->setIcon(QIcon(GuiUtilsNs::getIconPath("arrangetables")));
@@ -264,6 +264,8 @@ void MainWindow::configureMenusActionsWidgets()
 																this, &MainWindow::expandSceneRect)->setData(-1);
 
 	action_expand_canvas = expand_canvas_menu.menuAction();
+	canvas_menu->addAction(action_expand_canvas);
+
 	action_expand_canvas->setEnabled(false);
 	action_expand_canvas->setText(tr("Expand canvas"));
 	action_expand_canvas->setToolTip(tr("Expand the canvas geometry to a specific direction"));
@@ -355,7 +357,7 @@ void MainWindow::configureMenusActionsWidgets()
 	plugins_config_menu.menuAction()->setIconVisibleInMenu(false);
 	main_menu.addMenu(file_menu);
 	main_menu.addMenu(edit_menu);
-	main_menu.addMenu(show_menu);
+	main_menu.addMenu(canvas_menu);
 	main_menu.addMenu(about_menu);
 	main_menu.addSeparator();
 	main_menu.addAction(action_show_main_menu);
@@ -1390,7 +1392,7 @@ void MainWindow::addModel(const QString &filename)
 		model_tab->db_model->setInvalidated(false);
 		action_save_model->setEnabled(false);
 
-		if(action_alin_objs_grade->isChecked())
+		if(action_align_grid->isChecked())
 			current_model->scene->alignObjectsToGrid();
 	}
 	catch(Exception &e)
@@ -1426,7 +1428,7 @@ void MainWindow::addModel(ModelWidget *model_wgt)
 		setCurrentModel();
 		models_tbw->currentWidget()->layout()->setContentsMargins(0,0,0,0);
 
-		if(action_alin_objs_grade->isChecked())
+		if(action_align_grid->isChecked())
 			current_model->scene->alignObjectsToGrid();
 	}
 	catch(Exception &e)
@@ -1583,7 +1585,7 @@ void MainWindow::setCurrentModel()
 			current_model->update();
 		});
 
-		connect(action_alin_objs_grade, &QAction::triggered, this, &MainWindow::setGridOptions, Qt::UniqueConnection);
+		connect(action_align_grid, &QAction::triggered, this, &MainWindow::setGridOptions, Qt::UniqueConnection);
 		connect(action_show_grid, &QAction::triggered, this, &MainWindow::setGridOptions, Qt::UniqueConnection);
 		connect(action_show_delimiters, &QAction::triggered, this, &MainWindow::setGridOptions, Qt::UniqueConnection);
 		connect(action_lock_delim, &QAction::triggered, this, &MainWindow::setGridOptions, Qt::UniqueConnection);
@@ -1642,14 +1644,14 @@ void MainWindow::setGridOptions()
 
 	ObjectsScene::setShowGrid(action_show_grid->isChecked());
 	ObjectsScene::setShowPageDelimiters(action_show_delimiters->isChecked());
-	ObjectsScene::setAlignObjectsToGrid(action_alin_objs_grade->isChecked());
+	ObjectsScene::setAlignObjectsToGrid(action_align_grid->isChecked());
 	ObjectsScene::setLockDelimiterScale(action_lock_delim->isChecked(),
 																			current_model ? current_model->getCurrentZoom() : 1);
 
 	if(current_model)
 	{
 		//Align the object to grid is the option is checked
-		if(action_alin_objs_grade->isChecked())
+		if(action_align_grid->isChecked())
 		{
 			current_model->scene->alignObjectsToGrid();
 
@@ -1663,7 +1665,7 @@ void MainWindow::setGridOptions()
 
 	attribs[Attributes::Configuration][Attributes::ShowCanvasGrid] = action_show_grid->isChecked() ? Attributes::True : Attributes::False;
 	attribs[Attributes::Configuration][Attributes::ShowPageDelimiters] = action_show_delimiters->isChecked() ? Attributes::True : Attributes::False;
-	attribs[Attributes::Configuration][Attributes::AlignObjsToGrid] = action_alin_objs_grade->isChecked() ? Attributes::True : Attributes::False;
+	attribs[Attributes::Configuration][Attributes::AlignObjsToGrid] = action_align_grid->isChecked() ? Attributes::True : Attributes::False;
 	attribs[Attributes::Configuration][Attributes::LockPageDelimResize] = action_lock_delim->isChecked() ? Attributes::True : Attributes::False;
 
 	conf_wgt->setConfigurationSection(Attributes::Configuration, attribs[Attributes::Configuration]);
@@ -2221,7 +2223,7 @@ void MainWindow::updateToolsState(bool model_closed)
 	action_inc_zoom->setEnabled(enabled && current_model->getCurrentZoom() < ModelWidget::MaximumZoom);
 	action_dec_zoom->setEnabled(enabled && current_model->getCurrentZoom() > ModelWidget::MinimumZoom);
 	action_normal_zoom->setEnabled(enabled && (current_model->getCurrentZoom() * 100) != 100);
-	action_alin_objs_grade->setEnabled(enabled);
+	action_align_grid->setEnabled(enabled);
 	action_undo->setEnabled(enabled);
 	action_redo->setEnabled(enabled);
 	action_compact_view->setEnabled(enabled);
@@ -2539,7 +2541,7 @@ void MainWindow::changeCurrentView(bool checked)
 		for(auto &act : actions)
 			act->setEnabled(enable);
 
-		actions = show_menu->actions();
+		actions = canvas_menu->actions();
 		for(auto &act : actions)
 			act->setEnabled(enable);
 
