@@ -700,7 +700,7 @@ class __libgui ModelWidget: public QWidget {
 		void s_objectsLayerChanged();
 
 		friend class MainWindow;
-		friend class ModelExportForm;
+		friend class ModelExportWidget;
 		friend class OperationListWidget;
 		friend class ModelObjectsWidget;
 		friend class ModelOverviewWidget;

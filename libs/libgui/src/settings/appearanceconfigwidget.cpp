@@ -205,23 +205,17 @@ AppearanceConfigWidget::AppearanceConfigWidget(QWidget * parent) : BaseConfigWid
 	viewp->setViewportUpdateMode(QGraphicsView::SmartViewportUpdate);
 	viewp->centerOn(0,0);
 
-	QHBoxLayout *hbox = new QHBoxLayout(grid_color_wgt);
-	hbox->setContentsMargins(0,0,0,0);
-	grid_color_cp = new ColorPickerWidget(1, grid_color_wgt);
+	grid_color_cp = new ColorPickerWidget(1, this);
 	grid_color_cp->setButtonToolTip(0, tr("Define a custom color for the grid lines"));
-	hbox->addWidget(grid_color_cp);
+	grid_color_lt->addWidget(grid_color_cp);
 
-	hbox = new QHBoxLayout(canvas_color_wgt);
-	hbox->setContentsMargins(0,0,0,0);
-	canvas_color_cp = new ColorPickerWidget(1, canvas_color_wgt);
+	canvas_color_cp = new ColorPickerWidget(1, this);
 	canvas_color_cp->setButtonToolTip(0, tr("Define a custom color for the canvas area"));
-	hbox->addWidget(canvas_color_cp);
+	canvas_color_lt->addWidget(canvas_color_cp);
 
-	hbox = new QHBoxLayout(delimiters_color_wgt);
-	hbox->setContentsMargins(0,0,0,0);
-	delimiters_color_cp = new ColorPickerWidget(1, delimiters_color_wgt);
+	delimiters_color_cp = new ColorPickerWidget(1, this);
 	delimiters_color_cp->setButtonToolTip(0, tr("Define a custom color for the page delimiter lines"));
-	hbox->addWidget(delimiters_color_cp);
+	delimiters_color_lt->addWidget(delimiters_color_cp);
 
 	QGridLayout *grid = dynamic_cast<QGridLayout *>(objects_gb->layout());
 	grid->addWidget(elem_color_cp, 3, 1, 1, 4);
@@ -236,6 +230,10 @@ AppearanceConfigWidget::AppearanceConfigWidget(QWidget * parent) : BaseConfigWid
 	line_highlight_cp=new ColorPickerWidget(1, this);
 	line_highlight_cp->setButtonToolTip(0, tr("Highlighted line color"));
 
+	code_wgt_colors_lt->insertWidget(0, line_numbers_cp);
+	code_wgt_colors_lt->insertWidget(0, line_numbers_bg_cp);
+	code_wgt_colors_lt->insertWidget(0, line_highlight_cp);
+
 	font_preview_txt=new NumberedTextEditor(this);
 	font_preview_txt->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 	font_preview_txt->setPlainText(
@@ -248,14 +246,12 @@ CREATE TABLE public.table_b (\n \
 
 	font_preview_hl = new SyntaxHighlighter(font_preview_txt, false, true);
 
-	QHBoxLayout *layout = new QHBoxLayout;
-	grid = dynamic_cast<QGridLayout *>(code_font_gb->layout());
-	layout->addWidget(line_numbers_cp);
-	layout->addWidget(line_numbers_bg_cp);
-	layout->addWidget(line_highlight_cp);
-	layout->addItem(new QSpacerItem(20, 20, QSizePolicy::Expanding));
-	grid->addLayout(layout, 1, 1);
-	grid->addWidget(font_preview_txt, grid->count(), 0, 1, 3);
+	QVBoxLayout *layout = new QVBoxLayout(code_preview_gb);
+	layout->setContentsMargins(GuiUtilsNs::LtMargins);
+	layout->addWidget(font_preview_txt);
+
+	ui_theme_gb->layout()->setAlignment(Qt::AlignTop | Qt::AlignLeft);
+	code_style_gb->layout()->setAlignment(Qt::AlignTop | Qt::AlignLeft);
 
 	ui_theme_cmb->addItem(tr("System default"), Attributes::System);
 	ui_theme_cmb->addItem(tr("Light"), Attributes::Light);

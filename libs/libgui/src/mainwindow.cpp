@@ -22,7 +22,7 @@
 #include "tools/metadatahandlingform.h"
 #include "tools/sqlexecutionwidget.h"
 #include "tools/modelfixform.h"
-#include "tools/modelexportform.h"
+#include "tools/modelexportwidget.h"
 #include "tools/modeldatabasediffform.h"
 #include <QMimeData>
 #include <QDesktopServices>
@@ -82,14 +82,14 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags) : QMainWindow(par
 
 	//Restoring the canvas grid options
 	action_show_grid->setChecked(confs[Attributes::Configuration][Attributes::ShowCanvasGrid]==Attributes::True);
-	action_alin_objs_grade->setChecked(confs[Attributes::Configuration][Attributes::AlignObjsToGrid]==Attributes::True);
+	action_align_grid->setChecked(confs[Attributes::Configuration][Attributes::AlignObjsToGrid]==Attributes::True);
 	action_show_delimiters->setChecked(confs[Attributes::Configuration][Attributes::ShowPageDelimiters]==Attributes::True);
 	action_lock_delim->setChecked(confs[Attributes::Configuration][Attributes::LockPageDelimResize]==Attributes::True);
 	action_compact_view->setChecked(confs[Attributes::Configuration][Attributes::CompactView]==Attributes::True);
 
 	ObjectsScene::setShowGrid(action_show_grid->isChecked());
 	ObjectsScene::setShowPageDelimiters(action_show_delimiters->isChecked());
-	ObjectsScene::setAlignObjectsToGrid(action_alin_objs_grade->isChecked());
+	ObjectsScene::setAlignObjectsToGrid(action_align_grid->isChecked());
 
 	#ifndef Q_OS_MACOS
 		//Hiding/showing the main menu bar depending on the retrieved conf
@@ -238,7 +238,7 @@ void MainWindow::configureMenusActionsWidgets()
 	QToolButton *tool_btn = qobject_cast<QToolButton *>(tools_acts_tb->widgetForAction(fix_menu.menuAction()));
 	tool_btn->setPopupMode(QToolButton::InstantPopup);
 
-	QAction *act_arrange_objs = show_menu->insertMenu(action_compact_view, &arrange_menu);
+	QAction *act_arrange_objs = canvas_menu->insertMenu(action_compact_view, &arrange_menu);
 	act_arrange_objs->setText(tr("Arrange objects"));
 	act_arrange_objs->setToolTip(tr("Rearrange objects over the canvas"));
 	act_arrange_objs->setIcon(QIcon(GuiUtilsNs::getIconPath("arrangetables")));
@@ -264,6 +264,8 @@ void MainWindow::configureMenusActionsWidgets()
 																this, &MainWindow::expandSceneRect)->setData(-1);
 
 	action_expand_canvas = expand_canvas_menu.menuAction();
+	canvas_menu->addAction(action_expand_canvas);
+
 	action_expand_canvas->setEnabled(false);
 	action_expand_canvas->setText(tr("Expand canvas"));
 	action_expand_canvas->setToolTip(tr("Expand the canvas geometry to a specific direction"));
@@ -355,7 +357,7 @@ void MainWindow::configureMenusActionsWidgets()
 	plugins_config_menu.menuAction()->setIconVisibleInMenu(false);
 	main_menu.addMenu(file_menu);
 	main_menu.addMenu(edit_menu);
-	main_menu.addMenu(show_menu);
+	main_menu.addMenu(canvas_menu);
 	main_menu.addMenu(about_menu);
 	main_menu.addSeparator();
 	main_menu.addAction(action_show_main_menu);
@@ -509,6 +511,14 @@ void MainWindow::createMainWidgets()
 		vbox->setSpacing(0);
 		vbox->addWidget(db_import_wgt);
 		views_stw->widget(ImportView)->setLayout(vbox);
+
+		model_export_wgt = new ModelExportWidget(this);
+		db_import_wgt->setObjectName("model_export_wgt");
+		vbox = new QVBoxLayout;
+		vbox->setContentsMargins(0,0,0,0);
+		vbox->setSpacing(0);
+		vbox->addWidget(model_export_wgt);
+		views_stw->widget(ExportView)->setLayout(vbox);
 
 		model_nav_wgt=new ModelNavigationWidget(this);
 		model_nav_wgt->setObjectName("model_nav_wgt");
@@ -667,7 +677,7 @@ void MainWindow::connectSignalsToSlots()
 
 	connect(&model_save_timer, &QTimer::timeout, this, &MainWindow::saveAllModels);
 
-	connect(action_export, &QAction::triggered, this, &MainWindow::exportModel);
+	//connect(action_export, &QAction::triggered, this, &MainWindow::exportModel);
 	//connect(action_import, &QAction::triggered, this, &MainWindow::importDatabase);
 	connect(action_diff, &QAction::triggered, this, &MainWindow::diffModelDatabase);
 
@@ -689,6 +699,8 @@ void MainWindow::connectSignalsToSlots()
 		act->setData(static_cast<MWViewsId>(vw_id++));
 		connect(act, &QAction::toggled, this, &MainWindow::changeCurrentView);
 	}
+
+	connect(action_export, &QAction::toggled, this, &MainWindow::validateModelOnExport);
 
 	connect(action_bug_report, &QAction::triggered, this, &MainWindow::reportBug);
 	connect(action_handle_metadata, &QAction::triggered, this, &MainWindow::handleObjectsMetadata);
@@ -1117,7 +1129,8 @@ void MainWindow::updateConnections(bool force)
 {
 	if(force || (!force && (model_valid_wgt->connections_cmb->count() == 0 ||
 													sql_tool_wgt->connections_cmb->count() == 0 ||
-													db_import_wgt->connections_cmb->count() == 0)))
+													db_import_wgt->connections_cmb->count() == 0 ||
+													model_export_wgt->connections_cmb->count() == 0)))
 	{
 		if(sender() != sql_tool_wgt)
 		{
@@ -1130,6 +1143,9 @@ void MainWindow::updateConnections(bool force)
 
 		if(sender() != db_import_wgt)
 			ConnectionsConfigWidget::fillConnectionsComboBox(db_import_wgt->connections_cmb, true, Connection::OpImport);
+
+		if(sender() != model_export_wgt)
+			ConnectionsConfigWidget::fillConnectionsComboBox(model_export_wgt->connections_cmb, true, Connection::OpExport);
 	}
 }
 
@@ -1364,6 +1380,9 @@ void MainWindow::addModel(const QString &filename)
 		model_nav_wgt->addModel(model_tab);
 		models_tbw->setUpdatesEnabled(true);
 		models_tbw->setVisible(true);
+
+		model_tab->setModified(false);
+		model_tab->db_model->setInvalidated(false);
 		setCurrentModel();
 
 		if(start_timers)
@@ -1374,11 +1393,9 @@ void MainWindow::addModel(const QString &filename)
 			tmpmodel_save_timer.start();
 		}
 
-		model_tab->setModified(false);
-		model_tab->db_model->setInvalidated(false);
 		action_save_model->setEnabled(false);
 
-		if(action_alin_objs_grade->isChecked())
+		if(action_align_grid->isChecked())
 			current_model->scene->alignObjectsToGrid();
 	}
 	catch(Exception &e)
@@ -1414,7 +1431,7 @@ void MainWindow::addModel(ModelWidget *model_wgt)
 		setCurrentModel();
 		models_tbw->currentWidget()->layout()->setContentsMargins(0,0,0,0);
 
-		if(action_alin_objs_grade->isChecked())
+		if(action_align_grid->isChecked())
 			current_model->scene->alignObjectsToGrid();
 	}
 	catch(Exception &e)
@@ -1571,7 +1588,7 @@ void MainWindow::setCurrentModel()
 			current_model->update();
 		});
 
-		connect(action_alin_objs_grade, &QAction::triggered, this, &MainWindow::setGridOptions, Qt::UniqueConnection);
+		connect(action_align_grid, &QAction::triggered, this, &MainWindow::setGridOptions, Qt::UniqueConnection);
 		connect(action_show_grid, &QAction::triggered, this, &MainWindow::setGridOptions, Qt::UniqueConnection);
 		connect(action_show_delimiters, &QAction::triggered, this, &MainWindow::setGridOptions, Qt::UniqueConnection);
 		connect(action_lock_delim, &QAction::triggered, this, &MainWindow::setGridOptions, Qt::UniqueConnection);
@@ -1611,6 +1628,7 @@ void MainWindow::setCurrentModel()
 	obj_finder_wgt->setModel(current_model);
 	changelog_wgt->setModel(current_model);
 	db_import_wgt->setModel(current_model);
+	model_export_wgt->setModel(current_model);
 
 	if(current_model)
 		model_objs_wgt->restoreTreeState(model_tree_states[current_model],
@@ -1629,14 +1647,14 @@ void MainWindow::setGridOptions()
 
 	ObjectsScene::setShowGrid(action_show_grid->isChecked());
 	ObjectsScene::setShowPageDelimiters(action_show_delimiters->isChecked());
-	ObjectsScene::setAlignObjectsToGrid(action_alin_objs_grade->isChecked());
+	ObjectsScene::setAlignObjectsToGrid(action_align_grid->isChecked());
 	ObjectsScene::setLockDelimiterScale(action_lock_delim->isChecked(),
 																			current_model ? current_model->getCurrentZoom() : 1);
 
 	if(current_model)
 	{
 		//Align the object to grid is the option is checked
-		if(action_alin_objs_grade->isChecked())
+		if(action_align_grid->isChecked())
 		{
 			current_model->scene->alignObjectsToGrid();
 
@@ -1650,7 +1668,7 @@ void MainWindow::setGridOptions()
 
 	attribs[Attributes::Configuration][Attributes::ShowCanvasGrid] = action_show_grid->isChecked() ? Attributes::True : Attributes::False;
 	attribs[Attributes::Configuration][Attributes::ShowPageDelimiters] = action_show_delimiters->isChecked() ? Attributes::True : Attributes::False;
-	attribs[Attributes::Configuration][Attributes::AlignObjsToGrid] = action_alin_objs_grade->isChecked() ? Attributes::True : Attributes::False;
+	attribs[Attributes::Configuration][Attributes::AlignObjsToGrid] = action_align_grid->isChecked() ? Attributes::True : Attributes::False;
 	attribs[Attributes::Configuration][Attributes::LockPageDelimResize] = action_lock_delim->isChecked() ? Attributes::True : Attributes::False;
 
 	conf_wgt->setConfigurationSection(Attributes::Configuration, attribs[Attributes::Configuration]);
@@ -1940,45 +1958,30 @@ void MainWindow::saveModel(ModelWidget *model)
 #endif
 }
 
-void MainWindow::exportModel()
+void MainWindow::validateModelOnExport()
 {
-	ModelExportForm model_export_form(nullptr, Qt::Dialog | Qt::WindowMinMaxButtonsHint | Qt::WindowCloseButtonHint);
-	Messagebox msg_box;
-	DatabaseModel *db_model=current_model->getDatabaseModel();
+	if(!action_export->isChecked())
+		return;
 
-	action_design->setChecked(true);
+	DatabaseModel *db_model = current_model->getDatabaseModel();
 
-	if(confirm_validation && db_model->isInvalidated())
+	if(confirm_validation && current_model->getDatabaseModel()->isInvalidated())
 	{
-		msg_box.show(tr("Confirmation"),
-					 tr(" <strong>WARNING:</strong> The model <strong>%1</strong> has not been validated since the last modification! Before run the export process it's recommended to validate in order to correctly create the objects on database server!").arg(db_model->getName()),
-					 Messagebox::AlertIcon, Messagebox::AllButtons,
-					 tr("Validate"), tr("Export anyway"), "",
-					 GuiUtilsNs::getIconPath("validation"), GuiUtilsNs::getIconPath("export"));
+		Messagebox msgbox;
 
-		if(msg_box.isAccepted())
+		msgbox.show(tr("Confirmation"), tr("<strong>WARNING:</strong> The model <strong>%1</strong> has not been validated since the last modification! Before running the export process it's recommended to validate in order to correctly create the objects on database server!").arg(db_model->getName()),
+								Messagebox::AlertIcon, Messagebox::YesNoButtons, tr("Validate"), tr("Export anyway"), "",
+								GuiUtilsNs::getIconPath("validation"), GuiUtilsNs::getIconPath("export"));
+
+		if(msgbox.isAccepted())
 		{
-			validation_btn->setChecked(true);
-			this->pending_op=PendingExportOp;
-			model_valid_wgt->validateModel();
+			action_design->toggle();
+			QTimer::singleShot(1000, this, [this]{
+				validation_btn->setChecked(true);
+				pending_op = PendingExportOp;
+				model_valid_wgt->validateModel();
+			});
 		}
-	}
-
-	if(!confirm_validation ||
-			(!db_model->isInvalidated() || (confirm_validation && !msg_box.isCanceled() && msg_box.isRejected())))
-	{
-		stopTimers(true);
-
-		connect(&model_export_form, &ModelExportForm::s_connectionsUpdateRequest, this, [this](){
-			updateConnections(true);
-		});
-
-		GuiUtilsNs::resizeDialog(&model_export_form);
-		GeneralConfigWidget::restoreWidgetGeometry(&model_export_form);
-		model_export_form.exec(current_model);
-		GeneralConfigWidget::saveWidgetGeometry(&model_export_form);
-
-		stopTimers(false);
 	}
 }
 
@@ -2208,7 +2211,7 @@ void MainWindow::updateToolsState(bool model_closed)
 	action_inc_zoom->setEnabled(enabled && current_model->getCurrentZoom() < ModelWidget::MaximumZoom);
 	action_dec_zoom->setEnabled(enabled && current_model->getCurrentZoom() > ModelWidget::MinimumZoom);
 	action_normal_zoom->setEnabled(enabled && (current_model->getCurrentZoom() * 100) != 100);
-	action_alin_objs_grade->setEnabled(enabled);
+	action_align_grid->setEnabled(enabled);
 	action_undo->setEnabled(enabled);
 	action_redo->setEnabled(enabled);
 	action_compact_view->setEnabled(enabled);
@@ -2454,27 +2457,27 @@ void MainWindow::showDemoVersionWarning(bool exit_msg)
 
 void MainWindow::executePendingOperation(bool valid_error)
 {
-	if(!valid_error && pending_op != NoPendingOp)
-	{
-		static const QString op_names[]={ "", QT_TR_NOOP("save"), QT_TR_NOOP("save"),
-																			QT_TR_NOOP("export"), QT_TR_NOOP("diff") },
+	if(valid_error || pending_op == NoPendingOp)
+		return;
 
-		op_icons[]={ "", GuiUtilsNs::getIconPath("save"), GuiUtilsNs::getIconPath("saveas"),
-								 GuiUtilsNs::getIconPath("export"), GuiUtilsNs::getIconPath("diff") };
+	static const QString op_names[]={ "", QT_TR_NOOP("save"), QT_TR_NOOP("save"),
+																		QT_TR_NOOP("export"), QT_TR_NOOP("diff") },
 
-		GuiUtilsNs::createOutputTreeItem(model_valid_wgt->output_trw,
-																		 tr("Executing pending <strong>%1</strong> operation...").arg(op_names[pending_op]),
-																		 op_icons[pending_op]);
+	op_icons[]={ "", GuiUtilsNs::getIconPath("save"), GuiUtilsNs::getIconPath("saveas"),
+							 GuiUtilsNs::getIconPath("export"), GuiUtilsNs::getIconPath("diff") };
 
-		if(pending_op == PendingSaveOp || pending_op == PendingSaveAsOp)
-			saveModel();
-		else if(pending_op == PendingExportOp)
-			exportModel();
-		else if(pending_op == PendingDiffOp)
-			diffModelDatabase();
+	GuiUtilsNs::createOutputTreeItem(model_valid_wgt->output_trw,
+																	 tr("Executing pending <strong>%1</strong> operation...").arg(op_names[pending_op]),
+																	 op_icons[pending_op]);
 
-		pending_op = NoPendingOp;
-	}
+	if(pending_op == PendingSaveOp || pending_op == PendingSaveAsOp)
+		saveModel();
+	else if(pending_op == PendingExportOp)
+		action_export->toggle();
+	else if(pending_op == PendingDiffOp)
+		action_diff->toggle();
+
+	pending_op = NoPendingOp;
 }
 
 void MainWindow::changeCurrentView(bool checked)
@@ -2526,7 +2529,7 @@ void MainWindow::changeCurrentView(bool checked)
 		for(auto &act : actions)
 			act->setEnabled(enable);
 
-		actions = show_menu->actions();
+		actions = canvas_menu->actions();
 		for(auto &act : actions)
 			act->setEnabled(enable);
 

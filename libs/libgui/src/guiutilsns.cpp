@@ -32,6 +32,8 @@
 
 namespace GuiUtilsNs {
 
+
+
 	NumberedTextEditor *createNumberedTextEditor(QWidget *parent, bool act_btns_enabled, qreal custom_fnt_size)
 	{
 		NumberedTextEditor *editor=new NumberedTextEditor(parent, act_btns_enabled, custom_fnt_size);
