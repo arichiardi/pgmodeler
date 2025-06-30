@@ -518,8 +518,6 @@ QFrame *BaseObjectWidget::generateInformationFrame(const QString &msg)
 	font.setBold(false);
 	info_frm->setFont(font);
 
-	//GuiUtilsNs::configureWidgetFont(info_frm, GuiUtilsNs::MediumFontFactor);
-
 	info_frm->setObjectName("info_frm");
 	info_frm->setFrameShape(QFrame::StyledPanel);
 	info_frm->setFrameShadow(QFrame::Raised);

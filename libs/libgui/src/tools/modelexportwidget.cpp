@@ -27,10 +27,11 @@ bool ModelExportWidget::low_verbosity {false};
 
 ModelExportWidget::ModelExportWidget(QWidget *parent) : QWidget(parent)
 {
-	model=nullptr;
-	viewp=nullptr;
+	model = nullptr;
+	viewp = nullptr;
 	setupUi(this);
 
+	alert_frm->setVisible(false);
 	GuiUtilsNs::configureWidgetsFont({ export_btn, cancel_btn }, GuiUtilsNs::BigFontFactor);
 
 	sql_file_sel = new FileSelectorWidget(this);
@@ -86,16 +87,12 @@ ModelExportWidget::ModelExportWidget(QWidget *parent) : QWidget(parent)
 
 	connect(pgsqlvers_chk, &QCheckBox::toggled, pgsqlvers1_cmb, &QComboBox::setEnabled);
 	connect(export_btn, &QPushButton::clicked, this, &ModelExportWidget::exportModel);
-	connect(drop_chk, &QCheckBox::toggled, drop_db_rb, &QRadioButton::setEnabled);
-	connect(drop_chk, &QCheckBox::toggled, drop_objs_rb, &QRadioButton::setEnabled);
-	connect(drop_db_rb, &QCheckBox::toggled, force_db_drop_chk, &QRadioButton::setEnabled);
+	connect(drop_chk, &QCheckBox::toggled, drop_mode_cmb, &QComboBox::setEnabled);
 
-	connect(drop_chk, &QCheckBox::toggled, this, [this](bool toggled) {
-		force_db_drop_chk->setEnabled(toggled && drop_db_rb->isChecked());
-	});
+	connect(drop_mode_cmb, &QComboBox::activated, this, [this](int idx){
+		force_db_drop_chk->setEnabled(idx == 1);
 
-	connect(drop_objs_rb, &QCheckBox::toggled, this, [this](bool toggled){
-		if(toggled)
+		if(idx == 0)
 			force_db_drop_chk->setChecked(false);
 	});
 
@@ -165,24 +162,31 @@ void ModelExportWidget::setLowVerbosity(bool value)
 void ModelExportWidget::setModel(ModelWidget *model)
 {
 	setEnabled(model != nullptr);
+
 	this->model = model;
 	ConnectionsConfigWidget::fillConnectionsComboBox(connections_cmb, true, Connection::OpExport);
+
+	if(model)
+	{
+		model_name_lbl->setText(model->getDatabaseModel()->getName());
+		model_file_edt->setText(!model->getFilename().isEmpty() ? model->getFilename() : tr("(not yet saved to a file)"));
+	}
 
 	selectExportMode();
 
 #ifdef DEMO_VERSION
 	#warning "DEMO VERSION: export to DBMS is disabled in demo version."
-	export_to_dbms_rb->blockSignals(true);
-	export_to_dbms_rb->setEnabled(false);
+	export_to_dbms_tb->blockSignals(true);
+	export_to_dbms_tb->setEnabled(false);
 	export_to_dbms_gb->setEnabled(false);
-	export_to_dbms_rb->setChecked(false);
-	export_to_dbms_rb->blockSignals(false);
+	export_to_dbms_tb->setChecked(false);
+	export_to_dbms_tb->blockSignals(false);
 
 	#warning "DEMO VERSION: export to data dictionary is disabled in demo version."
-	export_to_dict_rb->blockSignals(true);
-	export_to_dict_rb->setEnabled(false);
+	export_to_dict_tb->blockSignals(true);
+	export_to_dict_tb->setEnabled(false);
 	export_to_dict_gb->setEnabled(false);
-	export_to_dict_rb->blockSignals(false);
+	export_to_dict_tb->blockSignals(false);
 
 	#warning "DEMO VERSION: export to data PNG limited to zoom factor of 50%."
 	zoom_cmb->setCurrentText("30%");
@@ -191,7 +195,7 @@ void ModelExportWidget::setModel(ModelWidget *model)
 	#warning "DEMO VERSION: export to data SVG is disabled in demo version."
 	img_fmt_cmb->setEnabled(false);
 
-	export_to_file_rb->setChecked(true);
+	export_to_file_tb->setChecked(true);
 #endif
 }
 
@@ -246,7 +250,7 @@ void ModelExportWidget::exportModel()
 			Messagebox msg_box;
 			QString msg;
 
-			if(drop_db_rb->isChecked())
+			if(drop_mode_cmb->currentIndex() == 0)
 				msg = tr("<strong>CAUTION:</strong> You are about to drop an entire database from the chosen server! All data will be completely wiped out. Do you really want to proceed?");
 			else
 				msg = tr("<strong>CAUTION:</strong> You are about to drop objects in a database of the chosen server! Data can be lost in the process. Do you really want to proceed?");
@@ -318,8 +322,8 @@ void ModelExportWidget::exportModel()
 
 				export_hlp.setExportToDBMSParams(model->db_model, conn, version,
 																				 ignore_dup_chk->isChecked(),
-																				 drop_chk->isChecked() && drop_db_rb->isChecked(),
-																				 drop_chk->isChecked() && drop_objs_rb->isChecked(),
+																				 drop_chk->isChecked() && drop_mode_cmb->currentIndex() == 1,
+																				 drop_chk->isChecked() && drop_mode_cmb->currentIndex() == 0,
 																				 false, false,
 																				 drop_chk->isChecked() && force_db_drop_chk->isChecked(),
 																				 run_in_transaction_chk->isChecked());
@@ -436,6 +440,11 @@ void ModelExportWidget::closeEvent(QCloseEvent *event)
   close the form and make thread execute in background */
 	if(export_thread->isRunning())
 		event->ignore();
+}
+
+void ModelExportWidget::showEvent(QShowEvent *)
+{
+	alert_frm->setVisible(model && model->getDatabaseModel()->isInvalidated());
 }
 
 void ModelExportWidget::editConnections()

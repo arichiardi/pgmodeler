@@ -700,6 +700,8 @@ void MainWindow::connectSignalsToSlots()
 		connect(act, &QAction::toggled, this, &MainWindow::changeCurrentView);
 	}
 
+	connect(action_export, &QAction::toggled, this, &MainWindow::validateModelOnExport);
+
 	connect(action_bug_report, &QAction::triggered, this, &MainWindow::reportBug);
 	connect(action_handle_metadata, &QAction::triggered, this, &MainWindow::handleObjectsMetadata);
 	connect(action_compact_view, &QAction::triggered, this, &MainWindow::toggleCompactView);
@@ -1378,6 +1380,9 @@ void MainWindow::addModel(const QString &filename)
 		model_nav_wgt->addModel(model_tab);
 		models_tbw->setUpdatesEnabled(true);
 		models_tbw->setVisible(true);
+
+		model_tab->setModified(false);
+		model_tab->db_model->setInvalidated(false);
 		setCurrentModel();
 
 		if(start_timers)
@@ -1388,8 +1393,6 @@ void MainWindow::addModel(const QString &filename)
 			tmpmodel_save_timer.start();
 		}
 
-		model_tab->setModified(false);
-		model_tab->db_model->setInvalidated(false);
 		action_save_model->setEnabled(false);
 
 		if(action_align_grid->isChecked())
@@ -1955,45 +1958,30 @@ void MainWindow::saveModel(ModelWidget *model)
 #endif
 }
 
-void MainWindow::exportModel()
+void MainWindow::validateModelOnExport()
 {
-	ModelExportWidget model_export_form(nullptr);
-	Messagebox msg_box;
-	DatabaseModel *db_model=current_model->getDatabaseModel();
+	if(!action_export->isChecked())
+		return;
 
-	action_design->setChecked(true);
+	DatabaseModel *db_model = current_model->getDatabaseModel();
 
-	if(confirm_validation && db_model->isInvalidated())
+	if(confirm_validation && current_model->getDatabaseModel()->isInvalidated())
 	{
-		msg_box.show(tr("Confirmation"),
-					 tr(" <strong>WARNING:</strong> The model <strong>%1</strong> has not been validated since the last modification! Before run the export process it's recommended to validate in order to correctly create the objects on database server!").arg(db_model->getName()),
-					 Messagebox::AlertIcon, Messagebox::AllButtons,
-					 tr("Validate"), tr("Export anyway"), "",
-					 GuiUtilsNs::getIconPath("validation"), GuiUtilsNs::getIconPath("export"));
+		Messagebox msgbox;
 
-		if(msg_box.isAccepted())
+		msgbox.show(tr("Confirmation"), tr("<strong>WARNING:</strong> The model <strong>%1</strong> has not been validated since the last modification! Before running the export process it's recommended to validate in order to correctly create the objects on database server!").arg(db_model->getName()),
+								Messagebox::AlertIcon, Messagebox::YesNoButtons, tr("Validate"), tr("Export anyway"), "",
+								GuiUtilsNs::getIconPath("validation"), GuiUtilsNs::getIconPath("export"));
+
+		if(msgbox.isAccepted())
 		{
-			validation_btn->setChecked(true);
-			this->pending_op=PendingExportOp;
-			model_valid_wgt->validateModel();
+			action_design->toggle();
+			QTimer::singleShot(1000, this, [this]{
+				validation_btn->setChecked(true);
+				pending_op = PendingExportOp;
+				model_valid_wgt->validateModel();
+			});
 		}
-	}
-
-	if(!confirm_validation ||
-			(!db_model->isInvalidated() || (confirm_validation && !msg_box.isCanceled() && msg_box.isRejected())))
-	{
-		stopTimers(true);
-
-		connect(&model_export_form, &ModelExportWidget::s_connectionsUpdateRequest, this, [this](){
-			updateConnections(true);
-		});
-
-		GuiUtilsNs::resizeDialog(&model_export_form);
-		GeneralConfigWidget::restoreWidgetGeometry(&model_export_form);
-		model_export_form.setModel(current_model);
-		GeneralConfigWidget::saveWidgetGeometry(&model_export_form);
-
-		stopTimers(false);
 	}
 }
 
@@ -2469,27 +2457,27 @@ void MainWindow::showDemoVersionWarning(bool exit_msg)
 
 void MainWindow::executePendingOperation(bool valid_error)
 {
-	if(!valid_error && pending_op != NoPendingOp)
-	{
-		static const QString op_names[]={ "", QT_TR_NOOP("save"), QT_TR_NOOP("save"),
-																			QT_TR_NOOP("export"), QT_TR_NOOP("diff") },
+	if(valid_error || pending_op == NoPendingOp)
+		return;
 
-		op_icons[]={ "", GuiUtilsNs::getIconPath("save"), GuiUtilsNs::getIconPath("saveas"),
-								 GuiUtilsNs::getIconPath("export"), GuiUtilsNs::getIconPath("diff") };
+	static const QString op_names[]={ "", QT_TR_NOOP("save"), QT_TR_NOOP("save"),
+																		QT_TR_NOOP("export"), QT_TR_NOOP("diff") },
 
-		GuiUtilsNs::createOutputTreeItem(model_valid_wgt->output_trw,
-																		 tr("Executing pending <strong>%1</strong> operation...").arg(op_names[pending_op]),
-																		 op_icons[pending_op]);
+	op_icons[]={ "", GuiUtilsNs::getIconPath("save"), GuiUtilsNs::getIconPath("saveas"),
+							 GuiUtilsNs::getIconPath("export"), GuiUtilsNs::getIconPath("diff") };
 
-		if(pending_op == PendingSaveOp || pending_op == PendingSaveAsOp)
-			saveModel();
-		else if(pending_op == PendingExportOp)
-			exportModel();
-		else if(pending_op == PendingDiffOp)
-			diffModelDatabase();
+	GuiUtilsNs::createOutputTreeItem(model_valid_wgt->output_trw,
+																	 tr("Executing pending <strong>%1</strong> operation...").arg(op_names[pending_op]),
+																	 op_icons[pending_op]);
 
-		pending_op = NoPendingOp;
-	}
+	if(pending_op == PendingSaveOp || pending_op == PendingSaveAsOp)
+		saveModel();
+	else if(pending_op == PendingExportOp)
+		action_export->toggle();
+	else if(pending_op == PendingDiffOp)
+		action_diff->toggle();
+
+	pending_op = NoPendingOp;
 }
 
 void MainWindow::changeCurrentView(bool checked)

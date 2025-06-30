@@ -324,7 +324,7 @@ public:
 		void printModel();
 
 		//! \brief Executes the export of the currently focused model
-		void exportModel();
+		void validateModelOnExport();
 
 		//! \brief Executes the model <> database comparison
 		void diffModelDatabase();

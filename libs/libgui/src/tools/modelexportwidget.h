@@ -62,7 +62,7 @@ class __libgui ModelExportWidget: public QWidget, public Ui::ModelExportWidget {
 		void finishExport(const QString &msg);
 		void enableExportModes(bool value);
 		void closeEvent(QCloseEvent *event);
-		int exec(void){ return QDialog::Rejected; }
+		void showEvent(QShowEvent *);
 
 	public:
 		ModelExportWidget(QWidget * parent = nullptr);
