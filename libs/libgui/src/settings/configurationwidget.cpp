@@ -34,7 +34,7 @@ ConfigurationWidget::ConfigurationWidget(QWidget *parent) : QWidget(parent)
 	GuiUtilsNs::configureWidgetsFont({ apply_btn, revert_btn, defaults_btn },
 																	 GuiUtilsNs::BigFontFactor);
 
-	QList<BaseConfigWidget *> wgt_list={ general_conf, appearance_conf, relationships_conf,
+	QList<BaseConfigWidget *> wgt_list { general_conf, appearance_conf, relationships_conf,
 																			 connections_conf, snippets_conf, plugins_conf };
 
 	for(auto &wgt : wgt_list)
