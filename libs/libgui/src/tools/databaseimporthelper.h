@@ -347,6 +347,7 @@ class __libgui DatabaseImportHelper: public QObject {
 		
 		friend class ModelDatabaseDiffForm;
 		friend class DatabaseImportWidget;
+		friend class DiffToolWidget;
 };
 
 #endif

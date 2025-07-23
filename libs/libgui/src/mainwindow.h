@@ -47,9 +47,22 @@
 #include "settings/configurationwidget.h"
 #include "tools/databaseimportwidget.h"
 #include "tools/modelexportwidget.h"
+#include "tools/difftoolwidget.h"
 
 class __libgui MainWindow: public QMainWindow, public Ui::MainWindow {
 	Q_OBJECT
+
+	public:
+		enum MWViewsId {
+			WelcomeView,
+			DesignView,
+			ManageView,
+			ImportView,
+			ExportView,
+			DiffView,
+			ConfigureView,
+			FixView
+		};
 
 	private:
 		static int ToolsActionsCount;
@@ -111,6 +124,9 @@ class __libgui MainWindow: public QMainWindow, public Ui::MainWindow {
 
 		//! \brief Model export widget
 		ModelExportWidget *model_export_wgt;
+
+		//! \brief Diff tool widget
+		DiffToolWidget *diff_tool_wgt;
 
 		//! \brief Operation list dock widget
 		OperationListWidget *oper_list_wgt;
@@ -220,17 +236,11 @@ class __libgui MainWindow: public QMainWindow, public Ui::MainWindow {
 		 *  in case of any configuration file is broken or missing */
 		void handleInitializationFailure(Exception &e);
 
-public:
-		enum MWViewsId {
-			WelcomeView,
-			DesignView,
-			ManageView,
-			ImportView,
-			ExportView,
-			DiffView,
-			ConfigureView,
-		};
+		//! \brief Creates a view widget in insert its in the stacked widget at view_id index
+		template <class WgtClass>
+		WgtClass *createViewWidget(MWViewsId view_id, const QString &view_name);
 
+	public:
 		MainWindow(QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::Widget);
 
 		virtual ~MainWindow();

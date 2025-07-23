@@ -462,6 +462,21 @@ void MainWindow::handleInitializationFailure(Exception &e)
 	}
 }
 
+template<class WgtClass>
+WgtClass *MainWindow::createViewWidget(MWViewsId view_id, const QString &view_name)
+{
+	WgtClass *view_wgt = new WgtClass(this);
+	view_wgt->setObjectName(view_name);
+
+	QVBoxLayout *vbox = new QVBoxLayout;
+	vbox->setContentsMargins(0,0,0,0);
+	vbox->setSpacing(0);
+	vbox->addWidget(view_wgt);
+	views_stw->widget(view_id)->setLayout(vbox);
+
+	return view_wgt;
+}
+
 void MainWindow::createMainWidgets()
 {
 	try
@@ -479,46 +494,12 @@ void MainWindow::createMainWidgets()
 		hbox->setContentsMargins(0, GuiUtilsNs::LtMargin, 0, 0);
 		scene_info_parent->setLayout(hbox);
 
-		welcome_wgt = new WelcomeWidget(this);
-		welcome_wgt->setObjectName("welcome_wgt");
-
-		QVBoxLayout *vbox = new QVBoxLayout;
-		vbox->setContentsMargins(0,0,0,0);
-		vbox->setSpacing(0);
-		vbox->addWidget(welcome_wgt);
-		views_stw->widget(WelcomeView)->setLayout(vbox);
-
-		sql_tool_wgt = new SQLToolWidget(this);
-		sql_tool_wgt->setObjectName("sql_tool_wgt");
-		vbox = new QVBoxLayout;
-		vbox->setContentsMargins(0,0,0,0);
-		vbox->setSpacing(0);
-		vbox->addWidget(sql_tool_wgt);
-		views_stw->widget(ManageView)->setLayout(vbox);
-
-		configuration_wgt = new ConfigurationWidget(this);
-		sql_tool_wgt->setObjectName("configuration_wgt");
-		vbox = new QVBoxLayout;
-		vbox->setContentsMargins(0,0,0,0);
-		vbox->setSpacing(0);
-		vbox->addWidget(configuration_wgt);
-		views_stw->widget(ConfigureView)->setLayout(vbox);
-
-		db_import_wgt = new DatabaseImportWidget(this);
-		db_import_wgt->setObjectName("db_import_wgt");
-		vbox = new QVBoxLayout;
-		vbox->setContentsMargins(0,0,0,0);
-		vbox->setSpacing(0);
-		vbox->addWidget(db_import_wgt);
-		views_stw->widget(ImportView)->setLayout(vbox);
-
-		model_export_wgt = new ModelExportWidget(this);
-		db_import_wgt->setObjectName("model_export_wgt");
-		vbox = new QVBoxLayout;
-		vbox->setContentsMargins(0,0,0,0);
-		vbox->setSpacing(0);
-		vbox->addWidget(model_export_wgt);
-		views_stw->widget(ExportView)->setLayout(vbox);
+		welcome_wgt = createViewWidget<WelcomeWidget>(WelcomeView, "welcome_wgt");
+		sql_tool_wgt = createViewWidget<SQLToolWidget>(ManageView, "sql_tool_wgt");
+		configuration_wgt = createViewWidget<ConfigurationWidget>(ConfigureView, "configuration_wgt");
+		db_import_wgt = createViewWidget<DatabaseImportWidget>(ImportView, "db_import_wgt");
+		model_export_wgt = createViewWidget<ModelExportWidget>(ExportView, "model_export_wgt");
+		diff_tool_wgt = createViewWidget<DiffToolWidget>(DiffView, "diff_tool_wgt");
 
 		model_nav_wgt=new ModelNavigationWidget(this);
 		model_nav_wgt->setObjectName("model_nav_wgt");
@@ -679,7 +660,7 @@ void MainWindow::connectSignalsToSlots()
 
 	//connect(action_export, &QAction::triggered, this, &MainWindow::exportModel);
 	//connect(action_import, &QAction::triggered, this, &MainWindow::importDatabase);
-	connect(action_diff, &QAction::triggered, this, &MainWindow::diffModelDatabase);
+	//connect(action_diff, &QAction::triggered, this, &MainWindow::diffModelDatabase);
 
 	/* Configuring the view switching actions slots.
 	 * ATTENTION: The order of the actions in the list below

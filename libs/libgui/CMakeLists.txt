@@ -83,6 +83,7 @@ set(SOURCES
     src/tools/sqltoolwidget.cpp src/tools/sqltoolwidget.h
     src/tools/swapobjectsidswidget.cpp src/tools/swapobjectsidswidget.h
     src/tools/validationinfo.cpp src/tools/validationinfo.h
+    src/tools/difftoolwidget.cpp src/tools/difftoolwidget.h
     src/utils/customsortproxymodel.cpp src/utils/customsortproxymodel.h
     src/utils/deletableitemdelegate.cpp src/utils/deletableitemdelegate.h
     src/utils/fragmentinfo.cpp src/utils/fragmentinfo.h
@@ -196,6 +197,7 @@ set(FORMS
     ui/tools/swapobjectsidswidget.ui
     ui/tools/modelvalidationwidget.ui
     ui/tools/databaseimportwidget.ui
+    ui/tools/difftoolwidget.ui
     ui/widgets/aboutwidget.ui
     ui/widgets/customtablewidget.ui
     ui/widgets/donatewidget.ui
