@@ -81,7 +81,7 @@ class __libgui ModelValidationWidget: public QWidget, public Ui::ModelValidation
 		void setModel(ModelWidget *model_wgt);
 
 		//! \brief Returns if there is a validation in progress
-		bool isValidationRunning();
+		bool isThreadRunning();
 
 	private slots:
 		void applyFixes();

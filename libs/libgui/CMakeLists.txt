@@ -69,7 +69,7 @@ set(SOURCES
     src/tools/datagridwidget.cpp src/tools/datagridwidget.h
     src/tools/datahandlingform.cpp src/tools/datahandlingform.h
     src/tools/metadatahandlingform.cpp src/tools/metadatahandlingform.h
-    src/tools/modeldatabasediffform.cpp src/tools/modeldatabasediffform.h
+
     src/tools/modelexportwidget.cpp src/tools/modelexportwidget.h
     src/tools/modelexporthelper.cpp src/tools/modelexporthelper.h
     src/tools/modelfixform.cpp src/tools/modelfixform.h
@@ -192,7 +192,7 @@ set(FORMS
     ui/tools/metadatahandlingform.ui
     ui/tools/modelfixform.ui
     ui/tools/sqltoolwidget.ui
-    ui/tools/modeldatabasediffform.ui
+
     ui/tools/modelrestorationform.ui
     ui/tools/swapobjectsidswidget.ui
     ui/tools/modelvalidationwidget.ui

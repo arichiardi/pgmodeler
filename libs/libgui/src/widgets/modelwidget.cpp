@@ -123,7 +123,8 @@ ModelWidget::ModelWidget(QWidget *parent) : QWidget(parent)
 	tmp_filename=tmp_file.fileName();
 	tmp_file.close();
 
-	protected_model_frm=new QFrame(this);
+	protected_model_frm = new QFrame(this);
+	protected_model_frm->setObjectName("protected_model_frm");
 	protected_model_frm->setGeometry(QRect(20, 10, 500, 25));
 	protected_model_frm->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
 	protected_model_frm->setMinimumSize(QSize(0, 25));
@@ -131,16 +132,17 @@ ModelWidget::ModelWidget(QWidget *parent) : QWidget(parent)
 	protected_model_frm->setFrameShadow(QFrame::Raised);
 	protected_model_frm->setVisible(false);
 
-	label=new QLabel(protected_model_frm);
+	label = new QLabel(protected_model_frm);
 	label->setMinimumSize(QSize(20, 20));
 	label->setMaximumSize(QSize(20, 20));
 	label->setScaledContents(true);
 	label->setPixmap(QPixmap(GuiUtilsNs::getIconPath("alert")));
+	label->setObjectName("icon_lbl");
 
-	grid=new QGridLayout;
+	grid = new QGridLayout;
 	grid->addWidget(label, 0, 0, 1, 1);
 
-	label=new QLabel(protected_model_frm);
+	label = new QLabel(protected_model_frm);
 
 	font.setBold(false);
 	font.setItalic(false);
@@ -150,7 +152,7 @@ ModelWidget::ModelWidget(QWidget *parent) : QWidget(parent)
 	font.setKerning(true);
 	label->setFont(font);
 	label->setWordWrap(true);
-	label->setText(tr("<strong>ATTENTION:</strong> The database model is protected! Operations that could modify it are disabled!"));
+	label->setText(tr("<strong>ATTENTION:</strong> The database model is protected! Any modification over it is disabled!"));
 
 	grid->addWidget(label, 0, 1, 1, 1);
 	protected_model_frm->setLayout(grid);
@@ -3434,6 +3436,7 @@ void ModelWidget::duplicateObject()
 				db_model->updateTableFKRelationships(dynamic_cast<Table *>(tab));
 
 			this->setModified(true);
+			db_model->setInvalidated(true);
 			emit s_objectCreated();
 			setBlinkAddedObjects(false);
 		}

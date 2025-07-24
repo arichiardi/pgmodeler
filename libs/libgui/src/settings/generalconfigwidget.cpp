@@ -24,7 +24,7 @@
 #include "mainwindow.h"
 #include "widgets/numberedtexteditor.h"
 #include "tools/sqlexecutionwidget.h"
-#include "tools/modeldatabasediffform.h"
+#include "tools/difftoolwidget.h"
 #include "tools/databaseimportwidget.h"
 #include "tools/modelexportwidget.h"
 
@@ -616,7 +616,7 @@ void GeneralConfigWidget::applyConfiguration()
 	BaseObjectView::setShadowHidden(hide_obj_shadows_chk->isChecked());
 
 	SQLExecutionWidget::setSQLHistoryMaxLength(history_max_length_spb->value());
-	ModelDatabaseDiffForm::setLowVerbosity(low_verbosity_chk->isChecked());
+	DiffToolWidget::setLowVerbosity(low_verbosity_chk->isChecked());
 	DatabaseImportWidget::setLowVerbosity(low_verbosity_chk->isChecked());
 	ModelExportWidget::setLowVerbosity(low_verbosity_chk->isChecked());
 	Connection::setIgnoreDbVersion(old_pgsql_versions_chk->isChecked());

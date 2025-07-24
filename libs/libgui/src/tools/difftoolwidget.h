@@ -139,9 +139,6 @@ class __libgui DiffToolWidget: public BaseConfigWidget, public Ui::DiffToolWidge
 		void saveDiffToFile();
 		void finishDiff();
 
-		//! \brief Returns true when one or more threads of the whole diff process are running.
-		bool isThreadsRunning();
-
 		//! \brief Applies the loaded configurations to the form. In this widget only list the loaded presets
 		virtual void applyConfiguration();
 
@@ -166,16 +163,24 @@ class __libgui DiffToolWidget: public BaseConfigWidget, public Ui::DiffToolWidge
 		//! \brief Makes the form behaves like a QDialog by running it from an event loop. The event loop is finished when the user clicks close
 		void exec();
 
-		void setModelWidget(ModelWidget *model_wgt);
+		void setModel(ModelWidget *model_wgt);
 
 		//! \brief Defines if all the output generated during the import process should be displayed
 		static void setLowVerbosity(bool value);
+
+		//! \brief Returns true when one or more threads of the whole diff process are running.
+		bool isThreadsRunning();
 
 	private slots:
 		void listDatabases();
 		void enableDiffMode();
 		void generateDiff();
+
+		/*! \brief This method cancel any running thread emitting an signal
+		 *  to indicate the cancelled status. It also reset the diff widget
+		 *  to its initial state */
 		void cancelOperation(bool cancel_by_user);
+
 		void updateProgress(int progress, QString msg, ObjectType obj_type, QString cmd="");
 		void updateDiffInfo(ObjectsDiffInfo diff_info);
 		void captureThreadError(Exception e);
@@ -208,6 +213,12 @@ class __libgui DiffToolWidget: public BaseConfigWidget, public Ui::DiffToolWidge
 		 * The signal contains the connection id, the database name and the temp filename that is generated containing
 		 * the commands to be loaded */
 		void s_loadDiffInSQLTool(QString conn_id, QString database, QString sql_file);
+
+		//! \brief This signal is emitted whenever the diff has started
+		void s_diffStarted();
+
+		//! \brief This signal is emitted by cancelOperation.
+		void s_diffCanceled();
 };
 
 #endif

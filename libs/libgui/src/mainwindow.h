@@ -333,11 +333,11 @@ class __libgui MainWindow: public QMainWindow, public Ui::MainWindow {
 		//! \brief Prints the currently focused model
 		void printModel();
 
-		//! \brief Executes the export of the currently focused model
-		void validateModelOnExport();
+		//! \brief Executes the validation before the export process
+		void validateBeforeOperation();
 
 		//! \brief Executes the model <> database comparison
-		void diffModelDatabase();
+		//void diffModelDatabase();
 
 		//! \brief Updates the opened models with new configurations
 		void applyConfigurations();
@@ -404,8 +404,8 @@ class __libgui MainWindow: public QMainWindow, public Ui::MainWindow {
 		bool mimeDataHasModelFiles(const QMimeData *mime_data);
 		void loadModelsFromMimeData(const QMimeData *mime_data);
 		void addNewLayer(const QString &layer_name);
-
 		void handleImportFinished();
+		void loadDiffInSQLTool(const QString &conn_id, const QString &database, const QString &filename);
 
 	signals:
 		void s_currentModelChanged(ModelWidget *model_wgt);

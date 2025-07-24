@@ -261,7 +261,7 @@ void DiffToolWidget::exec()
 	event_loop.exec();
 }
 
-void DiffToolWidget::setModelWidget(ModelWidget *model_wgt)
+void DiffToolWidget::setModel(ModelWidget *model_wgt)
 {
 	if(model_wgt)
 	{
@@ -592,6 +592,8 @@ void DiffToolWidget::generateDiff()
 		}
 	}
 
+	emit s_diffStarted();
+
 	// Cancel any pending preset editing before run the diff
 	togglePresetConfiguration(false);
 
@@ -878,7 +880,6 @@ void DiffToolWidget::loadDiffInSQLTool()
 		}
 
 		emit s_loadDiffInSQLTool(conn.getConnectionId(), database, filename);
-		close();
 	}
 	catch(Exception &e)
 	{
@@ -969,8 +970,10 @@ void DiffToolWidget::cancelOperation(bool cancel_by_user)
 	dbg_output_wgt->showActionButtons(debug_mode_chk->isChecked());
 
 	resetButtons();
-	process_paused=false;
+	process_paused = false;
 	close_btn->setEnabled(true);
+
+	emit s_diffCanceled();
 }
 
 void DiffToolWidget::captureThreadError(Exception e)

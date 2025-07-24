@@ -133,7 +133,7 @@ class __libgui DatabaseImportWidget: public QWidget, public Ui::DatabaseImportWi
 		ModelWidget *getModel();
 		
 		//! \brief Returns if the importing thread is running
-		bool isImportRunning();
+		bool isThreadRunning();
 
 		//! \brief Fills a combo box with all available databases according to the configurations of the specified import helper
 		static void listDatabases(DatabaseImportHelper &import_helper, QComboBox *dbcombo);

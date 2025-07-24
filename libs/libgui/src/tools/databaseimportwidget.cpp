@@ -854,7 +854,7 @@ ModelWidget *DatabaseImportWidget::getModel()
 	return nullptr;
 }
 
-bool DatabaseImportWidget::isImportRunning()
+bool DatabaseImportWidget::isThreadRunning()
 {
 	return import_thread && import_thread->isRunning();
 }

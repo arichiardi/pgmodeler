@@ -248,7 +248,7 @@ void ModelValidationWidget::setModel(ModelWidget *model_wgt)
 	destroyThread(true);
 }
 
-bool ModelValidationWidget::isValidationRunning()
+bool ModelValidationWidget::isThreadRunning()
 {
 	return (validation_thread && validation_thread->isRunning());
 }
