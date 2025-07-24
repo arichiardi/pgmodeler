@@ -145,7 +145,7 @@ DiffToolWidget::DiffToolWidget(QWidget *parent, Qt::WindowFlags flags) : BaseCon
 	connect(database_cmb, &QComboBox::currentIndexChanged, this, &DiffToolWidget::enableDiffMode);
 	connect(generate_btn, &QPushButton::clicked, this, __slot(this, DiffToolWidget::generateDiff));
 
-	connect(close_btn, &QPushButton::clicked, this, &DiffToolWidget::close);
+	//connect(close_btn, &QPushButton::clicked, this, &DiffToolWidget::close);
 	connect(store_in_file_rb, &QRadioButton::clicked, store_in_file_wgt, &QWidget::setEnabled);
 
 	connect(dont_drop_missing_objs_chk, &QCheckBox::toggled, drop_missing_cols_constr_chk, &QCheckBox::setEnabled);
@@ -315,7 +315,7 @@ void DiffToolWidget::resetForm()
 	settings_tbw->setTabEnabled(3, false);
 }
 
-void DiffToolWidget::closeEvent(QCloseEvent *event)
+/* void DiffToolWidget::closeEvent(QCloseEvent *event)
 {
 	//Ignore the close event when the thread is running
 	if(isThreadsRunning())
@@ -326,7 +326,7 @@ void DiffToolWidget::closeEvent(QCloseEvent *event)
 	//If no threads are running we quit the event loop so the control can be returned to main thread (application)
 	if(!isThreadsRunning())
 		event_loop.quit();
-}
+} */
 
 void DiffToolWidget::showEvent(QShowEvent *event)
 {
@@ -627,7 +627,7 @@ void DiffToolWidget::generateDiff()
 	buttons_wgt->setEnabled(false);
 	cancel_btn->setEnabled(true);
 	generate_btn->setEnabled(false);
-	close_btn->setEnabled(false);
+	//close_btn->setEnabled(false);
 
 	settings_tbw->setTabEnabled(0, false);
 	settings_tbw->setTabEnabled(1, false);
@@ -821,14 +821,14 @@ void DiffToolWidget::exportDiff(bool confirm)
 			export_helper->setIgnoredErrors(error_codes_edt->text().simplified().split(' '));
 
 		export_thread->start();
-		close_btn->setEnabled(false);
+		//close_btn->setEnabled(false);
 	}
 	else if(msg_box.isCanceled())
 		cancelOperation(true);
 	else
 	{
 		process_paused=true;
-		close_btn->setEnabled(true);
+		//close_btn->setEnabled(true);
 		settings_tbw->setCurrentIndex(3);
 		settings_tbw->setTabEnabled(3, true);
 		apply_on_server_btn->setVisible(true);
@@ -971,7 +971,7 @@ void DiffToolWidget::cancelOperation(bool cancel_by_user)
 
 	resetButtons();
 	process_paused = false;
-	close_btn->setEnabled(true);
+	//close_btn->setEnabled(true);
 
 	emit s_diffCanceled();
 }

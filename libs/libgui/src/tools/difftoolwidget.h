@@ -121,7 +121,7 @@ class __libgui DiffToolWidget: public BaseConfigWidget, public Ui::DiffToolWidge
 
 		bool process_paused, src_server_supported, server_supported;
 
-		void closeEvent(QCloseEvent *event);
+		//void closeEvent(QCloseEvent *event);
 		void showEvent(QShowEvent *event);
 
 		//! \brief Creates the helpers and threads
