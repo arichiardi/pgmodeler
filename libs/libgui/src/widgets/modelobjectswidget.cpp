@@ -116,11 +116,11 @@ ModelObjectsWidget::ModelObjectsWidget(bool simplified_view, QWidget *parent) : 
 
 bool ModelObjectsWidget::eventFilter(QObject *object, QEvent *event)
 {
-	if(event->type() == QEvent::FocusOut && object==objectstree_tw)
+	if(event->type() == QEvent::FocusOut && object == objectstree_tw)
 	{
-		QFocusEvent *evnt=dynamic_cast<QFocusEvent *>(event);
+		QFocusEvent *evnt = dynamic_cast<QFocusEvent *>(event);
 
-		if(evnt->reason()==Qt::MouseFocusReason)
+		if(evnt->reason() == Qt::MouseFocusReason)
 		{
 			clearSelectedObject();
 
@@ -198,6 +198,12 @@ void ModelObjectsWidget::selectObject()
 
 	selected_objs.clear();
 	QTreeWidgetItem *tree_item = objectstree_tw->currentItem();
+
+	/* Avoiding selecting the object if the model has
+	 * interaction disabled */
+	if(!model_wgt ||
+		 (model_wgt && !model_wgt->isInteractive()))
+		return;
 
 	if(tree_item)
 	{

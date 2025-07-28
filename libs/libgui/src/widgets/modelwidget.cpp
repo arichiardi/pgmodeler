@@ -151,8 +151,9 @@ ModelWidget::ModelWidget(QWidget *parent) : QWidget(parent)
 	font.setStrikeOut(false);
 	font.setKerning(true);
 	label->setFont(font);
+	label->setObjectName("message_lbl");
 	label->setWordWrap(true);
-	label->setText(tr("<strong>ATTENTION:</strong> The database model is protected! Any modification over it is disabled!"));
+	//label->setText(tr("<strong>ATTENTION:</strong> The database model is protected! Any modification over it is disabled!"));
 
 	grid->addWidget(label, 0, 1, 1, 1);
 	protected_model_frm->setLayout(grid);
@@ -1276,6 +1277,35 @@ void ModelWidget::emitSceneInteracted()
 		emit s_sceneInteracted(static_cast<int>(selected_objects.size()), scene->itemsBoundingRect(true, true));
 }
 
+void ModelWidget::setProtected(bool protect)
+{
+	QLabel *msg_lbl = protected_model_frm->findChild<QLabel *>("message_lbl");
+	msg_lbl->setText(tr("<strong>ATTENTION:</strong> The database model is protected. Modifications are disabled!"));
+
+	protected_model_frm->setVisible(protect);
+	db_model->setProtected(protect);
+}
+
+void ModelWidget::setInteractive(bool interact)
+{
+	QLabel *msg_lbl = protected_model_frm->findChild<QLabel *>("message_lbl");
+	msg_lbl->setText(tr("<strong>ATTENTION:</strong> The database model is being accessed by another operation (diff or import). Modifications are temporarily disabled until the operation finishes!"));
+
+	protected_model_frm->setVisible(!interact);
+	viewport->setInteractive(interact);
+	new_obj_overlay_wgt->setEnabled(interact);
+
+	for(auto &act : popup_menu.actions())
+		act->setEnabled(interact);
+
+	emit s_interactiveChanged(interact);
+}
+
+bool ModelWidget::isInteractive()
+{
+	return viewport->isInteractive();
+}
+
 void ModelWidget::startSceneMove()
 {
 	if(scene_moving)
@@ -1856,7 +1886,8 @@ void ModelWidget::loadModel(const QString &filename)
 		adjustSceneRect(true);
 
 		task_prog_wgt.close();
-		protected_model_frm->setVisible(db_model->isProtected());
+		//protected_model_frm->setVisible(db_model->isProtected());
+		setProtected(db_model->isProtected());
 		setModified(false);
 
 		#ifdef PGMODELER_DEBUG
@@ -2819,7 +2850,8 @@ void ModelWidget::protectObject()
 		for(auto &obj : upd_objects)
 			obj->setModified(true);
 
-		protected_model_frm->setVisible(db_model->isProtected());
+		setProtected(db_model->isProtected());
+
 		scene->blockSignals(false);
 		scene->clearSelection();
 		this->setModified(true);
@@ -4679,14 +4711,19 @@ void ModelWidget::configureDatabaseActions()
 
 void ModelWidget::configurePopupMenu(const std::vector<BaseObject *> &objects)
 {
+	new_object_menu.clear();
+	quick_actions_menu.clear();
+	popup_menu.clear();
+
+	/* We do not configure the popup menu if the viewport
+	 * has the intaraction disabled */
+	if(!viewport->isInteractive())
+		return;
+
 	unsigned count = 0, i = 0;
 	std::vector<QMenu *> submenus;
 	TableObject *tab_obj=nullptr;
 	bool protected_obj=false, model_protected=db_model->isProtected();
-
-	new_object_menu.clear();
-	quick_actions_menu.clear();
-	popup_menu.clear();
 
 	enableModelActions(false);
 	selected_objects=objects;

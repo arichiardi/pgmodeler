@@ -93,18 +93,19 @@ DiffToolWidget::DiffToolWidget(QWidget *parent, Qt::WindowFlags flags) : BaseCon
 	file_sel->setDefaultSuffix("sql");
 	store_in_file_grid->addWidget(file_sel, 0, 1);
 
-	is_adding_new_preset=false;
-	imported_model=loaded_model=source_model=nullptr;
-	src_import_helper=import_helper=nullptr;
-	diff_helper=nullptr;
-	export_helper=nullptr;
-	src_import_thread=import_thread=diff_thread=export_thread=nullptr;
-	src_import_item=import_item=diff_item=export_item=nullptr;
-	export_conn=nullptr;
-	process_paused=false;
-	diff_progress=curr_step=total_steps=0;
+	is_adding_new_preset = false;
+	src_model_wgt = nullptr;
+	imported_model = loaded_model = source_model = nullptr;
+	src_import_helper = import_helper = nullptr;
+	diff_helper = nullptr;
+	export_helper = nullptr;
+	src_import_thread = import_thread = diff_thread = export_thread = nullptr;
+	src_import_item = import_item = diff_item = export_item = nullptr;
+	export_conn = nullptr;
+	process_paused = false;
+	diff_progress = curr_step = total_steps = 0;
 
-	sqlcode_hl=new SyntaxHighlighter(sqlcode_txt);
+	sqlcode_hl = new SyntaxHighlighter(sqlcode_txt);
 	sqlcode_hl->loadConfiguration(GlobalAttributes::getSQLHighlightConfPath());
 
 	pgsql_ver_cmb->addItems(PgSqlVersions::AllVersions);
@@ -145,7 +146,6 @@ DiffToolWidget::DiffToolWidget(QWidget *parent, Qt::WindowFlags flags) : BaseCon
 	connect(database_cmb, &QComboBox::currentIndexChanged, this, &DiffToolWidget::enableDiffMode);
 	connect(generate_btn, &QPushButton::clicked, this, __slot(this, DiffToolWidget::generateDiff));
 
-	//connect(close_btn, &QPushButton::clicked, this, &DiffToolWidget::close);
 	connect(store_in_file_rb, &QRadioButton::clicked, store_in_file_wgt, &QWidget::setEnabled);
 
 	connect(dont_drop_missing_objs_chk, &QCheckBox::toggled, drop_missing_cols_constr_chk, &QCheckBox::setEnabled);
@@ -265,6 +265,7 @@ void DiffToolWidget::setModel(ModelWidget *model_wgt)
 {
 	if(model_wgt)
 	{
+		src_model_wgt = model_wgt;
 		source_model = loaded_model = model_wgt->getDatabaseModel();
 		src_model_name_lbl->setText(source_model->getName());
 		src_model_name_edt->setText(QString("%1").arg(model_wgt->getFilename().isEmpty() ? tr("(not yet saved to a file)") : model_wgt->getFilename()));
@@ -593,6 +594,7 @@ void DiffToolWidget::generateDiff()
 	}
 
 	emit s_diffStarted();
+	src_model_wgt->setInteractive(false);
 
 	// Cancel any pending preset editing before run the diff
 	togglePresetConfiguration(false);
@@ -627,7 +629,6 @@ void DiffToolWidget::generateDiff()
 	buttons_wgt->setEnabled(false);
 	cancel_btn->setEnabled(true);
 	generate_btn->setEnabled(false);
-	//close_btn->setEnabled(false);
 
 	settings_tbw->setTabEnabled(0, false);
 	settings_tbw->setTabEnabled(1, false);
@@ -821,14 +822,12 @@ void DiffToolWidget::exportDiff(bool confirm)
 			export_helper->setIgnoredErrors(error_codes_edt->text().simplified().split(' '));
 
 		export_thread->start();
-		//close_btn->setEnabled(false);
 	}
 	else if(msg_box.isCanceled())
 		cancelOperation(true);
 	else
 	{
 		process_paused=true;
-		//close_btn->setEnabled(true);
 		settings_tbw->setCurrentIndex(3);
 		settings_tbw->setTabEnabled(3, true);
 		apply_on_server_btn->setVisible(true);
@@ -971,9 +970,9 @@ void DiffToolWidget::cancelOperation(bool cancel_by_user)
 
 	resetButtons();
 	process_paused = false;
-	//close_btn->setEnabled(true);
 
 	emit s_diffCanceled();
+	src_model_wgt->setInteractive(true);
 }
 
 void DiffToolWidget::captureThreadError(Exception e)
@@ -1037,7 +1036,6 @@ void DiffToolWidget::handleDiffFinished()
 	{
 #ifdef DEMO_VERSION
 		#warning "DEMO VERSION: forcing code preview after diff."
-		close_btn->setEnabled(true);
 		settings_tbw->setCurrentIndex(3);
 		settings_tbw->setTabEnabled(3, true);
 		output_trw->collapseItem(diff_item);

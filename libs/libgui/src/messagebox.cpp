@@ -198,6 +198,14 @@ int Messagebox::confirm(const QString &msg, ButtonsId btns_id,
 										 yes_ico, no_ico, cancel_ico);
 }
 
+int Messagebox::confirm(const QString &title, const QString &msg, ButtonsId btns_id, const QString &yes_lbl, const QString &no_lbl, const QString &cancel_lbl, const QString &yes_ico, const QString &no_ico, const QString &cancel_ico)
+{
+	Messagebox msgbox;
+	return msgbox.show(title, msg, ConfirmIcon, btns_id,
+										 yes_lbl, no_lbl, cancel_lbl,
+										 yes_ico, no_ico, cancel_ico);
+}
+
 int Messagebox::show(const QString &title, const QString &msg, IconType icon_type, ButtonsId buttons,
 										 const QString &yes_lbl, const QString &no_lbl, const QString &cancel_lbl,
 										 const QString &yes_ico, const QString &no_ico, const QString &cancel_ico)

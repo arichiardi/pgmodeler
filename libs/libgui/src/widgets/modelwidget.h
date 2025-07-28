@@ -486,6 +486,13 @@ class __libgui ModelWidget: public QWidget {
 
 		void emitSceneInteracted();
 
+		//! \brief Toggles the protection over the model and display a message indicating the status
+		void setProtected(bool protect);
+
+		void setInteractive(bool interact);
+
+		bool isInteractive();
+
 	private slots:
 		//! \brief Handles the signals that indicates the object creation on the reference database model
 		void handleObjectAddition(BaseObject *object);
@@ -660,6 +667,9 @@ class __libgui ModelWidget: public QWidget {
 		void s_zoomModified(double);
 		void s_maginifierAreaVisible(bool);
 		void s_modelResized();
+
+		//! \brief Signal emitted whenever the interaction status is changes (see setInteractive)
+		void s_interactiveChanged(bool);
 
 		//! \brief Signal emitted whenever the modified status of the model changes
 		void s_modelModified(bool);

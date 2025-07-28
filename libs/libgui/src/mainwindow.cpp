@@ -1699,35 +1699,38 @@ void MainWindow::removeModelActions()
 
 void MainWindow::closeModel(int model_id)
 {
-	QWidget *tab=nullptr;
+	QWidget *tab = nullptr;
+
+	if(model_id >= 0)
+		tab = models_tbw->widget(model_id);
+	else
+		tab = models_tbw->currentWidget();
 
 	overview_wgt->close();
 
-	if(model_id >= 0)
-		tab=models_tbw->widget(model_id);
-	else
-		tab=models_tbw->currentWidget();
-
 	if(tab)
 	{
-		ModelWidget *model=dynamic_cast<ModelWidget *>(tab);
-		Messagebox msg_box;
+		ModelWidget *model = dynamic_cast<ModelWidget *>(tab);
 
-#ifdef DEMO_VERSION
-		msg_box.setResult(QDialog::Accepted);
-#else
+		// Avoid closing the model if it has interaction disabled
+		if(!model->isInteractive())
+			return;
+
+		int msg_res = QDialog::Accepted;
+
+#ifndef DEMO_VERSION
 		//Ask the user to save the model if its modified
 		if(model->isModified())
 		{
-			msg_box.show(tr("Save model"),
-									 tr("The model <strong>%1</strong> was modified! Do you really want to close without saving it?")
-									 .arg(model->getDatabaseModel()->getName()),
-									 Messagebox::ConfirmIcon, Messagebox::YesNoButtons);
+			Messagebox::confirm(tr("Save model"),
+													tr("The model <strong>%1</strong> was modified! Do you really want to close without saving it?")
+													.arg(model->getDatabaseModel()->getName()),
+													Messagebox::YesNoButtons);
 		}
 #endif
 
 		if(!model->isModified() ||
-				(model->isModified() && msg_box.isAccepted()))
+				(model->isModified() && msg_res == Messagebox::Accepted))
 		{
 			model_nav_wgt->removeModel(model_id);
 			model_tree_states.remove(model);
@@ -2481,7 +2484,7 @@ void MainWindow::changeCurrentView(bool checked)
 
 		actions = tools_acts_tb->actions();
 		for(int i = ToolsActionsCount; i < actions.count(); i++)
-			actions[i]->setEnabled(enable);
+			actions[i]->setEnabled(enable && current_model && current_model->isInteractive());
 
 		if(!enable)
 			overview_wgt->close();
