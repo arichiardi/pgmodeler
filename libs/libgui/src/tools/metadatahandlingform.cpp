@@ -203,12 +203,12 @@ void MetadataHandlingForm::handleObjectsMetada()
 																										UtilsNs::formatMessage(tr("Applying metadata from file `%1'").arg(metadata_file)),
 																										QPixmap(GuiUtilsNs::getIconPath("info")), nullptr);
 
-			model_wgt->setUpdatesEnabled(false);
+			//model_wgt->setUpdatesEnabled(false);
 			model_wgt->getDatabaseModel()->loadObjectsMetadata(metadata_file, static_cast<DatabaseModel::MetaAttrOptions>(options));
 			model_wgt->adjustSceneRect(false);
 			model_wgt->updateSceneLayers();
 			model_wgt->restoreLastCanvasPosition();
-			model_wgt->setUpdatesEnabled(true);
+			//model_wgt->setUpdatesEnabled(true);
 			model_wgt->setModified(true);
 			model_wgt->updateObjectsOpacity();
 		}

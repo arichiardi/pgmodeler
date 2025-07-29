@@ -261,6 +261,7 @@ void ModelExportWidget::exportModel()
 				return;
 		}
 
+		model->setInteractive(false);
 		output_trw->clear();
 		settings_tbw->setTabEnabled(1, true);
 		settings_tbw->setCurrentIndex(1);
@@ -412,6 +413,7 @@ void ModelExportWidget::finishExport(const QString &msg)
 
 	enableExportModes(true);
 
+	model->setInteractive(true);
 	cancel_btn->setEnabled(false);
 	progress_pb->setValue(100);
 	progress_lbl->setText(msg);
