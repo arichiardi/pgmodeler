@@ -23,6 +23,7 @@
 #include "utilsns.h"
 #include "settings/connectionsconfigwidget.h"
 #include "pgsqlversions.h"
+#include "modeldbpickerwidget.h"
 
 bool DiffToolWidget::low_verbosity { false };
 std::map<QString, attribs_map> DiffToolWidget::config_params;
@@ -92,6 +93,9 @@ DiffToolWidget::DiffToolWidget(QWidget *parent, Qt::WindowFlags flags) : BaseCon
 	file_sel->setMimeTypeFilters({"application/sql", "application/octet-stream"});
 	file_sel->setDefaultSuffix("sql");
 	store_in_file_grid->addWidget(file_sel, 0, 1);
+
+	GuiUtilsNs::createWidgetInParent<ModelDBPickerWidget>(GuiUtilsNs::LtMargin, input_picker_gb);
+	GuiUtilsNs::createWidgetInParent<ModelDBPickerWidget>(GuiUtilsNs::LtMargin, compared_pick_gb);
 
 	is_adding_new_preset = false;
 	src_model_wgt = nullptr;
@@ -594,7 +598,6 @@ void DiffToolWidget::generateDiff()
 	}
 
 	emit s_diffStarted();
-	src_model_wgt->setInteractive(false);
 
 	// Cancel any pending preset editing before run the diff
 	togglePresetConfiguration(false);
@@ -612,6 +615,9 @@ void DiffToolWidget::generateDiff()
 	if(low_verbosity)
 		GuiUtilsNs::createOutputTreeItem(output_trw, tr("<strong>Low verbosity is set:</strong> only key informations and errors will be displayed."),
 																				QPixmap(GuiUtilsNs::getIconPath("alert")), nullptr, false);
+
+	if(src_model_wgt)
+		src_model_wgt->setInteractive(false);
 
 	if(src_model_rb->isChecked())
 	{
@@ -972,7 +978,9 @@ void DiffToolWidget::cancelOperation(bool cancel_by_user)
 	process_paused = false;
 
 	emit s_diffCanceled();
-	src_model_wgt->setInteractive(true);
+
+	if(src_model_wgt)
+		src_model_wgt->setInteractive(true);
 }
 
 void DiffToolWidget::captureThreadError(Exception e)
