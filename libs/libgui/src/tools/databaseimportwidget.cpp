@@ -593,7 +593,7 @@ void DatabaseImportWidget::listDatabases()
 		if(connections_cmb->currentIndex() == connections_cmb->count()-1)
 		{
 			if(ConnectionsConfigWidget::openConnectionsConfiguration(connections_cmb, true))
-				emit s_connectionsUpdateRequest();
+				emit s_connectionsUpdateRequested();
 		}
 
 		Connection *conn=reinterpret_cast<Connection *>(connections_cmb->itemData(connections_cmb->currentIndex()).value<void *>());
@@ -1210,4 +1210,9 @@ std::vector<QTreeWidgetItem *> DatabaseImportWidget::updateObjectsTree(DatabaseI
 		}
 	}
 	return items_vect;
+}
+
+void DatabaseImportWidget::updateConnections()
+{
+	ConnectionsConfigWidget::fillConnectionsComboBox(connections_cmb, true, Connection::OpImport);
 }

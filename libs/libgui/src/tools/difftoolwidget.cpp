@@ -23,7 +23,6 @@
 #include "utilsns.h"
 #include "settings/connectionsconfigwidget.h"
 #include "pgsqlversions.h"
-#include "modeldbpickerwidget.h"
 
 bool DiffToolWidget::low_verbosity { false };
 std::map<QString, attribs_map> DiffToolWidget::config_params;
@@ -94,8 +93,8 @@ DiffToolWidget::DiffToolWidget(QWidget *parent, Qt::WindowFlags flags) : BaseCon
 	file_sel->setDefaultSuffix("sql");
 	store_in_file_grid->addWidget(file_sel, 0, 1);
 
-	GuiUtilsNs::createWidgetInParent<ModelDBPickerWidget>(GuiUtilsNs::LtMargin, input_picker_gb);
-	GuiUtilsNs::createWidgetInParent<ModelDBPickerWidget>(GuiUtilsNs::LtMargin, compared_pick_gb);
+	input_picker_wgt = GuiUtilsNs::createWidgetInParent<ModelDBPickerWidget>(GuiUtilsNs::LtMargin, input_picker_gb);
+	compared_picker_wgt = GuiUtilsNs::createWidgetInParent<ModelDBPickerWidget>(GuiUtilsNs::LtMargin, compared_pick_gb);
 
 	is_adding_new_preset = false;
 	src_model_wgt = nullptr;
@@ -237,6 +236,16 @@ DiffToolWidget::DiffToolWidget(QWidget *parent, Qt::WindowFlags flags) : BaseCon
 		}
 	});
 
+	connect(input_picker_wgt, &ModelDBPickerWidget::s_connectionsUpdateRequested, this, [this](){
+		compared_picker_wgt->updateConnections();
+		emit DiffToolWidget::s_connectionsUpdateRequested();
+	});
+
+	connect(compared_picker_wgt, &ModelDBPickerWidget::s_connectionsUpdateRequested, this, [this](){
+		input_picker_wgt->updateConnections();
+		emit DiffToolWidget::s_connectionsUpdateRequested();
+	});
+
 #ifdef DEMO_VERSION
 	#warning "DEMO VERSION: forcing ignore errors in diff."
 	ignore_errors_chk->setChecked(true);
@@ -298,6 +307,12 @@ bool DiffToolWidget::isThreadsRunning()
 					(export_thread && export_thread->isRunning()));
 }
 
+void DiffToolWidget::updateConnections()
+{
+	input_picker_wgt->updateConnections(Connection::OpDiff);
+	compared_picker_wgt->updateConnections(Connection::OpDiff);
+}
+
 void DiffToolWidget::resetForm()
 {
 	ConnectionsConfigWidget::fillConnectionsComboBox(src_connections_cmb, true);
@@ -342,6 +357,7 @@ void DiffToolWidget::showEvent(QShowEvent *event)
 	if(!isThreadsRunning() && connections_cmb->count() == 0)
 	{
 		resetForm();
+		updateConnections();
 
 		if(connections_cmb->currentIndex() > 0)
 			listDatabases();
@@ -514,7 +530,7 @@ void DiffToolWidget::listDatabases()
 			if(ConnectionsConfigWidget::openConnectionsConfiguration(conn_cmb, true))
 			{
 				resetForm();
-				emit s_connectionsUpdateRequest();
+				emit s_connectionsUpdateRequested();
 			}
 		}
 

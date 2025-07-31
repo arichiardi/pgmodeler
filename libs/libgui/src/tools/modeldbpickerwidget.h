@@ -27,11 +27,13 @@
 
 #include <QWidget>
 #include "ui_modeldbpickerwidget.h"
+#include "connection.h"
 
 class ModelDBPickerWidget : public QWidget, public Ui::ModelDBPickerWidget {
 		Q_OBJECT
 
 	private:
+		void updateConnections(Connection::ConnOperation def_conn_op = Connection::OpNone);
 
 	public:
 		enum PickMode {
@@ -44,6 +46,14 @@ class ModelDBPickerWidget : public QWidget, public Ui::ModelDBPickerWidget {
 		~ModelDBPickerWidget();
 
 		void setPickMode(PickMode pick_mode);
+
+	public slots:
+		void listDatabases();
+
+	signals:
+		void s_connectionsUpdateRequested();
+
+	friend class DiffToolWidget;
 };
 
 #endif

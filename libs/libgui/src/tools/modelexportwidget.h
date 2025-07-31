@@ -70,6 +70,9 @@ class __libgui ModelExportWidget: public QWidget, public Ui::ModelExportWidget {
 		//! \brief Defines if all the output generated during the import process should be displayed
 		static void setLowVerbosity(bool value);
 
+		//! \brief Updates the connections combo with the latest loaded connection settings
+		void updateConnections();
+
 	public slots:
 		void setModel(ModelWidget *model);
 
@@ -91,7 +94,7 @@ class __libgui ModelExportWidget: public QWidget, public Ui::ModelExportWidget {
 	signals:
 		/*! \brief This signal is emitted whenever the user changes the connections settings
 		within this widget without use the main configurations dialog */
-		void s_connectionsUpdateRequest();
+		void s_connectionsUpdateRequested();
 };
 
 #endif

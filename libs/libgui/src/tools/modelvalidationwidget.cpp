@@ -651,7 +651,7 @@ void ModelValidationWidget::editConnections()
 	if(connections_cmb->currentIndex()==connections_cmb->count()-1)
 	{
 		if(ConnectionsConfigWidget::openConnectionsConfiguration(connections_cmb, true))
-			emit s_connectionsUpdateRequest();
+			emit s_connectionsUpdateRequested();
 	}
 }
 
@@ -740,4 +740,9 @@ void ModelValidationWidget::generateOutputItemText(QTreeWidgetItem *item, QStrin
 
 	for(int child = 0; child < item->childCount(); child++)
 		generateOutputItemText(item->child(child), output, level + 1);
+}
+
+void ModelValidationWidget::updateConnections()
+{
+	ConnectionsConfigWidget::fillConnectionsComboBox(connections_cmb, true, Connection::OpValidation);
 }

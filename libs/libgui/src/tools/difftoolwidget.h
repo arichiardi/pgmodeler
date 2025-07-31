@@ -39,6 +39,7 @@
 #include "widgets/searchreplacewidget.h"
 #include "widgets/objecttypeslistwidget.h"
 #include "widgets/debugoutputwidget.h"
+#include "modeldbpickerwidget.h"
 #include <QThread>
 
 class __libgui DiffToolWidget: public BaseConfigWidget, public Ui::DiffToolWidget {
@@ -60,6 +61,8 @@ class __libgui DiffToolWidget: public BaseConfigWidget, public Ui::DiffToolWidge
 		static std::map<QString, attribs_map> config_params;
 
 		static const QString ForceObjsBtnLabel;
+
+		ModelDBPickerWidget *input_picker_wgt, *compared_picker_wgt;
 
 		DebugOutputWidget *dbg_output_wgt;
 
@@ -173,6 +176,9 @@ class __libgui DiffToolWidget: public BaseConfigWidget, public Ui::DiffToolWidge
 		//! \brief Returns true when one or more threads of the whole diff process are running.
 		bool isThreadsRunning();
 
+		//! \brief Updates the connections combo with the latest loaded connection settings
+		void updateConnections();
+
 	private slots:
 		void listDatabases();
 		void enableDiffMode();
@@ -209,7 +215,7 @@ class __libgui DiffToolWidget: public BaseConfigWidget, public Ui::DiffToolWidge
 	signals:
 		/*! \brief This signal is emitted whenever the user changes the connections settings
 		within this widget without use the main configurations dialog */
-		void s_connectionsUpdateRequest();
+		void s_connectionsUpdateRequested();
 
 		/*! \brief This signal is emitted whenever the user wants to load the generated diff in the sql tool
 		 * The signal contains the connection id, the database name and the temp filename that is generated containing
@@ -221,6 +227,8 @@ class __libgui DiffToolWidget: public BaseConfigWidget, public Ui::DiffToolWidge
 
 		//! \brief This signal is emitted by cancelOperation.
 		void s_diffCanceled();
+
+	friend class MainWindow;
 };
 
 #endif

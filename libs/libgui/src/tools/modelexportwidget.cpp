@@ -454,7 +454,7 @@ void ModelExportWidget::editConnections()
 	if(connections_cmb->currentIndex()==connections_cmb->count()-1)
 	{
 		ConnectionsConfigWidget::openConnectionsConfiguration(connections_cmb, true);
-		emit s_connectionsUpdateRequest();
+		emit s_connectionsUpdateRequested();
 	}
 
 	enableExport();
@@ -538,4 +538,9 @@ void ModelExportWidget::selectSQLExportMode()
 		sql_file_sel->setFileMustExist(false);
 		sql_file_sel->setDirectoryMode(true);
 	}
+}
+
+void ModelExportWidget::updateConnections()
+{
+	ConnectionsConfigWidget::fillConnectionsComboBox(connections_cmb, true, Connection::OpExport);
 }

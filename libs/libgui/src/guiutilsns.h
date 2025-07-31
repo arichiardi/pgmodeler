@@ -217,7 +217,8 @@ namespace GuiUtilsNs {
 
 	/*! \brief Creates a wiget in a parent. If the parent has no layout configured then
 	 * this function also creates a layout for the parent and puts the new widget there.
-	 * The user can specify the layout margins */
+	 * The user can specify the layout margins. If no parent is provided the object is an
+	 * orphan one, meaning the user needs to take care of its destruction */
 	template<class WgtClass, typename ...CtorArgs,
 					 std::enable_if_t<std::is_base_of_v<QWidget, WgtClass>, bool> = true>
 	extern __libgui WgtClass *createWidgetInParent(int lt_margins, CtorArgs... new_wgt_ctor_args)
@@ -238,7 +239,8 @@ namespace GuiUtilsNs {
 
 	/*! \brief Creates a wiget in a parent. If the parent has no layout configured then
 	 * this function also creates a layout for the parent and puts the new widget there.
-	 * This version, creates the layout in parent with no margins. */
+	 * This version, creates the layout in parent with no margins. If no parent is provided
+	 * the object is an orphan one, meaning the user needs to take care of its destruction */
 	template<class WgtClass, typename ...CtorArgs,
 					 std::enable_if_t<std::is_base_of_v<QWidget, WgtClass>, bool> = true>
 	extern __libgui WgtClass *createWidgetInParent(CtorArgs... new_wgt_ctor_args)
@@ -247,10 +249,9 @@ namespace GuiUtilsNs {
 	}
 
 	/*! \brief Creates a NumberedTextEditor instance automatically assigning it to 'parent'.
-		This function will create a layout if 'parent' doesn't has one. If parent has a layout
-		the function will do nothing. If parent is null creates an orphan object which means the
-		user must take care of the destruction of the object */
-	[[deprecated("Replace by GuiUtilsNs::createWidgetInParent()")]]
+	 * This function will create a layout if 'parent' doesn't has one. If parent has a layout
+	 * the function will do nothing. If parent is null creates an orphan object which means the
+	 * user must take care of the destruction of the object */
 	extern __libgui NumberedTextEditor *createNumberedTextEditor(QWidget *parent, bool act_btns_enabled = false, qreal custom_fnt_size = 0);
 }
 

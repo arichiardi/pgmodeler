@@ -737,15 +737,15 @@ void MainWindow::connectSignalsToSlots()
 
 	connect(&tmpmodel_save_timer, &QTimer::timeout, this, &MainWindow::saveTemporaryModels);
 
-	connect(model_valid_wgt, &ModelValidationWidget::s_connectionsUpdateRequest, this, [this](){
+	connect(model_valid_wgt, &ModelValidationWidget::s_connectionsUpdateRequested, this, [this](){
 		updateConnections(true);
 	});
 
-	connect(sql_tool_wgt, &SQLToolWidget::s_connectionsUpdateRequest, this, [this](){
+	connect(sql_tool_wgt, &SQLToolWidget::s_connectionsUpdateRequested, this, [this](){
 		updateConnections(true);
 	});
 
-	connect(db_import_wgt, &DatabaseImportWidget::s_connectionsUpdateRequest, this, [this](){
+	connect(db_import_wgt, &DatabaseImportWidget::s_connectionsUpdateRequested, this, [this](){
 		updateConnections(true);
 	});
 
@@ -755,7 +755,7 @@ void MainWindow::connectSignalsToSlots()
 
 	connect(db_import_wgt, &DatabaseImportWidget::s_importFinished, this, &MainWindow::handleImportFinished);
 
-	connect(diff_tool_wgt, &DiffToolWidget::s_connectionsUpdateRequest, this, [this](){
+	connect(diff_tool_wgt, &DiffToolWidget::s_connectionsUpdateRequested, this, [this](){
 		updateConnections(true);
 	});
 
@@ -1125,19 +1125,19 @@ void MainWindow::updateConnections(bool force)
 													model_export_wgt->connections_cmb->count() == 0)))
 	{
 		if(sender() != sql_tool_wgt)
-		{
-			ConnectionsConfigWidget::fillConnectionsComboBox(sql_tool_wgt->connections_cmb, true);
-			sql_tool_wgt->clearDatabases();
-		}
+			sql_tool_wgt->updateConnections();
 
 		if(sender() != model_valid_wgt)
-			ConnectionsConfigWidget::fillConnectionsComboBox(model_valid_wgt->connections_cmb, true, Connection::OpValidation);
+			model_valid_wgt->updateConnections();
 
 		if(sender() != db_import_wgt)
-			ConnectionsConfigWidget::fillConnectionsComboBox(db_import_wgt->connections_cmb, true, Connection::OpImport);
+			db_import_wgt->updateConnections();
 
 		if(sender() != model_export_wgt)
-			ConnectionsConfigWidget::fillConnectionsComboBox(model_export_wgt->connections_cmb, true, Connection::OpExport);
+			model_export_wgt->updateConnections();
+
+		if(sender() != diff_tool_wgt)
+			diff_tool_wgt->updateConnections();
 	}
 }
 
