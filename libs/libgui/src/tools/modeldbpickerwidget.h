@@ -18,7 +18,7 @@
 
 /**
 \ingroup libgui
-\class ModelDBPickerWidget
+\class ModelDbPickerWidget
 \brief Implements the widget that allows user to choose the model or database to be used in a diff operation
 */
 
@@ -28,8 +28,9 @@
 #include <QWidget>
 #include "ui_modeldbpickerwidget.h"
 #include "connection.h"
+#include "widgets/modelwidget.h"
 
-class ModelDBPickerWidget : public QWidget, public Ui::ModelDBPickerWidget {
+class ModelDbPickerWidget : public QWidget, public Ui::ModelDBPickerWidget {
 		Q_OBJECT
 
 	private:
@@ -41,17 +42,27 @@ class ModelDBPickerWidget : public QWidget, public Ui::ModelDBPickerWidget {
 			PickDatabase
 		};
 
-		explicit ModelDBPickerWidget(QWidget *parent = nullptr);
+		explicit ModelDbPickerWidget(QWidget *parent = nullptr);
 
-		~ModelDBPickerWidget();
+		~ModelDbPickerWidget();
 
 		void setPickMode(PickMode pick_mode);
+
+		Connection getCurrentConnection();
+		QString getCurrentDatabase();
+		unsigned getCurrentDatabaseOid();
+		ModelWidget *getCurrentModel();
+
+		bool isDatabaseSelected();
+		bool isModelSelected();
+		bool hasSelection();
 
 	public slots:
 		void listDatabases();
 
 	signals:
 		void s_connectionsUpdateRequested();
+		void s_pickerChanged();
 
 	friend class DiffToolWidget;
 };

@@ -21,27 +21,73 @@
 #include "databaseimporthelper.h"
 #include "databaseimportwidget.h"
 
-ModelDBPickerWidget::ModelDBPickerWidget(QWidget *parent) : QWidget(parent)
+ModelDbPickerWidget::ModelDbPickerWidget(QWidget *parent) : QWidget(parent)
 {
 	setupUi(this);
 	setPickMode(PickDatabase);
 	alert_frm->setVisible(false);
 
-	connect(connections_cmb, &QComboBox::activated, this, &ModelDBPickerWidget::listDatabases);
+	connect(connections_cmb, &QComboBox::activated, this, &ModelDbPickerWidget::listDatabases);
+	connect(database_cmb, &QComboBox::activated, this, &ModelDbPickerWidget::s_pickerChanged);
+	connect(model_name_cmb, &QComboBox::activated, this, &ModelDbPickerWidget::s_pickerChanged);
 }
 
-ModelDBPickerWidget::~ModelDBPickerWidget()
+ModelDbPickerWidget::~ModelDbPickerWidget()
 {
 
 }
 
-void ModelDBPickerWidget::setPickMode(PickMode pick_mode)
+void ModelDbPickerWidget::setPickMode(PickMode pick_mode)
 {
 	model_ctrl_wgt->setVisible(pick_mode == PickModel);
 	db_ctrl_wgt->setVisible(pick_mode == PickDatabase);
 }
 
-void ModelDBPickerWidget::updateConnections(Connection::ConnOperation def_conn_op)
+Connection ModelDbPickerWidget::getCurrentConnection()
+{
+	if(database_cmb->currentIndex() <= 0)
+		return Connection();
+
+	return *(reinterpret_cast<Connection *>(connections_cmb->currentData().value<void *>()));
+}
+
+QString ModelDbPickerWidget::getCurrentDatabase()
+{
+	if(database_cmb->currentIndex() <= 0)
+		return "";
+
+	return database_cmb->currentText();
+}
+
+unsigned int ModelDbPickerWidget::getCurrentDatabaseOid()
+{
+	if(database_cmb->currentIndex() <= 0)
+		return 0;
+
+	return database_cmb->currentData().value<unsigned>();
+}
+
+ModelWidget *ModelDbPickerWidget::getCurrentModel()
+{
+	return nullptr;
+}
+
+bool ModelDbPickerWidget::isDatabaseSelected()
+{
+	return database_cmb->currentIndex() >= 1;
+}
+
+bool ModelDbPickerWidget::isModelSelected()
+{
+	return model_name_cmb->currentIndex() >= 1;
+}
+
+bool ModelDbPickerWidget::hasSelection()
+{
+	return isDatabaseSelected() || isModelSelected();
+}
+
+void ModelDbPickerWidget::updateConnections(Connection::ConnOperation def_conn_op)
 {
 	ConnectionsConfigWidget::fillConnectionsComboBox(connections_cmb, true, def_conn_op);
 	connections_cmb->setEnabled(connections_cmb->count() > 0);
@@ -52,7 +98,7 @@ void ModelDBPickerWidget::updateConnections(Connection::ConnOperation def_conn_o
 	database_lbl->setEnabled(false);
 }
 
-void ModelDBPickerWidget::listDatabases()
+void ModelDbPickerWidget::listDatabases()
 {
 	try
 	{
@@ -93,5 +139,7 @@ void ModelDBPickerWidget::listDatabases()
 		database_lbl->setEnabled(false);
 		Messagebox::error(e.getErrorMessage(), e.getErrorCode(), PGM_FUNC, PGM_FILE, PGM_LINE, &e);
 	}
+
+	emit s_pickerChanged();
 }
 
