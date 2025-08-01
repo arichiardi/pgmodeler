@@ -30,11 +30,12 @@
 #include "connection.h"
 #include "widgets/modelwidget.h"
 
-class ModelDbPickerWidget : public QWidget, public Ui::ModelDBPickerWidget {
+class ModelDbPickerWidget : public QWidget, public Ui::ModelDbPickerWidget {
 		Q_OBJECT
 
 	private:
 		void updateConnections(Connection::ConnOperation def_conn_op = Connection::OpNone);
+		void updateModels(const QList<ModelWidget *> &models);
 
 	public:
 		enum PickMode {
@@ -59,6 +60,7 @@ class ModelDbPickerWidget : public QWidget, public Ui::ModelDBPickerWidget {
 
 	public slots:
 		void listDatabases();
+		void updateModelFilename();
 
 	signals:
 		void s_connectionsUpdateRequested();

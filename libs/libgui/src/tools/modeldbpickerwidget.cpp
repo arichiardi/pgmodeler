@@ -29,7 +29,8 @@ ModelDbPickerWidget::ModelDbPickerWidget(QWidget *parent) : QWidget(parent)
 
 	connect(connections_cmb, &QComboBox::activated, this, &ModelDbPickerWidget::listDatabases);
 	connect(database_cmb, &QComboBox::activated, this, &ModelDbPickerWidget::s_pickerChanged);
-	connect(model_name_cmb, &QComboBox::activated, this, &ModelDbPickerWidget::s_pickerChanged);
+	connect(model_cmb, &QComboBox::activated, this, &ModelDbPickerWidget::s_pickerChanged);
+	connect(model_cmb, &QComboBox::activated, this, &ModelDbPickerWidget::updateModelFilename);
 }
 
 ModelDbPickerWidget::~ModelDbPickerWidget()
@@ -79,7 +80,7 @@ bool ModelDbPickerWidget::isDatabaseSelected()
 
 bool ModelDbPickerWidget::isModelSelected()
 {
-	return model_name_cmb->currentIndex() >= 1;
+	return model_cmb->currentIndex() >= 1;
 }
 
 bool ModelDbPickerWidget::hasSelection()
@@ -96,6 +97,40 @@ void ModelDbPickerWidget::updateConnections(Connection::ConnOperation def_conn_o
 	database_cmb->clear();
 	database_cmb->setEnabled(false);
 	database_lbl->setEnabled(false);
+}
+
+void ModelDbPickerWidget::updateModels(const QList<ModelWidget *> &models)
+{
+	QVariant data = model_cmb->currentData();
+
+	model_cmb->blockSignals(true);
+	model_cmb->clear();
+
+	if(models.isEmpty())
+		model_cmb->addItem(tr("No models found"));
+	else
+		model_cmb->addItem(tr("Found %1 model(s)").arg(models.size()));
+
+	for(auto &model : models)
+		model_cmb->addItem(model->getDatabaseModel()->getName(), QVariant::fromValue<void *>(model));
+
+	model_cmb->blockSignals(false);
+
+	int data_idx = model_cmb->findData(data);
+	model_cmb->setCurrentIndex(data_idx < 0 ? 0 : data_idx);
+	model_cmb->setEnabled(!models.isEmpty());
+	model_file_edt->setEnabled(!models.isEmpty());
+}
+
+void ModelDbPickerWidget::updateModelFilename()
+{
+	model_file_edt->clear();
+
+	if(model_cmb->currentIndex() <= 0)
+		return;
+
+	ModelWidget *model = reinterpret_cast<ModelWidget *>(model_cmb->currentData().value<void *>());
+	model_file_edt->setText(model->getFilename().isEmpty() ? tr("(model not yet saved)") : model->getFilename());
 }
 
 void ModelDbPickerWidget::listDatabases()

@@ -343,6 +343,12 @@ void DiffToolWidget::updateConnections()
 	compared_picker_wgt->updateConnections(Connection::OpDiff);
 }
 
+void DiffToolWidget::updateModels(const QList<ModelWidget *> &models)
+{
+	input_picker_wgt->updateModels(models);
+	compared_picker_wgt->updateModels(models);
+}
+
 void DiffToolWidget::resetForm()
 {
 	ConnectionsConfigWidget::fillConnectionsComboBox(src_connections_cmb, true);

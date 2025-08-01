@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>ModelDBPickerWidget</class>
- <widget class="QWidget" name="ModelDBPickerWidget">
+ <class>ModelDbPickerWidget</class>
+ <widget class="QWidget" name="ModelDbPickerWidget">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -67,18 +67,12 @@
        </widget>
       </item>
       <item>
-       <widget class="QComboBox" name="model_name_cmb">
-        <item>
-         <property name="text">
-          <string>foobar</string>
-         </property>
-        </item>
-       </widget>
+       <widget class="QComboBox" name="model_cmb"/>
       </item>
       <item>
        <widget class="QLineEdit" name="model_file_edt">
         <property name="text">
-         <string>/foo/bar/foobar.dbm</string>
+         <string/>
         </property>
         <property name="readOnly">
          <bool>true</bool>

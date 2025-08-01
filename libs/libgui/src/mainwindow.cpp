@@ -2503,6 +2503,9 @@ void MainWindow::changeCurrentView(bool checked)
 		action_print->setEnabled(enable);
 		action_close_model->setEnabled(enable);
 		action_save_as->setEnabled(enable);
+
+		if(curr_act == action_diff)
+			diff_tool_wgt->updateModels(model_nav_wgt->getModelWidgets());
 	}
 	else
 	{

@@ -182,8 +182,11 @@ class __libgui DiffToolWidget: public BaseConfigWidget, public Ui::DiffToolWidge
 		//! \brief Returns true when one or more threads of the whole diff process are running.
 		bool isThreadsRunning();
 
-		//! \brief Updates the connections combo with the latest loaded connection settings
+		//! \brief Updates the connections combo in the model/db pickers with the latest loaded connection settings
 		void updateConnections();
+
+		//! \brief Updates the models combo with in the model/db pickers with the ones open in Design view
+		void updateModels(const QList<ModelWidget *> &models);
 
 	private slots:
 		void listDatabases();
