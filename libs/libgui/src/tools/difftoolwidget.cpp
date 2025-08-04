@@ -48,22 +48,22 @@ DiffToolWidget::DiffToolWidget(QWidget *parent) : BaseConfigWidget (parent)
 	forced_obj_types_menu->addAction(wgt_act);
 	forced_objs_types_btn->setMenu(forced_obj_types_menu);
 
-	src_server_supported = server_supported = true;
 	dates_wgt->setVisible(false);
 	start_date_dt->setDateTime(QDateTime::currentDateTime());
 	end_date_dt->setDateTime(QDateTime::currentDateTime());
 
 	pd_filter_wgt = new ObjectsFilterWidget(this);
-
-	QVBoxLayout *vbox = qobject_cast<QVBoxLayout *>(pd_filter_gb->layout());
+	QVBoxLayout *vbox = qobject_cast<QVBoxLayout *>(pd_filters_gb->layout());
 	vbox->addWidget(pd_filter_wgt);
 	pd_filter_wgt->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
-	pd_hsplitter->setSizes({ 300, 500 });
 
-	sqlcode_txt=GuiUtilsNs::createNumberedTextEditor(sqlcode_wgt);
+	pd_splitter->setSizes({ 500, 500 });
+	opts_splitter->setSizes({ 500, 500 });
+
+	sqlcode_txt = GuiUtilsNs::createNumberedTextEditor(sqlcode_wgt);
 	sqlcode_txt->setReadOnly(true);
 
-	htmlitem_del=new HtmlItemDelegate(this);
+	htmlitem_del = new HtmlItemDelegate(this);
 	output_trw->setItemDelegateForColumn(0, htmlitem_del);
 
 	search_sql_wgt = new SearchReplaceWidget(sqlcode_txt, search_wgt_parent);
@@ -73,16 +73,11 @@ DiffToolWidget::DiffToolWidget(QWidget *parent) : BaseConfigWidget (parent)
 	vbox->addWidget(search_sql_wgt);
 	vbox->setContentsMargins(0,0,0,0);
 
-	dbg_output_wgt = new DebugOutputWidget(this);
-	vbox = new QVBoxLayout(settings_tbw->widget(4));
-	vbox->setContentsMargins(GuiUtilsNs::LtMargin, GuiUtilsNs::LtMargin,
-													 GuiUtilsNs::LtMargin, GuiUtilsNs::LtMargin);
-	vbox->addWidget(dbg_output_wgt);
+	dbg_output_wgt = GuiUtilsNs::createWidgetInParent<DebugOutputWidget>(GuiUtilsNs::LtMargin, settings_tbw->widget(3));
 
 	settings_tbw->setTabEnabled(1, false);
 	settings_tbw->setTabEnabled(2, false);
-	settings_tbw->setTabEnabled(3, false);
-	settings_tbw->setTabVisible(4, false);
+	settings_tbw->setTabVisible(3, false);
 
 	connect(search_tb, &QToolButton::toggled, search_wgt_parent, &QWidget::setVisible);
 	connect(search_sql_wgt, &SearchReplaceWidget::s_hideRequested, search_tb, &QToolButton::toggle);
@@ -140,7 +135,6 @@ DiffToolWidget::DiffToolWidget(QWidget *parent) : BaseConfigWidget (parent)
 
 		settings_tbw->setTabEnabled(1, false);
 		settings_tbw->setTabEnabled(2, false);
-		settings_tbw->setTabEnabled(3, false);
 		enableDiffMode();
 	});
 
@@ -220,7 +214,7 @@ DiffToolWidget::DiffToolWidget(QWidget *parent) : BaseConfigWidget (parent)
 
 	connect(debug_mode_chk, &QCheckBox::toggled, this, [this](bool checked) {
 		dbg_output_wgt->setLogMessages(checked);
-		settings_tbw->setTabVisible(4, checked);
+		settings_tbw->setTabVisible(3, checked);
 	});
 
 	auto lmb_slot = [this](bool checked){
@@ -272,13 +266,6 @@ DiffToolWidget::~DiffToolWidget()
 	destroyModel();
 }
 
-void DiffToolWidget::exec()
-{
-	show();
-	loadConfiguration();
-	//event_loop.exec();
-}
-
 void DiffToolWidget::setLowVerbosity(bool value)
 {
 	low_verbosity = value;
@@ -304,21 +291,15 @@ void DiffToolWidget::updateModels(const QList<ModelWidget *> &models)
 	compared_sel_wgt->updateModels(models);
 }
 
-/* void DiffToolWidget::showEvent(QShowEvent *event)
+void DiffToolWidget::showEvent(QShowEvent *event)
 {
 	if(event->spontaneous())
 		return;
 
-	//Doing the form configuration in the first show in order to populate the connections combo
-	if(!isThreadsRunning() && connections_cmb->count() == 0)
-	{
-		resetForm();
-		updateConnections();
-
-		if(connections_cmb->currentIndex() > 0)
-			listDatabases();
-	}
-} */
+	// Loading the presets on the first show of the widget
+	if(presets_cmb->count() == 0)
+		loadConfiguration();
+}
 
 void DiffToolWidget::createThread(ThreadId thread_id)
 {
@@ -565,7 +546,7 @@ void DiffToolWidget::startDiff()
 		total_steps = 4;
 
 	dbg_output_wgt->setLogMessages(debug_mode_chk->isChecked());
-	settings_tbw->setTabVisible(4, debug_mode_chk->isChecked());
+	settings_tbw->setTabVisible(3, debug_mode_chk->isChecked());
 
 	buttons_wgt->setEnabled(false);
 	cancel_btn->setEnabled(true);
@@ -574,8 +555,7 @@ void DiffToolWidget::startDiff()
 	settings_tbw->setTabEnabled(0, false);
 	settings_tbw->setTabEnabled(1, false);
 	settings_tbw->setTabEnabled(2, true);
-	settings_tbw->setTabEnabled(3, false);
-	settings_tbw->setCurrentIndex(2);
+	settings_tbw->setCurrentIndex(1);
 
 	/* The diff mode selected is different from model to model.
 	 * We need to import the involved databases, otherwise we use
@@ -774,8 +754,8 @@ void DiffToolWidget::exportDiff(bool confirm)
 	else
 	{
 		process_paused=true;
-		settings_tbw->setCurrentIndex(3);
-		settings_tbw->setTabEnabled(3, true);
+		settings_tbw->setCurrentIndex(2);
+		settings_tbw->setTabEnabled(2, true);
 		apply_on_server_btn->setVisible(true);
 		output_trw->collapseItem(diff_item);
 		GuiUtilsNs::createOutputTreeItem(output_trw,
@@ -978,7 +958,7 @@ void DiffToolWidget::handleDiffFinished()
 	sqlcode_txt->setPlainText(code);
 #endif
 
-	settings_tbw->setTabEnabled(2, true);
+	settings_tbw->setTabEnabled(1, true);
 	diff_thread->quit();
 
 	if(store_in_file_rb->isChecked())
@@ -988,7 +968,7 @@ void DiffToolWidget::handleDiffFinished()
 #ifdef DEMO_VERSION
 		#warning "DEMO VERSION: forcing code preview after diff."
 		settings_tbw->setCurrentIndex(3);
-		settings_tbw->setTabEnabled(3, true);
+		settings_tbw->setTabEnabled(2, true);
 		output_trw->collapseItem(diff_item);
 #else
 		exportDiff();
@@ -1463,27 +1443,13 @@ void DiffToolWidget::enablePartialDiff()
 {
 	bool enable = input_sel_wgt->hasSelection();
 
-	settings_tbw->setTabEnabled(1, enable);
+	pd_filters_gb->setEnabled(enable);
+	pd_filtered_objs_gb->setEnabled(enable);
+
 	gen_filters_from_log_chk->setChecked(false);
 	gen_filters_from_log_chk->setVisible(input_sel_wgt->isModelSelected());
 	pd_filter_wgt->setModelFilteringMode(input_sel_wgt->isModelSelected(),
 																			 { ObjectType::Relationship, ObjectType::Permission });
-
-	if(input_sel_wgt->isModelSelected())
-	{
-		pd_input_lbl->setText(QString("<strong>%1 [%2]</strong>")
-												 .arg(input_model->getName(), QFileInfo(input_model_wgt->getFilename()).fileName()));
-		pd_input_lbl->setToolTip(input_model->getName());
-		pd_input_ico_lbl->setPixmap(QPixmap(GuiUtilsNs::getIconPath("dbmodel")));
-	}
-	else if(input_sel_wgt->isDatabaseSelected())
-	{
-		Connection conn = input_sel_wgt->getSelectedConnection();
-		conn.setConnectionParam(Connection::ParamDbName, input_sel_wgt->getSelectedDatabase());
-
-		pd_input_lbl->setText(conn.getConnectionId(true, true, true));
-		pd_input_ico_lbl->setPixmap(QPixmap(GuiUtilsNs::getIconPath("database")));
-	}
 }
 
 void DiffToolWidget::enableFilterByDate()

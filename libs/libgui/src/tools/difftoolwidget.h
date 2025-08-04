@@ -122,9 +122,9 @@ class __libgui DiffToolWidget: public BaseConfigWidget, public Ui::DiffToolWidge
 
 		int diff_progress, curr_step, total_steps;
 
-		bool process_paused, src_server_supported, server_supported;
+		bool process_paused;
 
-		//void showEvent(QShowEvent *event);
+		void showEvent(QShowEvent *event);
 
 		//! \brief Creates the helpers and threads
 		void createThread(ThreadId thread_id);
@@ -161,12 +161,6 @@ class __libgui DiffToolWidget: public BaseConfigWidget, public Ui::DiffToolWidge
 		DiffToolWidget(QWidget * parent = nullptr);
 
 		virtual ~DiffToolWidget();
-
-		//! \brief Makes the form behaves like a QDialog by running it from an event loop. The event loop is finished when the user clicks close
-		[[deprecated]]
-		void exec();
-
-		//void setModels(ModelWidget *input_mdl_wgt, ModelWidget *compared_mdl_wgt);
 
 		//! \brief Defines if all the output generated during the import process should be displayed
 		static void setLowVerbosity(bool value);
