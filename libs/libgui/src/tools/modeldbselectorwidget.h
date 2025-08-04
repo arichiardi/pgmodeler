@@ -18,41 +18,41 @@
 
 /**
 \ingroup libgui
-\class ModelDbPickerWidget
+\class ModelDbSelectorWidget
 \brief Implements the widget that allows user to choose the model or database to be used in a diff operation
 */
 
-#ifndef MODEL_DB_PICKER_WIDGET_H
-#define MODEL_DB_PICKER_WIDGET_H
+#ifndef MODEL_DB_SELECTOR_WIDGET_H
+#define MODEL_DB_SELECTOR_WIDGET_H
 
 #include <QWidget>
-#include "ui_modeldbpickerwidget.h"
+#include "ui_modeldbselectorwidget.h"
 #include "connection.h"
 #include "widgets/modelwidget.h"
 
-class ModelDbPickerWidget : public QWidget, public Ui::ModelDbPickerWidget {
-		Q_OBJECT
+class ModelDbSelectorWidget : public QWidget, public Ui::ModelDbSelectorWidget {
+	Q_OBJECT
 
 	private:
 		void updateConnections(Connection::ConnOperation def_conn_op = Connection::OpNone);
 		void updateModels(const QList<ModelWidget *> &models);
 
 	public:
-		enum PickMode {
-			PickModel,
-			PickDatabase
+		enum SelectMode {
+			SelectModel,
+			SelectDatabase
 		};
 
-		explicit ModelDbPickerWidget(QWidget *parent = nullptr);
+		explicit ModelDbSelectorWidget(QWidget *parent = nullptr);
 
-		~ModelDbPickerWidget();
+		~ModelDbSelectorWidget() = default;
 
-		void setPickMode(PickMode pick_mode);
+		void setSelectMode(SelectMode sel_mode);
 
-		Connection getCurrentConnection();
-		QString getCurrentDatabase();
-		unsigned getCurrentDatabaseOid();
-		ModelWidget *getCurrentModel();
+		Connection getSelectedConnection();
+		QString getSelectedDatabase();
+		unsigned getSelectedDatabaseOid();
+		ModelWidget *getSelectedModel();
 
 		bool isDatabaseSelected();
 		bool isModelSelected();
@@ -64,7 +64,7 @@ class ModelDbPickerWidget : public QWidget, public Ui::ModelDbPickerWidget {
 
 	signals:
 		void s_connectionsUpdateRequested();
-		void s_pickerChanged();
+		void s_selectionChanged();
 
 	friend class DiffToolWidget;
 };

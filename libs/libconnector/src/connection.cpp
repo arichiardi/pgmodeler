@@ -390,7 +390,7 @@ bool Connection::isAutoBrowseDB()
 	return auto_browse_db;
 }
 
-QString  Connection::getPgSQLVersion(bool major_only)
+QString Connection::getPgSQLVersion(bool major_only)
 {
 	QString raw_ver, fmt_ver;
 

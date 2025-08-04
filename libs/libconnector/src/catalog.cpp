@@ -1068,6 +1068,18 @@ bool Catalog::isServerSupported()
 	}
 }
 
+QString Catalog::getServerVersion(bool major_only)
+{
+	try
+	{
+		return connection.getPgSQLVersion(major_only);
+	}
+	catch(Exception &e)
+	{
+		throw Exception(e.getErrorMessage(), e.getErrorCode(), PGM_FUNC, PGM_FILE, PGM_LINE, &e);
+	}
+}
+
 QStringList Catalog::parseArrayValues(const QString &array_val)
 {
 	QStringList list;

@@ -80,6 +80,10 @@ DiffToolWidget::DiffToolWidget(QWidget *parent) : BaseConfigWidget (parent)
 	vbox->setContentsMargins(GuiUtilsNs::LtMargin, GuiUtilsNs::LtMargin,
 													 GuiUtilsNs::LtMargin, GuiUtilsNs::LtMargin);
 	vbox->addWidget(dbg_output_wgt);
+
+	settings_tbw->setTabEnabled(1, false);
+	settings_tbw->setTabEnabled(2, false);
+	settings_tbw->setTabEnabled(3, false);
 	settings_tbw->setTabVisible(4, false);
 
 	connect(search_tb, &QToolButton::toggled, search_wgt_parent, &QWidget::setVisible);
@@ -93,12 +97,12 @@ DiffToolWidget::DiffToolWidget(QWidget *parent) : BaseConfigWidget (parent)
 	file_sel->setDefaultSuffix("sql");
 	store_in_file_grid->addWidget(file_sel, 0, 1);
 
-	input_picker_wgt = GuiUtilsNs::createWidgetInParent<ModelDbPickerWidget>(GuiUtilsNs::LtMargin, input_picker_gb);
-	compared_picker_wgt = GuiUtilsNs::createWidgetInParent<ModelDbPickerWidget>(GuiUtilsNs::LtMargin, compared_pick_gb);
+	input_sel_wgt = GuiUtilsNs::createWidgetInParent<ModelDbSelectorWidget>(GuiUtilsNs::LtMargin, input_picker_gb);
+	compared_sel_wgt = GuiUtilsNs::createWidgetInParent<ModelDbSelectorWidget>(GuiUtilsNs::LtMargin, compared_pick_gb);
 
 	is_adding_new_preset = false;
 	input_model_wgt = nullptr;
-	compared_imported_model = compared_loaded_model = input_model = nullptr;
+	compared_model = input_model = nullptr;
 	input_imp_helper = compared_imp_helper = nullptr;
 	diff_helper = nullptr;
 	export_helper = nullptr;
@@ -129,7 +133,19 @@ DiffToolWidget::DiffToolWidget(QWidget *parent) : BaseConfigWidget (parent)
 	mode_btn_grp->addButton(model_to_db_tb);
 	mode_btn_grp->setExclusive(true);
 
-	connect(mode_btn_grp, &QButtonGroup::buttonToggled, this, &DiffToolWidget::enableDiffMode);
+	connect(mode_btn_grp, &QButtonGroup::buttonToggled, this, [this]()
+	{
+		input_sel_wgt->setSelectMode(model_to_db_tb->isChecked() || model_to_model_tb->isChecked() ?
+																	 ModelDbSelectorWidget::SelectModel : ModelDbSelectorWidget::SelectDatabase);
+
+		compared_sel_wgt->setSelectMode(model_to_model_tb->isChecked() ?
+																		 ModelDbSelectorWidget::SelectModel : ModelDbSelectorWidget::SelectDatabase);
+
+		settings_tbw->setTabEnabled(1, false);
+		settings_tbw->setTabEnabled(2, false);
+		settings_tbw->setTabEnabled(3, false);
+		enableDiffMode();
+	});
 
 	connect(gen_filters_from_log_chk, &QCheckBox::toggled, dates_wgt, &QWidget::setVisible);
 	connect(start_date_chk, &QCheckBox::toggled, this, &DiffToolWidget::enableFilterByDate);
@@ -137,11 +153,11 @@ DiffToolWidget::DiffToolWidget(QWidget *parent) : BaseConfigWidget (parent)
 	connect(generate_filters_tb, &QToolButton::clicked, this, &DiffToolWidget::generateFiltersFromChangelog);
 
 	connect(first_change_dt_tb, &QToolButton::clicked, this, [this](){
-		start_date_dt->setDateTime(compared_loaded_model->getFirstChangelogDate());
+		start_date_dt->setDateTime(compared_model->getFirstChangelogDate());
 	});
 
 	connect(last_change_dt_tb, &QToolButton::clicked, this, [this](){
-		end_date_dt->setDateTime(compared_loaded_model->getLastChangelogDate());
+		end_date_dt->setDateTime(compared_model->getLastChangelogDate());
 	});
 
 	connect(cancel_btn, &QToolButton::clicked, this, [this](){
@@ -149,12 +165,9 @@ DiffToolWidget::DiffToolWidget(QWidget *parent) : BaseConfigWidget (parent)
 	});
 
 	connect(pgsql_ver_chk, &QCheckBox::toggled, pgsql_ver_cmb, &QComboBox::setEnabled);
-	connect(connections_cmb, &QComboBox::activated, this, __slot(this, DiffToolWidget::listDatabases));
-
 	connect(store_in_file_rb, &QRadioButton::clicked, this, &DiffToolWidget::enableDiffMode);
 	connect(apply_on_server_rb, &QRadioButton::clicked, this, &DiffToolWidget::enableDiffMode);
 	connect(file_sel, &FileSelectorWidget::s_selectorChanged, this, &DiffToolWidget::enableDiffMode);
-	connect(database_cmb, &QComboBox::currentIndexChanged, this, &DiffToolWidget::enableDiffMode);
 	connect(generate_btn, &QPushButton::clicked, this, __slot(this, DiffToolWidget::startDiff));
 
 	connect(store_in_file_rb, &QRadioButton::clicked, store_in_file_wgt, &QWidget::setEnabled);
@@ -165,25 +178,13 @@ DiffToolWidget::DiffToolWidget(QWidget *parent) : BaseConfigWidget (parent)
 	connect(alter_tb, &QToolButton::toggled, this, &DiffToolWidget::filterDiffInfos);
 	connect(ignore_tb, &QToolButton::toggled, this, &DiffToolWidget::filterDiffInfos);
 	connect(ignore_error_codes_chk, &QCheckBox::toggled, error_codes_edt, &QLineEdit::setEnabled);
-	connect(src_model_rb, &QRadioButton::toggled, src_model_name_lbl, &QLabel::setEnabled);
-	connect(src_model_rb, &QRadioButton::toggled, src_model_name_edt, &QLabel::setEnabled);
 
-
-	connect(src_connections_cmb, &QComboBox::activated, this, __slot(this, DiffToolWidget::listDatabases));
-	connect(src_database_cmb, &QComboBox::currentIndexChanged, this, &DiffToolWidget::enableDiffMode);
-	connect(src_model_rb, &QRadioButton::toggled, this, &DiffToolWidget::enableDiffMode);
 	connect(open_in_sql_tool_btn, &QPushButton::clicked, this, &DiffToolWidget::loadDiffInSQLTool);
 	connect(presets_cmb, &QComboBox::activated, this, &DiffToolWidget::selectPreset);
 
 	connect(default_presets_tb, &QToolButton::clicked, this, &DiffToolWidget::restoreDefaults);
 	connect(remove_preset_tb, &QToolButton::clicked, this, __slot(this, DiffToolWidget::removePreset));
 	connect(save_preset_tb, &QToolButton::clicked, this, __slot(this, DiffToolWidget::savePreset));
-
-	connect(src_database_rb, &QRadioButton::toggled, this, [this](bool toggle){
-		src_database_wgt->setEnabled(toggle);
-		src_connection_lbl->setEnabled(toggle && src_connections_cmb->count() > 0);
-		enableDiffMode();
-	});
 
 	connect(new_preset_tb, &QToolButton::clicked, this, [this](){
 		togglePresetConfiguration(true);
@@ -201,10 +202,6 @@ DiffToolWidget::DiffToolWidget(QWidget *parent) : BaseConfigWidget (parent)
 	connect(preset_name_edt, &QLineEdit::textChanged, this, [this](const QString &text){
 		save_preset_tb->setEnabled(!text.isEmpty());
 	});
-
-	//connect(src_model_rb, &QRadioButton::toggled, this, &DiffToolWidget::enablePartialDiff);
-	//connect(src_database_cmb, &QComboBox::currentIndexChanged, this, &DiffToolWidget::enablePartialDiff);
-	//connect(database_cmb, &QComboBox::currentIndexChanged, this, &DiffToolWidget::enablePartialDiff);
 
 	connect(pd_filter_wgt, &ObjectsFilterWidget::s_filterApplyingRequested, this, &DiffToolWidget::applyPartialDiffFilters);
 
@@ -245,19 +242,15 @@ DiffToolWidget::DiffToolWidget(QWidget *parent) : BaseConfigWidget (parent)
 		}
 	});
 
-	connect(input_picker_wgt, &ModelDbPickerWidget::s_pickerChanged, this, &DiffToolWidget::enableDiffMode);
-	connect(input_picker_wgt, &ModelDbPickerWidget::s_pickerChanged, this, &DiffToolWidget::enablePartialDiff);
-
-	connect(input_picker_wgt, &ModelDbPickerWidget::s_connectionsUpdateRequested, this, [this](){
-		compared_picker_wgt->updateConnections();
+	connect(input_sel_wgt, &ModelDbSelectorWidget::s_selectionChanged, this, &DiffToolWidget::selectModels);
+	connect(input_sel_wgt, &ModelDbSelectorWidget::s_connectionsUpdateRequested, this, [this](){
+		compared_sel_wgt->updateConnections();
 		emit DiffToolWidget::s_connectionsUpdateRequested();
 	});
 
-	connect(compared_picker_wgt, &ModelDbPickerWidget::s_pickerChanged, this, &DiffToolWidget::enableDiffMode);
-	connect(compared_picker_wgt, &ModelDbPickerWidget::s_pickerChanged, this, &DiffToolWidget::enablePartialDiff);
-
-	connect(compared_picker_wgt, &ModelDbPickerWidget::s_connectionsUpdateRequested, this, [this](){
-		input_picker_wgt->updateConnections();
+	connect(compared_sel_wgt, &ModelDbSelectorWidget::s_selectionChanged, this, &DiffToolWidget::selectModels);
+	connect(compared_sel_wgt, &ModelDbSelectorWidget::s_connectionsUpdateRequested, this, [this](){
+		input_sel_wgt->updateConnections();
 		emit DiffToolWidget::s_connectionsUpdateRequested();
 	});
 
@@ -286,42 +279,7 @@ void DiffToolWidget::exec()
 {
 	show();
 	loadConfiguration();
-	event_loop.exec();
-}
-
-void DiffToolWidget::setModel(ModelWidget *model_wgt)
-{
-	if(model_wgt)
-	{
-		input_model_wgt = model_wgt;
-		input_model = compared_loaded_model = model_wgt->getDatabaseModel();
-		src_model_name_lbl->setText(input_model->getName());
-		src_model_name_edt->setText(QString("%1").arg(model_wgt->getFilename().isEmpty() ? tr("(not yet saved to a file)") : model_wgt->getFilename()));
-	}
-	else
-	{
-		src_model_name_lbl->setText(tr("(none)"));
-		src_model_name_edt->setText(tr("(none)"));
-		src_database_rb->setChecked(true);
-		src_model_rb->setEnabled(false);
-	}
-
-	src_model_name_edt->setCursorPosition(0);
-}
-
-void DiffToolWidget::setModels(ModelWidget *input_mdl_wgt, ModelWidget *compared_mdl_wgt)
-{
-	if(input_mdl_wgt)
-	{
-		input_model = input_mdl_wgt->getDatabaseModel();
-		input_model_wgt = input_mdl_wgt;
-	}
-
-	if(compared_mdl_wgt)
-	{
-		compared_loaded_model = compared_mdl_wgt->getDatabaseModel();
-		compared_model_wgt = compared_mdl_wgt;
-	}
+	//event_loop.exec();
 }
 
 void DiffToolWidget::setLowVerbosity(bool value)
@@ -339,52 +297,17 @@ bool DiffToolWidget::isThreadsRunning()
 
 void DiffToolWidget::updateConnections()
 {
-	input_picker_wgt->updateConnections(Connection::OpDiff);
-	compared_picker_wgt->updateConnections(Connection::OpDiff);
+	input_sel_wgt->updateConnections(Connection::OpDiff);
+	compared_sel_wgt->updateConnections(Connection::OpDiff);
 }
 
 void DiffToolWidget::updateModels(const QList<ModelWidget *> &models)
 {
-	input_picker_wgt->updateModels(models);
-	compared_picker_wgt->updateModels(models);
+	input_sel_wgt->updateModels(models);
+	compared_sel_wgt->updateModels(models);
 }
 
-void DiffToolWidget::resetForm()
-{
-	ConnectionsConfigWidget::fillConnectionsComboBox(src_connections_cmb, true);
-	src_connections_cmb->setEnabled(src_connections_cmb->count() > 0);
-	src_connection_lbl->setEnabled(src_connections_cmb->isEnabled());
-	src_database_cmb->clear();
-	src_database_cmb->setEnabled(false);
-	src_database_lbl->setEnabled(false);
-
-	ConnectionsConfigWidget::fillConnectionsComboBox(connections_cmb, true, Connection::OpDiff);
-	connections_cmb->setEnabled(connections_cmb->count() > 0);
-	connection_lbl->setEnabled(connections_cmb->isEnabled());
-	database_cmb->clear();
-	database_cmb->setEnabled(false);
-	database_lbl->setEnabled(false);
-
-	enableDiffMode();
-	settings_tbw->setTabEnabled(1, false);
-	settings_tbw->setTabEnabled(2, false);
-	settings_tbw->setTabEnabled(3, false);
-}
-
-/* void DiffToolWidget::closeEvent(QCloseEvent *event)
-{
-	//Ignore the close event when the thread is running
-	if(isThreadsRunning())
-		event->ignore();
-	else if(process_paused)
-		cancelOperation(true);
-
-	//If no threads are running we quit the event loop so the control can be returned to main thread (application)
-	if(!isThreadsRunning())
-		event_loop.quit();
-} */
-
-void DiffToolWidget::showEvent(QShowEvent *event)
+/* void DiffToolWidget::showEvent(QShowEvent *event)
 {
 	if(event->spontaneous())
 		return;
@@ -398,7 +321,7 @@ void DiffToolWidget::showEvent(QShowEvent *event)
 		if(connections_cmb->currentIndex() > 0)
 			listDatabases();
 	}
-}
+} */
 
 void DiffToolWidget::createThread(ThreadId thread_id)
 {
@@ -480,24 +403,24 @@ void DiffToolWidget::createThread(ThreadId thread_id)
 
 void DiffToolWidget::destroyThread(ThreadId thread_id)
 {
-	if(thread_id==InputImpThread && input_imp_thread)
+	if(thread_id == InputImpThread && input_imp_thread)
 	{
 		delete input_imp_thread;
 		delete input_imp_helper;
 		input_imp_thread=nullptr;
 		input_imp_helper=nullptr;
 	}
-	else if(thread_id==ComparedImpThread && compared_imp_thread)
+	else if(thread_id == ComparedImpThread && compared_imp_thread)
 	{
 		delete compared_imp_thread;
 		delete compared_imp_helper;
-		compared_imp_thread=nullptr;
-		compared_imp_helper=nullptr;
+		compared_imp_thread = nullptr;
+		compared_imp_helper = nullptr;
 	}
-	else if(thread_id==DiffThread && diff_thread)
+	else if(thread_id == DiffThread && diff_thread)
 	{
-		diff_thread=nullptr;
-		diff_helper=nullptr;
+		diff_thread = nullptr;
+		diff_helper = nullptr;
 		delete diff_thread;
 		delete diff_helper;
 	}
@@ -506,29 +429,31 @@ void DiffToolWidget::destroyThread(ThreadId thread_id)
 		if(export_conn)
 		{
 			delete export_conn;
-			export_conn=nullptr;
+			export_conn = nullptr;
 		}
 
 		delete export_thread;
 		delete export_helper;
-		export_thread=nullptr;
-		export_helper=nullptr;
+		export_thread = nullptr;
+		export_helper = nullptr;
 	}
 }
 
 void DiffToolWidget::destroyModel()
 {
-	#warning "Review: destroy models only when they come from import process!"
-	if(compared_imported_model)
-		delete compared_imported_model;
-
-	if(input_model && input_model != compared_loaded_model && src_database_rb->isChecked())
+	if(input_model &&
+		 input_sel_wgt->isDatabaseSelected())
 	{
 		delete input_model;
 		input_model = nullptr;
 	}
 
-	compared_imported_model=nullptr;
+	if(compared_model &&
+		 compared_sel_wgt->isDatabaseSelected())
+	{
+		delete compared_model;
+		compared_model = nullptr;
+	}
 }
 
 void DiffToolWidget::clearOutput()
@@ -553,72 +478,14 @@ void DiffToolWidget::clearOutput()
 	ignore_tb->setText("0");
 }
 
-void DiffToolWidget::listDatabases()
-{
-	QComboBox *conn_cmb = (sender() == src_connections_cmb ? src_connections_cmb : connections_cmb),
-			*db_cmb = (conn_cmb == src_connections_cmb ? src_database_cmb : database_cmb);
-	QLabel *db_lbl = (conn_cmb == src_connections_cmb ? src_database_lbl : database_lbl);
-	bool *srv_supp = (conn_cmb == src_connections_cmb ? &src_server_supported : &server_supported);
-
-	try
-	{
-		if(conn_cmb->currentIndex() == conn_cmb->count()-1)
-		{
-			if(ConnectionsConfigWidget::openConnectionsConfiguration(conn_cmb, true))
-			{
-				resetForm();
-				emit s_connectionsUpdateRequested();
-			}
-		}
-
-		Connection *conn = reinterpret_cast<Connection *>(conn_cmb->itemData(conn_cmb->currentIndex()).value<void *>());
-		dbg_output_wgt->clear();
-		dbg_output_wgt->showActionButtons(false);
-
-		if(conn)
-		{
-			DatabaseImportHelper imp_helper;
-			imp_helper.setConnection(*conn);
-			DatabaseImportWidget::listDatabases(imp_helper, db_cmb);
-			(*srv_supp) = imp_helper.getCatalog().isServerSupported();
-
-			if(conn->isAutoBrowseDB())
-				db_cmb->setCurrentText(conn->getConnectionParam(Connection::ParamDbName));
-		}
-		else
-		{
-			(*srv_supp) = true;
-			db_cmb->clear();
-		}
-
-		db_cmb->setEnabled(db_cmb->count() > 0);
-		db_lbl->setEnabled(db_cmb->isEnabled());
-		pg_version_alert_frm->setVisible(Connection::isDbVersionIgnored() &&
-																		 (!src_server_supported || !server_supported));
-	}
-	catch(Exception &e)
-	{
-		db_cmb->clear();
-		db_cmb->setEnabled(false);
-		db_lbl->setEnabled(false);
-		throw Exception(e.getErrorMessage(), e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
-	}
-}
-
 void DiffToolWidget::enableDiffMode()
 {
-	input_picker_wgt->setPickMode(model_to_db_tb->isChecked() || model_to_model_tb->isChecked() ?
-																	ModelDbPickerWidget::PickModel : ModelDbPickerWidget::PickDatabase);
-
-	compared_picker_wgt->setPickMode(model_to_model_tb->isChecked() ?
-																		 ModelDbPickerWidget::PickModel : ModelDbPickerWidget::PickDatabase);
-
 	export_opts_gb->setEnabled(apply_on_server_rb->isChecked());
 	store_in_file_wgt->setEnabled(store_in_file_rb->isChecked());
 	file_sel->setFileIsMandatory(store_in_file_rb->isChecked());
 
-	generate_btn->setEnabled(input_picker_wgt->hasSelection() &&
-													 compared_picker_wgt->hasSelection() &&
+	generate_btn->setEnabled(input_sel_wgt->hasSelection() &&
+													 compared_sel_wgt->hasSelection() &&
 													 ((store_in_file_rb->isChecked() &&
 														 !file_sel->getSelectedFile().isEmpty() && !file_sel->hasWarning()) ||
 														(apply_on_server_rb->isChecked())));
@@ -637,7 +504,7 @@ void DiffToolWidget::startDiff()
 			msgbox.show("",
 									tr("The options <strong>%1</strong> and <strong>%2</strong> are currently unchecked. This can lead to the generation of extra <strong>DROP</strong> commands\
  for objects not present in the filtered set used in the <strong>partial diff</strong>. Take extra caution when applying the resulting diff! How do you want to proceed?")
-										.arg(dont_drop_missing_objs_chk->text()).arg(drop_missing_cols_constr_chk->text()),
+										.arg(dont_drop_missing_objs_chk->text(), drop_missing_cols_constr_chk->text()),
 										 Messagebox::AlertIcon,
 										 Messagebox::AllButtons,
 										 tr("Check them and diff"),
@@ -681,13 +548,10 @@ void DiffToolWidget::startDiff()
 	if(compared_model_wgt)
 		compared_model_wgt->setInteractive(false);
 
-	if(src_model_rb->isChecked())
-	{
-		input_model = compared_loaded_model;
-		total_steps=3;
-	}
+	if(input_sel_wgt->isModelSelected())
+		total_steps = 3;
 	else
-		total_steps=4;
+		total_steps = 4;
 
 	dbg_output_wgt->setLogMessages(debug_mode_chk->isChecked());
 	settings_tbw->setTabVisible(4, debug_mode_chk->isChecked());
@@ -716,15 +580,15 @@ void DiffToolWidget::importDatabase(ThreadId thread_id)
 
 		QThread *thread = (thread_id == InputImpThread ? input_imp_thread : compared_imp_thread);
 		DatabaseImportHelper *import_hlp = (thread_id == InputImpThread ? input_imp_helper : compared_imp_helper);
-		ModelDbPickerWidget *model_db_pick = (thread_id == InputImpThread ? input_picker_wgt : compared_picker_wgt);
-		Connection cat_conn = model_db_pick->getCurrentConnection(), hlp_conn;
+		ModelDbSelectorWidget *model_db_sel = (thread_id == InputImpThread ? input_sel_wgt : compared_sel_wgt);
+		Connection cat_conn = model_db_sel->getSelectedConnection(), hlp_conn;
 		std::map<ObjectType, std::vector<unsigned>> obj_oids;
 		std::map<unsigned, std::vector<unsigned>> col_oids;
 		Catalog catalog;
 		DatabaseModel *db_model = nullptr;
 		QStringList pd_filters = pd_filter_wgt->getObjectFilters();
-		QString db_name = model_db_pick->getCurrentDatabase();
-		unsigned db_oid = model_db_pick->getCurrentDatabaseOid();
+		QString db_name = model_db_sel->getSelectedDatabase();
+		unsigned db_oid = model_db_sel->getSelectedDatabaseOid();
 
 		hlp_conn = cat_conn;
 		step_ico_lbl->setPixmap(QPixmap(GuiUtilsNs::getIconPath("import")));
@@ -753,7 +617,7 @@ void DiffToolWidget::importDatabase(ThreadId thread_id)
 			 * relationships we need to inject filters to force the retrieval of the all involved tables in those relationships
 			 * from the destination database,this way we avoid the diff try to create everytime all tables
 			 * in the those relationships. */
-			if(input_picker_wgt->isModelSelected())
+			if(input_sel_wgt->isModelSelected())
 				pd_filters.append(ModelsDiffHelper::getRelationshipFilters(filtered_objs,
 																																	 gen_filters_from_log_chk->isChecked() ||
 																																	 pd_filter_wgt->isMatchBySignature()));
@@ -774,15 +638,15 @@ void DiffToolWidget::importDatabase(ThreadId thread_id)
 
 		if(thread_id == InputImpThread)
 		{
-			input_model=new DatabaseModel;
+			input_model = new DatabaseModel;
 			input_model->createSystemObjects(true);
 			db_model = input_model;
 		}
 		else
 		{
-			compared_imported_model=new DatabaseModel;
-			compared_imported_model->createSystemObjects(true);
-			db_model = compared_imported_model;
+			compared_model = new DatabaseModel;
+			compared_model->createSystemObjects(true);
+			db_model = compared_model;
 		}
 
 		import_hlp->setConnection(hlp_conn);
@@ -805,7 +669,7 @@ void DiffToolWidget::diffModels()
 	step_lbl->setText(tr("Step %1/%2: Comparing <strong>%3</strong> and <strong>%4</strong>...")
 						.arg(curr_step)
 						.arg(total_steps)
-						.arg(input_model->getName(), compared_imported_model->getName()));
+						.arg(input_model->getName(), compared_model->getName()));
 
 	step_ico_lbl->setPixmap(QPixmap(GuiUtilsNs::getIconPath("diff")));
 
@@ -813,9 +677,9 @@ void DiffToolWidget::diffModels()
 		output_trw->collapseItem(input_imp_item);
 
 	output_trw->collapseItem(compared_imp_item);
-	diff_progress=step_pb->value();
+	diff_progress = step_pb->value();
 
-	diff_item=GuiUtilsNs::createOutputTreeItem(output_trw, step_lbl->text(), step_ico_lbl->pixmap(Qt::ReturnByValue), nullptr);
+	diff_item = GuiUtilsNs::createOutputTreeItem(output_trw, step_lbl->text(), step_ico_lbl->pixmap(Qt::ReturnByValue), nullptr);
 
 	diff_helper->setDiffOption(ModelsDiffHelper::OptKeepClusterObjs, keep_cluster_objs_chk->isChecked());
 	diff_helper->setDiffOption(ModelsDiffHelper::OptCascadeMode, cascade_mode_chk->isChecked());
@@ -828,11 +692,11 @@ void DiffToolWidget::diffModels()
 	diff_helper->setDiffOption(ModelsDiffHelper::OptDropMissingColsConstr, drop_missing_cols_constr_chk->isChecked());
 
 	diff_helper->setForcedRecreateTypes(forced_obj_types_wgt->getTypesPerCheckState(Qt::Checked));
-	diff_helper->setModels(input_model, compared_imported_model);
+	diff_helper->setModels(input_model, compared_model);
 
 	/* If the user has chosen diff between a model and database
 	 * We need to retrieve the filtered object in partial diff tab */
-	if(src_model_rb->isChecked())
+	if(input_sel_wgt->isModelSelected())
 		diff_helper->setFilteredObjects(filtered_objs);
 
 	if(pgsql_ver_chk->isChecked())
@@ -860,8 +724,8 @@ void DiffToolWidget::exportDiff(bool confirm)
 
 	if(!confirm || msg_box.isAccepted())
 	{
-		export_conn=new Connection;
-		*export_conn=*reinterpret_cast<Connection *>(connections_cmb->itemData(connections_cmb->currentIndex()).value<void *>());
+		export_conn = new Connection;
+		*export_conn = compared_sel_wgt->getSelectedConnection();
 
 		settings_tbw->setCurrentIndex(2);
 		apply_on_server_btn->setEnabled(true);
@@ -869,16 +733,16 @@ void DiffToolWidget::exportDiff(bool confirm)
 		step_lbl->setText(tr("Step %1/%2: Exporting diff to database <strong>%3@%4</strong>...")
 											.arg(curr_step)
 											.arg(total_steps)
-											.arg(compared_imported_model->getName())
+											.arg(compared_model->getName())
 											.arg(export_conn->getConnectionId(true)));
 		step_ico_lbl->setPixmap(QPixmap(GuiUtilsNs::getIconPath("export")));
 
 		output_trw->collapseItem(diff_item);
-		diff_progress=step_pb->value();
-		export_item=GuiUtilsNs::createOutputTreeItem(output_trw, step_lbl->text(), step_ico_lbl->pixmap(Qt::ReturnByValue), nullptr);
+		diff_progress = step_pb->value();
+		export_item = GuiUtilsNs::createOutputTreeItem(output_trw, step_lbl->text(), step_ico_lbl->pixmap(Qt::ReturnByValue), nullptr);
 
 		export_helper->setExportToDBMSParams(sqlcode_txt->toPlainText(), export_conn,
-																				 database_cmb->currentText(), ignore_duplic_chk->isChecked(),
+																				 compared_sel_wgt->getSelectedDatabase(), ignore_duplic_chk->isChecked(),
 																				 run_in_transaction_chk->isChecked());
 
 		if(ignore_error_codes_chk->isChecked())
@@ -921,9 +785,9 @@ void DiffToolWidget::loadDiffInSQLTool()
 {
 	try
 	{
-		QString database = database_cmb->currentText(), filename;
+		QString database = compared_sel_wgt->getSelectedDatabase(), filename;
 		QFile out_tmp_file;
-		Connection conn=(*reinterpret_cast<Connection *>(connections_cmb->itemData(connections_cmb->currentIndex()).value<void *>()));
+		Connection conn = compared_sel_wgt->getSelectedConnection();
 		QTemporaryFile tmp_sql_file;
 
 		cancelOperation(true);
@@ -1071,7 +935,6 @@ void DiffToolWidget::handleImportFinished(Exception e)
 	{
 		input_imp_thread->quit();
 		input_imp_item->setExpanded(false);
-		//importDatabase(ComparedImpThread);
 		importDatabase(ComparedImpThread);
 	}
 	else
@@ -1123,7 +986,6 @@ void DiffToolWidget::handleExportFinished()
 {
 	export_thread->quit();
 	export_thread->wait();
-	listDatabases();
 	finishDiff();
 }
 
@@ -1148,7 +1010,7 @@ void DiffToolWidget::updateProgress(int progress, QString msg, ObjectType obj_ty
 {
 	int progress_aux = 0;
 
-	msg=UtilsNs::formatMessage(msg);
+	msg = UtilsNs::formatMessage(msg);
 
 	if(input_imp_thread && input_imp_thread->isRunning())
 	{
@@ -1163,7 +1025,7 @@ void DiffToolWidget::updateProgress(int progress, QString msg, ObjectType obj_ty
 	}
 	else if(compared_imp_thread && compared_imp_thread->isRunning())
 	{
-		if(src_model_rb->isChecked())
+		if(input_sel_wgt->isModelSelected())
 			progress_aux = progress/4;
 		else
 			progress_aux = 20 + (progress/5);
@@ -1350,7 +1212,7 @@ void DiffToolWidget::restoreDefaults()
 
 void DiffToolWidget::selectPreset()
 {
-	attribs_map conf = config_params[presets_cmb->currentText()];
+	/* attribs_map conf = config_params[presets_cmb->currentText()];
 	QStringList db_name;
 
 	src_model_rb->setChecked(src_model_rb->isEnabled() && conf[Attributes::CurrentModel] == Attributes::True);
@@ -1415,12 +1277,12 @@ void DiffToolWidget::selectPreset()
 	forced_obj_types_wgt->setTypesCheckState(Qt::Unchecked);
 	forced_obj_types_wgt->blockSignals(false);
 
-	forced_obj_types_wgt->setTypeNamesCheckState(conf[Attributes::ForceObjsReCreation].split(','), Qt::Checked);
+	forced_obj_types_wgt->setTypeNamesCheckState(conf[Attributes::ForceObjsReCreation].split(','), Qt::Checked); */
 
 	/* Compatibility with previous versions of diff-presets.conf
 	 * We configure diff filters only when one of the attributes related
 	 * to them is present */
-	if(conf.count(Attributes::MatchBySignature) ||
+	/* if(conf.count(Attributes::MatchBySignature) ||
 		 conf.count(Attributes::OnlyMatching) ||
 		 conf.count(Attributes::ForcedFiltering))
 	{
@@ -1428,7 +1290,7 @@ void DiffToolWidget::selectPreset()
 		pd_filter_wgt->setForceObjectsFilter(conf[Attributes::ForcedFiltering].split(','));
 		pd_filter_wgt->setMatchBySignature(conf[Attributes::MatchBySignature] != Attributes::False);
 		pd_filter_wgt->setOnlyMatching(conf[Attributes::OnlyMatching] != Attributes::False);
-	}
+	} */
 }
 
 void DiffToolWidget::togglePresetConfiguration(bool toggle, bool is_edit)
@@ -1473,7 +1335,7 @@ void DiffToolWidget::removePreset()
 
 void DiffToolWidget::savePreset()
 {
-	try
+/*	try
 	{
 		QString name, fmt_name;
 		attribs_map conf;
@@ -1546,57 +1408,59 @@ void DiffToolWidget::savePreset()
 	catch(Exception &e)
 	{
 		throw Exception(e.getErrorMessage(), e.getErrorCode(), PGM_FUNC, PGM_FILE, PGM_LINE, &e);
-	}
+	} */
 }
 
-/* void DiffToolWidget::enablePartialDiff()
+void DiffToolWidget::selectModels()
 {
-	bool enable = (src_model_rb->isChecked() || src_database_cmb->currentIndex() > 0) &&
-								 database_cmb->currentIndex() > 0;
-
-	settings_tbw->setTabEnabled(1, enable);
-	gen_filters_from_log_chk->setChecked(false);
-	gen_filters_from_log_chk->setVisible(src_model_rb->isChecked());
-	pd_filter_wgt->setModelFilteringMode(src_model_rb->isChecked(), { ObjectType::Relationship, ObjectType::Permission });
-
-	if(src_model_rb->isChecked())
+	if(input_sel_wgt->isModelSelected())
 	{
-		pd_input_lbl->setText(QString("<strong>%1 [%2]</strong>").arg(src_model_name_lbl->text(),
-																																	QFileInfo(src_model_name_edt->text()).fileName()));
-		pd_input_lbl->setToolTip(src_model_name_edt->text());
-		pd_input_ico_lbl->setPixmap(QPixmap(GuiUtilsNs::getIconPath("dbmodel")));
+		input_model_wgt = input_sel_wgt->getSelectedModel();
+		input_model = input_model_wgt->getDatabaseModel();
 	}
-	else if(src_database_cmb->currentIndex() > 0)
+	else
 	{
-		Connection conn = (*reinterpret_cast<Connection *>(src_connections_cmb->currentData(Qt::UserRole).value<void *>()));
-		conn.setConnectionParam(Connection::ParamDbName, src_database_cmb->currentText());
-
-		pd_input_lbl->setText(conn.getConnectionId(true, true, true));
-		pd_input_ico_lbl->setPixmap(QPixmap(GuiUtilsNs::getIconPath("database")));
+		input_model = nullptr;
+		input_model_wgt = nullptr;
 	}
-} */
+
+	if(compared_sel_wgt->isModelSelected())
+	{
+		compared_model_wgt = compared_sel_wgt->getSelectedModel();
+		compared_model = compared_model_wgt->getDatabaseModel();
+		compared_model_wgt->setInteractive(false);
+	}
+	else
+	{
+		compared_model = nullptr;
+		compared_model_wgt = nullptr;
+	}
+
+	enableDiffMode();
+	enablePartialDiff();
+}
 
 void DiffToolWidget::enablePartialDiff()
 {
-	bool enable = input_picker_wgt->hasSelection();
+	bool enable = input_sel_wgt->hasSelection();
 
 	settings_tbw->setTabEnabled(1, enable);
 	gen_filters_from_log_chk->setChecked(false);
-	gen_filters_from_log_chk->setVisible(input_picker_wgt->isModelSelected());
-	pd_filter_wgt->setModelFilteringMode(input_picker_wgt->isModelSelected(),
+	gen_filters_from_log_chk->setVisible(input_sel_wgt->isModelSelected());
+	pd_filter_wgt->setModelFilteringMode(input_sel_wgt->isModelSelected(),
 																			 { ObjectType::Relationship, ObjectType::Permission });
 
-	if(input_picker_wgt->isModelSelected())
+	if(input_sel_wgt->isModelSelected())
 	{
-		pd_input_lbl->setText(QString("<strong>%1 [%2]</strong>").arg(src_model_name_lbl->text(),
-																																	QFileInfo(src_model_name_edt->text()).fileName()));
-		pd_input_lbl->setToolTip(src_model_name_edt->text());
+		pd_input_lbl->setText(QString("<strong>%1 [%2]</strong>")
+												 .arg(input_model->getName(), QFileInfo(input_model_wgt->getFilename()).fileName()));
+		pd_input_lbl->setToolTip(input_model->getName());
 		pd_input_ico_lbl->setPixmap(QPixmap(GuiUtilsNs::getIconPath("dbmodel")));
 	}
-	else if(input_picker_wgt->isDatabaseSelected())
+	else if(input_sel_wgt->isDatabaseSelected())
 	{
-		Connection conn = input_picker_wgt->getCurrentConnection();
-		conn.setConnectionParam(Connection::ParamDbName, input_picker_wgt->getCurrentDatabase());
+		Connection conn = input_sel_wgt->getSelectedConnection();
+		conn.setConnectionParam(Connection::ParamDbName, input_sel_wgt->getSelectedDatabase());
 
 		pd_input_lbl->setText(conn.getConnectionId(true, true, true));
 		pd_input_ico_lbl->setPixmap(QPixmap(GuiUtilsNs::getIconPath("database")));
@@ -1612,68 +1476,28 @@ void DiffToolWidget::enableFilterByDate()
 	last_change_dt_tb->setEnabled(end_date_chk->isChecked());
 }
 
-/* void DiffToolWidget::applyPartialDiffFilters()
-{
-	try
-	{
-		if(src_model_rb->isChecked())
-		{
-			QString search_attr = (gen_filters_from_log_chk->isChecked() ||
-														 pd_filter_wgt->isMatchBySignature()) ?
-																Attributes::Signature : Attributes::Name;
-
-			std::vector<BaseObject *> flt_objs = compared_loaded_model->findObjects(pd_filter_wgt->getObjectFilters(), search_attr, false);
-
-			GuiUtilsNs::populateObjectsTable(filtered_objs_view, flt_objs, search_attr);
-			getFilteredObjects(filtered_objs);
-		}
-		else if(src_connections_cmb->currentIndex() > 0 &&
-						 src_database_cmb->currentIndex() > 0)
-		{
-			DatabaseImportHelper import_helper;
-			Connection conn = (*reinterpret_cast<Connection *>(src_connections_cmb->currentData(Qt::UserRole).value<void *>()));
-
-			filtered_objs.clear();
-			conn.setConnectionParam(Connection::ParamDbName, src_database_cmb->currentText());
-			import_helper.setConnection(conn);
-			import_helper.setObjectFilters(pd_filter_wgt->getObjectFilters(),
-																			pd_filter_wgt->isOnlyMatching(),
-																			pd_filter_wgt->isMatchBySignature(),
-																			pd_filter_wgt->getForceObjectsFilter());
-
-			DatabaseImportWidget::listFilteredObjects(import_helper, filtered_objs_view);
-		}
-	}
-	catch(Exception &e)
-	{
-		Messagebox::error(e, PGM_FUNC, PGM_FILE, PGM_LINE);
-	}
-} */
-
 void DiffToolWidget::applyPartialDiffFilters()
 {
 	try
 	{
-		if(input_picker_wgt->isModelSelected())
+		if(input_sel_wgt->isModelSelected())
 		{
-			#warning "Fix me!"
-			/*
 			QString search_attr = (gen_filters_from_log_chk->isChecked() ||
 														 pd_filter_wgt->isMatchBySignature()) ?
-																Attributes::Signature : Attributes::Name;
+														 Attributes::Signature : Attributes::Name;
 
-			std::vector<BaseObject *> flt_objs = compared_loaded_model->findObjects(pd_filter_wgt->getObjectFilters(), search_attr, false);
+			std::vector<BaseObject *> flt_objs = input_model->findObjects(pd_filter_wgt->getObjectFilters(), search_attr, false);
 
 			GuiUtilsNs::populateObjectsTable(filtered_objs_view, flt_objs, search_attr);
-			getFilteredObjects(filtered_objs); */
+			getFilteredObjects(filtered_objs);
 		}
-		else if(input_picker_wgt->isDatabaseSelected())
+		else if(input_sel_wgt->isDatabaseSelected())
 		{
 			DatabaseImportHelper import_helper;
-			Connection conn = input_picker_wgt->getCurrentConnection();
+			Connection conn = input_sel_wgt->getSelectedConnection();
 
 			filtered_objs.clear();
-			conn.setConnectionParam(Connection::ParamDbName, input_picker_wgt->getCurrentDatabase());
+			conn.setConnectionParam(Connection::ParamDbName, input_sel_wgt->getSelectedDatabase());
 			import_helper.setConnection(conn);
 			import_helper.setObjectFilters(pd_filter_wgt->getObjectFilters(),
 																			pd_filter_wgt->isOnlyMatching(),

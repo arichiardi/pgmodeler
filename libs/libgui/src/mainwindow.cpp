@@ -1621,7 +1621,6 @@ void MainWindow::setCurrentModel()
 	changelog_wgt->setModel(current_model);
 	db_import_wgt->setModel(current_model);
 	model_export_wgt->setModel(current_model);
-	diff_tool_wgt->setModel(current_model);
 
 	if(current_model)
 		model_objs_wgt->restoreTreeState(model_tree_states[current_model],

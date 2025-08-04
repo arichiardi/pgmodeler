@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>ModelDbPickerWidget</class>
- <widget class="QWidget" name="ModelDbPickerWidget">
+ <class>ModelDbSelectorWidget</class>
+ <widget class="QWidget" name="ModelDbSelectorWidget">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
     <width>710</width>
-    <height>151</height>
+    <height>156</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -162,7 +162,7 @@
           </widget>
          </item>
          <item row="0" column="1">
-          <widget class="QLabel" name="inv_version_warn_lbl_4">
+          <widget class="QLabel" name="inv_version_warn_lbl">
            <property name="font">
             <font>
              <bold>false</bold>
@@ -172,7 +172,7 @@
             </font>
            </property>
            <property name="text">
-            <string>Unsupported server(s) version(s) detected! The database comparison may not work properly.</string>
+            <string>Unsupported server version detected! The database comparison may not work properly.</string>
            </property>
            <property name="wordWrap">
             <bool>true</bool>

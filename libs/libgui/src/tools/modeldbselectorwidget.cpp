@@ -16,35 +16,41 @@
 # Also, you can get the complete GNU General Public License at <http://www.gnu.org/licenses/>
 */
 
-#include "modeldbpickerwidget.h"
+#include "modeldbselectorwidget.h"
 #include "settings/connectionsconfigwidget.h"
 #include "databaseimporthelper.h"
 #include "databaseimportwidget.h"
 
-ModelDbPickerWidget::ModelDbPickerWidget(QWidget *parent) : QWidget(parent)
+ModelDbSelectorWidget::ModelDbSelectorWidget(QWidget *parent) : QWidget(parent)
 {
 	setupUi(this);
-	setPickMode(PickDatabase);
+	setSelectMode(SelectDatabase);
 	alert_frm->setVisible(false);
 
-	connect(connections_cmb, &QComboBox::activated, this, &ModelDbPickerWidget::listDatabases);
-	connect(database_cmb, &QComboBox::activated, this, &ModelDbPickerWidget::s_pickerChanged);
-	connect(model_cmb, &QComboBox::activated, this, &ModelDbPickerWidget::s_pickerChanged);
-	connect(model_cmb, &QComboBox::activated, this, &ModelDbPickerWidget::updateModelFilename);
+	connect(connections_cmb, &QComboBox::activated, this, &ModelDbSelectorWidget::listDatabases);
+	connect(database_cmb, &QComboBox::activated, this, &ModelDbSelectorWidget::s_selectionChanged);
+	connect(model_cmb, &QComboBox::activated, this, &ModelDbSelectorWidget::s_selectionChanged);
+	connect(model_cmb, &QComboBox::activated, this, &ModelDbSelectorWidget::updateModelFilename);
 }
 
-ModelDbPickerWidget::~ModelDbPickerWidget()
+void ModelDbSelectorWidget::setSelectMode(SelectMode sel_mode)
 {
+	model_ctrl_wgt->setVisible(sel_mode == SelectModel);
+	db_ctrl_wgt->setVisible(sel_mode == SelectDatabase);
 
+	if(sel_mode == SelectDatabase)
+	{
+		model_cmb->setCurrentIndex(0);
+		model_file_edt->clear();
+	}
+	else
+	{
+		connections_cmb->setCurrentIndex(0);
+		database_cmb->clear();
+	}
 }
 
-void ModelDbPickerWidget::setPickMode(PickMode pick_mode)
-{
-	model_ctrl_wgt->setVisible(pick_mode == PickModel);
-	db_ctrl_wgt->setVisible(pick_mode == PickDatabase);
-}
-
-Connection ModelDbPickerWidget::getCurrentConnection()
+Connection ModelDbSelectorWidget::getSelectedConnection()
 {
 	if(database_cmb->currentIndex() <= 0)
 		return Connection();
@@ -52,7 +58,7 @@ Connection ModelDbPickerWidget::getCurrentConnection()
 	return *(reinterpret_cast<Connection *>(connections_cmb->currentData().value<void *>()));
 }
 
-QString ModelDbPickerWidget::getCurrentDatabase()
+QString ModelDbSelectorWidget::getSelectedDatabase()
 {
 	if(database_cmb->currentIndex() <= 0)
 		return "";
@@ -60,7 +66,7 @@ QString ModelDbPickerWidget::getCurrentDatabase()
 	return database_cmb->currentText();
 }
 
-unsigned int ModelDbPickerWidget::getCurrentDatabaseOid()
+unsigned int ModelDbSelectorWidget::getSelectedDatabaseOid()
 {
 	if(database_cmb->currentIndex() <= 0)
 		return 0;
@@ -68,27 +74,30 @@ unsigned int ModelDbPickerWidget::getCurrentDatabaseOid()
 	return database_cmb->currentData().value<unsigned>();
 }
 
-ModelWidget *ModelDbPickerWidget::getCurrentModel()
+ModelWidget *ModelDbSelectorWidget::getSelectedModel()
 {
-	return nullptr;
+	if(model_cmb->currentIndex() <= 0)
+		return nullptr;
+
+	return reinterpret_cast<ModelWidget *>(model_cmb->currentData().value<void *>());
 }
 
-bool ModelDbPickerWidget::isDatabaseSelected()
+bool ModelDbSelectorWidget::isDatabaseSelected()
 {
 	return database_cmb->currentIndex() >= 1;
 }
 
-bool ModelDbPickerWidget::isModelSelected()
+bool ModelDbSelectorWidget::isModelSelected()
 {
 	return model_cmb->currentIndex() >= 1;
 }
 
-bool ModelDbPickerWidget::hasSelection()
+bool ModelDbSelectorWidget::hasSelection()
 {
 	return isDatabaseSelected() || isModelSelected();
 }
 
-void ModelDbPickerWidget::updateConnections(Connection::ConnOperation def_conn_op)
+void ModelDbSelectorWidget::updateConnections(Connection::ConnOperation def_conn_op)
 {
 	ConnectionsConfigWidget::fillConnectionsComboBox(connections_cmb, true, def_conn_op);
 	connections_cmb->setEnabled(connections_cmb->count() > 0);
@@ -99,7 +108,7 @@ void ModelDbPickerWidget::updateConnections(Connection::ConnOperation def_conn_o
 	database_lbl->setEnabled(false);
 }
 
-void ModelDbPickerWidget::updateModels(const QList<ModelWidget *> &models)
+void ModelDbSelectorWidget::updateModels(const QList<ModelWidget *> &models)
 {
 	QVariant data = model_cmb->currentData();
 
@@ -122,7 +131,7 @@ void ModelDbPickerWidget::updateModels(const QList<ModelWidget *> &models)
 	model_file_edt->setEnabled(!models.isEmpty());
 }
 
-void ModelDbPickerWidget::updateModelFilename()
+void ModelDbSelectorWidget::updateModelFilename()
 {
 	model_file_edt->clear();
 
@@ -133,7 +142,7 @@ void ModelDbPickerWidget::updateModelFilename()
 	model_file_edt->setText(model->getFilename().isEmpty() ? tr("(model not yet saved)") : model->getFilename());
 }
 
-void ModelDbPickerWidget::listDatabases()
+void ModelDbSelectorWidget::listDatabases()
 {
 	try
 	{
@@ -148,6 +157,7 @@ void ModelDbPickerWidget::listDatabases()
 
 		Connection *conn = reinterpret_cast<Connection *>(connections_cmb->currentData().value<void *>());
 		bool is_srv_supported = true;
+		QString srv_version;
 
 		if(conn)
 		{
@@ -156,6 +166,7 @@ void ModelDbPickerWidget::listDatabases()
 			imp_helper.setConnection(*conn);
 			DatabaseImportWidget::listDatabases(imp_helper, database_cmb);
 			is_srv_supported = imp_helper.getCatalog().isServerSupported();
+			srv_version = imp_helper.getCatalog().getServerVersion();
 
 			if(conn->isAutoBrowseDB())
 				database_cmb->setCurrentText(conn->getConnectionParam(Connection::ParamDbName));
@@ -165,16 +176,24 @@ void ModelDbPickerWidget::listDatabases()
 
 		database_cmb->setEnabled(database_cmb->count() > 0);
 		database_lbl->setEnabled(database_cmb->isEnabled());
-		alert_frm->setVisible(Connection::isDbVersionIgnored() && !is_srv_supported);
+
+		if(Connection::isDbVersionIgnored() && !is_srv_supported)
+		{
+			alert_frm->setVisible(true);
+			inv_version_warn_lbl->setText(tr("Unsupported server version <strong>%1</strong> detected! The database comparison may not work properly.").arg(srv_version));
+		}
+		else
+			alert_frm->setVisible(false);
 	}
 	catch(Exception &e)
 	{
 		database_cmb->clear();
 		database_cmb->setEnabled(false);
 		database_lbl->setEnabled(false);
+		alert_frm->setVisible(false);
 		Messagebox::error(e.getErrorMessage(), e.getErrorCode(), PGM_FUNC, PGM_FILE, PGM_LINE, &e);
 	}
 
-	emit s_pickerChanged();
+	emit s_selectionChanged();
 }
 
