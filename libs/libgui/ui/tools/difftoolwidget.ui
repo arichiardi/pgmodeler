@@ -9,12 +9,12 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1288</width>
+    <width>1275</width>
     <height>972</height>
    </rect>
   </property>
   <property name="sizePolicy">
-   <sizepolicy hsizetype="Expanding" vsizetype="MinimumExpanding">
+   <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
     <horstretch>0</horstretch>
     <verstretch>0</verstretch>
    </sizepolicy>
@@ -43,7 +43,7 @@
     <number>3</number>
    </property>
    <property name="bottomMargin">
-    <number>3</number>
+    <number>0</number>
    </property>
    <property name="spacing">
     <number>5</number>
@@ -174,364 +174,6 @@
                <number>1</number>
               </property>
               <item>
-               <widget class="QGroupBox" name="presets_gb">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="minimumSize">
-                 <size>
-                  <width>0</width>
-                  <height>0</height>
-                 </size>
-                </property>
-                <property name="title">
-                 <string>Pr&amp;esets</string>
-                </property>
-                <property name="flat">
-                 <bool>false</bool>
-                </property>
-                <property name="checkable">
-                 <bool>false</bool>
-                </property>
-                <layout class="QVBoxLayout" name="verticalLayout_8">
-                 <property name="spacing">
-                  <number>5</number>
-                 </property>
-                 <property name="leftMargin">
-                  <number>5</number>
-                 </property>
-                 <property name="topMargin">
-                  <number>5</number>
-                 </property>
-                 <property name="rightMargin">
-                  <number>5</number>
-                 </property>
-                 <property name="bottomMargin">
-                  <number>5</number>
-                 </property>
-                 <item>
-                  <layout class="QHBoxLayout" name="horizontalLayout_6">
-                   <property name="spacing">
-                    <number>5</number>
-                   </property>
-                   <item>
-                    <widget class="QComboBox" name="presets_cmb">
-                     <property name="sizePolicy">
-                      <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                       <horstretch>0</horstretch>
-                       <verstretch>0</verstretch>
-                      </sizepolicy>
-                     </property>
-                     <property name="insertPolicy">
-                      <enum>QComboBox::InsertPolicy::InsertAtBottom</enum>
-                     </property>
-                     <property name="sizeAdjustPolicy">
-                      <enum>QComboBox::SizeAdjustPolicy::AdjustToMinimumContentsLengthWithIcon</enum>
-                     </property>
-                     <property name="iconSize">
-                      <size>
-                       <width>25</width>
-                       <height>25</height>
-                      </size>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <widget class="QLineEdit" name="preset_name_edt">
-                     <property name="sizePolicy">
-                      <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                       <horstretch>0</horstretch>
-                       <verstretch>0</verstretch>
-                      </sizepolicy>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <widget class="QToolButton" name="new_preset_tb">
-                     <property name="enabled">
-                      <bool>true</bool>
-                     </property>
-                     <property name="sizePolicy">
-                      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                       <horstretch>0</horstretch>
-                       <verstretch>0</verstretch>
-                      </sizepolicy>
-                     </property>
-                     <property name="toolTip">
-                      <string>Add new preset</string>
-                     </property>
-                     <property name="text">
-                      <string/>
-                     </property>
-                     <property name="icon">
-                      <iconset resource="../../res/resources.qrc">
-                       <normaloff>:/icons/icons/new.png</normaloff>:/icons/icons/new.png</iconset>
-                     </property>
-                     <property name="iconSize">
-                      <size>
-                       <width>25</width>
-                       <height>25</height>
-                      </size>
-                     </property>
-                     <property name="shortcut">
-                      <string>Ins</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <widget class="QToolButton" name="edit_preset_tb">
-                     <property name="enabled">
-                      <bool>true</bool>
-                     </property>
-                     <property name="sizePolicy">
-                      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                       <horstretch>0</horstretch>
-                       <verstretch>0</verstretch>
-                      </sizepolicy>
-                     </property>
-                     <property name="toolTip">
-                      <string>Edit preset name</string>
-                     </property>
-                     <property name="text">
-                      <string/>
-                     </property>
-                     <property name="icon">
-                      <iconset resource="../../res/resources.qrc">
-                       <normaloff>:/icons/icons/edit.png</normaloff>:/icons/icons/edit.png</iconset>
-                     </property>
-                     <property name="iconSize">
-                      <size>
-                       <width>25</width>
-                       <height>25</height>
-                      </size>
-                     </property>
-                     <property name="shortcut">
-                      <string>Ctrl+E</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <widget class="QToolButton" name="save_preset_tb">
-                     <property name="enabled">
-                      <bool>true</bool>
-                     </property>
-                     <property name="sizePolicy">
-                      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                       <horstretch>0</horstretch>
-                       <verstretch>0</verstretch>
-                      </sizepolicy>
-                     </property>
-                     <property name="toolTip">
-                      <string>Save preset</string>
-                     </property>
-                     <property name="text">
-                      <string/>
-                     </property>
-                     <property name="icon">
-                      <iconset resource="../../res/resources.qrc">
-                       <normaloff>:/icons/icons/save.png</normaloff>:/icons/icons/save.png</iconset>
-                     </property>
-                     <property name="iconSize">
-                      <size>
-                       <width>25</width>
-                       <height>25</height>
-                      </size>
-                     </property>
-                     <property name="shortcut">
-                      <string>Ctrl+S</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <widget class="QToolButton" name="cancel_preset_edit_tb">
-                     <property name="enabled">
-                      <bool>true</bool>
-                     </property>
-                     <property name="sizePolicy">
-                      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                       <horstretch>0</horstretch>
-                       <verstretch>0</verstretch>
-                      </sizepolicy>
-                     </property>
-                     <property name="toolTip">
-                      <string>Cancel operation on the preset</string>
-                     </property>
-                     <property name="text">
-                      <string/>
-                     </property>
-                     <property name="icon">
-                      <iconset resource="../../res/resources.qrc">
-                       <normaloff>:/icons/icons/close1.png</normaloff>:/icons/icons/close1.png</iconset>
-                     </property>
-                     <property name="iconSize">
-                      <size>
-                       <width>25</width>
-                       <height>25</height>
-                      </size>
-                     </property>
-                     <property name="shortcut">
-                      <string>Esc</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <widget class="QToolButton" name="remove_preset_tb">
-                     <property name="enabled">
-                      <bool>true</bool>
-                     </property>
-                     <property name="sizePolicy">
-                      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                       <horstretch>0</horstretch>
-                       <verstretch>0</verstretch>
-                      </sizepolicy>
-                     </property>
-                     <property name="toolTip">
-                      <string>Delete the selected preset</string>
-                     </property>
-                     <property name="text">
-                      <string/>
-                     </property>
-                     <property name="icon">
-                      <iconset resource="../../res/resources.qrc">
-                       <normaloff>:/icons/icons/delete.png</normaloff>:/icons/icons/delete.png</iconset>
-                     </property>
-                     <property name="iconSize">
-                      <size>
-                       <width>25</width>
-                       <height>25</height>
-                      </size>
-                     </property>
-                     <property name="shortcut">
-                      <string>Del</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <widget class="QToolButton" name="default_presets_tb">
-                     <property name="enabled">
-                      <bool>true</bool>
-                     </property>
-                     <property name="sizePolicy">
-                      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                       <horstretch>0</horstretch>
-                       <verstretch>0</verstretch>
-                      </sizepolicy>
-                     </property>
-                     <property name="toolTip">
-                      <string>Restore the default presets</string>
-                     </property>
-                     <property name="text">
-                      <string/>
-                     </property>
-                     <property name="icon">
-                      <iconset resource="../../res/resources.qrc">
-                       <normaloff>:/icons/icons/refresh.png</normaloff>:/icons/icons/refresh.png</iconset>
-                     </property>
-                     <property name="iconSize">
-                      <size>
-                       <width>25</width>
-                       <height>25</height>
-                      </size>
-                     </property>
-                     <property name="shortcut">
-                      <string>Ctrl+R</string>
-                     </property>
-                    </widget>
-                   </item>
-                  </layout>
-                 </item>
-                </layout>
-               </widget>
-              </item>
-              <item>
-               <widget class="QFrame" name="pg_version_alert_frm">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="minimumSize">
-                 <size>
-                  <width>0</width>
-                  <height>48</height>
-                 </size>
-                </property>
-                <property name="frameShape">
-                 <enum>QFrame::Shape::StyledPanel</enum>
-                </property>
-                <property name="frameShadow">
-                 <enum>QFrame::Shadow::Raised</enum>
-                </property>
-                <layout class="QGridLayout" name="gridLayout_19">
-                 <property name="leftMargin">
-                  <number>5</number>
-                 </property>
-                 <property name="topMargin">
-                  <number>5</number>
-                 </property>
-                 <property name="rightMargin">
-                  <number>5</number>
-                 </property>
-                 <property name="bottomMargin">
-                  <number>5</number>
-                 </property>
-                 <property name="spacing">
-                  <number>5</number>
-                 </property>
-                 <item row="0" column="0">
-                  <widget class="QLabel" name="icon_lbl_5">
-                   <property name="minimumSize">
-                    <size>
-                     <width>25</width>
-                     <height>25</height>
-                    </size>
-                   </property>
-                   <property name="maximumSize">
-                    <size>
-                     <width>25</width>
-                     <height>25</height>
-                    </size>
-                   </property>
-                   <property name="text">
-                    <string/>
-                   </property>
-                   <property name="textFormat">
-                    <enum>Qt::TextFormat::AutoText</enum>
-                   </property>
-                   <property name="pixmap">
-                    <pixmap resource="../../res/resources.qrc">:/icons/icons/alert.png</pixmap>
-                   </property>
-                   <property name="scaledContents">
-                    <bool>true</bool>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="0" column="1">
-                  <widget class="QLabel" name="inv_version_warn_lbl_4">
-                   <property name="font">
-                    <font>
-                     <bold>false</bold>
-                     <underline>false</underline>
-                     <strikeout>false</strikeout>
-                     <kerning>true</kerning>
-                    </font>
-                   </property>
-                   <property name="text">
-                    <string>Unsupported server(s) version(s) detected! The database comparison may not work properly.</string>
-                   </property>
-                   <property name="wordWrap">
-                    <bool>true</bool>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </widget>
-              </item>
-              <item>
                <layout class="QHBoxLayout" name="horizontalLayout_5">
                 <property name="bottomMargin">
                  <number>0</number>
@@ -578,7 +220,7 @@
                       </size>
                      </property>
                      <property name="text">
-                      <string>Database ⇌ Database</string>
+                      <string>DB ➡ DB</string>
                      </property>
                      <property name="icon">
                       <iconset resource="../../res/resources.qrc">
@@ -605,6 +247,47 @@
                     </widget>
                    </item>
                    <item>
+                    <widget class="QToolButton" name="model_to_db_tb">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                     <property name="minimumSize">
+                      <size>
+                       <width>50</width>
+                       <height>50</height>
+                      </size>
+                     </property>
+                     <property name="text">
+                      <string>Model ➡ DB</string>
+                     </property>
+                     <property name="icon">
+                      <iconset resource="../../res/resources.qrc">
+                       <normaloff>:/icons/icons/diff.png</normaloff>:/icons/icons/diff.png</iconset>
+                     </property>
+                     <property name="iconSize">
+                      <size>
+                       <width>48</width>
+                       <height>48</height>
+                      </size>
+                     </property>
+                     <property name="checkable">
+                      <bool>true</bool>
+                     </property>
+                     <property name="checked">
+                      <bool>false</bool>
+                     </property>
+                     <property name="toolButtonStyle">
+                      <enum>Qt::ToolButtonStyle::ToolButtonTextUnderIcon</enum>
+                     </property>
+                     <property name="autoRaise">
+                      <bool>true</bool>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
                     <widget class="QToolButton" name="model_to_model_tb">
                      <property name="sizePolicy">
                       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -619,7 +302,7 @@
                       </size>
                      </property>
                      <property name="text">
-                      <string>Model ⇌ Model</string>
+                      <string>Model ➡ Model</string>
                      </property>
                      <property name="icon">
                       <iconset resource="../../res/resources.qrc">
@@ -645,46 +328,298 @@
                      </property>
                     </widget>
                    </item>
+                  </layout>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QGroupBox" name="presets_gb">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="minimumSize">
+                   <size>
+                    <width>0</width>
+                    <height>0</height>
+                   </size>
+                  </property>
+                  <property name="title">
+                   <string>Pr&amp;esets</string>
+                  </property>
+                  <property name="flat">
+                   <bool>false</bool>
+                  </property>
+                  <property name="checkable">
+                   <bool>false</bool>
+                  </property>
+                  <layout class="QVBoxLayout" name="verticalLayout_8">
+                   <property name="spacing">
+                    <number>5</number>
+                   </property>
+                   <property name="leftMargin">
+                    <number>5</number>
+                   </property>
+                   <property name="topMargin">
+                    <number>5</number>
+                   </property>
+                   <property name="rightMargin">
+                    <number>5</number>
+                   </property>
+                   <property name="bottomMargin">
+                    <number>5</number>
+                   </property>
                    <item>
-                    <widget class="QToolButton" name="model_to_db_tb">
-                     <property name="sizePolicy">
-                      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                       <horstretch>0</horstretch>
-                       <verstretch>0</verstretch>
-                      </sizepolicy>
+                    <layout class="QHBoxLayout" name="horizontalLayout_6">
+                     <property name="spacing">
+                      <number>5</number>
                      </property>
-                     <property name="minimumSize">
-                      <size>
-                       <width>50</width>
-                       <height>50</height>
-                      </size>
+                     <item>
+                      <widget class="QComboBox" name="presets_cmb">
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                         <horstretch>0</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
+                       </property>
+                       <property name="insertPolicy">
+                        <enum>QComboBox::InsertPolicy::InsertAtBottom</enum>
+                       </property>
+                       <property name="sizeAdjustPolicy">
+                        <enum>QComboBox::SizeAdjustPolicy::AdjustToMinimumContentsLengthWithIcon</enum>
+                       </property>
+                       <property name="iconSize">
+                        <size>
+                         <width>25</width>
+                         <height>25</height>
+                        </size>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QLineEdit" name="preset_name_edt">
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                         <horstretch>0</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                   <item>
+                    <layout class="QHBoxLayout" name="horizontalLayout_2">
+                     <property name="bottomMargin">
+                      <number>0</number>
                      </property>
-                     <property name="text">
-                      <string>Model ⇌ Database</string>
-                     </property>
-                     <property name="icon">
-                      <iconset resource="../../res/resources.qrc">
-                       <normaloff>:/icons/icons/diff.png</normaloff>:/icons/icons/diff.png</iconset>
-                     </property>
-                     <property name="iconSize">
-                      <size>
-                       <width>48</width>
-                       <height>48</height>
-                      </size>
-                     </property>
-                     <property name="checkable">
-                      <bool>true</bool>
-                     </property>
-                     <property name="checked">
-                      <bool>false</bool>
-                     </property>
-                     <property name="toolButtonStyle">
-                      <enum>Qt::ToolButtonStyle::ToolButtonTextUnderIcon</enum>
-                     </property>
-                     <property name="autoRaise">
-                      <bool>true</bool>
-                     </property>
-                    </widget>
+                     <item>
+                      <spacer name="horizontalSpacer_5">
+                       <property name="orientation">
+                        <enum>Qt::Orientation::Horizontal</enum>
+                       </property>
+                       <property name="sizeHint" stdset="0">
+                        <size>
+                         <width>40</width>
+                         <height>20</height>
+                        </size>
+                       </property>
+                      </spacer>
+                     </item>
+                     <item>
+                      <widget class="QToolButton" name="new_preset_tb">
+                       <property name="enabled">
+                        <bool>true</bool>
+                       </property>
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                         <horstretch>0</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
+                       </property>
+                       <property name="toolTip">
+                        <string>Add new preset</string>
+                       </property>
+                       <property name="text">
+                        <string/>
+                       </property>
+                       <property name="icon">
+                        <iconset resource="../../res/resources.qrc">
+                         <normaloff>:/icons/icons/new.png</normaloff>:/icons/icons/new.png</iconset>
+                       </property>
+                       <property name="iconSize">
+                        <size>
+                         <width>25</width>
+                         <height>25</height>
+                        </size>
+                       </property>
+                       <property name="shortcut">
+                        <string>Ins</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QToolButton" name="edit_preset_tb">
+                       <property name="enabled">
+                        <bool>true</bool>
+                       </property>
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                         <horstretch>0</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
+                       </property>
+                       <property name="toolTip">
+                        <string>Edit preset name</string>
+                       </property>
+                       <property name="text">
+                        <string/>
+                       </property>
+                       <property name="icon">
+                        <iconset resource="../../res/resources.qrc">
+                         <normaloff>:/icons/icons/edit.png</normaloff>:/icons/icons/edit.png</iconset>
+                       </property>
+                       <property name="iconSize">
+                        <size>
+                         <width>25</width>
+                         <height>25</height>
+                        </size>
+                       </property>
+                       <property name="shortcut">
+                        <string>Ctrl+E</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QToolButton" name="save_preset_tb">
+                       <property name="enabled">
+                        <bool>true</bool>
+                       </property>
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                         <horstretch>0</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
+                       </property>
+                       <property name="toolTip">
+                        <string>Save preset</string>
+                       </property>
+                       <property name="text">
+                        <string/>
+                       </property>
+                       <property name="icon">
+                        <iconset resource="../../res/resources.qrc">
+                         <normaloff>:/icons/icons/save.png</normaloff>:/icons/icons/save.png</iconset>
+                       </property>
+                       <property name="iconSize">
+                        <size>
+                         <width>25</width>
+                         <height>25</height>
+                        </size>
+                       </property>
+                       <property name="shortcut">
+                        <string>Ctrl+S</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QToolButton" name="cancel_preset_edit_tb">
+                       <property name="enabled">
+                        <bool>true</bool>
+                       </property>
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                         <horstretch>0</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
+                       </property>
+                       <property name="toolTip">
+                        <string>Cancel operation on the preset</string>
+                       </property>
+                       <property name="text">
+                        <string/>
+                       </property>
+                       <property name="icon">
+                        <iconset resource="../../res/resources.qrc">
+                         <normaloff>:/icons/icons/close1.png</normaloff>:/icons/icons/close1.png</iconset>
+                       </property>
+                       <property name="iconSize">
+                        <size>
+                         <width>25</width>
+                         <height>25</height>
+                        </size>
+                       </property>
+                       <property name="shortcut">
+                        <string>Esc</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QToolButton" name="remove_preset_tb">
+                       <property name="enabled">
+                        <bool>true</bool>
+                       </property>
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                         <horstretch>0</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
+                       </property>
+                       <property name="toolTip">
+                        <string>Delete the selected preset</string>
+                       </property>
+                       <property name="text">
+                        <string/>
+                       </property>
+                       <property name="icon">
+                        <iconset resource="../../res/resources.qrc">
+                         <normaloff>:/icons/icons/delete.png</normaloff>:/icons/icons/delete.png</iconset>
+                       </property>
+                       <property name="iconSize">
+                        <size>
+                         <width>25</width>
+                         <height>25</height>
+                        </size>
+                       </property>
+                       <property name="shortcut">
+                        <string>Del</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QToolButton" name="default_presets_tb">
+                       <property name="enabled">
+                        <bool>true</bool>
+                       </property>
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                         <horstretch>0</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
+                       </property>
+                       <property name="toolTip">
+                        <string>Restore the default presets</string>
+                       </property>
+                       <property name="text">
+                        <string/>
+                       </property>
+                       <property name="icon">
+                        <iconset resource="../../res/resources.qrc">
+                         <normaloff>:/icons/icons/refresh.png</normaloff>:/icons/icons/refresh.png</iconset>
+                       </property>
+                       <property name="iconSize">
+                        <size>
+                         <width>25</width>
+                         <height>25</height>
+                        </size>
+                       </property>
+                       <property name="shortcut">
+                        <string>Ctrl+R</string>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
                    </item>
                   </layout>
                  </widget>
@@ -726,7 +661,7 @@
                  </sizepolicy>
                 </property>
                 <property name="title">
-                 <string>Diff code options</string>
+                 <string>Code options</string>
                 </property>
                 <layout class="QVBoxLayout" name="verticalLayout">
                  <property name="spacing">
@@ -745,136 +680,126 @@
                   <number>5</number>
                  </property>
                  <item>
-                  <layout class="QHBoxLayout" name="horizontalLayout_17">
-                   <property name="spacing">
-                    <number>5</number>
+                  <layout class="QGridLayout" name="gridLayout_8">
+                   <property name="bottomMargin">
+                    <number>0</number>
                    </property>
-                   <item>
-                    <widget class="QCheckBox" name="pgsql_ver_chk">
+                   <item row="0" column="1">
+                    <widget class="QWidget" name="store_in_file_wgt" native="true">
+                     <property name="enabled">
+                      <bool>true</bool>
+                     </property>
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="0" column="0">
+                    <widget class="QRadioButton" name="store_in_file_rb">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
                      <property name="toolTip">
-                      <string>&lt;p&gt;Override the PostgreSQL version when generating the diff code. The default is to use the same version as the input database (detected automatically).&lt;/p&gt;</string>
+                      <string>&lt;p&gt;Compares the model and the input database storing the diff in a SQL file for later usage.&lt;/p&gt;</string>
                      </property>
                      <property name="statusTip">
                       <string/>
                      </property>
                      <property name="text">
-                      <string>Use PostgreSQL:</string>
+                      <string>Store in SQL file:</string>
+                     </property>
+                     <property name="checked">
+                      <bool>true</bool>
                      </property>
                     </widget>
                    </item>
-                   <item>
-                    <widget class="QComboBox" name="pgsql_ver_cmb">
+                   <item row="1" column="0">
+                    <widget class="QRadioButton" name="apply_on_server_rb">
                      <property name="enabled">
-                      <bool>false</bool>
+                      <bool>true</bool>
+                     </property>
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                     <property name="minimumSize">
+                      <size>
+                       <width>125</width>
+                       <height>0</height>
+                      </size>
+                     </property>
+                     <property name="toolTip">
+                      <string>&lt;p&gt;Compares the model and the input database generating a diff and applying it directly to the latter. &lt;strong&gt;WARNING:&lt;/strong&gt; this mode causes irreversible changes on the database and in case of failure the original structure is not restored, so make sure to have a backup before proceed.&lt;/p&gt;</string>
                      </property>
                      <property name="statusTip">
                       <string/>
                      </property>
-                     <property name="iconSize">
-                      <size>
-                       <width>28</width>
-                       <height>28</height>
-                      </size>
+                     <property name="text">
+                      <string>Apply on server</string>
+                     </property>
+                     <property name="checked">
+                      <bool>false</bool>
                      </property>
                     </widget>
                    </item>
-                   <item>
-                    <spacer name="horizontalSpacer_4">
-                     <property name="orientation">
-                      <enum>Qt::Orientation::Horizontal</enum>
+                   <item row="1" column="1">
+                    <layout class="QHBoxLayout" name="horizontalLayout_17">
+                     <property name="spacing">
+                      <number>5</number>
                      </property>
-                     <property name="sizeHint" stdset="0">
-                      <size>
-                       <width>40</width>
-                       <height>20</height>
-                      </size>
-                     </property>
-                    </spacer>
+                     <item>
+                      <widget class="QCheckBox" name="pgsql_ver_chk">
+                       <property name="toolTip">
+                        <string>&lt;p&gt;Override the PostgreSQL version when generating the diff code. The default is to use the same version as the input database (detected automatically).&lt;/p&gt;</string>
+                       </property>
+                       <property name="statusTip">
+                        <string/>
+                       </property>
+                       <property name="text">
+                        <string>Use PostgreSQL:</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QComboBox" name="pgsql_ver_cmb">
+                       <property name="enabled">
+                        <bool>false</bool>
+                       </property>
+                       <property name="statusTip">
+                        <string/>
+                       </property>
+                       <property name="iconSize">
+                        <size>
+                         <width>28</width>
+                         <height>28</height>
+                        </size>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <spacer name="horizontalSpacer_4">
+                       <property name="orientation">
+                        <enum>Qt::Orientation::Horizontal</enum>
+                       </property>
+                       <property name="sizeHint" stdset="0">
+                        <size>
+                         <width>40</width>
+                         <height>20</height>
+                        </size>
+                       </property>
+                      </spacer>
+                     </item>
+                    </layout>
                    </item>
                   </layout>
-                 </item>
-                 <item>
-                  <widget class="QRadioButton" name="store_in_file_rb">
-                   <property name="sizePolicy">
-                    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                     <horstretch>0</horstretch>
-                     <verstretch>0</verstretch>
-                    </sizepolicy>
-                   </property>
-                   <property name="toolTip">
-                    <string>&lt;p&gt;Compares the model and the input database storing the diff in a SQL file for later usage.&lt;/p&gt;</string>
-                   </property>
-                   <property name="statusTip">
-                    <string/>
-                   </property>
-                   <property name="text">
-                    <string>Store in S&amp;QL file:</string>
-                   </property>
-                   <property name="checked">
-                    <bool>true</bool>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QWidget" name="store_in_file_wgt" native="true">
-                   <property name="enabled">
-                    <bool>true</bool>
-                   </property>
-                   <property name="sizePolicy">
-                    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                     <horstretch>0</horstretch>
-                     <verstretch>0</verstretch>
-                    </sizepolicy>
-                   </property>
-                   <layout class="QGridLayout" name="store_in_file_grid">
-                    <property name="leftMargin">
-                     <number>20</number>
-                    </property>
-                    <property name="topMargin">
-                     <number>0</number>
-                    </property>
-                    <property name="rightMargin">
-                     <number>0</number>
-                    </property>
-                    <property name="bottomMargin">
-                     <number>0</number>
-                    </property>
-                    <property name="spacing">
-                     <number>5</number>
-                    </property>
-                   </layout>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QRadioButton" name="apply_on_server_rb">
-                   <property name="enabled">
-                    <bool>true</bool>
-                   </property>
-                   <property name="sizePolicy">
-                    <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                     <horstretch>0</horstretch>
-                     <verstretch>0</verstretch>
-                    </sizepolicy>
-                   </property>
-                   <property name="minimumSize">
-                    <size>
-                     <width>125</width>
-                     <height>0</height>
-                    </size>
-                   </property>
-                   <property name="toolTip">
-                    <string>&lt;p&gt;Compares the model and the input database generating a diff and applying it directly to the latter. &lt;strong&gt;WARNING:&lt;/strong&gt; this mode causes irreversible changes on the database and in case of failure the original structure is not restored, so make sure to have a backup before proceed.&lt;/p&gt;</string>
-                   </property>
-                   <property name="statusTip">
-                    <string/>
-                   </property>
-                   <property name="text">
-                    <string>Appl&amp;y on server</string>
-                   </property>
-                   <property name="checked">
-                    <bool>false</bool>
-                   </property>
-                  </widget>
                  </item>
                 </layout>
                </widget>
@@ -1200,199 +1125,77 @@
                </widget>
               </item>
               <item>
-               <widget class="QGroupBox" name="import_opts_gb">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
+               <layout class="QHBoxLayout" name="horizontalLayout_3">
+                <property name="bottomMargin">
+                 <number>0</number>
                 </property>
-                <property name="title">
-                 <string>Import options</string>
-                </property>
-                <layout class="QVBoxLayout" name="verticalLayout_3">
-                 <property name="spacing">
-                  <number>5</number>
-                 </property>
-                 <property name="leftMargin">
-                  <number>5</number>
-                 </property>
-                 <property name="topMargin">
-                  <number>5</number>
-                 </property>
-                 <property name="rightMargin">
-                  <number>5</number>
-                 </property>
-                 <property name="bottomMargin">
-                  <number>5</number>
-                 </property>
-                 <item>
-                  <widget class="QCheckBox" name="import_sys_objs_chk">
-                   <property name="sizePolicy">
-                    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                     <horstretch>0</horstretch>
-                     <verstretch>0</verstretch>
-                    </sizepolicy>
-                   </property>
-                   <property name="toolTip">
-                    <string>&lt;p&gt;Import system (built-in) objects. Use this if the import step is returning errors related to missing objects.&lt;/p&gt;</string>
-                   </property>
-                   <property name="statusTip">
-                    <string/>
-                   </property>
-                   <property name="text">
-                    <string>Import system objects</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QCheckBox" name="import_ext_objs_chk">
-                   <property name="sizePolicy">
-                    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                     <horstretch>0</horstretch>
-                     <verstretch>0</verstretch>
-                    </sizepolicy>
-                   </property>
-                   <property name="toolTip">
-                    <string>&lt;p&gt;Import objects created by extensions. Use this if the import step is returning errors even importing built in ones.&lt;/p&gt;</string>
-                   </property>
-                   <property name="statusTip">
-                    <string/>
-                   </property>
-                   <property name="text">
-                    <string>Import extension objects</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QCheckBox" name="ignore_errors_chk">
-                   <property name="sizePolicy">
-                    <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                     <horstretch>0</horstretch>
-                     <verstretch>0</verstretch>
-                    </sizepolicy>
-                   </property>
-                   <property name="toolTip">
-                    <string>&lt;p&gt;Ignores as many as possible errors on import step. This option generates an incomplete diff.&lt;/p&gt;</string>
-                   </property>
-                   <property name="statusTip">
-                    <string/>
-                   </property>
-                   <property name="text">
-                    <string>Ignore import errors</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QCheckBox" name="debug_mode_chk">
-                   <property name="sizePolicy">
-                    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                     <horstretch>0</horstretch>
-                     <verstretch>0</verstretch>
-                    </sizepolicy>
-                   </property>
-                   <property name="toolTip">
-                    <string>&lt;p&gt;All catalog queries and the created objects' source code are printed on the standard output (stdout) and the &lt;strong&gt;Debug&lt;/strong&gt; tab.&lt;/p&gt;</string>
-                   </property>
-                   <property name="statusTip">
-                    <string/>
-                   </property>
-                   <property name="whatsThis">
-                    <string/>
-                   </property>
-                   <property name="text">
-                    <string>Debug mode</string>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </widget>
-              </item>
-              <item>
-               <widget class="QGroupBox" name="export_opts_gb">
-                <property name="enabled">
-                 <bool>true</bool>
-                </property>
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="title">
-                 <string>Export options</string>
-                </property>
-                <layout class="QVBoxLayout" name="verticalLayout_4">
-                 <property name="spacing">
-                  <number>5</number>
-                 </property>
-                 <property name="leftMargin">
-                  <number>5</number>
-                 </property>
-                 <property name="topMargin">
-                  <number>5</number>
-                 </property>
-                 <property name="rightMargin">
-                  <number>5</number>
-                 </property>
-                 <property name="bottomMargin">
-                  <number>5</number>
-                 </property>
-                 <item>
-                  <widget class="QCheckBox" name="run_in_transaction_chk">
-                   <property name="toolTip">
-                    <string>&lt;p&gt;Run the generated commands in a single transaction block. In case of errors, all changes are rolled back. &lt;strong&gt;NOTE:&lt;/strong&gt; This option may raise errors if the diff code contains DDL commands related to database and tablespaces.&lt;/p&gt;</string>
-                   </property>
-                   <property name="statusTip">
-                    <string/>
-                   </property>
-                   <property name="text">
-                    <string>Run in a transaction</string>
-                   </property>
-                   <property name="checked">
-                    <bool>true</bool>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QCheckBox" name="ignore_duplic_chk">
-                   <property name="sizePolicy">
-                    <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                     <horstretch>0</horstretch>
-                     <verstretch>0</verstretch>
-                    </sizepolicy>
-                   </property>
-                   <property name="toolTip">
-                    <string>&lt;p&gt;Ignores errors generated by duplicated objects when exporting the diff to database. &lt;strong&gt;NOTE:&lt;/strong&gt; this option disables the transactional mode.&lt;/p&gt;</string>
-                   </property>
-                   <property name="statusTip">
-                    <string/>
-                   </property>
-                   <property name="text">
-                    <string>Ignore duplicity errors</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <layout class="QGridLayout" name="gridLayout_7">
+                <item>
+                 <widget class="QGroupBox" name="import_opts_gb">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="title">
+                   <string>Import options</string>
+                  </property>
+                  <layout class="QVBoxLayout" name="verticalLayout_3">
                    <property name="spacing">
                     <number>5</number>
                    </property>
-                   <item row="1" column="0" colspan="3">
-                    <widget class="QLineEdit" name="error_codes_edt">
-                     <property name="enabled">
-                      <bool>false</bool>
+                   <property name="leftMargin">
+                    <number>5</number>
+                   </property>
+                   <property name="topMargin">
+                    <number>5</number>
+                   </property>
+                   <property name="rightMargin">
+                    <number>5</number>
+                   </property>
+                   <property name="bottomMargin">
+                    <number>5</number>
+                   </property>
+                   <item>
+                    <widget class="QCheckBox" name="import_sys_objs_chk">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
                      </property>
-                     <property name="clearButtonEnabled">
-                      <bool>true</bool>
+                     <property name="toolTip">
+                      <string>&lt;p&gt;Import system (built-in) objects. Use this if the import step is returning errors related to missing objects.&lt;/p&gt;</string>
+                     </property>
+                     <property name="statusTip">
+                      <string/>
+                     </property>
+                     <property name="text">
+                      <string>Import system objects</string>
                      </property>
                     </widget>
                    </item>
-                   <item row="0" column="0" colspan="3">
-                    <widget class="QCheckBox" name="ignore_error_codes_chk">
-                     <property name="enabled">
-                      <bool>true</bool>
+                   <item>
+                    <widget class="QCheckBox" name="import_ext_objs_chk">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
                      </property>
+                     <property name="toolTip">
+                      <string>&lt;p&gt;Import objects created by extensions. Use this if the import step is returning errors even importing built in ones.&lt;/p&gt;</string>
+                     </property>
+                     <property name="statusTip">
+                      <string/>
+                     </property>
+                     <property name="text">
+                      <string>Import extension objects</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QCheckBox" name="ignore_errors_chk">
                      <property name="sizePolicy">
                       <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
                        <horstretch>0</horstretch>
@@ -1400,20 +1203,149 @@
                       </sizepolicy>
                      </property>
                      <property name="toolTip">
-                      <string>&lt;p&gt;This advanced option causes pgModeler to ignore extra errors by their numeric codes. These errors must be informed in the input below and separated by space. For the complete list of error codes check the PostgreSQL docs, section &lt;strong&gt; Appendix A. PostgreSQL Error Codes&lt;/strong&gt;. &lt;strong&gt;WARNING:&lt;/strong&gt; use this option with extreme care since it can interfere in final export result. &lt;strong&gt;NOTE:&lt;/strong&gt; this option disables the transactional mode.&lt;/p&gt;</string>
+                      <string>&lt;p&gt;Ignores as many as possible errors on import step. This option generates an incomplete diff.&lt;/p&gt;</string>
                      </property>
                      <property name="statusTip">
                       <string/>
                      </property>
                      <property name="text">
-                      <string>Ignore error codes</string>
+                      <string>Ignore import errors</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QCheckBox" name="debug_mode_chk">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                     <property name="toolTip">
+                      <string>&lt;p&gt;All catalog queries and the created objects' source code are printed on the standard output (stdout) and the &lt;strong&gt;Debug&lt;/strong&gt; tab.&lt;/p&gt;</string>
+                     </property>
+                     <property name="statusTip">
+                      <string/>
+                     </property>
+                     <property name="whatsThis">
+                      <string/>
+                     </property>
+                     <property name="text">
+                      <string>Debug mode</string>
                      </property>
                     </widget>
                    </item>
                   </layout>
-                 </item>
-                </layout>
-               </widget>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QGroupBox" name="export_opts_gb">
+                  <property name="enabled">
+                   <bool>true</bool>
+                  </property>
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="title">
+                   <string>Export options</string>
+                  </property>
+                  <layout class="QVBoxLayout" name="verticalLayout_4">
+                   <property name="spacing">
+                    <number>5</number>
+                   </property>
+                   <property name="leftMargin">
+                    <number>5</number>
+                   </property>
+                   <property name="topMargin">
+                    <number>5</number>
+                   </property>
+                   <property name="rightMargin">
+                    <number>5</number>
+                   </property>
+                   <property name="bottomMargin">
+                    <number>5</number>
+                   </property>
+                   <item>
+                    <widget class="QCheckBox" name="run_in_transaction_chk">
+                     <property name="toolTip">
+                      <string>&lt;p&gt;Run the generated commands in a single transaction block. In case of errors, all changes are rolled back. &lt;strong&gt;NOTE:&lt;/strong&gt; This option may raise errors if the diff code contains DDL commands related to database and tablespaces.&lt;/p&gt;</string>
+                     </property>
+                     <property name="statusTip">
+                      <string/>
+                     </property>
+                     <property name="text">
+                      <string>Run in a transaction</string>
+                     </property>
+                     <property name="checked">
+                      <bool>true</bool>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QCheckBox" name="ignore_duplic_chk">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                     <property name="toolTip">
+                      <string>&lt;p&gt;Ignores errors generated by duplicated objects when exporting the diff to database. &lt;strong&gt;NOTE:&lt;/strong&gt; this option disables the transactional mode.&lt;/p&gt;</string>
+                     </property>
+                     <property name="statusTip">
+                      <string/>
+                     </property>
+                     <property name="text">
+                      <string>Ignore duplicity errors</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <layout class="QGridLayout" name="gridLayout_7">
+                     <property name="spacing">
+                      <number>5</number>
+                     </property>
+                     <item row="1" column="0" colspan="3">
+                      <widget class="QLineEdit" name="error_codes_edt">
+                       <property name="enabled">
+                        <bool>false</bool>
+                       </property>
+                       <property name="clearButtonEnabled">
+                        <bool>true</bool>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="0" column="0" colspan="3">
+                      <widget class="QCheckBox" name="ignore_error_codes_chk">
+                       <property name="enabled">
+                        <bool>true</bool>
+                       </property>
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                         <horstretch>0</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
+                       </property>
+                       <property name="toolTip">
+                        <string>&lt;p&gt;This advanced option causes pgModeler to ignore extra errors by their numeric codes. These errors must be informed in the input below and separated by space. For the complete list of error codes check the PostgreSQL docs, section &lt;strong&gt; Appendix A. PostgreSQL Error Codes&lt;/strong&gt;. &lt;strong&gt;WARNING:&lt;/strong&gt; use this option with extreme care since it can interfere in final export result. &lt;strong&gt;NOTE:&lt;/strong&gt; this option disables the transactional mode.&lt;/p&gt;</string>
+                       </property>
+                       <property name="statusTip">
+                        <string/>
+                       </property>
+                       <property name="text">
+                        <string>Ignore error codes</string>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                  </layout>
+                 </widget>
+                </item>
+               </layout>
               </item>
               <item>
                <spacer name="verticalSpacer_2">
@@ -2618,12 +2550,6 @@
   <tabstop>settings_tbw</tabstop>
   <tabstop>presets_cmb</tabstop>
   <tabstop>preset_name_edt</tabstop>
-  <tabstop>new_preset_tb</tabstop>
-  <tabstop>edit_preset_tb</tabstop>
-  <tabstop>save_preset_tb</tabstop>
-  <tabstop>cancel_preset_edit_tb</tabstop>
-  <tabstop>remove_preset_tb</tabstop>
-  <tabstop>default_presets_tb</tabstop>
   <tabstop>pgsql_ver_chk</tabstop>
   <tabstop>pgsql_ver_cmb</tabstop>
   <tabstop>keep_cluster_objs_chk</tabstop>

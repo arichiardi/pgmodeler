@@ -49,8 +49,6 @@ DiffToolWidget::DiffToolWidget(QWidget *parent) : BaseConfigWidget (parent)
 	forced_objs_types_btn->setMenu(forced_obj_types_menu);
 
 	src_server_supported = server_supported = true;
-	pg_version_alert_frm->setVisible(false);
-
 	dates_wgt->setVisible(false);
 	start_date_dt->setDateTime(QDateTime::currentDateTime());
 	end_date_dt->setDateTime(QDateTime::currentDateTime());
@@ -89,13 +87,12 @@ DiffToolWidget::DiffToolWidget(QWidget *parent) : BaseConfigWidget (parent)
 	connect(search_tb, &QToolButton::toggled, search_wgt_parent, &QWidget::setVisible);
 	connect(search_sql_wgt, &SearchReplaceWidget::s_hideRequested, search_tb, &QToolButton::toggle);
 
-	file_sel = new FileSelectorWidget(this);
+	file_sel = GuiUtilsNs::createWidgetInParent<FileSelectorWidget>(store_in_file_wgt);
 	file_sel->setAllowFilenameInput(true);
 	file_sel->setAcceptMode(QFileDialog::AcceptSave);
 	file_sel->setFileDialogTitle(tr("Save diff as"));
 	file_sel->setMimeTypeFilters({"application/sql", "application/octet-stream"});
 	file_sel->setDefaultSuffix("sql");
-	store_in_file_grid->addWidget(file_sel, 0, 1);
 
 	input_sel_wgt = GuiUtilsNs::createWidgetInParent<ModelDbSelectorWidget>(GuiUtilsNs::LtMargin, input_picker_gb);
 	compared_sel_wgt = GuiUtilsNs::createWidgetInParent<ModelDbSelectorWidget>(GuiUtilsNs::LtMargin, compared_pick_gb);
@@ -480,6 +477,14 @@ void DiffToolWidget::clearOutput()
 
 void DiffToolWidget::enableDiffMode()
 {
+	if(model_to_model_tb->isChecked())
+	{
+		apply_on_server_rb->setEnabled(false);
+		store_in_file_rb->setChecked(true);
+	}
+	else
+		apply_on_server_rb->setEnabled(true);
+
 	export_opts_gb->setEnabled(apply_on_server_rb->isChecked());
 	store_in_file_wgt->setEnabled(store_in_file_rb->isChecked());
 	file_sel->setFileIsMandatory(store_in_file_rb->isChecked());
@@ -548,15 +553,19 @@ void DiffToolWidget::startDiff()
 	if(compared_model_wgt)
 		compared_model_wgt->setInteractive(false);
 
-	if(input_sel_wgt->isModelSelected())
+	// Comparing two models
+	if(input_sel_wgt->isModelSelected() &&
+		 compared_sel_wgt->isModelSelected())
+		total_steps = 1;
+	// Comparing a model and database
+	else if(input_sel_wgt->isModelSelected())
 		total_steps = 3;
+	// Comparing two databases
 	else
 		total_steps = 4;
 
 	dbg_output_wgt->setLogMessages(debug_mode_chk->isChecked());
 	settings_tbw->setTabVisible(4, debug_mode_chk->isChecked());
-
-	importDatabase(db_to_db_tb->isChecked() ? InputImpThread : ComparedImpThread);
 
 	buttons_wgt->setEnabled(false);
 	cancel_btn->setEnabled(true);
@@ -567,6 +576,16 @@ void DiffToolWidget::startDiff()
 	settings_tbw->setTabEnabled(2, true);
 	settings_tbw->setTabEnabled(3, false);
 	settings_tbw->setCurrentIndex(2);
+
+	/* The diff mode selected is different from model to model.
+	 * We need to import the involved databases, otherwise we use
+	 * the ones selected by the user in the comparison */
+	if(!model_to_model_tb->isChecked())
+		importDatabase(db_to_db_tb->isChecked() ? InputImpThread : ComparedImpThread);
+	else
+	{
+		diffModels();
+	}
 }
 
 void DiffToolWidget::importDatabase(ThreadId thread_id)
@@ -1107,7 +1126,7 @@ void DiffToolWidget::updateDiffInfo(ObjectsDiffInfo diff_info)
 
 		/* If in debug mode we display the XML code of the involved objects
 		 * when the diff info is related to a ALTER Object */
-		if(compared_imp_helper->debug_mode &&
+		if(compared_imp_helper && compared_imp_helper->debug_mode &&
 			 diff_info.getDiffType() == ObjectsDiffInfo::AlterObject)
 		{		
 			GuiUtilsNs::createOutputTreeItem(
