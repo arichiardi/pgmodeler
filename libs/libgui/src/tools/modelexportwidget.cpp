@@ -463,6 +463,8 @@ void ModelExportWidget::editConnections()
 
 void ModelExportWidget::enableExport()
 {
+	alert_frm->setVisible(model_wgt && model_wgt->getDatabaseModel()->isInvalidated());
+
 	export_btn->setEnabled(model_wgt &&
 												 (export_to_dbms_tb->isChecked() && connections_cmb->currentIndex() > 0 &&
 													connections_cmb->currentIndex() != connections_cmb->count() - 1) ||
