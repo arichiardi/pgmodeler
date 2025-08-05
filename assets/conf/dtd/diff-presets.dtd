@@ -7,7 +7,6 @@
 <!ELEMENT preset (#PCDATA)>
 <!ATTLIST preset name CDATA #REQUIRED>
 <!ATTLIST preset diff-mode CDATA #REQUIRED>
-<!ATTLIST preset current-model CDATA #IMPLIED>
 <!ATTLIST preset input-db CDATA #IMPLIED>
 <!ATTLIST preset compare-to-db CDATA #IMPLIED>
 <!ATTLIST preset version CDATA #IMPLIED>
