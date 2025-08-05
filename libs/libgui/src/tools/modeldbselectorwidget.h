@@ -44,6 +44,8 @@ class ModelDbSelectorWidget : public QWidget, public Ui::ModelDbSelectorWidget {
 		~ModelDbSelectorWidget() = default;
 
 		void setSelectMode(SelectMode sel_mode);
+		void setSelectedDatabase(const QString &db_name);
+		void setSelectedConnection(const QString &conn_id);
 
 		Connection getSelectedConnection();
 		QString getSelectedDatabase();
@@ -56,6 +58,7 @@ class ModelDbSelectorWidget : public QWidget, public Ui::ModelDbSelectorWidget {
 
 		void updateConnections(Connection::ConnOperation def_conn_op = Connection::OpNone);
 		void updateModels(const QList<ModelWidget *> &models);
+
 
 	public slots:
 		void listDatabases();

@@ -771,9 +771,9 @@ void DiffToolWidget::filterDiffInfos()
 	QToolButton *btn=dynamic_cast<QToolButton *>(sender());
 	std::map<QToolButton *, ObjectsDiffInfo::DiffType> diff_types={
 												{create_tb, ObjectsDiffInfo::CreateObject},
-											  {drop_tb, ObjectsDiffInfo::DropObject},
-											  {alter_tb, ObjectsDiffInfo::AlterObject},
-											  {ignore_tb, ObjectsDiffInfo::IgnoreObject}};
+												{drop_tb, ObjectsDiffInfo::DropObject},
+												{alter_tb, ObjectsDiffInfo::AlterObject},
+												{ignore_tb, ObjectsDiffInfo::IgnoreObject}};
 
 	for(int i=0; i < diff_item->childCount(); i++)
 	{
@@ -1110,7 +1110,7 @@ void DiffToolWidget::updateDiffInfo(ObjectsDiffInfo diff_info)
 		 * when the diff info is related to a ALTER Object */
 		if(compared_imp_helper && compared_imp_helper->debug_mode &&
 			 diff_info.getDiffType() == ObjectsDiffInfo::AlterObject)
-		{		
+		{
 			GuiUtilsNs::createOutputTreeItem(
 						output_trw,
 						QString("** Imported object: %1 \n ** Source object: %2")
@@ -1213,23 +1213,22 @@ void DiffToolWidget::restoreDefaults()
 
 void DiffToolWidget::selectPreset()
 {
-	/* attribs_map conf = config_params[presets_cmb->currentText()];
+	attribs_map conf = config_params[presets_cmb->currentText()];
 	QStringList db_name;
 
-	src_model_rb->setChecked(src_model_rb->isEnabled() && conf[Attributes::CurrentModel] == Attributes::True);
-	src_database_rb->setChecked(!conf[Attributes::InputDatabase].isEmpty());
+	if(conf[Attributes::DifMode] == Attributes::DiffModels)
+		model_to_model_tb->setChecked(true);
+	else if(conf[Attributes::DifMode] == Attributes::DiffModelDb)
+		model_to_db_tb->setChecked(true);
+	else
+		db_to_db_tb->setChecked(true);
+
 	db_name = conf[Attributes::InputDatabase].split('@');
 
 	if(db_name.size() > 1)
 	{
-		int idx = src_connections_cmb->findText(db_name[1], Qt::MatchStartsWith);
-
-		if(idx >= 0)
-		{
-			src_connections_cmb->setCurrentIndex(idx);
-			src_connections_cmb->activated(idx);
-			src_database_cmb->setCurrentText(db_name[0]);
-		}
+		input_sel_wgt->setSelectedConnection(db_name[1]);
+		input_sel_wgt->setSelectedDatabase(db_name[0]);
 	}
 
 	// Selecting the database to compare
@@ -1237,14 +1236,8 @@ void DiffToolWidget::selectPreset()
 
 	if(db_name.size() > 1)
 	{
-		int idx = connections_cmb->findText(db_name[1], Qt::MatchStartsWith);
-
-		if(idx > 0)
-		{
-			connections_cmb->setCurrentIndex(idx);
-			connections_cmb->activated(idx);
-			database_cmb->setCurrentText(db_name[0]);
-		}
+		compared_sel_wgt->setSelectedConnection(db_name[1]);
+		compared_sel_wgt->setSelectedDatabase(db_name[0]);
 	}
 
 	pgsql_ver_chk->setChecked(!conf[Attributes::Version].isEmpty());
@@ -1265,12 +1258,14 @@ void DiffToolWidget::selectPreset()
 	reuse_sequences_chk->setChecked(conf[Attributes::ReuseSequences] == Attributes::True);
 	recreate_unmod_chk->setChecked(conf[Attributes::RecreateUnmodObjs] == Attributes::True);
 	replace_modified_chk->setChecked(conf[Attributes::ReplaceModObjs] == Attributes::True);
+	debug_mode_chk->setChecked(conf[Attributes::DebugMode] == Attributes::True);
 
 	import_sys_objs_chk->setChecked(conf[Attributes::ImportSysObjs] == Attributes::True);
 	import_ext_objs_chk->setChecked(conf[Attributes::ImportExtObjs] == Attributes::True);
 	ignore_duplic_chk->setChecked(conf[Attributes::IgnoreDuplicErrors] == Attributes::True);
 	ignore_errors_chk->setChecked(conf[Attributes::IgnoreImportErrors] == Attributes::True);
 	run_in_transaction_chk->setChecked(conf[Attributes::RunInTransaction] == Attributes::True);
+
 	ignore_error_codes_chk->setChecked(!conf[Attributes::IgnoreErrorCodes].isEmpty());
 	error_codes_edt->setText(conf[Attributes::IgnoreErrorCodes]);
 
@@ -1278,12 +1273,12 @@ void DiffToolWidget::selectPreset()
 	forced_obj_types_wgt->setTypesCheckState(Qt::Unchecked);
 	forced_obj_types_wgt->blockSignals(false);
 
-	forced_obj_types_wgt->setTypeNamesCheckState(conf[Attributes::ForceObjsReCreation].split(','), Qt::Checked); */
+	forced_obj_types_wgt->setTypeNamesCheckState(conf[Attributes::ForceObjsReCreation].split(','), Qt::Checked);
 
 	/* Compatibility with previous versions of diff-presets.conf
 	 * We configure diff filters only when one of the attributes related
 	 * to them is present */
-	/* if(conf.count(Attributes::MatchBySignature) ||
+	if(conf.count(Attributes::MatchBySignature) ||
 		 conf.count(Attributes::OnlyMatching) ||
 		 conf.count(Attributes::ForcedFiltering))
 	{
@@ -1291,7 +1286,7 @@ void DiffToolWidget::selectPreset()
 		pd_filter_wgt->setForceObjectsFilter(conf[Attributes::ForcedFiltering].split(','));
 		pd_filter_wgt->setMatchBySignature(conf[Attributes::MatchBySignature] != Attributes::False);
 		pd_filter_wgt->setOnlyMatching(conf[Attributes::OnlyMatching] != Attributes::False);
-	} */
+	}
 }
 
 void DiffToolWidget::togglePresetConfiguration(bool toggle, bool is_edit)
@@ -1336,7 +1331,7 @@ void DiffToolWidget::removePreset()
 
 void DiffToolWidget::savePreset()
 {
-/*	try
+	try
 	{
 		QString name, fmt_name;
 		attribs_map conf;
@@ -1356,20 +1351,37 @@ void DiffToolWidget::savePreset()
 			fmt_name = name + QString::number(++idx);
 
 		conf[Attributes::Name] = fmt_name;
-		conf[Attributes::CurrentModel] = src_model_rb->isChecked() ? Attributes::True : "";
 
-		if(src_database_rb->isChecked())
+		if(model_to_model_tb->isChecked())
+			conf[Attributes::DifMode] = Attributes::DiffModels;
+		else if(model_to_db_tb->isChecked())
+			conf[Attributes::DifMode] = Attributes::DiffModelDb;
+		else
+			conf[Attributes::DifMode] = Attributes::DiffDatabases;
+
+		Connection sel_conn = input_sel_wgt->getSelectedConnection();
+		QString	sel_db_name = input_sel_wgt->getSelectedDatabase();
+
+		if(sel_conn.isConfigured())
 		{
 			conf[Attributes::InputDatabase] = QString("%1@%2")
-																				.arg(src_database_cmb->currentIndex() > 0 ? src_database_cmb->currentText() : "-")
-																				.arg(src_connections_cmb->currentIndex() > 0 ? src_connections_cmb->currentText() : "-");
+																				.arg(!sel_db_name.isEmpty() ? sel_db_name : "-")
+																				.arg(sel_conn.getConnectionId());
 		}
 		else
 			conf[Attributes::InputDatabase] = "";
 
-		conf[Attributes::CompareToDatabase] = QString("%1@%2")
-																					.arg(database_cmb->currentIndex() > 0 ? database_cmb->currentText() : "-")
-																					.arg(connections_cmb->currentIndex() > 0 ? connections_cmb->currentText() : "-");
+		sel_conn = compared_sel_wgt->getSelectedConnection();
+		sel_db_name = compared_sel_wgt->getSelectedDatabase();
+
+		if(sel_conn.isConfigured())
+		{
+			conf[Attributes::CompareToDatabase] = QString("%1@%2")
+																				.arg(!sel_db_name.isEmpty() ? sel_db_name : "-")
+																				.arg(sel_conn.getConnectionId());
+		}
+		else
+			conf[Attributes::CompareToDatabase] = "";
 
 		conf[Attributes::Version] = pgsql_ver_chk->isChecked() ? pgsql_ver_cmb->currentText() : "";
 		conf[Attributes::StoreInFile] = store_in_file_rb->isChecked() ? Attributes::True : "";
@@ -1390,8 +1402,9 @@ void DiffToolWidget::savePreset()
 		conf[Attributes::IgnoreImportErrors] = ignore_errors_chk->isChecked() ? Attributes::True : Attributes::False;
 		conf[Attributes::IgnoreErrorCodes] = error_codes_edt->text();
 		conf[Attributes::RunInTransaction] = run_in_transaction_chk->isChecked() ? Attributes::True : Attributes::False;
-		conf[Attributes::ForceObjsReCreation] = forced_obj_types_wgt->getTypeNamesPerCheckState(Qt::Checked).join(',');
+		conf[Attributes::DebugMode] = debug_mode_chk->isChecked() ? Attributes::True : Attributes::False;
 
+		conf[Attributes::ForceObjsReCreation] = forced_obj_types_wgt->getTypeNamesPerCheckState(Qt::Checked).join(',');
 		conf[Attributes::MatchBySignature] = pd_filter_wgt->isMatchBySignature() ? Attributes::True : Attributes::False;
 		conf[Attributes::OnlyMatching] = pd_filter_wgt->isOnlyMatching() ? Attributes::True : Attributes::False;
 		conf[Attributes::ForcedFiltering] = pd_filter_wgt->getForceObjectsFilter().join(',' );
@@ -1409,7 +1422,7 @@ void DiffToolWidget::savePreset()
 	catch(Exception &e)
 	{
 		throw Exception(e.getErrorMessage(), e.getErrorCode(), PGM_FUNC, PGM_FILE, PGM_LINE, &e);
-	} */
+	}
 }
 
 void DiffToolWidget::selectModels()

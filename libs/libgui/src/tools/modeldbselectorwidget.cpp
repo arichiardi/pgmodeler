@@ -50,6 +50,33 @@ void ModelDbSelectorWidget::setSelectMode(SelectMode sel_mode)
 	}
 }
 
+void ModelDbSelectorWidget::setSelectedConnection(const QString &conn_id)
+{
+	connections_cmb->blockSignals(true);
+	connections_cmb->setCurrentText(conn_id);
+
+	if(connections_cmb->currentIndex() < 0 &&
+		 connections_cmb->count() > 1)
+		connections_cmb->setCurrentIndex(0);
+
+	listDatabases();
+	connections_cmb->blockSignals(false);
+}
+
+void ModelDbSelectorWidget::setSelectedDatabase(const QString &db_name)
+{
+	database_cmb->blockSignals(true);
+	database_cmb->setCurrentText(db_name);
+
+	if(database_cmb->currentIndex() < 0 &&
+		 database_cmb->count() > 1)
+		database_cmb->setCurrentIndex(0);
+
+	database_cmb->blockSignals(false);
+
+	emit s_selectionChanged();
+}
+
 Connection ModelDbSelectorWidget::getSelectedConnection()
 {
 	if(database_cmb->currentIndex() <= 0)
