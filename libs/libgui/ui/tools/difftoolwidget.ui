@@ -136,7 +136,7 @@
            <normaloff>:/icons/icons/config.png</normaloff>:/icons/icons/config.png</iconset>
          </attribute>
          <attribute name="title">
-          <string>&amp;Settings</string>
+          <string>Settings</string>
          </attribute>
          <layout class="QVBoxLayout" name="verticalLayout_5">
           <property name="leftMargin">
@@ -1784,7 +1784,7 @@
            <normaloff>:/icons/icons/outputpane.png</normaloff>:/icons/icons/outputpane.png</iconset>
          </attribute>
          <attribute name="title">
-          <string>&amp;Output</string>
+          <string>Output</string>
          </attribute>
          <layout class="QGridLayout" name="gridLayout_9">
           <property name="leftMargin">
@@ -2284,7 +2284,7 @@
            <normaloff>:/icons/icons/sqlpreview.png</normaloff>:/icons/icons/sqlpreview.png</iconset>
          </attribute>
          <attribute name="title">
-          <string>&amp;Diff preview</string>
+          <string>Diff preview</string>
          </attribute>
          <layout class="QGridLayout" name="gridLayout_5">
           <property name="leftMargin">
