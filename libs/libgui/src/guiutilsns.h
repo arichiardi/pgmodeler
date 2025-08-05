@@ -69,12 +69,6 @@ namespace GuiUtilsNs {
 	extern __libgui void __configureWidgetFont(QWidget *widget, double factor);
 	extern __libgui void configureWidgetsFont(const QWidgetList widgets, FontFactorId factor_id);
 
-	/*! \brief Creates a NumberedTextEditor instance automatically assigning it to 'parent'.
-		This function will create a layout if 'parent' doesn't has one. If parent has a layout
-		the function will do nothing. If parent is null creates an orphan object which means the
-		user must take care of the destruction of the object */
-	extern __libgui NumberedTextEditor *createNumberedTextEditor(QWidget *parent, bool act_btns_enabled = false, qreal custom_fnt_size = 0);
-
 	/*! \brief Creates an item in the specified QTreeWidget instance.
 		The new item is automatically inserted on the QTreeWidget object.
 		Setting word_wrap will create a QLabel instance into item's and assign the text to it. */
@@ -220,6 +214,45 @@ namespace GuiUtilsNs {
 			}
 		}
 	}
+
+	/*! \brief Creates a wiget in a parent. If the parent has no layout configured then
+	 * this function also creates a layout for the parent and puts the new widget there.
+	 * The user can specify the layout margins. If no parent is provided the object is an
+	 * orphan one, meaning the user needs to take care of its destruction */
+	template<class WgtClass, typename ...CtorArgs,
+					 std::enable_if_t<std::is_base_of_v<QWidget, WgtClass>, bool> = true>
+	extern __libgui WgtClass *createWidgetInParent(int lt_margins, CtorArgs... new_wgt_ctor_args)
+	{
+		WgtClass *new_wgt = new WgtClass(new_wgt_ctor_args...);
+		QWidget *parent = qobject_cast<QWidget *>(new_wgt->parent());
+
+		if(parent && !parent->layout())
+		{
+			QVBoxLayout *vbox = new QVBoxLayout(parent);
+			vbox->addWidget(new_wgt);
+			vbox->setContentsMargins(lt_margins, lt_margins, lt_margins, lt_margins);
+			vbox->setSpacing(LtSpacing);
+		}
+
+		return new_wgt;
+	}
+
+	/*! \brief Creates a wiget in a parent. If the parent has no layout configured then
+	 * this function also creates a layout for the parent and puts the new widget there.
+	 * This version, creates the layout in parent with no margins. If no parent is provided
+	 * the object is an orphan one, meaning the user needs to take care of its destruction */
+	template<class WgtClass, typename ...CtorArgs,
+					 std::enable_if_t<std::is_base_of_v<QWidget, WgtClass>, bool> = true>
+	extern __libgui WgtClass *createWidgetInParent(CtorArgs... new_wgt_ctor_args)
+	{
+		return createWidgetInParent<WgtClass>(0, new_wgt_ctor_args...);
+	}
+
+	/*! \brief Creates a NumberedTextEditor instance automatically assigning it to 'parent'.
+	 * This function will create a layout if 'parent' doesn't has one. If parent has a layout
+	 * the function will do nothing. If parent is null creates an orphan object which means the
+	 * user must take care of the destruction of the object */
+	extern __libgui NumberedTextEditor *createNumberedTextEditor(QWidget *parent, bool act_btns_enabled = false, qreal custom_fnt_size = 0);
 }
 
 #endif

@@ -23,7 +23,6 @@
 #include "tools/sqlexecutionwidget.h"
 #include "tools/modelfixform.h"
 #include "tools/modelexportwidget.h"
-#include "tools/modeldatabasediffform.h"
 #include <QMimeData>
 #include <QDesktopServices>
 
@@ -212,7 +211,7 @@ void MainWindow::handleImportFinished()
 	else if(current_model)
 		updateDockWidgets();
 
-	stopTimers(true);
+	stopTimers(false);
 	action_design->setChecked(true);
 }
 
@@ -462,6 +461,21 @@ void MainWindow::handleInitializationFailure(Exception &e)
 	}
 }
 
+template<class WgtClass>
+WgtClass *MainWindow::createViewWidget(MWViewsId view_id, const QString &view_name)
+{
+	WgtClass *view_wgt = new WgtClass(this);
+	view_wgt->setObjectName(view_name);
+
+	QVBoxLayout *vbox = new QVBoxLayout;
+	vbox->setContentsMargins(0,0,0,0);
+	vbox->setSpacing(0);
+	vbox->addWidget(view_wgt);
+	views_stw->widget(view_id)->setLayout(vbox);
+
+	return view_wgt;
+}
+
 void MainWindow::createMainWidgets()
 {
 	try
@@ -479,46 +493,12 @@ void MainWindow::createMainWidgets()
 		hbox->setContentsMargins(0, GuiUtilsNs::LtMargin, 0, 0);
 		scene_info_parent->setLayout(hbox);
 
-		welcome_wgt = new WelcomeWidget(this);
-		welcome_wgt->setObjectName("welcome_wgt");
-
-		QVBoxLayout *vbox = new QVBoxLayout;
-		vbox->setContentsMargins(0,0,0,0);
-		vbox->setSpacing(0);
-		vbox->addWidget(welcome_wgt);
-		views_stw->widget(WelcomeView)->setLayout(vbox);
-
-		sql_tool_wgt = new SQLToolWidget(this);
-		sql_tool_wgt->setObjectName("sql_tool_wgt");
-		vbox = new QVBoxLayout;
-		vbox->setContentsMargins(0,0,0,0);
-		vbox->setSpacing(0);
-		vbox->addWidget(sql_tool_wgt);
-		views_stw->widget(ManageView)->setLayout(vbox);
-
-		configuration_wgt = new ConfigurationWidget(this);
-		sql_tool_wgt->setObjectName("configuration_wgt");
-		vbox = new QVBoxLayout;
-		vbox->setContentsMargins(0,0,0,0);
-		vbox->setSpacing(0);
-		vbox->addWidget(configuration_wgt);
-		views_stw->widget(ConfigureView)->setLayout(vbox);
-
-		db_import_wgt = new DatabaseImportWidget(this);
-		db_import_wgt->setObjectName("db_import_wgt");
-		vbox = new QVBoxLayout;
-		vbox->setContentsMargins(0,0,0,0);
-		vbox->setSpacing(0);
-		vbox->addWidget(db_import_wgt);
-		views_stw->widget(ImportView)->setLayout(vbox);
-
-		model_export_wgt = new ModelExportWidget(this);
-		db_import_wgt->setObjectName("model_export_wgt");
-		vbox = new QVBoxLayout;
-		vbox->setContentsMargins(0,0,0,0);
-		vbox->setSpacing(0);
-		vbox->addWidget(model_export_wgt);
-		views_stw->widget(ExportView)->setLayout(vbox);
+		welcome_wgt = createViewWidget<WelcomeWidget>(WelcomeView, "welcome_wgt");
+		sql_tool_wgt = createViewWidget<SQLToolWidget>(ManageView, "sql_tool_wgt");
+		configuration_wgt = createViewWidget<ConfigurationWidget>(ConfigureView, "configuration_wgt");
+		db_import_wgt = createViewWidget<DatabaseImportWidget>(ImportView, "db_import_wgt");
+		model_export_wgt = createViewWidget<ModelExportWidget>(ExportView, "model_export_wgt");
+		diff_tool_wgt = createViewWidget<DiffToolWidget>(DiffView, "diff_tool_wgt");
 
 		model_nav_wgt=new ModelNavigationWidget(this);
 		model_nav_wgt->setObjectName("model_nav_wgt");
@@ -677,10 +657,6 @@ void MainWindow::connectSignalsToSlots()
 
 	connect(&model_save_timer, &QTimer::timeout, this, &MainWindow::saveAllModels);
 
-	//connect(action_export, &QAction::triggered, this, &MainWindow::exportModel);
-	//connect(action_import, &QAction::triggered, this, &MainWindow::importDatabase);
-	connect(action_diff, &QAction::triggered, this, &MainWindow::diffModelDatabase);
-
 	/* Configuring the view switching actions slots.
 	 * ATTENTION: The order of the actions in the list below
 	 * must match the enum MWViewsId otherwise the views will
@@ -700,7 +676,8 @@ void MainWindow::connectSignalsToSlots()
 		connect(act, &QAction::toggled, this, &MainWindow::changeCurrentView);
 	}
 
-	connect(action_export, &QAction::toggled, this, &MainWindow::validateModelOnExport);
+	connect(action_export, &QAction::toggled, this, &MainWindow::validateBeforeOperation);
+	connect(action_diff, &QAction::toggled, this, &MainWindow::validateBeforeOperation);
 
 	connect(action_bug_report, &QAction::triggered, this, &MainWindow::reportBug);
 	connect(action_handle_metadata, &QAction::triggered, this, &MainWindow::handleObjectsMetadata);
@@ -760,15 +737,15 @@ void MainWindow::connectSignalsToSlots()
 
 	connect(&tmpmodel_save_timer, &QTimer::timeout, this, &MainWindow::saveTemporaryModels);
 
-	connect(model_valid_wgt, &ModelValidationWidget::s_connectionsUpdateRequest, this, [this](){
+	connect(model_valid_wgt, &ModelValidationWidget::s_connectionsUpdateRequested, this, [this](){
 		updateConnections(true);
 	});
 
-	connect(sql_tool_wgt, &SQLToolWidget::s_connectionsUpdateRequest, this, [this](){
+	connect(sql_tool_wgt, &SQLToolWidget::s_connectionsUpdateRequested, this, [this](){
 		updateConnections(true);
 	});
 
-	connect(db_import_wgt, &DatabaseImportWidget::s_connectionsUpdateRequest, this, [this](){
+	connect(db_import_wgt, &DatabaseImportWidget::s_connectionsUpdateRequested, this, [this](){
 		updateConnections(true);
 	});
 
@@ -777,6 +754,20 @@ void MainWindow::connectSignalsToSlots()
 	});
 
 	connect(db_import_wgt, &DatabaseImportWidget::s_importFinished, this, &MainWindow::handleImportFinished);
+
+	connect(diff_tool_wgt, &DiffToolWidget::s_connectionsUpdateRequested, this, [this](){
+		updateConnections(true);
+	});
+
+	connect(diff_tool_wgt, &DiffToolWidget::s_diffStarted, this, [this](){
+		stopTimers(true);
+	});
+
+	connect(diff_tool_wgt, &DiffToolWidget::s_diffCanceled, this, [this](){
+		stopTimers(false);
+	});
+
+	connect(diff_tool_wgt, &DiffToolWidget::s_loadDiffInSQLTool, this, &MainWindow::loadDiffInSQLTool);
 
 #ifndef Q_OS_MACOS
 	connect(action_show_main_menu, &QAction::triggered, this, &MainWindow::showMainMenu);
@@ -979,8 +970,9 @@ void MainWindow::closeEvent(QCloseEvent *event)
 	/* pgModeler will not close when one of the
 	 * threaded operations (validation, import, diff, export)
 	 * is still running */
-	if(model_valid_wgt->isValidationRunning() ||
-		 db_import_wgt->isImportRunning())
+	if(model_valid_wgt->isThreadRunning() ||
+		 db_import_wgt->isThreadRunning() ||
+		 diff_tool_wgt->isThreadsRunning())
 		event->ignore();
 	else
 	{
@@ -1133,19 +1125,19 @@ void MainWindow::updateConnections(bool force)
 													model_export_wgt->connections_cmb->count() == 0)))
 	{
 		if(sender() != sql_tool_wgt)
-		{
-			ConnectionsConfigWidget::fillConnectionsComboBox(sql_tool_wgt->connections_cmb, true);
-			sql_tool_wgt->clearDatabases();
-		}
+			sql_tool_wgt->updateConnections();
 
 		if(sender() != model_valid_wgt)
-			ConnectionsConfigWidget::fillConnectionsComboBox(model_valid_wgt->connections_cmb, true, Connection::OpValidation);
+			model_valid_wgt->updateConnections();
 
 		if(sender() != db_import_wgt)
-			ConnectionsConfigWidget::fillConnectionsComboBox(db_import_wgt->connections_cmb, true, Connection::OpImport);
+			db_import_wgt->updateConnections();
 
 		if(sender() != model_export_wgt)
-			ConnectionsConfigWidget::fillConnectionsComboBox(model_export_wgt->connections_cmb, true, Connection::OpExport);
+			model_export_wgt->updateConnections();
+
+		if(sender() != diff_tool_wgt)
+			diff_tool_wgt->updateConnections();
 	}
 }
 
@@ -1628,7 +1620,6 @@ void MainWindow::setCurrentModel()
 	obj_finder_wgt->setModel(current_model);
 	changelog_wgt->setModel(current_model);
 	db_import_wgt->setModel(current_model);
-	model_export_wgt->setModel(current_model);
 
 	if(current_model)
 		model_objs_wgt->restoreTreeState(model_tree_states[current_model],
@@ -1706,35 +1697,38 @@ void MainWindow::removeModelActions()
 
 void MainWindow::closeModel(int model_id)
 {
-	QWidget *tab=nullptr;
+	QWidget *tab = nullptr;
+
+	if(model_id >= 0)
+		tab = models_tbw->widget(model_id);
+	else
+		tab = models_tbw->currentWidget();
 
 	overview_wgt->close();
 
-	if(model_id >= 0)
-		tab=models_tbw->widget(model_id);
-	else
-		tab=models_tbw->currentWidget();
-
 	if(tab)
 	{
-		ModelWidget *model=dynamic_cast<ModelWidget *>(tab);
-		Messagebox msg_box;
+		ModelWidget *model = dynamic_cast<ModelWidget *>(tab);
 
-#ifdef DEMO_VERSION
-		msg_box.setResult(QDialog::Accepted);
-#else
+		// Avoid closing the model if it has interaction disabled
+		if(!model->isInteractive())
+			return;
+
+		int msg_res = QDialog::Accepted;
+
+#ifndef DEMO_VERSION
 		//Ask the user to save the model if its modified
 		if(model->isModified())
 		{
-			msg_box.show(tr("Save model"),
-									 tr("The model <strong>%1</strong> was modified! Do you really want to close without saving it?")
-									 .arg(model->getDatabaseModel()->getName()),
-									 Messagebox::ConfirmIcon, Messagebox::YesNoButtons);
+			Messagebox::confirm(tr("Save model"),
+													tr("The model <strong>%1</strong> was modified! Do you really want to close without saving it?")
+													.arg(model->getDatabaseModel()->getName()),
+													Messagebox::YesNoButtons);
 		}
 #endif
 
 		if(!model->isModified() ||
-				(model->isModified() && msg_box.isAccepted()))
+				(model->isModified() && msg_res == Messagebox::Accepted))
 		{
 			model_nav_wgt->removeModel(model_id);
 			model_tree_states.remove(model);
@@ -1958,9 +1952,10 @@ void MainWindow::saveModel(ModelWidget *model)
 #endif
 }
 
-void MainWindow::validateModelOnExport()
+void MainWindow::validateBeforeOperation()
 {
-	if(!action_export->isChecked())
+	if(!current_model ||
+		 (!action_export->isChecked() && !action_diff->isChecked()))
 		return;
 
 	DatabaseModel *db_model = current_model->getDatabaseModel();
@@ -1968,72 +1963,41 @@ void MainWindow::validateModelOnExport()
 	if(confirm_validation && current_model->getDatabaseModel()->isInvalidated())
 	{
 		Messagebox msgbox;
+		bool is_export = action_export->isChecked();
+		QString btn_lbl = is_export ? tr("Export anyway") : tr("Diff anyway"),
+				icon_pth = GuiUtilsNs::getIconPath(is_export ? "export" : "diff");
 
-		msgbox.show(tr("Confirmation"), tr("<strong>WARNING:</strong> The model <strong>%1</strong> has not been validated since the last modification! Before running the export process it's recommended to validate in order to correctly create the objects on database server!").arg(db_model->getName()),
-								Messagebox::AlertIcon, Messagebox::YesNoButtons, tr("Validate"), tr("Export anyway"), "",
-								GuiUtilsNs::getIconPath("validation"), GuiUtilsNs::getIconPath("export"));
+		msgbox.show(tr("Confirmation"), tr("<strong>WARNING:</strong> The model <strong>%1</strong> has not been validated since the last modification! Before running the selected operation it's recommended to validate in order to correctly create the objects on database server!").arg(db_model->getName()),
+								Messagebox::AlertIcon, Messagebox::YesNoButtons, tr("Validate"), btn_lbl, "",
+								GuiUtilsNs::getIconPath("validation"), icon_pth);
 
 		if(msgbox.isAccepted())
 		{
 			action_design->toggle();
-			QTimer::singleShot(1000, this, [this]{
+			QTimer::singleShot(1000, this, [this, is_export]{
 				validation_btn->setChecked(true);
-				pending_op = PendingExportOp;
+				pending_op = is_export ? PendingExportOp : PendingDiffOp;
 				model_valid_wgt->validateModel();
 			});
 		}
 	}
 }
 
-void MainWindow::diffModelDatabase()
+void MainWindow::loadDiffInSQLTool(const QString &conn_id, const QString &database, const QString &filename)
 {
-	ModelDatabaseDiffForm modeldb_diff_frm(nullptr, Qt::Dialog | Qt::WindowMinMaxButtonsHint | Qt::WindowCloseButtonHint);
-	Messagebox msg_box;
-	DatabaseModel *db_model=(current_model ? current_model->getDatabaseModel() : nullptr);
+	qApp->setOverrideCursor(Qt::WaitCursor);
 
-	if(current_model)
-		action_design->setChecked(true);
-
-	if(confirm_validation && db_model && db_model->isInvalidated())
+	try
 	{
-		msg_box.show(tr("Confirmation"),
-					 tr(" <strong>WARNING:</strong> The model <strong>%1</strong> has not been validated since the last modification! Before run the diff process it's recommended to validate in order to correctly analyze and generate the difference between the model and a database!").arg(db_model->getName()),
-					 Messagebox::AlertIcon, Messagebox::AllButtons,
-					 tr("Validate"), tr("Diff anyway"), "",
-					 GuiUtilsNs::getIconPath("validation"), GuiUtilsNs::getIconPath("diff"));
-
-		if(msg_box.isAccepted())
-		{
-			validation_btn->setChecked(true);
-			this->pending_op=PendingDiffOp;
-			model_valid_wgt->validateModel();
-		}
+		action_manage->setChecked(true);
+		sql_tool_wgt->addSQLExecutionTab(conn_id, database, filename);
+	}
+	catch(Exception &e)
+	{
+		Messagebox::error(e, __PRETTY_FUNCTION__, __FILE__, __LINE__);
 	}
 
-	if(!confirm_validation || !db_model ||
-			((db_model && !db_model->isInvalidated()) || (confirm_validation && !msg_box.isCanceled() && msg_box.isRejected())))
-	{
-		modeldb_diff_frm.setModelWidget(current_model);
-		stopTimers(true);
-
-		connect(&modeldb_diff_frm, &ModelDatabaseDiffForm::s_connectionsUpdateRequest, this, [this](){
-			updateConnections(true);
-		});
-
-		connect(&modeldb_diff_frm, &ModelDatabaseDiffForm::s_loadDiffInSQLTool, this, [this](QString conn_id, QString database, QString filename){
-			__trycatch(
-				qApp->setOverrideCursor(Qt::WaitCursor);
-				action_manage->setChecked(true);
-				sql_tool_wgt->addSQLExecutionTab(conn_id, database, filename);
-				qApp->restoreOverrideCursor();
-			)
-		});
-
-		GeneralConfigWidget::restoreWidgetGeometry(&modeldb_diff_frm);
-		modeldb_diff_frm.exec();
-		GeneralConfigWidget::saveWidgetGeometry(&modeldb_diff_frm);
-		stopTimers(false);
-	}
+	qApp->restoreOverrideCursor();
 }
 
 void MainWindow::printModel()
@@ -2460,11 +2424,11 @@ void MainWindow::executePendingOperation(bool valid_error)
 	if(valid_error || pending_op == NoPendingOp)
 		return;
 
-	static const QString op_names[]={ "", QT_TR_NOOP("save"), QT_TR_NOOP("save"),
+	static const QString op_names[] { "", QT_TR_NOOP("save"), QT_TR_NOOP("save"),
 																		QT_TR_NOOP("export"), QT_TR_NOOP("diff") },
 
-	op_icons[]={ "", GuiUtilsNs::getIconPath("save"), GuiUtilsNs::getIconPath("saveas"),
-							 GuiUtilsNs::getIconPath("export"), GuiUtilsNs::getIconPath("diff") };
+	op_icons[] { "", GuiUtilsNs::getIconPath("save"), GuiUtilsNs::getIconPath("saveas"),
+									 GuiUtilsNs::getIconPath("export"), GuiUtilsNs::getIconPath("diff") };
 
 	GuiUtilsNs::createOutputTreeItem(model_valid_wgt->output_trw,
 																	 tr("Executing pending <strong>%1</strong> operation...").arg(op_names[pending_op]),
@@ -2518,7 +2482,7 @@ void MainWindow::changeCurrentView(bool checked)
 
 		actions = tools_acts_tb->actions();
 		for(int i = ToolsActionsCount; i < actions.count(); i++)
-			actions[i]->setEnabled(enable);
+			actions[i]->setEnabled(enable && current_model && current_model->isInteractive());
 
 		if(!enable)
 			overview_wgt->close();
@@ -2537,6 +2501,12 @@ void MainWindow::changeCurrentView(bool checked)
 		action_print->setEnabled(enable);
 		action_close_model->setEnabled(enable);
 		action_save_as->setEnabled(enable);
+
+		if(curr_act == action_diff)
+			diff_tool_wgt->updateModels(model_nav_wgt->getModelWidgets());
+
+		if(curr_act == action_export)
+			model_export_wgt->updateModels(model_nav_wgt->getModelWidgets());
 	}
 	else
 	{

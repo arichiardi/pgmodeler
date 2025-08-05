@@ -69,7 +69,7 @@ set(SOURCES
     src/tools/datagridwidget.cpp src/tools/datagridwidget.h
     src/tools/datahandlingform.cpp src/tools/datahandlingform.h
     src/tools/metadatahandlingform.cpp src/tools/metadatahandlingform.h
-    src/tools/modeldatabasediffform.cpp src/tools/modeldatabasediffform.h
+
     src/tools/modelexportwidget.cpp src/tools/modelexportwidget.h
     src/tools/modelexporthelper.cpp src/tools/modelexporthelper.h
     src/tools/modelfixform.cpp src/tools/modelfixform.h
@@ -83,6 +83,8 @@ set(SOURCES
     src/tools/sqltoolwidget.cpp src/tools/sqltoolwidget.h
     src/tools/swapobjectsidswidget.cpp src/tools/swapobjectsidswidget.h
     src/tools/validationinfo.cpp src/tools/validationinfo.h
+    src/tools/difftoolwidget.cpp src/tools/difftoolwidget.h
+    src/tools/modeldbselectorwidget.h src/tools/modeldbselectorwidget.cpp
     src/utils/customsortproxymodel.cpp src/utils/customsortproxymodel.h
     src/utils/deletableitemdelegate.cpp src/utils/deletableitemdelegate.h
     src/utils/fragmentinfo.cpp src/utils/fragmentinfo.h
@@ -191,11 +193,12 @@ set(FORMS
     ui/tools/metadatahandlingform.ui
     ui/tools/modelfixform.ui
     ui/tools/sqltoolwidget.ui
-    ui/tools/modeldatabasediffform.ui
     ui/tools/modelrestorationform.ui
     ui/tools/swapobjectsidswidget.ui
     ui/tools/modelvalidationwidget.ui
     ui/tools/databaseimportwidget.ui
+    ui/tools/difftoolwidget.ui
+    ui/tools/modeldbselectorwidget.ui
     ui/widgets/aboutwidget.ui
     ui/widgets/customtablewidget.ui
     ui/widgets/donatewidget.ui

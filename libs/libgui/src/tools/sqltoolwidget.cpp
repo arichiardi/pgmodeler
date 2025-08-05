@@ -235,7 +235,7 @@ void SQLToolWidget::connectToServer()
 		if(connections_cmb->currentIndex()==connections_cmb->count()-1)
 		{
 			if(ConnectionsConfigWidget::openConnectionsConfiguration(connections_cmb, true))
-				emit s_connectionsUpdateRequest();
+				emit s_connectionsUpdateRequested();
 		}
 		else
 		{
@@ -457,6 +457,12 @@ void SQLToolWidget::closeDatabaseExplorer(int idx, bool confirm_close)
 void SQLToolWidget::ignoreAutoBrowseFlag(bool value)
 {
 	ignore_auto_browse_flag = value;
+}
+
+void SQLToolWidget::updateConnections()
+{
+	ConnectionsConfigWidget::fillConnectionsComboBox(connections_cmb, true);
+	clearDatabases();
 }
 
 void SQLToolWidget::closeSQLExecutionTab(int idx, bool confirm_close)

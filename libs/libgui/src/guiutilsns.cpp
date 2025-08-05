@@ -31,21 +31,9 @@
 #include <unordered_map>
 
 namespace GuiUtilsNs {
-
-
-
 	NumberedTextEditor *createNumberedTextEditor(QWidget *parent, bool act_btns_enabled, qreal custom_fnt_size)
 	{
-		NumberedTextEditor *editor=new NumberedTextEditor(parent, act_btns_enabled, custom_fnt_size);
-
-		if(parent && !parent->layout())
-		{
-			QHBoxLayout *layout=new QHBoxLayout(parent);
-			layout->setContentsMargins(0,0,0,0);
-			layout->addWidget(editor);
-		}
-
-		return editor;
+		return createWidgetInParent<NumberedTextEditor>(parent, act_btns_enabled, custom_fnt_size);
 	}
 
 	QTreeWidgetItem *createOutputTreeItem(QTreeWidget *output_trw, const QString &text, const QPixmap &ico, QTreeWidgetItem *parent, bool expand_item, bool word_wrap)

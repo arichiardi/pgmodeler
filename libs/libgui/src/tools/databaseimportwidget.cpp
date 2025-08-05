@@ -364,8 +364,16 @@ void DatabaseImportWidget::importDatabase()
 			model_wgt->getDatabaseModel()->createSystemObjects(true);
 			model_wgt->updateSceneLayers();
 		}
+		// If importing to working model
+		else
+		{
+			// We temporarily disable interaction over it while import is running
+			model_wgt->setInteractive(false);
 
-		model_wgt->setUpdatesEnabled(false);
+			if(rand_obj_pos_chk->isChecked())
+				connect(model_wgt, &ModelWidget::s_objectAdded, this, &DatabaseImportWidget::setObjectPosition);
+		}
+
 		import_helper->setImportOptions(import_sys_objs_chk->isChecked(), import_ext_objs_chk->isChecked(),
 																		resolve_deps_chk->isChecked(), ignore_errors_chk->isChecked(),
 																		debug_mode_chk->isChecked(), rand_rel_color_chk->isChecked(), true,
@@ -379,9 +387,6 @@ void DatabaseImportWidget::importDatabase()
 		database_gb->setEnabled(false);
 		options_gb->setEnabled(false);
 		filter_gb->setEnabled(false);
-
-		if(!create_model && rand_obj_pos_chk->isChecked())
-			connect(model_wgt, &ModelWidget::s_objectAdded, this, &DatabaseImportWidget::setObjectPosition);
 
 		emit s_importStarted();
 	}
@@ -588,7 +593,7 @@ void DatabaseImportWidget::listDatabases()
 		if(connections_cmb->currentIndex() == connections_cmb->count()-1)
 		{
 			if(ConnectionsConfigWidget::openConnectionsConfiguration(connections_cmb, true))
-				emit s_connectionsUpdateRequest();
+				emit s_connectionsUpdateRequested();
 		}
 
 		Connection *conn=reinterpret_cast<Connection *>(connections_cmb->itemData(connections_cmb->currentIndex()).value<void *>());
@@ -784,8 +789,6 @@ void DatabaseImportWidget::handleImportFinished(Exception e)
 	import_thread->quit();
 	import_thread->wait();
 	settings_tbw->setCurrentIndex(0);
-
-	emit s_importFinished();
 }
 
 void DatabaseImportWidget::finishImport(const QString &msg)
@@ -805,7 +808,7 @@ void DatabaseImportWidget::finishImport(const QString &msg)
 
 	if(model_wgt)
 	{
-		model_wgt->setUpdatesEnabled(true);
+		model_wgt->setInteractive(true);
 
 		if(!create_model)
 		{
@@ -818,6 +821,8 @@ void DatabaseImportWidget::finishImport(const QString &msg)
 
 	if(!create_model && rand_obj_pos_chk->isChecked())
 		disconnect(model_wgt, nullptr, this, nullptr);
+
+	emit s_importFinished();
 }
 
 void DatabaseImportWidget::showEvent(QShowEvent *event)
@@ -854,7 +859,7 @@ ModelWidget *DatabaseImportWidget::getModel()
 	return nullptr;
 }
 
-bool DatabaseImportWidget::isImportRunning()
+bool DatabaseImportWidget::isThreadRunning()
 {
 	return import_thread && import_thread->isRunning();
 }
@@ -1205,4 +1210,9 @@ std::vector<QTreeWidgetItem *> DatabaseImportWidget::updateObjectsTree(DatabaseI
 		}
 	}
 	return items_vect;
+}
+
+void DatabaseImportWidget::updateConnections()
+{
+	ConnectionsConfigWidget::fillConnectionsComboBox(connections_cmb, true, Connection::OpImport);
 }

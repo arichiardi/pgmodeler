@@ -287,6 +287,9 @@ class __libconnector Catalog {
 		 * of the currently open connection of the catalog object. */
 		bool isServerSupported();
 
+		//! \brief Returns the version of the server in which the catalog object is connected to
+		QString getServerVersion(bool major_only = false);
+
 		//! \brief Parse a PostgreSQL array value and return the elements in a string list
 		static QStringList parseArrayValues(const QString &array_val);
 

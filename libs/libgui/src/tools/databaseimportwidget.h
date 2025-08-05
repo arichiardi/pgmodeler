@@ -95,8 +95,6 @@ class __libgui DatabaseImportWidget: public QWidget, public Ui::DatabaseImportWi
 		//! \brief Filters and list in a different way the objects that matches the user provided filters
 		void listFilteredObjects();
 
-
-
 	public:
 		//! \brief Constants used to access the tree widget items data
 		enum ObjectAttrId {
@@ -133,7 +131,7 @@ class __libgui DatabaseImportWidget: public QWidget, public Ui::DatabaseImportWi
 		ModelWidget *getModel();
 		
 		//! \brief Returns if the importing thread is running
-		bool isImportRunning();
+		bool isThreadRunning();
 
 		//! \brief Fills a combo box with all available databases according to the configurations of the specified import helper
 		static void listDatabases(DatabaseImportHelper &import_helper, QComboBox *dbcombo);
@@ -166,6 +164,9 @@ class __libgui DatabaseImportWidget: public QWidget, public Ui::DatabaseImportWi
 																											 bool checkable_items=false, bool disable_empty_grps=true, QTreeWidgetItem *root=nullptr,
 																											 const QString &schema="", const QString &table="");
 
+		//! \brief Updates the connections combo with the latest loaded connection settings
+		void updateConnections();
+
 	private slots:
 		void enableImportControls(bool enable);
 		void importDatabase();
@@ -189,7 +190,7 @@ class __libgui DatabaseImportWidget: public QWidget, public Ui::DatabaseImportWi
 	signals:
 		/*! \brief This signal is emitted whenever the user changes the connections settings
 		within this widget without use the main configurations dialog */
-		void s_connectionsUpdateRequest();
+		void s_connectionsUpdateRequested();
 
 		//! \brief This signal is emitted whenever the import has successfully finished
 		void s_importFinished();

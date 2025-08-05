@@ -90,6 +90,9 @@ class __libgui SQLToolWidget: public QWidget, public Ui::SQLToolWidget {
 		 * create an empty SQL explorer tab */
 		void ignoreAutoBrowseFlag(bool value);
 
+		//! \brief Updates the connections combo with the latest loaded connection settings
+		void updateConnections();
+
 	public slots:
 		void configureSnippets();
 		void clearDatabases();
@@ -133,7 +136,7 @@ class __libgui SQLToolWidget: public QWidget, public Ui::SQLToolWidget {
 	signals:
 		/*! \brief This signal is emitted whenever the user changes the connections settings
 		within this widget without use the main configurations dialog */
-		void s_connectionsUpdateRequest();
+		void s_connectionsUpdateRequested();
 
 		friend class MainWindow;
 };
