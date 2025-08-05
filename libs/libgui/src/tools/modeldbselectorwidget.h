@@ -33,10 +33,6 @@
 class ModelDbSelectorWidget : public QWidget, public Ui::ModelDbSelectorWidget {
 	Q_OBJECT
 
-	private:
-		void updateConnections(Connection::ConnOperation def_conn_op = Connection::OpNone);
-		void updateModels(const QList<ModelWidget *> &models);
-
 	public:
 		enum SelectMode {
 			SelectModel,
@@ -58,6 +54,9 @@ class ModelDbSelectorWidget : public QWidget, public Ui::ModelDbSelectorWidget {
 		bool isModelSelected();
 		bool hasSelection();
 
+		void updateConnections(Connection::ConnOperation def_conn_op = Connection::OpNone);
+		void updateModels(const QList<ModelWidget *> &models);
+
 	public slots:
 		void listDatabases();
 		void updateModelFilename();
@@ -65,8 +64,6 @@ class ModelDbSelectorWidget : public QWidget, public Ui::ModelDbSelectorWidget {
 	signals:
 		void s_connectionsUpdateRequested();
 		void s_selectionChanged();
-
-	friend class DiffToolWidget;
 };
 
 #endif

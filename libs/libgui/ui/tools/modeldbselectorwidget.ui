@@ -67,7 +67,11 @@
        </widget>
       </item>
       <item>
-       <widget class="QComboBox" name="model_cmb"/>
+       <widget class="QComboBox" name="model_cmb">
+        <property name="sizeAdjustPolicy">
+         <enum>QComboBox::SizeAdjustPolicy::AdjustToContents</enum>
+        </property>
+       </widget>
       </item>
       <item>
        <widget class="QLineEdit" name="model_file_edt">
@@ -172,7 +176,7 @@
             </font>
            </property>
            <property name="text">
-            <string>Unsupported server version detected! The database comparison may not work properly.</string>
+            <string>Unsupported server version detected! The operation may not work properly.</string>
            </property>
            <property name="wordWrap">
             <bool>true</bool>

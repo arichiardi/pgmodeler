@@ -34,6 +34,8 @@ DiffToolWidget::DiffToolWidget(QWidget *parent) : BaseConfigWidget (parent)
 {
 	setupUi(this);
 
+	inv_model_alert_frm->setVisible(false);
+
 	GuiUtilsNs::configureWidgetsFont({ generate_btn, cancel_btn }, GuiUtilsNs::BigFontFactor);
 
 	forced_obj_types_wgt = new ObjectTypesListWidget(this, { ObjectType::Relationship, ObjectType::Permission,
@@ -1437,6 +1439,9 @@ void DiffToolWidget::selectModels()
 
 	enableDiffMode();
 	enablePartialDiff();
+
+	inv_model_alert_frm->setVisible((input_model_wgt && input_model_wgt->getDatabaseModel()->isInvalidated()) ||
+																	(compared_model_wgt && compared_model_wgt->getDatabaseModel()->isInvalidated()));
 }
 
 void DiffToolWidget::enablePartialDiff()

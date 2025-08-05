@@ -223,7 +223,7 @@
            <number>5</number>
           </property>
           <item>
-           <widget class="QGroupBox" name="groupBox">
+           <widget class="QGroupBox" name="input_model_gb">
             <property name="title">
              <string>Input model</string>
             </property>
@@ -324,54 +324,6 @@
                 </item>
                </layout>
               </widget>
-             </item>
-             <item>
-              <layout class="QHBoxLayout" name="horizontalLayout_11">
-               <item>
-                <widget class="QLabel" name="logo_lbl">
-                 <property name="minimumSize">
-                  <size>
-                   <width>28</width>
-                   <height>28</height>
-                  </size>
-                 </property>
-                 <property name="maximumSize">
-                  <size>
-                   <width>28</width>
-                   <height>28</height>
-                  </size>
-                 </property>
-                 <property name="text">
-                  <string/>
-                 </property>
-                 <property name="pixmap">
-                  <pixmap resource="../../res/resources.qrc">:/icons/icons/dbmodel.png</pixmap>
-                 </property>
-                 <property name="scaledContents">
-                  <bool>true</bool>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QLabel" name="model_name_lbl">
-                 <property name="font">
-                  <font>
-                   <bold>true</bold>
-                  </font>
-                 </property>
-                 <property name="text">
-                  <string>model_name</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QLineEdit" name="model_file_edt">
-                 <property name="readOnly">
-                  <bool>true</bool>
-                 </property>
-                </widget>
-               </item>
-              </layout>
              </item>
             </layout>
            </widget>
@@ -806,7 +758,7 @@
              <item row="0" column="1" rowspan="2">
               <widget class="QWidget" name="export_to_file_wgt" native="true">
                <property name="enabled">
-                <bool>true</bool>
+                <bool>false</bool>
                </property>
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -839,7 +791,7 @@
                 <item row="1" column="0">
                  <widget class="QLabel" name="output_lbl">
                   <property name="enabled">
-                   <bool>true</bool>
+                   <bool>false</bool>
                   </property>
                   <property name="sizePolicy">
                    <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -866,7 +818,7 @@
                   <item>
                    <widget class="QComboBox" name="pgsqlvers_cmb">
                     <property name="enabled">
-                     <bool>true</bool>
+                     <bool>false</bool>
                     </property>
                     <property name="minimumSize">
                      <size>
@@ -1051,7 +1003,7 @@
                 <item row="0" column="0">
                  <widget class="QLabel" name="mode_lbl">
                   <property name="enabled">
-                   <bool>true</bool>
+                   <bool>false</bool>
                   </property>
                   <property name="sizePolicy">
                    <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -1147,7 +1099,7 @@
              <item row="0" column="2" rowspan="2">
               <widget class="QWidget" name="export_to_img_wgt" native="true">
                <property name="enabled">
-                <bool>true</bool>
+                <bool>false</bool>
                </property>
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -1180,7 +1132,7 @@
                 <item row="2" column="0">
                  <widget class="QLabel" name="image_lbl">
                   <property name="enabled">
-                   <bool>true</bool>
+                   <bool>false</bool>
                   </property>
                   <property name="sizePolicy">
                    <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -1202,7 +1154,7 @@
                 <item row="0" column="0">
                  <widget class="QLabel" name="img_fmt_lbl">
                   <property name="enabled">
-                   <bool>true</bool>
+                   <bool>false</bool>
                   </property>
                   <property name="sizePolicy">
                    <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -1261,7 +1213,7 @@
                   <item>
                    <widget class="QLabel" name="zoom_lbl">
                     <property name="enabled">
-                     <bool>true</bool>
+                     <bool>false</bool>
                     </property>
                     <property name="sizePolicy">
                      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -1288,7 +1240,7 @@
                   <item>
                    <widget class="QComboBox" name="zoom_cmb">
                     <property name="enabled">
-                     <bool>true</bool>
+                     <bool>false</bool>
                     </property>
                     <property name="sizePolicy">
                      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -1330,7 +1282,7 @@
                   <item>
                    <widget class="QCheckBox" name="show_grid_chk">
                     <property name="enabled">
-                     <bool>true</bool>
+                     <bool>false</bool>
                     </property>
                     <property name="sizePolicy">
                      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -1346,7 +1298,7 @@
                   <item>
                    <widget class="QCheckBox" name="show_delim_chk">
                     <property name="enabled">
-                     <bool>true</bool>
+                     <bool>false</bool>
                     </property>
                     <property name="sizePolicy">
                      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -1362,7 +1314,7 @@
                   <item>
                    <widget class="QCheckBox" name="page_by_page_chk">
                     <property name="enabled">
-                     <bool>true</bool>
+                     <bool>false</bool>
                     </property>
                     <property name="sizePolicy">
                      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -1483,7 +1435,7 @@
              <item row="0" column="2" rowspan="2">
               <widget class="QWidget" name="export_to_dict_wgt" native="true">
                <property name="enabled">
-                <bool>true</bool>
+                <bool>false</bool>
                </property>
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -1516,7 +1468,7 @@
                 <item row="0" column="0">
                  <widget class="QLabel" name="data_dict_mode_lbl_2">
                   <property name="enabled">
-                   <bool>true</bool>
+                   <bool>false</bool>
                   </property>
                   <property name="sizePolicy">
                    <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -1541,7 +1493,7 @@
                 <item row="1" column="0">
                  <widget class="QLabel" name="data_dict_ouput_lbl">
                   <property name="enabled">
-                   <bool>true</bool>
+                   <bool>false</bool>
                   </property>
                   <property name="sizePolicy">
                    <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -1615,7 +1567,7 @@
                   <item>
                    <widget class="QCheckBox" name="incl_index_chk">
                     <property name="enabled">
-                     <bool>true</bool>
+                     <bool>false</bool>
                     </property>
                     <property name="sizePolicy">
                      <sizepolicy hsizetype="Expanding" vsizetype="Fixed">

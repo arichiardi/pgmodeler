@@ -22,17 +22,22 @@
 #include "connectionsconfigwidget.h"
 #include "pgsqlversions.h"
 #include <QThread>
+#include <QButtonGroup>
 
 bool ModelExportWidget::low_verbosity {false};
 
 ModelExportWidget::ModelExportWidget(QWidget *parent) : QWidget(parent)
 {
-	model = nullptr;
+	model_wgt = nullptr;
 	viewp = nullptr;
 	setupUi(this);
 
 	alert_frm->setVisible(false);
 	GuiUtilsNs::configureWidgetsFont({ export_btn, cancel_btn }, GuiUtilsNs::BigFontFactor);
+
+	model_sel_wgt = new ModelDbSelectorWidget(this);
+	model_sel_wgt->setSelectMode(ModelDbSelectorWidget::SelectModel);
+	input_model_gb->layout()->addWidget(model_sel_wgt);
 
 	sql_file_sel = new FileSelectorWidget(this);
 	sql_file_sel->setFileDialogTitle(tr("Export model to SQL file"));
@@ -67,6 +72,23 @@ ModelExportWidget::ModelExportWidget(QWidget *parent) : QWidget(parent)
 	export_to_file_gb->setFocusProxy(export_to_file_tb);
 	export_to_dict_gb->setFocusProxy(export_to_dict_tb);
 	export_to_img_gb->setFocusProxy(export_to_img_tb);
+
+	QButtonGroup *radios_grp = new QButtonGroup(this);
+
+	radios_grp->addButton(export_to_dbms_tb);
+	radios_grp->addButton(export_to_file_tb);
+	radios_grp->addButton(export_to_dict_tb);
+	radios_grp->addButton(export_to_img_tb);
+
+	connect(model_sel_wgt, &ModelDbSelectorWidget::s_selectionChanged, this, [this](){
+		model_wgt = model_sel_wgt->getSelectedModel();
+		enableExport();
+	});
+
+	connect(export_to_dbms_tb, &QToolButton::toggled, export_to_dbms_wgt, &QWidget::setEnabled);
+	connect(export_to_img_tb, &QToolButton::toggled, export_to_img_wgt, &QWidget::setEnabled);
+	connect(export_to_file_tb, &QToolButton::toggled, export_to_file_wgt, &QWidget::setEnabled);
+	connect(export_to_dict_tb, &QToolButton::toggled, export_to_dict_wgt, &QWidget::setEnabled);
 
 	connect(sql_file_sel, &FileSelectorWidget::s_selectorChanged, this, &ModelExportWidget::enableExport);
 	connect(sql_file_sel, &FileSelectorWidget::s_fileSelected, this, &ModelExportWidget::enableExport);
@@ -159,19 +181,10 @@ void ModelExportWidget::setLowVerbosity(bool value)
 	low_verbosity = value;
 }
 
-void ModelExportWidget::setModel(ModelWidget *model)
+void ModelExportWidget::updateModels(const QList<ModelWidget *> &models)
 {
-	setEnabled(model != nullptr);
-
-	this->model = model;
+	model_sel_wgt->updateModels(models);
 	ConnectionsConfigWidget::fillConnectionsComboBox(connections_cmb, true, Connection::OpExport);
-
-	if(model)
-	{
-		model_name_lbl->setText(model->getDatabaseModel()->getName());
-		model_file_edt->setText(!model->getFilename().isEmpty() ? model->getFilename() : tr("(not yet saved to a file)"));
-	}
-
 	selectExportMode();
 
 #ifdef DEMO_VERSION
@@ -261,7 +274,7 @@ void ModelExportWidget::exportModel()
 				return;
 		}
 
-		model->setInteractive(false);
+		model_wgt->setInteractive(false);
 		output_trw->clear();
 		settings_tbw->setTabEnabled(1, true);
 		settings_tbw->setCurrentIndex(1);
@@ -271,15 +284,15 @@ void ModelExportWidget::exportModel()
 		//Export to png
 		if(export_to_img_tb->isChecked())
 		{
-			viewp=new QGraphicsView(model->scene);
+			viewp=new QGraphicsView(model_wgt->scene);
 
 			if(img_fmt_cmb->currentIndex() == 0)
-				export_hlp.setExportToPNGParams(model->scene, viewp, img_file_sel->getSelectedFile(),
+				export_hlp.setExportToPNGParams(model_wgt->scene, viewp, img_file_sel->getSelectedFile(),
 																				zoom_cmb->itemData(zoom_cmb->currentIndex()).toDouble(),
 																				show_grid_chk->isChecked(), show_delim_chk->isChecked(),
 																				 page_by_page_chk->isChecked(), override_bg_color_chk->isChecked());
 			else
-				export_hlp.setExportToSVGParams(model->scene, img_file_sel->getSelectedFile(),
+				export_hlp.setExportToSVGParams(model_wgt->scene, img_file_sel->getSelectedFile(),
 																				show_grid_chk->isChecked(),
 																				show_delim_chk->isChecked());
 
@@ -297,7 +310,7 @@ void ModelExportWidget::exportModel()
 			if(export_to_file_tb->isChecked())
 			{
 				progress_lbl->setText(tr("Saving file '%1'").arg(sql_file_sel->getSelectedFile()));
-				export_hlp.setExportToSQLParams(model->db_model, sql_file_sel->getSelectedFile(),
+				export_hlp.setExportToSQLParams(model_wgt->db_model, sql_file_sel->getSelectedFile(),
 																				pgsqlvers_cmb->currentText(), sql_split_rb->isChecked(),
 																				static_cast<DatabaseModel::CodeGenMode>(code_options_cmb->currentIndex()),
 																				gen_drop_file_chk->isChecked());
@@ -305,7 +318,7 @@ void ModelExportWidget::exportModel()
 			}
 			else if(export_to_dict_tb->isChecked())
 			{
-				export_hlp.setExportToDataDictParams(model->db_model, dict_file_sel->getSelectedFile(),
+				export_hlp.setExportToDataDictParams(model_wgt->db_model, dict_file_sel->getSelectedFile(),
 																						 incl_index_chk->isChecked(),
 																						 dict_mode_cmb->currentIndex() == 1,
 																						 dict_format_cmb->currentIndex() == 1);
@@ -321,7 +334,7 @@ void ModelExportWidget::exportModel()
 				if(pgsqlvers1_cmb->isEnabled())
 					version=pgsqlvers1_cmb->currentText();
 
-				export_hlp.setExportToDBMSParams(model->db_model, conn, version,
+				export_hlp.setExportToDBMSParams(model_wgt->db_model, conn, version,
 																				 ignore_dup_chk->isChecked(),
 																				 drop_chk->isChecked() && drop_mode_cmb->currentIndex() == 1,
 																				 drop_chk->isChecked() && drop_mode_cmb->currentIndex() == 0,
@@ -345,18 +358,6 @@ void ModelExportWidget::exportModel()
 
 void ModelExportWidget::selectExportMode()
 {
-	QList<QAbstractButton *> radios={ export_to_dbms_tb, export_to_img_tb, export_to_file_tb, export_to_dict_tb};
-	QWidgetList wgts={ export_to_dbms_wgt, export_to_img_wgt, export_to_file_wgt, export_to_dict_wgt };
-	int i = 0;
-
-	for(auto &rb : radios)
-	{
-		rb->blockSignals(true);
-		rb->setChecked((!sender() && rb==export_to_dbms_tb) || (sender()==rb));
-		wgts[i++]->setEnabled(rb->isChecked());
-		rb->blockSignals(false);
-	}
-
 	sql_file_sel->setFileIsMandatory(export_to_file_tb->isChecked());
 	img_file_sel->setFileIsMandatory(export_to_img_tb->isChecked());
 	dict_file_sel->setFileIsMandatory(export_to_dict_tb->isChecked());
@@ -413,7 +414,7 @@ void ModelExportWidget::finishExport(const QString &msg)
 
 	enableExportModes(true);
 
-	model->setInteractive(true);
+	model_wgt->setInteractive(true);
 	cancel_btn->setEnabled(false);
 	progress_pb->setValue(100);
 	progress_lbl->setText(msg);
@@ -446,12 +447,12 @@ void ModelExportWidget::closeEvent(QCloseEvent *event)
 
 void ModelExportWidget::showEvent(QShowEvent *)
 {
-	alert_frm->setVisible(model && model->getDatabaseModel()->isInvalidated());
+	alert_frm->setVisible(model_wgt && model_wgt->getDatabaseModel()->isInvalidated());
 }
 
 void ModelExportWidget::editConnections()
 {
-	if(connections_cmb->currentIndex()==connections_cmb->count()-1)
+	if(connections_cmb->currentIndex() == connections_cmb->count()-1)
 	{
 		ConnectionsConfigWidget::openConnectionsConfiguration(connections_cmb, true);
 		emit s_connectionsUpdateRequested();
@@ -462,8 +463,9 @@ void ModelExportWidget::editConnections()
 
 void ModelExportWidget::enableExport()
 {
-	export_btn->setEnabled((export_to_dbms_tb->isChecked() && connections_cmb->currentIndex() > 0 &&
-													 connections_cmb->currentIndex() != connections_cmb->count()-1) ||
+	export_btn->setEnabled(model_wgt &&
+												 (export_to_dbms_tb->isChecked() && connections_cmb->currentIndex() > 0 &&
+													connections_cmb->currentIndex() != connections_cmb->count() - 1) ||
 												 (export_to_file_tb->isChecked() && !sql_file_sel->hasWarning()) ||
 												 (export_to_img_tb->isChecked() && !img_file_sel->hasWarning()) ||
 												 (export_to_dict_tb->isChecked() && !dict_file_sel->hasWarning()));

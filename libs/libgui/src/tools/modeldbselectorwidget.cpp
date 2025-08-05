@@ -140,6 +140,7 @@ void ModelDbSelectorWidget::updateModelFilename()
 
 	ModelWidget *model = reinterpret_cast<ModelWidget *>(model_cmb->currentData().value<void *>());
 	model_file_edt->setText(model->getFilename().isEmpty() ? tr("(model not yet saved)") : model->getFilename());
+	model_file_edt->setCursorPosition(0);
 }
 
 void ModelDbSelectorWidget::listDatabases()

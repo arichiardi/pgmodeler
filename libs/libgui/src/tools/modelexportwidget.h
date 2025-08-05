@@ -31,6 +31,7 @@
 #include "modelexporthelper.h"
 #include "utils/htmlitemdelegate.h"
 #include "widgets/fileselectorwidget.h"
+#include "modeldbselectorwidget.h"
 
 class __libgui ModelExportWidget: public QWidget, public Ui::ModelExportWidget {
 	Q_OBJECT
@@ -43,8 +44,8 @@ class __libgui ModelExportWidget: public QWidget, public Ui::ModelExportWidget {
 		//! \brief Custom delegate used to paint html texts in output tree
 		HtmlItemDelegate *htmlitem_del;
 
-		//! \brief Stores the model widget which will be exported
-		ModelWidget *model;
+		//! \brief Stores the model_wgt widget which will be exported
+		ModelWidget *model_wgt;
 
 		//! \brief Export helper
 		ModelExportHelper export_hlp;
@@ -54,6 +55,8 @@ class __libgui ModelExportWidget: public QWidget, public Ui::ModelExportWidget {
 
 		//! \brief Auxiliary viewport passed to export helper when dealing with PNG export
 		QGraphicsView *viewp;
+
+		ModelDbSelectorWidget *model_sel_wgt;
 
 		FileSelectorWidget *sql_file_sel,
 		*img_file_sel,
@@ -73,8 +76,7 @@ class __libgui ModelExportWidget: public QWidget, public Ui::ModelExportWidget {
 		//! \brief Updates the connections combo with the latest loaded connection settings
 		void updateConnections();
 
-	public slots:
-		void setModel(ModelWidget *model);
+		void updateModels(const QList<ModelWidget *> &models);
 
 	private slots:
 		void selectExportMode();

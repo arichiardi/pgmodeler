@@ -1620,7 +1620,6 @@ void MainWindow::setCurrentModel()
 	obj_finder_wgt->setModel(current_model);
 	changelog_wgt->setModel(current_model);
 	db_import_wgt->setModel(current_model);
-	model_export_wgt->setModel(current_model);
 
 	if(current_model)
 		model_objs_wgt->restoreTreeState(model_tree_states[current_model],
@@ -2505,6 +2504,9 @@ void MainWindow::changeCurrentView(bool checked)
 
 		if(curr_act == action_diff)
 			diff_tool_wgt->updateModels(model_nav_wgt->getModelWidgets());
+
+		if(curr_act == action_export)
+			model_export_wgt->updateModels(model_nav_wgt->getModelWidgets());
 	}
 	else
 	{
