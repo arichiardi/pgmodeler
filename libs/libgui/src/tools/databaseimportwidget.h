@@ -31,6 +31,7 @@
 #include "utils/htmlitemdelegate.h"
 #include "widgets/objectsfilterwidget.h"
 #include "widgets/debugoutputwidget.h"
+#include "modeldbselectorwidget.h"
 #include <QTimer>
 #include <random>
 
@@ -66,6 +67,8 @@ class __libgui DatabaseImportWidget: public QWidget, public Ui::DatabaseImportWi
 		ObjectsFilterWidget *objs_filter_wgt;
 
 		DebugOutputWidget *dbg_output_wgt;
+
+		ModelDbSelectorWidget *model_sel_wgt;
 		
 		/*! \brief Toggles the checked state for the specified item. This method recursively
 		changes the check state for the children items */
@@ -81,7 +84,7 @@ class __libgui DatabaseImportWidget: public QWidget, public Ui::DatabaseImportWi
 		"col_oids" stores the columns oids for each selected table */
 		void getObjectToImport(std::map<ObjectType, std::vector<unsigned>> &obj_oids, std::map<unsigned, std::vector<unsigned>> &col_oids);
 		
-		void finishImport(const QString &msg);
+		void finishImport(const QString &msg, bool aborted_by_error);
 		void showEvent(QShowEvent *event) override;
 		void closeEvent(QCloseEvent *event) override;
 		void destroyModel();
@@ -122,8 +125,6 @@ class __libgui DatabaseImportWidget: public QWidget, public Ui::DatabaseImportWi
 
 		virtual ~DatabaseImportWidget();
 		
-		void setModel(ModelWidget *model);
-
 		//! \brief Defines if all the output generated during the import process should be displayed
 		static void setLowVerbosity(bool value);
 		
@@ -167,6 +168,10 @@ class __libgui DatabaseImportWidget: public QWidget, public Ui::DatabaseImportWi
 		//! \brief Updates the connections combo with the latest loaded connection settings
 		void updateConnections();
 
+		void updateModels(const QList<ModelWidget *> &models);
+
+		void enableImport();
+
 	private slots:
 		void enableImportControls(bool enable);
 		void importDatabase();
@@ -193,7 +198,7 @@ class __libgui DatabaseImportWidget: public QWidget, public Ui::DatabaseImportWi
 		void s_connectionsUpdateRequested();
 
 		//! \brief This signal is emitted whenever the import has successfully finished
-		void s_importFinished();
+		void s_importFinished(bool aborted_by_error);
 
 		//! \brief This signal is emitted whenever the import has started
 		void s_importStarted();

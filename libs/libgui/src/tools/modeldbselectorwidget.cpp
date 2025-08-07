@@ -119,6 +119,24 @@ bool ModelDbSelectorWidget::isModelSelected()
 	return model_cmb->currentIndex() >= 1;
 }
 
+void ModelDbSelectorWidget::clearSelection()
+{
+	connections_cmb->blockSignals(true);
+	database_cmb->blockSignals(true);
+	model_cmb->blockSignals(true);
+
+	connections_cmb->setCurrentIndex(0);
+	database_cmb->clear();
+	model_cmb->setCurrentIndex(0);
+	model_file_edt->clear();
+
+	connections_cmb->blockSignals(false);
+	database_cmb->blockSignals(false);
+	model_cmb->blockSignals(false);
+
+	emit s_selectionChanged();
+}
+
 bool ModelDbSelectorWidget::hasSelection()
 {
 	return isDatabaseSelected() || isModelSelected();

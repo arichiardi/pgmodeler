@@ -292,16 +292,10 @@
               <item>
                <widget class="QGroupBox" name="options_gb">
                 <property name="sizePolicy">
-                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                   <horstretch>0</horstretch>
                   <verstretch>0</verstretch>
                  </sizepolicy>
-                </property>
-                <property name="minimumSize">
-                 <size>
-                  <width>0</width>
-                  <height>350</height>
-                 </size>
                 </property>
                 <property name="title">
                  <string>Options</string>
@@ -482,7 +476,7 @@
                     <string/>
                    </property>
                    <property name="text">
-                    <string>Import objects to the working model</string>
+                    <string>Import objects to model:</string>
                    </property>
                    <property name="checked">
                     <bool>false</bool>
@@ -490,7 +484,7 @@
                   </widget>
                  </item>
                  <item>
-                  <layout class="QVBoxLayout" name="verticalLayout_5">
+                  <layout class="QVBoxLayout" name="import_to_model_lt">
                    <property name="spacing">
                     <number>5</number>
                    </property>
@@ -500,19 +494,6 @@
                    <property name="bottomMargin">
                     <number>0</number>
                    </property>
-                   <item>
-                    <widget class="QCheckBox" name="rand_obj_pos_chk">
-                     <property name="enabled">
-                      <bool>false</bool>
-                     </property>
-                     <property name="toolTip">
-                      <string>&lt;p&gt;When checked this option causes the imported tables to be placed in random positions without changing the positions of the objects previously existing on the model. If this option is unchecked, all tables will be placed at the position (0, 0).&lt;/p&gt;</string>
-                     </property>
-                     <property name="text">
-                      <string>Random position for tables</string>
-                     </property>
-                    </widget>
-                   </item>
                    <item>
                     <layout class="QHBoxLayout" name="horizontalLayout_5">
                      <property name="spacing">
@@ -525,12 +506,21 @@
                       <number>0</number>
                      </property>
                      <item>
-                      <widget class="QLabel" name="scattering_lvl_lbl">
+                      <widget class="QCheckBox" name="rand_obj_pos_chk">
                        <property name="enabled">
                         <bool>false</bool>
                        </property>
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                         <horstretch>0</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
+                       </property>
+                       <property name="toolTip">
+                        <string>&lt;p&gt;When checked this option causes the imported tables to be placed in random positions without changing the positions of the objects previously existing on the model. If this option is unchecked, all tables will be placed at the position (0, 0).&lt;/p&gt;</string>
+                       </property>
                        <property name="text">
-                        <string>Scattering level:</string>
+                        <string>Random positions with</string>
                        </property>
                       </widget>
                      </item>
@@ -545,35 +535,44 @@
                        <property name="currentIndex">
                         <number>0</number>
                        </property>
+                       <property name="sizeAdjustPolicy">
+                        <enum>QComboBox::SizeAdjustPolicy::AdjustToContents</enum>
+                       </property>
                        <item>
                         <property name="text">
-                         <string>Minimum</string>
+                         <string>minimum</string>
                         </property>
                        </item>
                        <item>
                         <property name="text">
-                         <string>Medium</string>
+                         <string>medium</string>
                         </property>
                        </item>
                        <item>
                         <property name="text">
-                         <string>Maximum</string>
+                         <string>maximum</string>
                         </property>
                        </item>
                       </widget>
                      </item>
                      <item>
-                      <spacer name="horizontalSpacer_2">
-                       <property name="orientation">
-                        <enum>Qt::Orientation::Horizontal</enum>
+                      <widget class="QLabel" name="scattering_lbl">
+                       <property name="enabled">
+                        <bool>false</bool>
                        </property>
-                       <property name="sizeHint" stdset="0">
-                        <size>
-                         <width>40</width>
-                         <height>20</height>
-                        </size>
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                         <horstretch>0</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
                        </property>
-                      </spacer>
+                       <property name="text">
+                        <string>scattering</string>
+                       </property>
+                       <property name="margin">
+                        <number>0</number>
+                       </property>
+                      </widget>
                      </item>
                     </layout>
                    </item>

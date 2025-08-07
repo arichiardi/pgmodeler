@@ -55,6 +55,8 @@ class ModelDbSelectorWidget : public QWidget, public Ui::ModelDbSelectorWidget {
 		bool isDatabaseSelected();
 		bool isModelSelected();
 
+		void clearSelection();
+
 		//! \brief Returns wheter the selector has a valid selection (database or model)
 		bool hasSelection();
 

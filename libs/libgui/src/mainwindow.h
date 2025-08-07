@@ -404,7 +404,7 @@ class __libgui MainWindow: public QMainWindow, public Ui::MainWindow {
 		bool mimeDataHasModelFiles(const QMimeData *mime_data);
 		void loadModelsFromMimeData(const QMimeData *mime_data);
 		void addNewLayer(const QString &layer_name);
-		void handleImportFinished();
+		void handleImportFinished(bool aborted_by_error);
 		void loadDiffInSQLTool(const QString &conn_id, const QString &database, const QString &filename);
 
 	signals:

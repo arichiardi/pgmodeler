@@ -204,7 +204,7 @@ void MainWindow::addNewLayer(const QString &layer_name)
 	current_model->layers_wgt->setAttributes(current_model);
 }
 
-void MainWindow::handleImportFinished()
+void MainWindow::handleImportFinished(bool aborted_by_error)
 {
 	if(db_import_wgt->getModel())
 		addModel(db_import_wgt->getModel());
@@ -212,7 +212,7 @@ void MainWindow::handleImportFinished()
 		updateDockWidgets();
 
 	stopTimers(false);
-	action_design->setChecked(true);
+	action_design->setChecked(!aborted_by_error);
 }
 
 void MainWindow::dropEvent(QDropEvent *event)
@@ -1619,7 +1619,6 @@ void MainWindow::setCurrentModel()
 	model_valid_wgt->setModel(current_model);
 	obj_finder_wgt->setModel(current_model);
 	changelog_wgt->setModel(current_model);
-	db_import_wgt->setModel(current_model);
 
 	if(current_model)
 		model_objs_wgt->restoreTreeState(model_tree_states[current_model],
@@ -2507,6 +2506,9 @@ void MainWindow::changeCurrentView(bool checked)
 
 		if(curr_act == action_export)
 			model_export_wgt->updateModels(model_nav_wgt->getModelWidgets());
+
+		if(curr_act == action_import)
+			db_import_wgt->updateModels(model_nav_wgt->getModelWidgets());
 	}
 	else
 	{
