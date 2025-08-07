@@ -471,6 +471,7 @@ void DiffToolWidget::enableDiffMode()
 	export_opts_gb->setEnabled(apply_on_server_rb->isChecked());
 	store_in_file_wgt->setEnabled(store_in_file_rb->isChecked());
 	file_sel->setFileIsMandatory(store_in_file_rb->isChecked());
+	import_opts_gb->setEnabled(!model_to_model_tb->isChecked());
 
 	generate_btn->setEnabled(input_sel_wgt->hasSelection() &&
 													 compared_sel_wgt->hasSelection() &&

@@ -19,7 +19,7 @@
 /**
 \ingroup libgui
 \class ModelDbSelectorWidget
-\brief Implements the widget that allows user to choose the model or database to be used in a diff operation
+\brief Implements the widget that allows user to choose the model or database to be used in a operation
 */
 
 #ifndef MODEL_DB_SELECTOR_WIDGET_H
@@ -54,11 +54,17 @@ class ModelDbSelectorWidget : public QWidget, public Ui::ModelDbSelectorWidget {
 
 		bool isDatabaseSelected();
 		bool isModelSelected();
+
+		//! \brief Returns wheter the selector has a valid selection (database or model)
 		bool hasSelection();
 
+		/*! \brief Updates the combo of connections with the models in the list.
+		 *  The parameter def_conn_op selects by default the first connection in which
+		 *  is the default for the provided operation */
 		void updateConnections(Connection::ConnOperation def_conn_op = Connection::OpNone);
-		void updateModels(const QList<ModelWidget *> &models);
 
+		//! \brief Updates the combo of database models with the models in the list
+		void updateModels(const QList<ModelWidget *> &models);
 
 	public slots:
 		void listDatabases();
