@@ -62,6 +62,7 @@ set(SOURCES
     src/settings/pluginsconfigwidget.cpp src/settings/pluginsconfigwidget.h
     src/settings/relationshipconfigwidget.cpp src/settings/relationshipconfigwidget.h
     src/settings/snippetsconfigwidget.cpp src/settings/snippetsconfigwidget.h
+    src/settings/configurationwidget.h src/settings/configurationwidget.cpp
     src/tools/bugreportform.cpp src/tools/bugreportform.h
     src/tools/databaseexplorerwidget.cpp src/tools/databaseexplorerwidget.h
     src/tools/databaseimportwidget.cpp src/tools/databaseimportwidget.h
@@ -69,7 +70,6 @@ set(SOURCES
     src/tools/datagridwidget.cpp src/tools/datagridwidget.h
     src/tools/datahandlingform.cpp src/tools/datahandlingform.h
     src/tools/metadatahandlingform.cpp src/tools/metadatahandlingform.h
-
     src/tools/modelexportwidget.cpp src/tools/modelexportwidget.h
     src/tools/modelexporthelper.cpp src/tools/modelexporthelper.h
     src/tools/modelfixform.cpp src/tools/modelfixform.h
@@ -85,6 +85,7 @@ set(SOURCES
     src/tools/validationinfo.cpp src/tools/validationinfo.h
     src/tools/difftoolwidget.cpp src/tools/difftoolwidget.h
     src/tools/modeldbselectorwidget.h src/tools/modeldbselectorwidget.cpp
+    src/tools/fixtoolswidget.h src/tools/fixtoolswidget.cpp
     src/utils/customsortproxymodel.cpp src/utils/customsortproxymodel.h
     src/utils/deletableitemdelegate.cpp src/utils/deletableitemdelegate.h
     src/utils/fragmentinfo.cpp src/utils/fragmentinfo.h
@@ -128,8 +129,7 @@ set(SOURCES
     src/widgets/tabledatawidget.cpp src/widgets/tabledatawidget.h
     src/widgets/taskprogresswidget.cpp src/widgets/taskprogresswidget.h
     src/widgets/updatenotifierwidget.cpp src/widgets/updatenotifierwidget.h
-    src/widgets/welcomewidget.cpp src/widgets/welcomewidget.h
-    src/settings/configurationwidget.h src/settings/configurationwidget.cpp)
+    src/widgets/welcomewidget.cpp src/widgets/welcomewidget.h)
 
 set(FORMS
     ui/baseform.ui
@@ -184,6 +184,7 @@ set(FORMS
     ui/settings/snippetsconfigwidget.ui
     ui/settings/generalconfigwidget.ui
     ui/settings/relationshipconfigwidget.ui
+    ui/settings/configurationwidget.ui
     ui/tools/bugreportform.ui
     ui/tools/datagridwidget.ui
     ui/tools/datahandlingform.ui
@@ -199,6 +200,7 @@ set(FORMS
     ui/tools/databaseimportwidget.ui
     ui/tools/difftoolwidget.ui
     ui/tools/modeldbselectorwidget.ui
+    ui/tools/fixtoolswidget.ui
     ui/widgets/aboutwidget.ui
     ui/widgets/customtablewidget.ui
     ui/widgets/donatewidget.ui
@@ -226,8 +228,7 @@ set(FORMS
     ui/widgets/customsqlwidget.ui
     ui/widgets/modelnavigationwidget.ui
     ui/widgets/sceneinfowidget.ui
-    ui/widgets/welcomewidget.ui
-    ui/settings/configurationwidget.ui)
+    ui/widgets/welcomewidget.ui)
 
 set(RESOURCES res/resources.qrc)
 
