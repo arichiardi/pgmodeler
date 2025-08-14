@@ -227,15 +227,17 @@ void MainWindow::configureMenusActionsWidgets()
 	act_more->setIcon(QIcon(GuiUtilsNs::getIconPath("moreactions")));
 	act_more->setToolTip(tr("Additional actions over the model"));
 
-	fix_menu.addAction(action_fix_model);
-	fix_menu.addAction(action_handle_metadata);
+	//fix_menu.addAction(action_fix_model);
+	//fix_menu.addAction(action_handle_metadata);
 
-	QAction *act_fix = fix_menu.menuAction();
-	act_fix->setIcon(QIcon(GuiUtilsNs::getIconPath("fix")));
-	act_fix->setText(tr("Fix"));
-	tools_acts_tb->insertAction(action_configure, fix_menu.menuAction());
-	QToolButton *tool_btn = qobject_cast<QToolButton *>(tools_acts_tb->widgetForAction(fix_menu.menuAction()));
-	tool_btn->setPopupMode(QToolButton::InstantPopup);
+	//QAction *act_fix = fix_menu.menuAction();
+	//act_fix->setIcon(QIcon(GuiUtilsNs::getIconPath("fix")));
+	//act_fix->setText(tr("Fix"));
+	//tools_acts_tb->insertAction(action_configure, fix_menu.menuAction());
+	//QToolButton *tool_btn = qobject_cast<QToolButton *>(tools_acts_tb->widgetForAction(fix_menu.menuAction()));
+	//tool_btn->setPopupMode(QToolButton::InstantPopup);
+
+	QToolButton *tool_btn = nullptr;
 
 	QAction *act_arrange_objs = canvas_menu->insertMenu(action_compact_view, &arrange_menu);
 	act_arrange_objs->setText(tr("Arrange objects"));
@@ -464,14 +466,23 @@ void MainWindow::handleInitializationFailure(Exception &e)
 template<class WgtClass>
 WgtClass *MainWindow::createViewWidget(MWViewsId view_id, const QString &view_name)
 {
-	WgtClass *view_wgt = new WgtClass(this);
+	QWidget *parent_wgt = views_stw->widget(view_id);
+
+	if(!parent_wgt)
+		throw Exception(tr("Page index %1 not created in views widget!").arg(view_id), ErrorCode::Custom, PGM_FUNC, PGM_FILE, PGM_LINE);
+
+	WgtClass *view_wgt = GuiUtilsNs::createWidgetInParent<WgtClass>(parent_wgt);
 	view_wgt->setObjectName(view_name);
+
+	/*WgtClass *view_wgt = new WgtClass(this);
+	view_wgt->setObjectName(view_name);
+
 
 	QVBoxLayout *vbox = new QVBoxLayout;
 	vbox->setContentsMargins(0,0,0,0);
 	vbox->setSpacing(0);
 	vbox->addWidget(view_wgt);
-	views_stw->widget(view_id)->setLayout(vbox);
+	views_stw->widget(view_id)->setLayout(vbox); */
 
 	return view_wgt;
 }
@@ -499,6 +510,7 @@ void MainWindow::createMainWidgets()
 		db_import_wgt = createViewWidget<DatabaseImportWidget>(ImportView, "db_import_wgt");
 		model_export_wgt = createViewWidget<ModelExportWidget>(ExportView, "model_export_wgt");
 		diff_tool_wgt = createViewWidget<DiffToolWidget>(DiffView, "diff_tool_wgt");
+		fix_tools_wgt = createViewWidget<FixToolsWidget>(FixView, "fix_tools_wgt");
 
 		model_nav_wgt=new ModelNavigationWidget(this);
 		model_nav_wgt->setObjectName("model_nav_wgt");
@@ -606,9 +618,9 @@ void MainWindow::connectSignalsToSlots()
 
 	connect(action_close_model, &QAction::triggered, this, &MainWindow::closeModel);
 
-	connect(action_fix_model, &QAction::triggered, this, [this]() {
+/* 	connect(action_fix_model, &QAction::triggered, this, [this]() {
 		fixModel();
-	});
+	}); */
 
 	connect(action_support, &QAction::triggered, this, &MainWindow::openSupport);
 
@@ -666,7 +678,7 @@ void MainWindow::connectSignalsToSlots()
 		action_welcome, action_design,
 		action_manage, action_import,
 		action_export, action_diff,
-		action_configure
+		action_fix, action_configure
 	});
 
 	int vw_id = 0;

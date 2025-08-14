@@ -48,6 +48,7 @@
 #include "tools/databaseimportwidget.h"
 #include "tools/modelexportwidget.h"
 #include "tools/difftoolwidget.h"
+#include "tools/fixtoolswidget.h"
 
 class __libgui MainWindow: public QMainWindow, public Ui::MainWindow {
 	Q_OBJECT
@@ -60,8 +61,8 @@ class __libgui MainWindow: public QMainWindow, public Ui::MainWindow {
 			ImportView,
 			ExportView,
 			DiffView,
+			FixView,
 			ConfigureView,
-			FixView
 		};
 
 	private:
@@ -128,6 +129,9 @@ class __libgui MainWindow: public QMainWindow, public Ui::MainWindow {
 		//! \brief Diff tool widget
 		DiffToolWidget *diff_tool_wgt;
 
+		//! \brief Fix tools widget
+		FixToolsWidget *fix_tools_wgt;
+
 		//! \brief Operation list dock widget
 		OperationListWidget *oper_list_wgt;
 
@@ -174,7 +178,7 @@ class __libgui MainWindow: public QMainWindow, public Ui::MainWindow {
 
 		more_actions_menu,
 
-		fix_menu,
+		//fix_menu,
 
 		plugins_config_menu,
 
