@@ -1067,6 +1067,8 @@ void TableWidget::applyConfiguration()
 				 * Duplicated columns are discarded by the method Constraint::addColumn */
 				for(Column *col : pk_cols)
 					pk->addColumn(col, Constraint::SourceCols);
+
+				pk->updateDependencies();
 			}
 		}
 		else if(pk_cols.empty() && pk && !pk->isAddedByRelationship())

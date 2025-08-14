@@ -1633,8 +1633,16 @@ void BaseObject::updateDependencies()
 
 void BaseObject::updateDependencies(const std::vector<BaseObject *> &dep_objs, const std::vector<BaseObject *> &old_deps)
 {
-	for(auto &old_dep : old_deps)
-		unsetDependency(old_dep);
+	/* If the custom list of old dependencies is emtpy, by default,
+	 * the current dependencies will be unset */
+	if(old_deps.empty())
+		clearDependencies();
+	// Otherwise we unset only the dependencies provided in old_deps
+	else
+	{
+		for(auto &old_dep : old_deps)
+			unsetDependency(old_dep);
+	}
 
 	std::vector<BaseObject *> aux_deps = {
 		schema, tablespace, owner, collation
