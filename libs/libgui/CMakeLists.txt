@@ -72,7 +72,7 @@ set(SOURCES
     src/tools/metadatahandlingform.cpp src/tools/metadatahandlingform.h
     src/tools/modelexportwidget.cpp src/tools/modelexportwidget.h
     src/tools/modelexporthelper.cpp src/tools/modelexporthelper.h
-    src/tools/modelfixform.cpp src/tools/modelfixform.h
+    src/tools/modelfixwidget.cpp src/tools/modelfixwidget.h
     src/tools/modelrestorationform.cpp src/tools/modelrestorationform.h
     src/tools/modelsdiffhelper.cpp src/tools/modelsdiffhelper.h
     src/tools/modelvalidationhelper.cpp src/tools/modelvalidationhelper.h
@@ -192,7 +192,7 @@ set(FORMS
     ui/tools/sqlexecutionwidget.ui
     ui/tools/databaseexplorerwidget.ui
     ui/tools/metadatahandlingform.ui
-    ui/tools/modelfixform.ui
+    ui/tools/modelfixwidget.ui
     ui/tools/sqltoolwidget.ui
     ui/tools/modelrestorationform.ui
     ui/tools/swapobjectsidswidget.ui

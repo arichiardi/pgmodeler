@@ -26,22 +26,30 @@
 #define FIX_TOOLS_WIDGET_H
 
 #include "ui_fixtoolswidget.h"
-#include "modelfixform.h"
+#include "modelfixwidget.h"
 #include "metadatahandlingform.h"
 
 class __libgui FixToolsWidget: public QWidget, public Ui::FixToolsWidget {
 	Q_OBJECT
 
 	private:
-		
+		ModelFixWidget *model_fix_wgt;
+
+		MetadataHandlingForm *metadata_wgt;
+
+	private:
+
 	public:
 		FixToolsWidget(QWidget * parent = nullptr);
 
 		virtual ~FixToolsWidget() = default;
 
+		bool isToolRunning();
+
 	public slots:
 
 	private slots:
+		void setCurrentTool();
 
 	signals:
 };

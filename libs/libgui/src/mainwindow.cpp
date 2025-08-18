@@ -21,7 +21,7 @@
 #include "tools/bugreportform.h"
 #include "tools/metadatahandlingform.h"
 #include "tools/sqlexecutionwidget.h"
-#include "tools/modelfixform.h"
+#include "tools/modelfixwidget.h"
 #include "tools/modelexportwidget.h"
 #include <QMimeData>
 #include <QDesktopServices>
@@ -512,25 +512,25 @@ void MainWindow::createMainWidgets()
 		diff_tool_wgt = createViewWidget<DiffToolWidget>(DiffView, "diff_tool_wgt");
 		fix_tools_wgt = createViewWidget<FixToolsWidget>(FixView, "fix_tools_wgt");
 
-		model_nav_wgt=new ModelNavigationWidget(this);
+		model_nav_wgt = new ModelNavigationWidget(this);
 		model_nav_wgt->setObjectName("model_nav_wgt");
 
-		about_wgt=new AboutWidget(this);
-		donate_wgt=new DonateWidget(this);
-		restoration_form=new ModelRestorationForm(nullptr, Qt::Dialog | Qt::WindowTitleHint | Qt::WindowMinMaxButtonsHint | Qt::WindowCloseButtonHint);
+		about_wgt = new AboutWidget(this);
+		donate_wgt = new DonateWidget(this);
+		restoration_form = new ModelRestorationForm(nullptr, Qt::Dialog | Qt::WindowTitleHint | Qt::WindowMinMaxButtonsHint | Qt::WindowCloseButtonHint);
 
 	#ifdef NO_UPDATE_CHECK
 		update_notifier_wgt=nullptr;
 	#else
-		update_notifier_wgt=new UpdateNotifierWidget(this);
+		update_notifier_wgt = new UpdateNotifierWidget(this);
 		update_notifier_wgt->setVisible(false);
 	#endif
 
-		oper_list_wgt=new OperationListWidget;
-		model_objs_wgt=new ModelObjectsWidget;
-		overview_wgt=new ModelOverviewWidget;
-		model_valid_wgt=new ModelValidationWidget;
-		obj_finder_wgt=new ObjectSearchWidget;
+		oper_list_wgt = new OperationListWidget;
+		model_objs_wgt = new ModelObjectsWidget;
+		overview_wgt = new ModelOverviewWidget;
+		model_valid_wgt = new ModelValidationWidget;
+		obj_finder_wgt = new ObjectSearchWidget;
 	}
 	catch(Exception &e)
 	{
@@ -939,7 +939,8 @@ void MainWindow::stopTimers(bool value)
 
 void MainWindow::fixModel(const QString &filename)
 {
-	ModelFixForm model_fix_form(nullptr, Qt::Dialog | Qt::WindowMinMaxButtonsHint | Qt::WindowCloseButtonHint);
+	#warning "Fix me!"
+	/* ModelFixForm model_fix_form(nullptr, Qt::Dialog | Qt::WindowMinMaxButtonsHint | Qt::WindowCloseButtonHint);
 
 	connect(&model_fix_form, &ModelFixForm::s_modelLoadRequested,
 					this, qOverload<const QString &>(&MainWindow::loadModel),
@@ -958,7 +959,7 @@ void MainWindow::fixModel(const QString &filename)
 	model_fix_form.exec();
 	GeneralConfigWidget::saveWidgetGeometry(&model_fix_form);
 
-	disconnect(&model_fix_form, nullptr, this, nullptr);
+	disconnect(&model_fix_form, nullptr, this, nullptr); */
 }
 
 void MainWindow::resizeEvent(QResizeEvent *)
@@ -984,7 +985,9 @@ void MainWindow::closeEvent(QCloseEvent *event)
 	 * is still running */
 	if(model_valid_wgt->isThreadRunning() ||
 		 db_import_wgt->isThreadRunning() ||
-		 diff_tool_wgt->isThreadsRunning())
+		 diff_tool_wgt->isThreadsRunning() ||
+		 model_export_wgt->isThreadRunning() ||
+		 fix_tools_wgt->isToolRunning())
 		event->ignore();
 	else
 	{

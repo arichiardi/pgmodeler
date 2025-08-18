@@ -78,6 +78,8 @@ class __libgui ModelExportWidget: public QWidget, public Ui::ModelExportWidget {
 
 		void updateModels(const QList<ModelWidget *> &models);
 
+		bool isThreadRunning();
+
 	private slots:
 		void selectExportMode();
 		void exportModel();

@@ -18,9 +18,45 @@
 
 #include "fixtoolswidget.h"
 #include "guiutilsns.h"
-#include <QButtonGroup>
 
 FixToolsWidget::FixToolsWidget(QWidget *parent) : QWidget(parent)
 {
 	setupUi(this);
+
+	model_fix_wgt = GuiUtilsNs::createWidgetInParent<ModelFixWidget>(fix_pg);
+	metadata_wgt = GuiUtilsNs::createWidgetInParent<MetadataHandlingForm>(metadata_pg);
+
+	connect(tools_tbw, &QTabWidget::currentChanged, this, &FixToolsWidget::setCurrentTool);
+	setCurrentTool();
+}
+
+bool FixToolsWidget::isToolRunning()
+{
+	return model_fix_wgt->isProcessRunning(); /* || metadata_wgt->isThreadRunning(); */
+}
+
+void FixToolsWidget::setCurrentTool()
+{
+	if(tools_tbw->currentIndex() == 0)
+	{
+		disconnect(metadata_wgt, nullptr, run_tool_btn, nullptr);
+		disconnect(run_tool_btn, nullptr, metadata_wgt, nullptr);
+		disconnect(cancel_btn, nullptr, metadata_wgt, nullptr);
+
+		connect(model_fix_wgt, &ModelFixWidget::s_modelFixEnabled, run_tool_btn, &QPushButton::setEnabled);
+		connect(run_tool_btn, &QPushButton::clicked, model_fix_wgt, &ModelFixWidget::fixModel);
+		connect(cancel_btn, &QPushButton::clicked, model_fix_wgt, &ModelFixWidget::cancelFix);
+
+		connect(model_fix_wgt, &ModelFixWidget::s_modelFixStarted, this, [this](){
+			cancel_btn->setEnabled(true);
+		});
+
+		connect(model_fix_wgt, &ModelFixWidget::s_modelFixFinished, this, [this](){
+			cancel_btn->setEnabled(false);
+		});
+	}
+	else
+	{
+
+	}
 }

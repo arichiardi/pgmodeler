@@ -212,6 +212,11 @@ void ModelExportWidget::updateModels(const QList<ModelWidget *> &models)
 #endif
 }
 
+bool ModelExportWidget::isThreadRunning()
+{
+	return export_thread->isRunning();
+}
+
 void ModelExportWidget::handleErrorIgnored(QString err_code, QString err_msg, QString cmd)
 {
 	QTreeWidgetItem *item=nullptr;

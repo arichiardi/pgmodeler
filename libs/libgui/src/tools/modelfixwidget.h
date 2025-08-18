@@ -18,19 +18,19 @@
 
 /**
 \ingroup libgui
-\class ModelFixForm
+\class ModelFixWidget
 \brief Implements an interface to pgmodeler-cli --fix-model command.
 */
 
-#ifndef MODEL_FIX_FORM_H
-#define MODEL_FIX_FORM_H
+#ifndef MODEL_FIX_WIDGET_H
+#define MODEL_FIX_WIDGET_H
 
 #include <QProcess>
-#include "ui_modelfixform.h"
+#include "ui_modelfixwidget.h"
 #include "widgets/fileselectorwidget.h"
 #include "widgets/debugoutputwidget.h"
 
-class __libgui ModelFixForm: public QDialog, public Ui::ModelFixForm {
+class __libgui ModelFixWidget: public QWidget, public Ui::ModelFixWidget {
 	Q_OBJECT
 
 	private:
@@ -47,27 +47,33 @@ class __libgui ModelFixForm: public QDialog, public Ui::ModelFixForm {
 
 		QStringList extra_cli_args;
 
-		void closeEvent(QCloseEvent *event);
+		//void closeEvent(QCloseEvent *event) override;
+		void showEvent(QShowEvent *event) override;
 		void resetFixForm();
 		void enableFixOptions(bool enable);
 
 	public:
-		ModelFixForm(QWidget * parent = nullptr, Qt::WindowFlags f = Qt::Widget);
+		ModelFixWidget(QWidget * parent = nullptr);
 
 		void setExtraCliArgs(const QStringList &extra_args);
 
+		bool isProcessRunning();
+
 	public slots:
-		int exec();
+		//int exec();
+		void fixModel();
+		void cancelFix();
 
 	private slots:
 		void enableFix();
-		void fixModel();
-		void cancelFix();
 		void updateOutput();
 		void handleProcessFinish(int res);
 
 	signals:
 		void s_modelLoadRequested(QString);
+		void s_modelFixEnabled(bool);
+		void s_modelFixStarted();
+		void s_modelFixFinished();
 
 	friend class MainWindow;
 };
