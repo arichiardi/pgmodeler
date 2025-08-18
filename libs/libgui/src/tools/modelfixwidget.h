@@ -47,9 +47,7 @@ class __libgui ModelFixWidget: public QWidget, public Ui::ModelFixWidget {
 
 		QStringList extra_cli_args;
 
-		//void closeEvent(QCloseEvent *event) override;
 		void showEvent(QShowEvent *event) override;
-		void resetFixForm();
 		void enableFixOptions(bool enable);
 
 	public:
@@ -57,12 +55,18 @@ class __libgui ModelFixWidget: public QWidget, public Ui::ModelFixWidget {
 
 		void setExtraCliArgs(const QStringList &extra_args);
 
+		/*! \brief Defines the input filename to be fixed.
+		 *  If gen_out_filename is true, the the output file selector will
+		 *  receive a filename derived from filename in the format:
+		 *  [filename (w/o extension)][_fixed][_yyyyMMdd_hhmmss][.dbm] */
+		void setInputModel(const QString &filename, bool gen_out_filename);
+
 		bool isProcessRunning();
 
 	public slots:
-		//int exec();
 		void fixModel();
 		void cancelFix();
+		void resetFixForm();
 
 	private slots:
 		void enableFix();
@@ -74,8 +78,6 @@ class __libgui ModelFixWidget: public QWidget, public Ui::ModelFixWidget {
 		void s_modelFixEnabled(bool);
 		void s_modelFixStarted();
 		void s_modelFixFinished();
-
-	friend class MainWindow;
 };
 
 #endif

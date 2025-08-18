@@ -116,6 +116,8 @@ class __libgui FileSelectorWidget: public QWidget, public Ui::FileSelectorWidget
 		 * the action of the file browse button will be to open the file/directory externally */
 		void setReadOnly(bool value);
 
+		bool isReadOnly();
+
 		void setToolTip(const QString &tooltip);
 
 	public slots:

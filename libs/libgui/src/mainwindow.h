@@ -178,8 +178,6 @@ class __libgui MainWindow: public QMainWindow, public Ui::MainWindow {
 
 		more_actions_menu,
 
-		//fix_menu,
-
 		plugins_config_menu,
 
 		expand_canvas_menu;
@@ -382,7 +380,6 @@ class __libgui MainWindow: public QMainWindow, public Ui::MainWindow {
 		//! \brief Configures the "More" actions in the general toolbar by usinge the current_model's popup menu
 		void configureMoreActionsMenu();
 
-		void fixModel(const QString &filename = "");
 		void showRightWidgetsBar();
 		void showBottomWidgetsBar();
 		void restoreLastSession();

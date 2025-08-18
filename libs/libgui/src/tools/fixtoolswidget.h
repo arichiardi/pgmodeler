@@ -52,6 +52,7 @@ class __libgui FixToolsWidget: public QWidget, public Ui::FixToolsWidget {
 		void setCurrentTool();
 
 	signals:
+		void s_modelLoadRequested(QString);
 };
 
 #endif

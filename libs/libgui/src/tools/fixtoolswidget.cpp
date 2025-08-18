@@ -23,6 +23,8 @@ FixToolsWidget::FixToolsWidget(QWidget *parent) : QWidget(parent)
 {
 	setupUi(this);
 
+	GuiUtilsNs::configureWidgetsFont({ run_tool_btn, cancel_btn }, GuiUtilsNs::BigFontFactor);
+
 	model_fix_wgt = GuiUtilsNs::createWidgetInParent<ModelFixWidget>(fix_pg);
 	metadata_wgt = GuiUtilsNs::createWidgetInParent<MetadataHandlingForm>(metadata_pg);
 
@@ -44,6 +46,8 @@ void FixToolsWidget::setCurrentTool()
 		disconnect(cancel_btn, nullptr, metadata_wgt, nullptr);
 
 		connect(model_fix_wgt, &ModelFixWidget::s_modelFixEnabled, run_tool_btn, &QPushButton::setEnabled);
+		connect(model_fix_wgt, &ModelFixWidget::s_modelLoadRequested, this, &FixToolsWidget::s_modelLoadRequested);
+
 		connect(run_tool_btn, &QPushButton::clicked, model_fix_wgt, &ModelFixWidget::fixModel);
 		connect(cancel_btn, &QPushButton::clicked, model_fix_wgt, &ModelFixWidget::cancelFix);
 

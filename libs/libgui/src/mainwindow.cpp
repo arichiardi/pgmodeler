@@ -617,11 +617,6 @@ void MainWindow::connectSignalsToSlots()
 	});
 
 	connect(action_close_model, &QAction::triggered, this, &MainWindow::closeModel);
-
-/* 	connect(action_fix_model, &QAction::triggered, this, [this]() {
-		fixModel();
-	}); */
-
 	connect(action_support, &QAction::triggered, this, &MainWindow::openSupport);
 
 	connect(action_inc_zoom, &QAction::triggered, this, &MainWindow::applyZoom);
@@ -781,6 +776,10 @@ void MainWindow::connectSignalsToSlots()
 
 	connect(diff_tool_wgt, &DiffToolWidget::s_loadDiffInSQLTool, this, &MainWindow::loadDiffInSQLTool);
 
+	connect(fix_tools_wgt, &FixToolsWidget::s_modelLoadRequested,
+					this, qOverload<const QString &>(&MainWindow::loadModel),
+					Qt::QueuedConnection);
+
 #ifndef Q_OS_MACOS
 	connect(action_show_main_menu, &QAction::triggered, this, &MainWindow::showMainMenu);
 	connect(action_hide_main_menu, &QAction::triggered, this, &MainWindow::showMainMenu);
@@ -935,31 +934,6 @@ void MainWindow::stopTimers(bool value)
 		if(model_save_timer.interval() < InfinityInterval)
 			model_save_timer.start();
 	}
-}
-
-void MainWindow::fixModel(const QString &filename)
-{
-	#warning "Fix me!"
-	/* ModelFixForm model_fix_form(nullptr, Qt::Dialog | Qt::WindowMinMaxButtonsHint | Qt::WindowCloseButtonHint);
-
-	connect(&model_fix_form, &ModelFixForm::s_modelLoadRequested,
-					this, qOverload<const QString &>(&MainWindow::loadModel),
-					Qt::QueuedConnection);
-
-	if(!filename.isEmpty())
-	{
-		QFileInfo fi(filename);
-		model_fix_form.input_file_sel->setSelectedFile(fi.absoluteFilePath());
-		model_fix_form.input_file_sel->setReadOnly(true);
-		model_fix_form.output_file_sel->setSelectedFile(fi.absolutePath() + GlobalAttributes::DirSeparator + fi.baseName() + "_fixed." + fi.suffix());
-	}
-
-	GuiUtilsNs::resizeDialog(&model_fix_form);
-	GeneralConfigWidget::restoreWidgetGeometry(&model_fix_form);
-	model_fix_form.exec();
-	GeneralConfigWidget::saveWidgetGeometry(&model_fix_form);
-
-	disconnect(&model_fix_form, nullptr, this, nullptr); */
 }
 
 void MainWindow::resizeEvent(QResizeEvent *)
@@ -2128,7 +2102,6 @@ void MainWindow::loadModels(const QStringList &files)
 	}
 	catch(Exception &e)
 	{
-		//qApp->restoreOverrideCursor();
 		registerRecentModels(loaded_files);
 
 		if(files[i].endsWith(GlobalAttributes::DbModelExt))
@@ -2152,7 +2125,11 @@ void MainWindow::showFixMessage(Exception &e, const QString &filename)
 							 GuiUtilsNs::getIconPath("fixobject"), GuiUtilsNs::getIconPath("cancel"));
 
 	if(msg_box.isAccepted())
-		fixModel(filename);
+	{
+		ModelFixWidget *model_fix_wgt = fix_tools_wgt->findChild<ModelFixWidget *>();
+		model_fix_wgt->setInputModel(filename, true);
+		action_fix->setChecked(true);
+	}
 }
 
 void MainWindow::setConfirmValidation(bool value)
