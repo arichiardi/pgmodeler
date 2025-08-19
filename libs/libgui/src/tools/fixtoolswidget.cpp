@@ -26,7 +26,7 @@ FixToolsWidget::FixToolsWidget(QWidget *parent) : QWidget(parent)
 	GuiUtilsNs::configureWidgetsFont({ run_tool_btn, cancel_btn }, GuiUtilsNs::BigFontFactor);
 
 	model_fix_wgt = GuiUtilsNs::createWidgetInParent<ModelFixWidget>(fix_pg);
-	metadata_wgt = GuiUtilsNs::createWidgetInParent<MetadataHandlingForm>(metadata_pg);
+	metadata_wgt = GuiUtilsNs::createWidgetInParent<MetadataHandlingWidget>(metadata_pg);
 
 	connect(tools_tbw, &QTabWidget::currentChanged, this, &FixToolsWidget::setCurrentTool);
 	setCurrentTool();
@@ -35,6 +35,11 @@ FixToolsWidget::FixToolsWidget(QWidget *parent) : QWidget(parent)
 bool FixToolsWidget::isToolRunning()
 {
 	return model_fix_wgt->isProcessRunning(); /* || metadata_wgt->isThreadRunning(); */
+}
+
+void FixToolsWidget::updateModels(const QList<ModelWidget *> &models)
+{
+	metadata_wgt->updateModels(models);
 }
 
 void FixToolsWidget::setCurrentTool()

@@ -95,7 +95,7 @@
            <normaloff>:/icons/icons/fixobject.png</normaloff>:/icons/icons/fixobject.png</iconset>
          </attribute>
          <attribute name="title">
-          <string>Fix model file</string>
+          <string>Model file</string>
          </attribute>
         </widget>
         <widget class="QWidget" name="metadata_pg">
@@ -104,7 +104,7 @@
            <normaloff>:/icons/icons/objmetadata.png</normaloff>:/icons/icons/objmetadata.png</iconset>
          </attribute>
          <attribute name="title">
-          <string>Handle objects' metadata</string>
+          <string>Objects' metadata</string>
          </attribute>
         </widget>
        </widget>

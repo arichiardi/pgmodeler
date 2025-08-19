@@ -27,7 +27,7 @@
 
 #include "ui_fixtoolswidget.h"
 #include "modelfixwidget.h"
-#include "metadatahandlingform.h"
+#include "metadatahandlingwidget.h"
 
 class __libgui FixToolsWidget: public QWidget, public Ui::FixToolsWidget {
 	Q_OBJECT
@@ -35,7 +35,7 @@ class __libgui FixToolsWidget: public QWidget, public Ui::FixToolsWidget {
 	private:
 		ModelFixWidget *model_fix_wgt;
 
-		MetadataHandlingForm *metadata_wgt;
+		MetadataHandlingWidget *metadata_wgt;
 
 	private:
 
@@ -45,6 +45,8 @@ class __libgui FixToolsWidget: public QWidget, public Ui::FixToolsWidget {
 		virtual ~FixToolsWidget() = default;
 
 		bool isToolRunning();
+
+		void updateModels(const QList<ModelWidget *> &models);
 
 	public slots:
 

@@ -24,7 +24,7 @@
 ModelDbSelectorWidget::ModelDbSelectorWidget(QWidget *parent) : QWidget(parent)
 {
 	setupUi(this);
-	setSelectMode(SelectDatabase);
+	setSelectMode(SelectModel);
 	alert_frm->setVisible(false);
 
 	connect(connections_cmb, &QComboBox::activated, this, &ModelDbSelectorWidget::listDatabases);

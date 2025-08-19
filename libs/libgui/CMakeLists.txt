@@ -69,7 +69,7 @@ set(SOURCES
     src/tools/databaseimporthelper.cpp src/tools/databaseimporthelper.h
     src/tools/datagridwidget.cpp src/tools/datagridwidget.h
     src/tools/datahandlingform.cpp src/tools/datahandlingform.h
-    src/tools/metadatahandlingform.cpp src/tools/metadatahandlingform.h
+    src/tools/metadatahandlingwidget.cpp src/tools/metadatahandlingwidget.h
     src/tools/modelexportwidget.cpp src/tools/modelexportwidget.h
     src/tools/modelexporthelper.cpp src/tools/modelexporthelper.h
     src/tools/modelfixwidget.cpp src/tools/modelfixwidget.h
@@ -191,7 +191,7 @@ set(FORMS
     ui/tools/modelexportwidget.ui
     ui/tools/sqlexecutionwidget.ui
     ui/tools/databaseexplorerwidget.ui
-    ui/tools/metadatahandlingform.ui
+    ui/tools/metadatahandlingwidget.ui
     ui/tools/modelfixwidget.ui
     ui/tools/sqltoolwidget.ui
     ui/tools/modelrestorationform.ui

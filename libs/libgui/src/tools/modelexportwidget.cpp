@@ -36,7 +36,6 @@ ModelExportWidget::ModelExportWidget(QWidget *parent) : QWidget(parent)
 	GuiUtilsNs::configureWidgetsFont({ export_btn, cancel_btn }, GuiUtilsNs::BigFontFactor);
 
 	model_sel_wgt = new ModelDbSelectorWidget(this);
-	model_sel_wgt->setSelectMode(ModelDbSelectorWidget::SelectModel);
 	input_model_gb->layout()->addWidget(model_sel_wgt);
 
 	sql_file_sel = new FileSelectorWidget(this);

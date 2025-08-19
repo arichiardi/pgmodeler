@@ -43,7 +43,6 @@ DatabaseImportWidget::DatabaseImportWidget(QWidget *parent) : QWidget(parent)
 	GuiUtilsNs::configureWidgetsFont({ import_btn, cancel_btn }, GuiUtilsNs::BigFontFactor);
 
 	model_sel_wgt = new ModelDbSelectorWidget(this);
-	model_sel_wgt->setSelectMode(ModelDbSelectorWidget::SelectModel);
 	model_sel_wgt->setEnabled(false);
 	import_to_model_lt->insertWidget(0, model_sel_wgt);
 

@@ -19,7 +19,7 @@
 #include "mainwindow.h"
 #include "guiutilsns.h"
 #include "tools/bugreportform.h"
-#include "tools/metadatahandlingform.h"
+#include "tools/metadatahandlingwidget.h"
 #include "tools/sqlexecutionwidget.h"
 #include "tools/modelfixwidget.h"
 #include "tools/modelexportwidget.h"
@@ -2493,14 +2493,19 @@ void MainWindow::changeCurrentView(bool checked)
 		action_close_model->setEnabled(enable);
 		action_save_as->setEnabled(enable);
 
+		QList<ModelWidget *> models = model_nav_wgt->getModelWidgets();
+
 		if(curr_act == action_diff)
-			diff_tool_wgt->updateModels(model_nav_wgt->getModelWidgets());
+			diff_tool_wgt->updateModels(models);
 
 		if(curr_act == action_export)
-			model_export_wgt->updateModels(model_nav_wgt->getModelWidgets());
+			model_export_wgt->updateModels(models);
 
 		if(curr_act == action_import)
-			db_import_wgt->updateModels(model_nav_wgt->getModelWidgets());
+			db_import_wgt->updateModels(models);
+
+		if(curr_act == action_fix)
+			fix_tools_wgt->updateModels(models);
 	}
 	else
 	{
@@ -2531,9 +2536,9 @@ void MainWindow::removeOperations()
 
 void MainWindow::handleObjectsMetadata()
 {
-	MetadataHandlingForm objs_meta_frm(nullptr, Qt::Dialog | Qt::WindowMinMaxButtonsHint | Qt::WindowCloseButtonHint);
+	//MetadataHandlingWidget objs_meta_frm(nullptr, Qt::Dialog | Qt::WindowMinMaxButtonsHint | Qt::WindowCloseButtonHint);
 
-	objs_meta_frm.setModelWidget(current_model);
+	/*objs_meta_frm.setModelWidget(current_model);
 	objs_meta_frm.setModelWidgets(model_nav_wgt->getModelWidgets());
 
 	connect(&objs_meta_frm, &MetadataHandlingForm::s_metadataHandled, model_objs_wgt, &ModelObjectsWidget::updateObjectsView);
@@ -2542,7 +2547,7 @@ void MainWindow::handleObjectsMetadata()
 	GuiUtilsNs::resizeDialog(&objs_meta_frm);
 	GeneralConfigWidget::restoreWidgetGeometry(&objs_meta_frm);
 	objs_meta_frm.exec();
-	GeneralConfigWidget::saveWidgetGeometry(&objs_meta_frm);
+	GeneralConfigWidget::saveWidgetGeometry(&objs_meta_frm);*/
 }
 
 void MainWindow::arrangeObjects()

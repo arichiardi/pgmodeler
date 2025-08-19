@@ -18,19 +18,20 @@
 
 /**
 \ingroup libgui
-\class ObjectsMetadataForm
+\class ObjectsMetadataWidget
 \brief Implements an interface to the feature to extract and restore objects metadata in a model.
 */
 
-#ifndef METADATA_HANDLING_FORM_H
-#define METADATA_HANDLING_FORM_H
+#ifndef METADATA_HANDLING_WIDGET_H
+#define METADATA_HANDLING_WIDGET_H
 
-#include "ui_metadatahandlingform.h"
+#include "ui_metadatahandlingwidget.h"
 #include "widgets/modelwidget.h"
 #include "utils/htmlitemdelegate.h"
 #include "widgets/fileselectorwidget.h"
+#include "tools/modeldbselectorwidget.h"
 
-class __libgui MetadataHandlingForm: public QDialog, public Ui::MetadataHandlingForm {
+class __libgui MetadataHandlingWidget: public QWidget, public Ui::MetadataHandlingWidget {
 	Q_OBJECT
 
 	private:
@@ -42,12 +43,23 @@ class __libgui MetadataHandlingForm: public QDialog, public Ui::MetadataHandling
 
 		FileSelectorWidget *backup_file_sel;
 
+		ModelDbSelectorWidget *extract_model_sel,
+
+		*apply_model_sel;
+
 		void showEvent(QShowEvent *);
+		void showOutput(bool show);
+
+		enum MetaOpType {
+			OpExtractRestore,
+			OpExtractOnly,
+			OpRestoreBackup
+		};
 
 	public:
-		MetadataHandlingForm(QWidget * parent = nullptr, Qt::WindowFlags f = Qt::Widget);
+		MetadataHandlingWidget(QWidget * parent = nullptr);
 		void setModelWidget(ModelWidget *model_wgt);
-		void setModelWidgets(QList<ModelWidget *> models);
+		void updateModels(const QList<ModelWidget *> &models);
 
 	private slots:
 		void updateProgress(int progress, QString msg, unsigned type_id);
@@ -58,6 +70,7 @@ class __libgui MetadataHandlingForm: public QDialog, public Ui::MetadataHandling
 
 	signals:
 		void s_metadataHandled();
+		void s_metadataHandlingEnabled(bool);
 };
 
 #endif
