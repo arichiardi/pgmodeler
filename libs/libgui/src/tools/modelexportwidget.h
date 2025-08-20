@@ -18,21 +18,22 @@
 
 /**
 \ingroup libgui
-\class ModelExportForm
+\class ModelExportWidget
 \brief Implements the operations to export a model to a file, image or directly to DBMS.
 */
 
-#ifndef MODEL_EXPORT_FORM_H
-#define MODEL_EXPORT_FORM_H
+#ifndef MODEL_EXPORT_WIDGET_H
+#define MODEL_EXPORT_WIDGET_H
 
-#include "ui_modelexportform.h"
+#include "ui_modelexportwidget.h"
 #include "schemaparser.h"
 #include "widgets/modelwidget.h"
 #include "modelexporthelper.h"
 #include "utils/htmlitemdelegate.h"
 #include "widgets/fileselectorwidget.h"
+#include "modeldbselectorwidget.h"
 
-class __libgui ModelExportForm: public QDialog, public Ui::ModelExportForm {
+class __libgui ModelExportWidget: public QWidget, public Ui::ModelExportWidget {
 	Q_OBJECT
 
 	private:
@@ -43,8 +44,8 @@ class __libgui ModelExportForm: public QDialog, public Ui::ModelExportForm {
 		//! \brief Custom delegate used to paint html texts in output tree
 		HtmlItemDelegate *htmlitem_del;
 
-		//! \brief Stores the model widget which will be exported
-		ModelWidget *model;
+		//! \brief Stores the model_wgt widget which will be exported
+		ModelWidget *model_wgt;
 
 		//! \brief Export helper
 		ModelExportHelper export_hlp;
@@ -55,6 +56,8 @@ class __libgui ModelExportForm: public QDialog, public Ui::ModelExportForm {
 		//! \brief Auxiliary viewport passed to export helper when dealing with PNG export
 		QGraphicsView *viewp;
 
+		ModelDbSelectorWidget *model_sel_wgt;
+
 		FileSelectorWidget *sql_file_sel,
 		*img_file_sel,
 		*dict_file_sel;
@@ -62,16 +65,20 @@ class __libgui ModelExportForm: public QDialog, public Ui::ModelExportForm {
 		void finishExport(const QString &msg);
 		void enableExportModes(bool value);
 		void closeEvent(QCloseEvent *event);
-		int exec(void){ return QDialog::Rejected; }
+		void showEvent(QShowEvent *);
 
 	public:
-		ModelExportForm(QWidget * parent = nullptr, Qt::WindowFlags f = Qt::Widget);
+		ModelExportWidget(QWidget * parent = nullptr);
 
 		//! \brief Defines if all the output generated during the import process should be displayed
 		static void setLowVerbosity(bool value);
 
-	public slots:
-		void exec(ModelWidget *model);
+		//! \brief Updates the connections combo with the latest loaded connection settings
+		void updateConnections();
+
+		void updateModels(const QList<ModelWidget *> &models);
+
+		bool isThreadRunning();
 
 	private slots:
 		void selectExportMode();
@@ -91,7 +98,7 @@ class __libgui ModelExportForm: public QDialog, public Ui::ModelExportForm {
 	signals:
 		/*! \brief This signal is emitted whenever the user changes the connections settings
 		within this widget without use the main configurations dialog */
-		void s_connectionsUpdateRequest();
+		void s_connectionsUpdateRequested();
 };
 
 #endif

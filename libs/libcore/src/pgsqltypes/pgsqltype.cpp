@@ -248,7 +248,7 @@ PgSqlType PgSqlType::parseString(const QString &str)
 	}
 	catch(Exception &e)
 	{
-		throw Exception(e.getErrorMessage(), e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__, &e, str);
+		throw Exception(e.getErrorMessage(), e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e, str);
 	}
 }
 
@@ -308,7 +308,7 @@ PgSqlType::TypeCategory PgSqlType::getCategory()
 unsigned PgSqlType::setType(unsigned type_id)
 {
 	if(type_id == Null)
-		throw Exception(ErrorCode::AsgInvalidTypeObject,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::AsgInvalidTypeObject,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	if(type_id >= static_cast<unsigned>(type_names.size()))
 		return setUserType(type_id);
@@ -324,7 +324,7 @@ unsigned PgSqlType::setType(const QString &type_name)
 	usr_type_id = getUserTypeIndex(type_name, nullptr);
 
 	if(type_id == Null && usr_type_id == Null)
-		throw Exception(ErrorCode::AsgInvalidTypeObject,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::AsgInvalidTypeObject,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	if(type_id != Null)
 		return TemplateType<PgSqlType>::setType(type_id, type_names);
@@ -549,7 +549,7 @@ unsigned PgSqlType::setUserType(unsigned type_id)
 		return type_idx;
 	}
 	else
-		throw Exception(ErrorCode::AsgInvalidTypeObject,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::AsgInvalidTypeObject,PGM_FUNC,PGM_FILE,PGM_LINE);
 }
 
 unsigned PgSqlType::setUserType(BaseObject *ptype)
@@ -557,7 +557,7 @@ unsigned PgSqlType::setUserType(BaseObject *ptype)
 	int idx = getUserTypeIndex("", ptype);
 
 	if(idx <= 0)
-		throw Exception(ErrorCode::AsgInvalidTypeObject,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::AsgInvalidTypeObject,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	type_idx = idx;
 	return type_idx;
@@ -1101,7 +1101,7 @@ void PgSqlType::setDimension(unsigned dim)
 		int idx=getUserTypeIndex(~(*this), nullptr) - (PseudoEnd + 1);
 		if(static_cast<unsigned>(idx) < user_types.size() &&
 				user_types[idx].type_conf==UserTypeConfig::SequenceType)
-			throw Exception(ErrorCode::AsgInvalidSequenceTypeArray,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+			throw Exception(ErrorCode::AsgInvalidSequenceTypeArray,PGM_FUNC,PGM_FILE,PGM_LINE);
 	}
 
 	dimension=dim;
@@ -1119,13 +1119,13 @@ void PgSqlType::setPrecision(int prec)
 		//Raises an error if the user tries to specify a precision > length
 		if(((type_names[type_idx]=="numeric" ||
 			 type_names[type_idx]=="decimal") && prec > static_cast<int>(length)))
-			throw Exception(ErrorCode::AsgInvalidPrecision,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+			throw Exception(ErrorCode::AsgInvalidPrecision,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 		//Raises an error if the precision is greater thant 6
 		if(((type_names[type_idx]=="time" ||
 					type_names[type_idx]=="timestamp" ||
 					type_names[type_idx]=="interval") && prec > 6))
-			throw Exception(ErrorCode::AsgInvalidPrecisionTimestamp,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+			throw Exception(ErrorCode::AsgInvalidPrecisionTimestamp,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 		this->precision=prec;
 	}

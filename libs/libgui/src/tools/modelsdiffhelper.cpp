@@ -67,7 +67,7 @@ ModelsDiffHelper::~ModelsDiffHelper()
 void ModelsDiffHelper::setDiffOption(DiffOptions opt_id, bool value)
 {
 	if(opt_id > OptDropMissingColsConstr)
-		throw Exception(ErrorCode::RefElementInvalidIndex,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::RefElementInvalidIndex,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	if(opt_id == OptDropMissingColsConstr)
 		diff_opts[opt_id]=value & !diff_opts[OptDropMissingColsConstr];
@@ -88,7 +88,7 @@ void ModelsDiffHelper::setForcedRecreateTypeNames(const QStringList &forced_rec_
 	}
 	catch(Exception &e)
 	{
-		throw Exception(e.getErrorMessage(),e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__, &e);
+		throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 	}
 }
 
@@ -113,7 +113,7 @@ void ModelsDiffHelper::setForcedRecreateTypes(const std::vector<ObjectType> &for
 			if(type == ObjectType::BaseObject)
 				type_name = QString::number(enum_t(type)) + " " + tr("(unrecognized id)");
 
-			throw Exception(ErrorCode::OprObjectInvalidType,__PRETTY_FUNCTION__,__FILE__,__LINE__, nullptr,
+			throw Exception(ErrorCode::OprObjectInvalidType,PGM_FUNC,PGM_FILE,PGM_LINE, nullptr,
 											tr("Object type id: %1").arg(type_name));
 		}
 	}
@@ -277,7 +277,7 @@ QStringList ModelsDiffHelper::getRelationshipFilters(const std::vector<BaseObjec
 unsigned ModelsDiffHelper::getDiffTypeCount(ObjectsDiffInfo::DiffType diff_type)
 {
 	if(diff_type >= ObjectsDiffInfo::NoDifference)
-		throw Exception(ErrorCode::RefElementInvalidIndex ,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::RefElementInvalidIndex ,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	return diffs_counter[diff_type];
 }
@@ -287,7 +287,7 @@ void ModelsDiffHelper::diffModels()
 	try
 	{
 		if(!source_model || !imported_model)
-			throw Exception(ErrorCode::OprNotAllocatedObject ,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+			throw Exception(ErrorCode::OprNotAllocatedObject ,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 		//First, we need to detect the objects to be dropped
 		diffModels(ObjectsDiffInfo::DropObject);
@@ -304,7 +304,7 @@ void ModelsDiffHelper::diffModels()
 	}
 	catch(Exception &e)
 	{
-		emit s_diffAborted(Exception(e.getErrorMessage(), e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__, &e, e.getExtraInfo()));
+		emit s_diffAborted(Exception(e.getErrorMessage(), e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e, e.getExtraInfo()));
 	}
 
 	destroyTempObjects();
@@ -618,7 +618,7 @@ void ModelsDiffHelper::diffModels(ObjectsDiffInfo::DiffType diff_type)
 	}
 	catch(Exception &e)
 	{
-		throw Exception(e.getErrorMessage(),e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__,&e);
+		throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE,&e);
 	}
 }
 
@@ -839,7 +839,7 @@ void ModelsDiffHelper::generateDiffInfo(ObjectsDiffInfo::DiffType diff_type, Bas
 	}
 	catch(Exception &e)
 	{
-		throw Exception(e.getErrorMessage(),e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__,&e);
+		throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE,&e);
 	}
 }
 
@@ -1191,7 +1191,7 @@ void ModelsDiffHelper::processDiffInfos()
 		for(Type *type : types)
 			type->convertFunctionParameters(true);
 
-		throw Exception(e.getErrorMessage(),e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__,&e);
+		throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE,&e);
 	}
 }
 
@@ -1236,7 +1236,7 @@ QString ModelsDiffHelper::getSourceCode(BaseObject *object, bool drop_cmd)
 	}
 	catch(Exception &e)
 	{
-		throw Exception(e.getErrorMessage(),e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__,&e);
+		throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE,&e);
 	}
 }
 

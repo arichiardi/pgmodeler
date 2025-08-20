@@ -55,6 +55,7 @@
 {spc} [disable-inline-editor="] %if {disable-inline-editor} %then true %else false %end ["] \n
 {spc} [alert-unsaved-models="] {alert-unsaved-models} ["] \n
 {spc} [alert-open-sqltabs="] {alert-open-sqltabs} ["] \n
+{spc} [alert-apply-metadata="] {alert-apply-metadata} ["] \n
 {spc} [use-def-disambiguation="] {use-def-disambiguation} ["] \n
 {spc} [hide-objects-sel-info="] %if {hide-objects-sel-info} %then true %else false %end ["] \n
 {spc} [hide-cur-pos-zoom-info="] %if {hide-cur-pos-zoom-info} %then true %else false %end ["] \n

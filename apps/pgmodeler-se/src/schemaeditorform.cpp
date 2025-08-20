@@ -40,7 +40,7 @@ SchemaEditorForm::SchemaEditorForm(QWidget *parent) : QWidget(parent)
 	setupUi(this);
 	setWindowTitle(windowTitle() + " " + GlobalAttributes::PgModelerVersion);
 
-	for(auto &obj : bnts_parent_wgt->children())
+	for(auto &obj : btns_parent_wgt->children())
 	{
 		btn = dynamic_cast<QToolButton *>(obj);
 		if(!btn) continue;
@@ -258,7 +258,7 @@ void SchemaEditorForm::loadSyntaxConfig()
 	}
 	catch(Exception &e)
 	{
-		throw Exception(e.getErrorMessage(), e.getErrorCode(), __PRETTY_FUNCTION__, __FILE__, __LINE__, &e);
+		throw Exception(e.getErrorMessage(), e.getErrorCode(), PGM_FUNC, PGM_FILE, PGM_LINE, &e);
 	}
 }
 
@@ -279,7 +279,7 @@ void SchemaEditorForm::applySyntaxConfig(bool from_temp_file)
 		if(!tmp_file.isOpen())
 		{
 			throw Exception(Exception::getErrorMessage(ErrorCode::FileDirectoryNotAccessed).arg(filename),
-											ErrorCode::FileDirectoryNotAccessed, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+											ErrorCode::FileDirectoryNotAccessed, PGM_FUNC, PGM_FILE, PGM_LINE);
 		}
 
 		tmp_file.write(syntax_txt->toPlainText().toUtf8());
@@ -308,7 +308,7 @@ void SchemaEditorForm::applySyntaxConfig(bool from_temp_file)
 	}
 	catch(Exception &e)
 	{
-		throw Exception(e.getErrorMessage(), e.getErrorCode(), __PRETTY_FUNCTION__, __FILE__, __LINE__, &e);
+		throw Exception(e.getErrorMessage(), e.getErrorCode(), PGM_FUNC, PGM_FILE, PGM_LINE, &e);
 	}
 
 	if(from_temp_file)
@@ -387,7 +387,7 @@ void SchemaEditorForm::saveAll()
 		}
 		catch(Exception &e)
 		{
-			Messagebox::error(e, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+			Messagebox::error(e, PGM_FUNC, PGM_FILE, PGM_LINE);
 			break;
 		}
 	}
@@ -469,7 +469,7 @@ void SchemaEditorForm::loadFile()
 	}
 	catch(Exception &e)
 	{
-		throw Exception(e.getErrorMessage(), e.getErrorCode(), __PRETTY_FUNCTION__, __FILE__, __LINE__, &e);
+		throw Exception(e.getErrorMessage(), e.getErrorCode(), PGM_FUNC, PGM_FILE, PGM_LINE, &e);
 	}
 }
 
@@ -487,7 +487,7 @@ void SchemaEditorForm::loadFiles(const QStringList &filenames)
 	catch(Exception &e)
 	{
 		//qApp->restoreOverrideCursor();
-		throw Exception(e.getErrorMessage(), e.getErrorCode(), __PRETTY_FUNCTION__, __FILE__, __LINE__, &e);
+		throw Exception(e.getErrorMessage(), e.getErrorCode(), PGM_FUNC, PGM_FILE, PGM_LINE, &e);
 	}
 }
 
@@ -508,7 +508,7 @@ void SchemaEditorForm::addEditorTab(const QString &filename)
 	catch(Exception &e)
 	{
 		delete editor_wgt;
-		throw Exception(e.getErrorMessage(), e.getErrorCode(), __PRETTY_FUNCTION__, __FILE__, __LINE__, &e);
+		throw Exception(e.getErrorMessage(), e.getErrorCode(), PGM_FUNC, PGM_FILE, PGM_LINE, &e);
 	}
 
 	editors_tbw->addTab(editor_wgt, filename.isEmpty() ? UntitledFile : fi.fileName());

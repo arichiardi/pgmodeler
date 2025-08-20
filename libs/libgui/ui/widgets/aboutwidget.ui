@@ -35,7 +35,7 @@
    <string>About pgModeler</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="../../res/resources.qrc">
+   <iconset resource="../../../../priv-plugins/res/logoicons.qrc">
     <normaloff>:/icons/icons/pgmodeler_logo.png</normaloff>:/icons/icons/pgmodeler_logo.png</iconset>
   </property>
   <property name="autoFillBackground">
@@ -393,7 +393,7 @@
         </property>
         <property name="icon">
          <iconset resource="../../res/resources.qrc">
-          <normaloff>:/icons/icons/close1.png</normaloff>:/icons/icons/close1.png</iconset>
+          <normaloff>:/icons/icons/closetab.png</normaloff>:/icons/icons/closetab.png</iconset>
         </property>
         <property name="iconSize">
          <size>
@@ -594,7 +594,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
          <string/>
         </property>
         <property name="pixmap">
-         <pixmap resource="../../res/resources.qrc">:/images/images/pgmodeler_splash.png</pixmap>
+         <pixmap resource="../../../../priv-plugins/res/logoicons.qrc">:/images/images/pgmodeler_splash.png</pixmap>
         </property>
         <property name="scaledContents">
          <bool>true</bool>
@@ -608,7 +608,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
  </widget>
  <resources>
   <include location="../../res/resources.qrc"/>
-  <include location="../../res/resources.qrc"/>
+  <include location="../../../../priv-plugins/res/logoicons.qrc"/>
  </resources>
  <connections/>
 </ui>

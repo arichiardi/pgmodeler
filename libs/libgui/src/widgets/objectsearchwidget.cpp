@@ -75,9 +75,9 @@ ObjectSearchWidget::ObjectSearchWidget(QWidget *parent) : QWidget(parent)
 		search_btn->setEnabled(!txt.isEmpty());
 	});
 
-	connect(search_btn, &QToolButton::clicked, this, &ObjectSearchWidget::findObjects);
-	connect(hide_tb, &QToolButton::clicked, this, &ObjectSearchWidget::hide);
-	connect(clear_res_btn, &QToolButton::clicked, this, &ObjectSearchWidget::clearResult);
+	connect(search_btn, &QPushButton::clicked, this, &ObjectSearchWidget::findObjects);
+	connect(hide_tb, &QPushButton::clicked, this, &ObjectSearchWidget::hide);
+	connect(clear_res_btn, &QPushButton::clicked, this, &ObjectSearchWidget::clearResult);
 
 	connect(result_view, &QTableView::doubleClicked, this, &ObjectSearchWidget::editObject);
 	connect(result_view, &QTableView::pressed, this, &ObjectSearchWidget::showObjectMenu);

@@ -25,29 +25,30 @@
 #include "tableview.h"
 #include "styledtextboxview.h"
 #include "graphicalview.h"
+#include <QButtonGroup>
 
 QPalette AppearanceConfigWidget::system_pal;
 std::map<QString, attribs_map> AppearanceConfigWidget::config_params;
 QString AppearanceConfigWidget::UiThemeId;
 
 std::map<QPalette::ColorRole, QStringList> AppearanceConfigWidget::dark_ui_colors {
-	{ QPalette::WindowText, {"#eff0f1", "#eff0f1", "#626c76"} },
-	{ QPalette::Button, {"#31363b", "#31363b", "#31363b"} },
-	{ QPalette::Light, {"#181b1d", "#181b1d", "#181b1d"} },
-	{ QPalette::Midlight, {"#25292c", "#25292c", "#25292c"} },
-	{ QPalette::Mid, {"#41484e", "#41484e", "#41484e"} },
-	{ QPalette::Dark, {"#626c76", "#626c76", "#626c76"} },
+	{ QPalette::Light, {"#15171e", "#15171e", "#15171e"} },
+	{ QPalette::Midlight, {"#191b23", "#191b23", "#191b23"} },
+	{ QPalette::Mid, {"#1c1f28", "#1c1f28", "#1c1f28"} },
+	{ QPalette::Button, {"#272b37", "#272b37", "#21242e"} },
+	{ QPalette::Dark, {"#363b4b", "#363b4b", "#292d3a"} },
+	{ QPalette::Base, {"#191d28", "#191d28", "#191d28"} },
+	{ QPalette::Window, {"#232933", "#1f242d", "#000000"} },
+	{ QPalette::Shadow, {"#000000", "#000000", "#000000"} },
 	{ QPalette::Text, {"#eff0f1", "#eff0f1", "#626c76"} },
 	{ QPalette::BrightText, {"#ffffff", "#ffffff", "#ffffff"} },
 	{ QPalette::ButtonText, {"#eff0f1", "#eff0f1", "#626c76"} },
-	{ QPalette::Base, {"#232629", "#232629", "#31363b"} },
-	{ QPalette::Window, {"#31363b", "#31363b", "#31363b"} },
-	{ QPalette::Shadow, {"#767676", "#767676", "#b1b1b1"} },
-	{ QPalette::Highlight, {"#3daee9", "#3daee9", "#41484e"} },
+	{ QPalette::WindowText, {"#eff0f1", "#eff0f1", "#626c76"} },
+	{ QPalette::Highlight, {"#26a5b1", "#4d99a0", "#3f7c82"} },
 	{ QPalette::HighlightedText, {"#eff0f1", "#eff0f1", "#25292c"} },
 	{ QPalette::Link, {"#2980b9", "#2980b9", "#2980b9"} },
 	{ QPalette::LinkVisited, {"#7f8c8d", "#7f8c8d", "#7f8c8d"} },
-	{ QPalette::AlternateBase, {"#31363b", "#31363b", "#31363b"} },
+	{ QPalette::AlternateBase, {"#222837", "#222837", "#222837"} },
 	{ QPalette::ToolTipBase, {"#31363b", "#31363b", "#31363b"} },
 	{ QPalette::ToolTipText, {"#eff0f1", "#eff0f1", "#eff0f1"} },
 	{ QPalette::PlaceholderText, {"#48494b", "#48494b", "#48494b"} }
@@ -57,16 +58,16 @@ std::map<QPalette::ColorRole, QStringList> AppearanceConfigWidget::light_ui_colo
 	{ QPalette::WindowText, {"#232627", "#232627", "#777878"} },
 	{ QPalette::Button, {"#eff0f1", "#eff0f1", "#eff0f1"} },
 	{ QPalette::Light, {"#ffffff", "#ffffff", "#ffffff"} },
-	{ QPalette::Midlight, {"#ffffff", "#ffffff", "#ffffff"} },
+	{ QPalette::Midlight, {"#c6c7c8", "#b0b1b2", "#b0b1b2"} },
 	{ QPalette::Mid, {"#9fa0a1", "#9fa0a1", "#9fa0a1"} },
 	{ QPalette::Dark, {"#777878", "#777878", "#777878"} },
 	{ QPalette::Text, {"#232627", "#232627", "#777878"} },
 	{ QPalette::BrightText, {"#ffffff", "#ffffff", "#ffffff"} },
 	{ QPalette::ButtonText, {"#232627", "#232627", "#777878"} },
 	{ QPalette::Base, {"#fcfcfc", "#fcfcfc", "#eff0f1"} },
-	{ QPalette::Window, {"#eff0f1", "#eff0f1", "#eff0f1"} },
-	{ QPalette::Shadow, {"#767676", "#767676", "#b1b1b1"} },
-	{ QPalette::Highlight, {"#3daee9", "#3daee9", "#9fa0a1"} },
+	{ QPalette::Window, {"#e4e5e6", "#e4e5e6", "#e4e5e6"} },
+	{ QPalette::Shadow, {"#404040", "#404040", "#7d7d7d"} },
+	{ QPalette::Highlight, {"#6ec7ff", "#6ec7ff", "#9fa0a1"} },
 	{ QPalette::HighlightedText, {"#fcfcfc", "#fcfcfc", "#fcfcfc"} },
 	{ QPalette::Link, {"#2980b9", "#2980b9", "#2980b9"} },
 	{ QPalette::LinkVisited, {"#7f8c8d", "#7f8c8d", "#7f8c8d"} },
@@ -204,25 +205,19 @@ AppearanceConfigWidget::AppearanceConfigWidget(QWidget * parent) : BaseConfigWid
 	viewp->setViewportUpdateMode(QGraphicsView::SmartViewportUpdate);
 	viewp->centerOn(0,0);
 
-	QHBoxLayout *hbox = new QHBoxLayout(grid_color_wgt);
-	hbox->setContentsMargins(0,0,0,0);
-	grid_color_cp = new ColorPickerWidget(1, grid_color_wgt);
+	grid_color_cp = new ColorPickerWidget(1, this);
 	grid_color_cp->setButtonToolTip(0, tr("Define a custom color for the grid lines"));
-	hbox->addWidget(grid_color_cp);
+	grid_color_lt->addWidget(grid_color_cp);
 
-	hbox = new QHBoxLayout(canvas_color_wgt);
-	hbox->setContentsMargins(0,0,0,0);
-	canvas_color_cp = new ColorPickerWidget(1, canvas_color_wgt);
+	canvas_color_cp = new ColorPickerWidget(1, this);
 	canvas_color_cp->setButtonToolTip(0, tr("Define a custom color for the canvas area"));
-	hbox->addWidget(canvas_color_cp);
+	canvas_color_lt->addWidget(canvas_color_cp);
 
-	hbox = new QHBoxLayout(delimiters_color_wgt);
-	hbox->setContentsMargins(0,0,0,0);
-	delimiters_color_cp = new ColorPickerWidget(1, delimiters_color_wgt);
+	delimiters_color_cp = new ColorPickerWidget(1, this);
 	delimiters_color_cp->setButtonToolTip(0, tr("Define a custom color for the page delimiter lines"));
-	hbox->addWidget(delimiters_color_cp);
+	delimiters_color_lt->addWidget(delimiters_color_cp);
 
-	QGridLayout *grid=dynamic_cast<QGridLayout *>(appearance_frm->layout());
+	QGridLayout *grid = dynamic_cast<QGridLayout *>(objects_gb->layout());
 	grid->addWidget(elem_color_cp, 3, 1, 1, 4);
 	grid->addWidget(viewp, 4 , 0, 1, 5);
 
@@ -234,6 +229,10 @@ AppearanceConfigWidget::AppearanceConfigWidget(QWidget * parent) : BaseConfigWid
 
 	line_highlight_cp=new ColorPickerWidget(1, this);
 	line_highlight_cp->setButtonToolTip(0, tr("Highlighted line color"));
+
+	code_wgt_colors_lt->insertWidget(0, line_numbers_cp);
+	code_wgt_colors_lt->insertWidget(0, line_numbers_bg_cp);
+	code_wgt_colors_lt->insertWidget(0, line_highlight_cp);
 
 	font_preview_txt=new NumberedTextEditor(this);
 	font_preview_txt->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -247,23 +246,30 @@ CREATE TABLE public.table_b (\n \
 
 	font_preview_hl = new SyntaxHighlighter(font_preview_txt, false, true);
 
-	QBoxLayout *layout=new QBoxLayout(QBoxLayout::LeftToRight);
-	grid=dynamic_cast<QGridLayout *>(code_font_gb->layout());
-	layout->addWidget(line_numbers_cp);
-	layout->addWidget(line_numbers_bg_cp);
-	layout->addWidget(line_highlight_cp);
-	layout->addItem(new QSpacerItem(1000,20, QSizePolicy::Expanding));
-	grid->addLayout(layout, 2, 1);
-	grid->addWidget(font_preview_txt,grid->count(),0, 1, 4);
+	QVBoxLayout *layout = new QVBoxLayout(code_preview_gb);
+	layout->setContentsMargins(GuiUtilsNs::LtMargins);
+	layout->addWidget(font_preview_txt);
+
+	ui_theme_gb->layout()->setAlignment(Qt::AlignTop | Qt::AlignLeft);
+	code_style_gb->layout()->setAlignment(Qt::AlignTop | Qt::AlignLeft);
 
 	ui_theme_cmb->addItem(tr("System default"), Attributes::System);
 	ui_theme_cmb->addItem(tr("Light"), Attributes::Light);
 	ui_theme_cmb->addItem(tr("Dark"), Attributes::Dark);
 	ui_theme_cmb->addItem(tr("InkSaver"), Attributes::InkSaver);
 
-	icons_size_cmb->addItem(tr("Big"), Attributes::Big);
-	icons_size_cmb->addItem(tr("Medium"), Attributes::Medium);
-	icons_size_cmb->addItem(tr("Small"), Attributes::Small);
+	ico_sz_btn_grp = new QButtonGroup(this);
+	ico_sz_btn_grp->setExclusive(true);
+
+	icon_small_tb->setProperty(Attributes::IconsSize.toLatin1(), Attributes::Small);
+	icon_medium_tb->setProperty(Attributes::IconsSize.toLatin1(), Attributes::Medium);
+	icon_big_tb->setProperty(Attributes::IconsSize.toLatin1(), Attributes::Big);
+
+	ico_sz_btn_grp->addButton(icon_small_tb);
+	ico_sz_btn_grp->addButton(icon_medium_tb);
+	ico_sz_btn_grp->addButton(icon_big_tb);
+
+	connect(ico_sz_btn_grp, &QButtonGroup::buttonToggled, this, __slot(this, AppearanceConfigWidget::previewUiSettings));
 
 	connect(element_cmb, &QComboBox::currentTextChanged, this, &AppearanceConfigWidget::enableConfigElement);
 	connect(elem_font_cmb, &QFontComboBox::currentFontChanged, this, &AppearanceConfigWidget::applyElementFontStyle);
@@ -304,7 +310,6 @@ CREATE TABLE public.table_b (\n \
 	connect(grid_pattern_cmb, &QComboBox::currentIndexChanged, this, &AppearanceConfigWidget::previewCanvasColors);
 
 	connect(ui_theme_cmb, &QComboBox::activated, this, __slot(this, AppearanceConfigWidget::previewUiSettings));
-	connect(icons_size_cmb, &QComboBox::currentTextChanged, this, __slot(this, AppearanceConfigWidget::previewUiSettings));
 
 	connect(custom_scale_chk, &QCheckBox::toggled, this, [this](bool toggled){
 		custom_scale_spb->setEnabled(toggled);
@@ -447,7 +452,7 @@ void AppearanceConfigWidget::loadExampleModel()
 	}
 	catch(Exception &e)
 	{
-		throw Exception(e.getErrorMessage(),e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__, &e);
+		throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 	}
 }
 
@@ -469,16 +474,22 @@ void AppearanceConfigWidget::loadConfiguration()
 		BaseConfigWidget::loadConfiguration(GlobalAttributes::AppearanceConf, config_params, { Attributes::Id }, true);
 
 		ui_theme_cmb->blockSignals(true);
-		icons_size_cmb->blockSignals(true);
+		ico_sz_btn_grp->blockSignals(true);
 
+		QString icon_size = config_params[GlobalAttributes::AppearanceConf][Attributes::IconsSize];
 		int idx = ui_theme_cmb->findData(config_params[GlobalAttributes::AppearanceConf][Attributes::UiTheme], Qt::UserRole, Qt::MatchExactly);
+
 		ui_theme_cmb->setCurrentIndex(idx < 0 ? 0 : idx);
 
-		idx = icons_size_cmb->findData(config_params[GlobalAttributes::AppearanceConf][Attributes::IconsSize], Qt::UserRole, Qt::MatchExactly);
-		icons_size_cmb->setCurrentIndex(idx < 0 ? 0 : idx);
+		if(icon_size == Attributes::Big)
+			icon_big_tb->setChecked(true);
+		if(icon_size == Attributes::Medium)
+			icon_medium_tb->setChecked(true);
+		else
+			icon_small_tb->setChecked(true);
 
 		ui_theme_cmb->blockSignals(false);
-		icons_size_cmb->blockSignals(false);
+		ico_sz_btn_grp->blockSignals(false);
 
 		custom_scale_chk->setChecked(config_params[GlobalAttributes::AppearanceConf].count(Attributes::CustomScale));
 		custom_scale_spb->setValue(config_params[GlobalAttributes::AppearanceConf][Attributes::CustomScale].toDouble());
@@ -489,7 +500,7 @@ void AppearanceConfigWidget::loadConfiguration()
 	}
 	catch(Exception &e)
 	{
-		throw Exception(e.getErrorMessage(),e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__, &e, e.getExtraInfo());
+		throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e, e.getExtraInfo());
 	}
 }
 
@@ -607,7 +618,7 @@ void AppearanceConfigWidget::saveConfiguration()
 
 		config_params.erase(GlobalAttributes::AppearanceConf);
 		attribs[Attributes::UiTheme] =  ui_theme_cmb->currentData(Qt::UserRole).toString();
-		attribs[Attributes::IconsSize] = icons_size_cmb->currentData(Qt::UserRole).toString();
+		attribs[Attributes::IconsSize] = ico_sz_btn_grp->checkedButton()->property(Attributes::IconsSize.toLatin1()).toString();
 
 		attribs[Attributes::CustomScale] = custom_scale_chk->isChecked() ?
 					QString::number(custom_scale_spb->value(), 'g', 2) : "";
@@ -714,7 +725,7 @@ void AppearanceConfigWidget::saveConfiguration()
 			if(!QFile::copy(theme_hl_files[i], orig_hl_files[i]))
 			{
 				throw Exception(Exception::getErrorMessage(ErrorCode::FileDirectoryNotWritten).arg(orig_hl_files[i]),
-												__PRETTY_FUNCTION__,__FILE__,__LINE__, nullptr,
+												PGM_FUNC,PGM_FILE,PGM_LINE, nullptr,
 												QFileInfo(theme_hl_files[i]).isReadable() ?
 												tr("The template file `%1' could not be accessed!").arg(theme_hl_files[i]) : "");
 			}
@@ -724,7 +735,7 @@ void AppearanceConfigWidget::saveConfiguration()
 	}
 	catch(Exception &e)
 	{
-		throw Exception(e.getErrorMessage(),e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__, &e);
+		throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 	}
 }
 
@@ -859,7 +870,7 @@ void AppearanceConfigWidget::restoreDefaults()
 	}
 	catch(Exception &e)
 	{
-		throw Exception(e.getErrorMessage(),e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__, &e);
+		throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 	}
 }
 
@@ -1009,7 +1020,7 @@ void AppearanceConfigWidget::applySyntaxHighlightTheme()
 	}
 	catch(Exception &e)
 	{
-		throw Exception(e.getErrorMessage(), e.getErrorCode(), __PRETTY_FUNCTION__, __FILE__, __LINE__, &e);
+		throw Exception(e.getErrorMessage(), e.getErrorCode(), PGM_FUNC, PGM_FILE, PGM_LINE, &e);
 	}
 }
 
@@ -1032,7 +1043,7 @@ void AppearanceConfigWidget::applyDesignCodeTheme()
 	}
 	catch(Exception &e)
 	{
-		throw Exception(e.getErrorMessage(), e.getErrorCode(), __PRETTY_FUNCTION__, __FILE__, __LINE__, &e);
+		throw Exception(e.getErrorMessage(), e.getErrorCode(), PGM_FUNC, PGM_FILE, PGM_LINE, &e);
 	}
 }
 
@@ -1048,13 +1059,13 @@ void AppearanceConfigWidget::applyUiStyleSheet()
 	{
 		Messagebox msg;
 		msg.show(Exception(Exception::getErrorMessage(ErrorCode::FileDirectoryNotAccessed).arg(ui_style.fileName()),
-											 ErrorCode::FileDirectoryNotAccessed,__PRETTY_FUNCTION__,__FILE__,__LINE__));
+											 ErrorCode::FileDirectoryNotAccessed, PGM_FUNC, PGM_FILE, PGM_LINE));
 	}
 	else
 	{
 		QByteArray ui_stylesheet = ui_style.readAll();
 
-		QString icon_size = icons_size_cmb->currentData().toString().toLower(),
+		QString icon_size = ico_sz_btn_grp->checkedButton()->property(Attributes::IconsSize.toLatin1()).toString(),
 				ico_style_conf = GlobalAttributes::getTmplConfigurationFilePath("",
 																																				"icons-" + icon_size +
 																																				GlobalAttributes::ConfigurationExt);
@@ -1083,11 +1094,16 @@ void AppearanceConfigWidget::applyUiStyleSheet()
 			{
 				Messagebox msg;
 				msg.show(Exception(Exception::getErrorMessage(ErrorCode::FileDirectoryNotAccessed).arg(ico_style_conf),
-														ErrorCode::FileDirectoryNotAccessed,__PRETTY_FUNCTION__,__FILE__,__LINE__));
+														ErrorCode::FileDirectoryNotAccessed,PGM_FUNC,PGM_FILE,PGM_LINE));
 			}
 			else
 				ui_stylesheet.append(ico_style.readAll());
 		}
+
+		/* Forcing the title element of group box to have a font size 85% of
+		 * the app's original/global font size */
+		ui_stylesheet.append(QString("\n QGroupBox { font-size: %1pt; font-weight: bold; }")
+												 .arg(qApp->font().pointSizeF() * 0.85).toUtf8());
 
 		qApp->setStyleSheet(ui_stylesheet);
 

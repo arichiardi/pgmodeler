@@ -57,23 +57,22 @@ set(SOURCES
     src/qtconnectmacros.h
     src/settings/appearanceconfigwidget.cpp src/settings/appearanceconfigwidget.h
     src/settings/baseconfigwidget.cpp src/settings/baseconfigwidget.h
-    src/settings/configurationform.cpp src/settings/configurationform.h
     src/settings/connectionsconfigwidget.cpp src/settings/connectionsconfigwidget.h
     src/settings/generalconfigwidget.cpp src/settings/generalconfigwidget.h
     src/settings/pluginsconfigwidget.cpp src/settings/pluginsconfigwidget.h
     src/settings/relationshipconfigwidget.cpp src/settings/relationshipconfigwidget.h
     src/settings/snippetsconfigwidget.cpp src/settings/snippetsconfigwidget.h
+    src/settings/configurationwidget.h src/settings/configurationwidget.cpp
     src/tools/bugreportform.cpp src/tools/bugreportform.h
     src/tools/databaseexplorerwidget.cpp src/tools/databaseexplorerwidget.h
-    src/tools/databaseimportform.cpp src/tools/databaseimportform.h
+    src/tools/databaseimportwidget.cpp src/tools/databaseimportwidget.h
     src/tools/databaseimporthelper.cpp src/tools/databaseimporthelper.h
     src/tools/datagridwidget.cpp src/tools/datagridwidget.h
     src/tools/datahandlingform.cpp src/tools/datahandlingform.h
-    src/tools/metadatahandlingform.cpp src/tools/metadatahandlingform.h
-    src/tools/modeldatabasediffform.cpp src/tools/modeldatabasediffform.h
-    src/tools/modelexportform.cpp src/tools/modelexportform.h
+    src/tools/metadatahandlingwidget.cpp src/tools/metadatahandlingwidget.h
+    src/tools/modelexportwidget.cpp src/tools/modelexportwidget.h
     src/tools/modelexporthelper.cpp src/tools/modelexporthelper.h
-    src/tools/modelfixform.cpp src/tools/modelfixform.h
+    src/tools/modelfixwidget.cpp src/tools/modelfixwidget.h
     src/tools/modelrestorationform.cpp src/tools/modelrestorationform.h
     src/tools/modelsdiffhelper.cpp src/tools/modelsdiffhelper.h
     src/tools/modelvalidationhelper.cpp src/tools/modelvalidationhelper.h
@@ -84,6 +83,9 @@ set(SOURCES
     src/tools/sqltoolwidget.cpp src/tools/sqltoolwidget.h
     src/tools/swapobjectsidswidget.cpp src/tools/swapobjectsidswidget.h
     src/tools/validationinfo.cpp src/tools/validationinfo.h
+    src/tools/difftoolwidget.cpp src/tools/difftoolwidget.h
+    src/tools/modeldbselectorwidget.h src/tools/modeldbselectorwidget.cpp
+    src/tools/fixtoolswidget.h src/tools/fixtoolswidget.cpp
     src/utils/customsortproxymodel.cpp src/utils/customsortproxymodel.h
     src/utils/deletableitemdelegate.cpp src/utils/deletableitemdelegate.h
     src/utils/fragmentinfo.cpp src/utils/fragmentinfo.h
@@ -180,23 +182,25 @@ set(FORMS
     ui/settings/connectionsconfigwidget.ui
     ui/settings/pluginsconfigwidget.ui
     ui/settings/snippetsconfigwidget.ui
-    ui/settings/configurationform.ui
     ui/settings/generalconfigwidget.ui
     ui/settings/relationshipconfigwidget.ui
+    ui/settings/configurationwidget.ui
     ui/tools/bugreportform.ui
     ui/tools/datagridwidget.ui
     ui/tools/datahandlingform.ui
-    ui/tools/modelexportform.ui
+    ui/tools/modelexportwidget.ui
     ui/tools/sqlexecutionwidget.ui
     ui/tools/databaseexplorerwidget.ui
-    ui/tools/metadatahandlingform.ui
-    ui/tools/modelfixform.ui
+    ui/tools/metadatahandlingwidget.ui
+    ui/tools/modelfixwidget.ui
     ui/tools/sqltoolwidget.ui
-    ui/tools/databaseimportform.ui
-    ui/tools/modeldatabasediffform.ui
     ui/tools/modelrestorationform.ui
     ui/tools/swapobjectsidswidget.ui
     ui/tools/modelvalidationwidget.ui
+    ui/tools/databaseimportwidget.ui
+    ui/tools/difftoolwidget.ui
+    ui/tools/modeldbselectorwidget.ui
+    ui/tools/fixtoolswidget.ui
     ui/widgets/aboutwidget.ui
     ui/widgets/customtablewidget.ui
     ui/widgets/donatewidget.ui

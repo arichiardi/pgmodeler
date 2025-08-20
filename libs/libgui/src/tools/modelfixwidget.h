@@ -18,19 +18,19 @@
 
 /**
 \ingroup libgui
-\class ModelFixForm
+\class ModelFixWidget
 \brief Implements an interface to pgmodeler-cli --fix-model command.
 */
 
-#ifndef MODEL_FIX_FORM_H
-#define MODEL_FIX_FORM_H
+#ifndef MODEL_FIX_WIDGET_H
+#define MODEL_FIX_WIDGET_H
 
 #include <QProcess>
-#include "ui_modelfixform.h"
+#include "ui_modelfixwidget.h"
 #include "widgets/fileselectorwidget.h"
 #include "widgets/debugoutputwidget.h"
 
-class __libgui ModelFixForm: public QDialog, public Ui::ModelFixForm {
+class __libgui ModelFixWidget: public QWidget, public Ui::ModelFixWidget {
 	Q_OBJECT
 
 	private:
@@ -47,29 +47,39 @@ class __libgui ModelFixForm: public QDialog, public Ui::ModelFixForm {
 
 		QStringList extra_cli_args;
 
-		void closeEvent(QCloseEvent *event);
-		void resetFixForm();
+		void showEvent(QShowEvent *event) override;
 		void enableFixOptions(bool enable);
 
 	public:
-		ModelFixForm(QWidget * parent = nullptr, Qt::WindowFlags f = Qt::Widget);
+		ModelFixWidget(QWidget * parent = nullptr);
 
 		void setExtraCliArgs(const QStringList &extra_args);
 
+		/*! \brief Defines the input filename to be fixed.
+		 *  If gen_out_filename is true, the the output file selector will
+		 *  receive a filename derived from filename in the format:
+		 *  [filename (w/o extension)][_fixed][_yyyyMMdd_hhmmss][.dbm] */
+		void setInputModel(const QString &filename, bool gen_out_filename);
+
+		bool isProcessRunning();
+
+		bool isFixEnabled();
+
 	public slots:
-		int exec();
+		void fixModel();
+		void cancelFix();
+		void resetFixForm();
 
 	private slots:
 		void enableFix();
-		void fixModel();
-		void cancelFix();
 		void updateOutput();
 		void handleProcessFinish(int res);
 
 	signals:
 		void s_modelLoadRequested(QString);
-
-	friend class MainWindow;
+		void s_modelFixEnabled(bool);
+		void s_modelFixStarted();
+		void s_modelFixFinished();
 };
 
 #endif

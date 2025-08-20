@@ -141,12 +141,12 @@ void ConstraintWidget::setAttributes(DatabaseModel *model, OperationList *op_lis
 	std::vector<ExcludeElement> excl_elems;
 
 	if(!parent_obj)
-		throw Exception(ErrorCode::AsgNotAllocattedObject,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::AsgNotAllocattedObject,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	obj_type = parent_obj->getObjectType();
 
 	if(!PhysicalTable::isPhysicalTable(obj_type) && obj_type!=ObjectType::Relationship)
-		throw Exception(ErrorCode::OprObjectInvalidType,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::OprObjectInvalidType,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	BaseObjectWidget::setAttributes(model, op_list, constr, parent_obj);
 
@@ -230,7 +230,7 @@ void ConstraintWidget::applyConfiguration()
 		//Raises an error if the user try to create a primary key that has columns added by relationship (not supported)
 		if(constr->getConstraintType()==ConstraintType::PrimaryKey &&
 				constr->isReferRelationshipAddedColumns())
-			throw Exception(ErrorCode::UnsupportedPKColsAddedByRel,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+			throw Exception(ErrorCode::UnsupportedPKColsAddedByRel,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 		BaseObjectWidget::applyConfiguration();
 
@@ -241,7 +241,7 @@ void ConstraintWidget::applyConfiguration()
 			constr->getColumnCount(Constraint::SourceCols)==0) ||
 				(constr->getConstraintType()==ConstraintType::ForeignKey &&
 				 constr->getColumnCount(Constraint::ReferencedCols)==0))
-			throw Exception(ErrorCode::InvConstratintNoColumns,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+			throw Exception(ErrorCode::InvConstratintNoColumns,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 		finishConfiguration();
 
@@ -254,7 +254,7 @@ void ConstraintWidget::applyConfiguration()
 	catch(Exception &e)
 	{
 		cancelConfiguration();
-		Messagebox::error(e, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+		Messagebox::error(e, PGM_FUNC, PGM_FILE, PGM_LINE);
 	}
 }
 

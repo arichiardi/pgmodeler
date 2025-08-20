@@ -130,7 +130,7 @@ void RoleWidget::showRoleData(Role *role, unsigned table_id, unsigned row)
 		Role *aux_role=nullptr;
 
 		if(table_id > 3)
-			throw Exception(ErrorCode::RefObjectInvalidIndex,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+			throw Exception(ErrorCode::RefObjectInvalidIndex,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 		members_tab[table_id]->setRowData(QVariant::fromValue(reinterpret_cast<void *>(role)), row);
 		members_tab[table_id]->setCellText(role->getName(), row, 0);
@@ -205,13 +205,13 @@ void RoleWidget::showSelectedRoleData()
 			if(obj_sel && idx_lin >= 0)
 			{
 				Messagebox::error(Exception::getErrorMessage(ErrorCode::InsDuplicatedRole).arg(obj_sel->getName(), name_edt->text()),
-													ErrorCode::InsDuplicatedRole, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+													ErrorCode::InsDuplicatedRole, PGM_FUNC, PGM_FILE, PGM_LINE);
 			}
 		}
 	}
 	catch(Exception &e)
 	{
-		Messagebox::error(e, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+		Messagebox::error(e, PGM_FUNC, PGM_FILE, PGM_LINE);
 	}
 }
 
@@ -264,7 +264,7 @@ void RoleWidget::applyConfiguration()
 			{
 				throw Exception(Exception::getErrorMessage(ErrorCode::OprReservedObject)
 												.arg(aux_role->getName(), aux_role->getTypeName()),
-												ErrorCode::OprReservedObject,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+												ErrorCode::OprReservedObject,PGM_FUNC,PGM_FILE,PGM_LINE);
 			}
 
 			op_list->registerObject(aux_role, Operation::ObjModified);
@@ -278,6 +278,6 @@ void RoleWidget::applyConfiguration()
 	catch(Exception &e)
 	{
 		cancelConfiguration();
-		throw Exception(e.getErrorMessage(),e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__, &e);
+		throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 	}
 }

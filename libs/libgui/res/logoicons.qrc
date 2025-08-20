@@ -6,4 +6,8 @@
     <qresource prefix="/images">
         <file>images/pgmodeler_splash.png</file>
     </qresource>
+
+    <qresource prefix="/images">
+        <file>images/crashhandler.png</file>
+    </qresource>
 </RCC>

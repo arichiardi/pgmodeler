@@ -39,7 +39,8 @@ CrashHandlerForm::CrashHandlerForm(bool analysis_mode, QWidget *parent, Qt::Wind
 	stack_txt->setLineWrapMode(QPlainTextEdit::NoWrap);
 
 	layout->addWidget(stack_txt);
-	layout->setContentsMargins(GuiUtilsNs::LtMargin,GuiUtilsNs::LtMargin,GuiUtilsNs::LtMargin,GuiUtilsNs::LtMargin);
+	layout->setContentsMargins(GuiUtilsNs::LtMargin, GuiUtilsNs::LtMargin,
+														 GuiUtilsNs::LtMargin, GuiUtilsNs::LtMargin);
 	wgt->setLayout(layout);
 
 	logo_lbl->setPixmap(QPixmap(":/images/images/crashhandler.png"));
@@ -127,7 +128,7 @@ void CrashHandlerForm::loadReport(QString filename)
 	if(!input.isOpen())
 	{
 		Messagebox::error(Exception::getErrorMessage(ErrorCode::FileDirectoryNotAccessed).arg(filename),
-											ErrorCode::FileDirectoryNotAccessed, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+											ErrorCode::FileDirectoryNotAccessed, PGM_FUNC, PGM_FILE, PGM_LINE);
 	}
 	else
 	{
@@ -180,7 +181,7 @@ void CrashHandlerForm::saveModel()
 	}
 	catch(Exception &e)
 	{
-		Messagebox::error(e, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+		Messagebox::error(e, PGM_FUNC, PGM_FILE, PGM_LINE);
 	}
 }
 

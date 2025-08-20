@@ -27,7 +27,7 @@ unsigned BaseTableView::attribs_per_page[2] { 10, 5};
 BaseTableView::BaseTableView(BaseTable *base_tab) : BaseObjectView(base_tab)
 {
 	if(!base_tab)
-		throw Exception(ErrorCode::AsgNotAllocattedObject, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+		throw Exception(ErrorCode::AsgNotAllocattedObject, PGM_FUNC, PGM_FILE, PGM_LINE);
 
 	pending_geom_update = false;
 	body=new RoundedRectItem;
@@ -213,7 +213,7 @@ void BaseTableView::mousePressEvent(QGraphicsSceneMouseEvent *event)
 void BaseTableView::setAttributesPerPage(BaseTable::TableSection section_id, unsigned value)
 {
 	if(section_id > BaseTable::ExtAttribsSection)
-		throw Exception(ErrorCode::RefElementInvalidIndex,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::RefElementInvalidIndex,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	if(value > 0)
 		attribs_per_page[section_id] = value;
@@ -222,7 +222,7 @@ void BaseTableView::setAttributesPerPage(BaseTable::TableSection section_id, uns
 unsigned BaseTableView::getAttributesPerPage(BaseTable::TableSection section_id)
 {
 	if(section_id > BaseTable::ExtAttribsSection)
-		throw Exception(ErrorCode::RefElementInvalidIndex,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::RefElementInvalidIndex,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	return attribs_per_page[section_id];
 }

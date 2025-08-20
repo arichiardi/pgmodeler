@@ -25,7 +25,7 @@ Messagebox::Messagebox(QWidget *parent, Qt::WindowFlags f) : QDialog(parent, f)
 	setupUi(this);
 
 	setWindowFlags(Qt::Dialog | Qt::WindowTitleHint | Qt::WindowMinMaxButtonsHint | Qt::WindowCloseButtonHint);
-	show_errors_tb->setVisible(false);
+	show_errors_btn->setVisible(false);
 	custom_option_chk->setVisible(false);
 	raw_stack_txt = nullptr;
 
@@ -33,7 +33,7 @@ Messagebox::Messagebox(QWidget *parent, Qt::WindowFlags f) : QDialog(parent, f)
 	connect(no_btn, &QPushButton::clicked, this, &Messagebox::handleNoCancelClick);
 	connect(cancel_btn, &QPushButton::clicked, this, &Messagebox::handleNoCancelClick);
 
-	connect(show_errors_tb, &QToolButton::toggled, this, [this](bool checked){
+	connect(show_errors_btn, &QPushButton::toggled, this, [this](bool checked){
 		objs_group_wgt->setCurrentIndex(checked ? 1 : 0);
 		resize(baseSize().width() * (checked ? 1.25 : 1),
 					 baseSize().height() * (checked ? 3 : 1));
@@ -198,12 +198,20 @@ int Messagebox::confirm(const QString &msg, ButtonsId btns_id,
 										 yes_ico, no_ico, cancel_ico);
 }
 
+int Messagebox::confirm(const QString &title, const QString &msg, ButtonsId btns_id, const QString &yes_lbl, const QString &no_lbl, const QString &cancel_lbl, const QString &yes_ico, const QString &no_ico, const QString &cancel_ico)
+{
+	Messagebox msgbox;
+	return msgbox.show(title, msg, ConfirmIcon, btns_id,
+										 yes_lbl, no_lbl, cancel_lbl,
+										 yes_ico, no_ico, cancel_ico);
+}
+
 int Messagebox::show(const QString &title, const QString &msg, IconType icon_type, ButtonsId buttons,
 										 const QString &yes_lbl, const QString &no_lbl, const QString &cancel_lbl,
 										 const QString &yes_ico, const QString &no_ico, const QString &cancel_ico)
 {
 	QString icon_name, aux_title=title;
-	QWidgetList btns = { yes_ok_btn, no_btn, cancel_btn, show_errors_tb };
+	QWidgetList btns = { yes_ok_btn, no_btn, cancel_btn, show_errors_btn };
 
 	if(!yes_lbl.isEmpty())
 		yes_ok_btn->setText(yes_lbl);
@@ -298,8 +306,8 @@ int Messagebox::show(const QString &title, const QString &msg, IconType icon_typ
 
 	setWindowTitle(aux_title);
 	objs_group_wgt->setCurrentIndex(0);
-	show_errors_tb->setChecked(false);
-	show_errors_tb->setVisible(exceptions_trw->topLevelItemCount() > 0);
+	show_errors_btn->setChecked(false);
+	show_errors_btn->setVisible(exceptions_trw->topLevelItemCount() > 0);
 
 	double w_factor = 0.25, h_factor = 0.15;
 	QSize sz = screen()->size();

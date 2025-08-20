@@ -32,8 +32,7 @@ class __libcore ExcludeElement: public Element {
 
 	public:
 		ExcludeElement();
-
-		virtual ~ExcludeElement() {}
+		~ExcludeElement() = default;
 
 		//! \brief Defines the operator used by the exclude element
 		virtual void setOperator(Operator *oper) override;

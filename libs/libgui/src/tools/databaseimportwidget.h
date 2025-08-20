@@ -18,23 +18,24 @@
 
 /**
 \ingroup libgui
-\class DatabaseImportForm
-\brief Implements the form to execute the reverse engineering operations
+\class DatabaseImportWidget
+\brief Implements the widget to execute the reverse engineering operations
 */
 
-#ifndef DATABASE_IMPORT_FORM_H
-#define DATABASE_IMPORT_FORM_H
+#ifndef DATABASE_IMPORT_WIDGET_H
+#define DATABASE_IMPORT_WIDGET_H
 
-#include "ui_databaseimportform.h"
+#include "ui_databaseimportwidget.h"
 #include "databaseimporthelper.h"
 #include "widgets/modelwidget.h"
 #include "utils/htmlitemdelegate.h"
 #include "widgets/objectsfilterwidget.h"
 #include "widgets/debugoutputwidget.h"
+#include "modeldbselectorwidget.h"
 #include <QTimer>
 #include <random>
 
-class __libgui DatabaseImportForm: public QDialog, public Ui::DatabaseImportForm {
+class __libgui DatabaseImportWidget: public QWidget, public Ui::DatabaseImportWidget {
 	Q_OBJECT
 
 	private:
@@ -66,6 +67,8 @@ class __libgui DatabaseImportForm: public QDialog, public Ui::DatabaseImportForm
 		ObjectsFilterWidget *objs_filter_wgt;
 
 		DebugOutputWidget *dbg_output_wgt;
+
+		ModelDbSelectorWidget *model_sel_wgt;
 		
 		/*! \brief Toggles the checked state for the specified item. This method recursively
 		changes the check state for the children items */
@@ -81,10 +84,10 @@ class __libgui DatabaseImportForm: public QDialog, public Ui::DatabaseImportForm
 		"col_oids" stores the columns oids for each selected table */
 		void getObjectToImport(std::map<ObjectType, std::vector<unsigned>> &obj_oids, std::map<unsigned, std::vector<unsigned>> &col_oids);
 		
-		void finishImport(const QString &msg);
-		void showEvent(QShowEvent *event);
-		void closeEvent(QCloseEvent *event);
-		void destroyModelWidget();
+		void finishImport(const QString &msg, bool aborted_by_error);
+		void showEvent(QShowEvent *event) override;
+		void closeEvent(QCloseEvent *event) override;
+		void destroyModel();
 		
 		//! \brief Allocates the import thread and helper
 		void createThread();
@@ -118,17 +121,19 @@ class __libgui DatabaseImportForm: public QDialog, public Ui::DatabaseImportForm
 		 * if all objects are imported without using filters */
 		static constexpr unsigned ObjectCountThreshould=2000;
 		
-		DatabaseImportForm(QWidget * parent = nullptr, Qt::WindowFlags f = Qt::Widget);
-		virtual ~DatabaseImportForm();
-		
-		void setModelWidget(ModelWidget *model);
+		DatabaseImportWidget(QWidget * parent = nullptr);
 
+		virtual ~DatabaseImportWidget();
+		
 		//! \brief Defines if all the output generated during the import process should be displayed
 		static void setLowVerbosity(bool value);
 		
 		//! \brief Returns the configured model widget
-		ModelWidget *getModelWidget();
+		ModelWidget *getModel();
 		
+		//! \brief Returns if the importing thread is running
+		bool isThreadRunning();
+
 		//! \brief Fills a combo box with all available databases according to the configurations of the specified import helper
 		static void listDatabases(DatabaseImportHelper &import_helper, QComboBox *dbcombo);
 
@@ -160,6 +165,13 @@ class __libgui DatabaseImportForm: public QDialog, public Ui::DatabaseImportForm
 																											 bool checkable_items=false, bool disable_empty_grps=true, QTreeWidgetItem *root=nullptr,
 																											 const QString &schema="", const QString &table="");
 
+		//! \brief Updates the connections combo with the latest loaded connection settings
+		void updateConnections();
+
+		void updateModels(const QList<ModelWidget *> &models);
+
+		void enableImport();
+
 	private slots:
 		void enableImportControls(bool enable);
 		void importDatabase();
@@ -183,10 +195,13 @@ class __libgui DatabaseImportForm: public QDialog, public Ui::DatabaseImportForm
 	signals:
 		/*! \brief This signal is emitted whenever the user changes the connections settings
 		within this widget without use the main configurations dialog */
-		void s_connectionsUpdateRequest();
+		void s_connectionsUpdateRequested();
 
 		//! \brief This signal is emitted whenever the import has successfully finished
-		void s_importFinished();
+		void s_importFinished(bool aborted_by_error);
+
+		//! \brief This signal is emitted whenever the import has started
+		void s_importStarted();
 };
 
 #endif

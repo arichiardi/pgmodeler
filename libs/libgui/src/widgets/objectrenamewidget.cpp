@@ -32,11 +32,11 @@ ObjectRenameWidget::ObjectRenameWidget(QWidget * parent) : QDialog(parent)
 	setWindowFlags(Qt::Dialog | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
 	setAttribute(Qt::WA_TranslucentBackground, true);
 
-	connect(new_name_edt, &QLineEdit::returnPressed, apply_tb, &QToolButton::click);
-	connect(cancel_tb, &QToolButton::clicked, this, &ObjectRenameWidget::reject);
+	connect(new_name_edt, &QLineEdit::returnPressed, apply_btn, &QPushButton::click);
+	connect(cancel_btn, &QPushButton::clicked, this, &ObjectRenameWidget::reject);
 
 	connect(new_name_edt, &QLineEdit::textChanged, this, [this](){
-		apply_tb->setEnabled(!new_name_edt->text().isEmpty());
+		apply_btn->setEnabled(!new_name_edt->text().isEmpty());
 	});
 
 	handle_lbl->installEventFilter(this);
@@ -54,14 +54,14 @@ void ObjectRenameWidget::setAttributes(std::vector<BaseObject *> objs, DatabaseM
 		{
 			throw Exception(Exception::getErrorMessage(ErrorCode::OprReservedObject)
 												 .arg(obj->getName(), obj->getTypeName()),
-											ErrorCode::OprReservedObject,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+											ErrorCode::OprReservedObject,PGM_FUNC,PGM_FILE,PGM_LINE);
 		}
 
 		if(tab_obj && tab_obj->isAddedByRelationship())
 		{
 			throw Exception(Exception::getErrorMessage(ErrorCode::OprRelationshipAddedObject)
 											.arg(tab_obj->getName(), tab_obj->getTypeName()),
-											ErrorCode::OprRelationshipAddedObject ,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+											ErrorCode::OprRelationshipAddedObject ,PGM_FUNC,PGM_FILE,PGM_LINE);
 		}
 	}
 
@@ -97,19 +97,19 @@ void ObjectRenameWidget::updateLabelsButtons()
 
 	if(!paste_mode)
 	{
-		cancel_tb->setText(tr("Cancel"));
-		cancel_tb->setIcon(QIcon(GuiUtilsNs::getIconPath("close1")));
+		cancel_btn->setText(tr("Cancel"));
+		cancel_btn->setIcon(QIcon(GuiUtilsNs::getIconPath("close1")));
 
-		disconnect(apply_tb, nullptr, this, nullptr);
-		connect(apply_tb, &QToolButton::clicked, this, &ObjectRenameWidget::applyRenaming, Qt::UniqueConnection);
+		disconnect(apply_btn, nullptr, this, nullptr);
+		connect(apply_btn, &QPushButton::clicked, this, &ObjectRenameWidget::applyRenaming, Qt::UniqueConnection);
 	}
 	else
 	{
-		cancel_tb->setText(tr("Ignore"));
-		cancel_tb->setIcon(QIcon(GuiUtilsNs::getIconPath("cancel")));
+		cancel_btn->setText(tr("Ignore"));
+		cancel_btn->setIcon(QIcon(GuiUtilsNs::getIconPath("cancel")));
 
-		disconnect(apply_tb, nullptr, this, nullptr);
-		connect(apply_tb, &QToolButton::clicked, this, &ObjectRenameWidget::validateName, Qt::UniqueConnection);
+		disconnect(apply_btn, nullptr, this, nullptr);
+		connect(apply_btn, &QPushButton::clicked, this, &ObjectRenameWidget::validateName, Qt::UniqueConnection);
 	}
 }
 
@@ -295,7 +295,7 @@ void ObjectRenameWidget::applyRenaming()
 	}
 	catch(Exception &e)
 	{
-		Messagebox::error(e, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+		Messagebox::error(e, PGM_FUNC, PGM_FILE, PGM_LINE);
 
 		if(obj_type != ObjectType::Database)
 			op_list->removeLastOperation();
@@ -312,7 +312,7 @@ void ObjectRenameWidget::validateName()
 	if(!BaseObject::isValidName(new_name_edt->text()))
 	{
 		Messagebox::error(Exception::getErrorMessage(ErrorCode::AsgInvalidNameObject),
-											ErrorCode::AsgInvalidNameObject, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+											ErrorCode::AsgInvalidNameObject, PGM_FUNC, PGM_FILE, PGM_LINE);
 
 		return;
 	}

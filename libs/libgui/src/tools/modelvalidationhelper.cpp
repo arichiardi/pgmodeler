@@ -211,7 +211,7 @@ void ModelValidationHelper::resolveConflict(ValidationInfo &info)
 	}
 	catch(Exception &e)
 	{
-		throw Exception(e.getErrorMessage(), e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__, &e);
+		throw Exception(e.getErrorMessage(), e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 	}
 }
 
@@ -233,7 +233,7 @@ unsigned ModelValidationHelper::getErrorCount()
 void ModelValidationHelper::setValidationParams(DatabaseModel *model, Connection *conn, const QString &pgsql_ver, bool use_tmp_names)
 {
 	if(!model)
-		throw Exception(ErrorCode::AsgNotAllocattedObject,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::AsgNotAllocattedObject,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	fix_mode=false;
 	valid_canceled=false;
@@ -259,7 +259,7 @@ bool ModelValidationHelper::isInFixMode()
 void ModelValidationHelper::validateModel()
 {
 	if(!db_model)
-		throw Exception(ErrorCode::OprNotAllocatedObject,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::OprNotAllocatedObject,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	try
 	{
@@ -376,7 +376,7 @@ void ModelValidationHelper::validateModel()
 	}
 	catch(Exception &e)
 	{
-		Messagebox::error(e, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+		Messagebox::error(e, PGM_FUNC, PGM_FILE, PGM_LINE);
 	}
 }
 
@@ -727,7 +727,7 @@ void ModelValidationHelper::checkUselessUqConstrs()
 		if(valid_canceled)
 			break;
 
-		table = dynamic_cast<Table *>(tab);
+		table = dynamic_cast<PhysicalTable *>(tab);
 		pk = table->getPrimaryKey();
 
 		if(!pk)

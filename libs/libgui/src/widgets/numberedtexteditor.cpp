@@ -508,7 +508,7 @@ void NumberedTextEditor::loadFile()
 	}
 	catch(Exception &e)
 	{
-		Messagebox::error(e, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+		Messagebox::error(e, PGM_FUNC, PGM_FILE, PGM_LINE);
 	}
 
 	if(loaded)
@@ -529,7 +529,7 @@ void NumberedTextEditor::saveFile()
 	}
 	catch(Exception &e)
 	{
-		Messagebox::error(e, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+		Messagebox::error(e, PGM_FUNC, PGM_FILE, PGM_LINE);
 	}
 }
 
@@ -553,7 +553,7 @@ void NumberedTextEditor::editSource()
 	if(!input.open(QFile::WriteOnly | QFile::Truncate))
 		throw Exception(Exception::getErrorMessage(ErrorCode::FileDirectoryNotAccessed)
 										.arg(tmp_src_file),
-										ErrorCode::FileDirectoryNotAccessed ,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+										ErrorCode::FileDirectoryNotAccessed ,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	buffer.append(this->toPlainText().toUtf8());
 	input.write(buffer);
@@ -596,7 +596,7 @@ void NumberedTextEditor::updateSource(int exit_code, QProcess::ExitStatus)
 		if(!input.open(QFile::ReadOnly))
 			throw Exception(Exception::getErrorMessage(ErrorCode::FileDirectoryNotAccessed)
 											.arg(tmp_src_file),
-											ErrorCode::FileDirectoryNotAccessed ,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+											ErrorCode::FileDirectoryNotAccessed ,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 		this->setPlainText(input.readAll());
 		input.close();

@@ -498,7 +498,7 @@ void TableObjectView::configureObject(const SimpleColumn &col)
 void TableObjectView::setChildObjectXPos(ChildObjectId obj_id, double px)
 {
 	if(obj_id > ConstrAliasLabel)
-		throw Exception(ErrorCode::RefObjectInvalidIndex, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+		throw Exception(ErrorCode::RefObjectInvalidIndex, PGM_FUNC, PGM_FILE, PGM_LINE);
 
 	if(obj_id == ObjDescriptor)
 		descriptor->setPos(px, descriptor->pos().y());
@@ -541,7 +541,7 @@ void TableObjectView::calculateBoundingRect()
 QGraphicsItem *TableObjectView::getChildObject(ChildObjectId obj_id)
 {
 	if(obj_id > ConstrAliasLabel)
-		throw Exception(ErrorCode::RefObjectInvalidIndex, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+		throw Exception(ErrorCode::RefObjectInvalidIndex, PGM_FUNC, PGM_FILE, PGM_LINE);
 
 	if(obj_id == ObjDescriptor)
 		return descriptor;

@@ -31,25 +31,15 @@
 #include <unordered_map>
 
 namespace GuiUtilsNs {
-
 	NumberedTextEditor *createNumberedTextEditor(QWidget *parent, bool act_btns_enabled, qreal custom_fnt_size)
 	{
-		NumberedTextEditor *editor=new NumberedTextEditor(parent, act_btns_enabled, custom_fnt_size);
-
-		if(parent && !parent->layout())
-		{
-			QHBoxLayout *layout=new QHBoxLayout(parent);
-			layout->setContentsMargins(0,0,0,0);
-			layout->addWidget(editor);
-		}
-
-		return editor;
+		return createWidgetInParent<NumberedTextEditor>(parent, act_btns_enabled, custom_fnt_size);
 	}
 
 	QTreeWidgetItem *createOutputTreeItem(QTreeWidget *output_trw, const QString &text, const QPixmap &ico, QTreeWidgetItem *parent, bool expand_item, bool word_wrap)
 	{
 		if(!output_trw)
-			throw Exception(ErrorCode::OprNotAllocatedObject,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+			throw Exception(ErrorCode::OprNotAllocatedObject,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 		QTreeWidgetItem *item=nullptr;
 
@@ -88,7 +78,7 @@ namespace GuiUtilsNs {
 	void createOutputListItem(QListWidget *output_lst, const QString &text, const QPixmap &ico, bool is_formated)
 	{
 		if(!output_lst)
-			throw Exception(ErrorCode::OprNotAllocatedObject,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+			throw Exception(ErrorCode::OprNotAllocatedObject,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 		QListWidgetItem *item=new QListWidgetItem;
 
@@ -134,7 +124,7 @@ namespace GuiUtilsNs {
 			{
 				throw Exception(Exception::getErrorMessage(ErrorCode::OprReservedObject)
 								.arg(object->getName(true), object->getTypeName()),
-								ErrorCode::OprReservedObject,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+								ErrorCode::OprReservedObject,PGM_FUNC,PGM_FILE,PGM_LINE);
 			}
 
 			object->setSQLDisabled(disable);
@@ -248,6 +238,12 @@ namespace GuiUtilsNs {
 		QFont font=widget->font();
 		font.setPointSizeF(font.pointSizeF() * factor);
 		widget->setFont(font);
+	}
+
+	void configureWidgetsFont(const QWidgetList widgets, FontFactorId factor_id)
+	{
+		for(auto &wgt : widgets)
+			configureWidgetFont(wgt, factor_id);
 	}
 
 	void createExceptionsTree(QTreeWidget *exceptions_trw, Exception &e, QTreeWidgetItem *root)
@@ -650,7 +646,7 @@ namespace GuiUtilsNs {
 		}
 		catch(Exception &e)
 		{
-			throw Exception(e.getErrorMessage(), __PRETTY_FUNCTION__, __FILE__, __LINE__, &e);
+			throw Exception(e.getErrorMessage(), PGM_FUNC, PGM_FILE, PGM_LINE, &e);
 		}
 	}
 
@@ -679,7 +675,7 @@ namespace GuiUtilsNs {
 		}
 		catch(Exception &e)
 		{
-			throw Exception(e.getErrorMessage(), __PRETTY_FUNCTION__, __FILE__, __LINE__, &e);
+			throw Exception(e.getErrorMessage(), PGM_FUNC, PGM_FILE, PGM_LINE, &e);
 		}
 	}
 
@@ -697,15 +693,13 @@ namespace GuiUtilsNs {
 
 	void updateDropShadow(QWidget *wgt)
 	{
-		QColor color(0, 0, 0, 80);
+		QColor color { qApp->palette().color(QPalette::Shadow) };
 		int radius = 6, x = 1, y = 1;
 
+		color.setAlpha(80);
+
 		if(!AppearanceConfigWidget::isDarkUiTheme())
-		{
 			radius = 1;
-			color.setRgb(225, 225, 225);
-			color.setAlpha(255);
-		}
 
 		if(!wgt->graphicsEffect())
 			createDropShadow(wgt, x, y, radius, color);

@@ -77,6 +77,8 @@ class __libgui AppearanceConfigWidget: public BaseConfigWidget, public Ui::Appea
 				bool obj_conf;
 		};
 		
+		QButtonGroup *ico_sz_btn_grp;
+
 		NumberedTextEditor *font_preview_txt;
 
 		SyntaxHighlighter *font_preview_hl;

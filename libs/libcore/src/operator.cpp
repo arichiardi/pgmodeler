@@ -82,9 +82,9 @@ bool Operator::isValidName(const QString &name)
 void Operator::setName(const QString &name)
 {
 	if(name.isEmpty())
-		throw Exception(ErrorCode::AsgEmptyNameObject,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::AsgEmptyNameObject,PGM_FUNC,PGM_FILE,PGM_LINE);
 	else	if(!isValidName(name))
-		throw Exception(ErrorCode::AsgInvalidNameObject,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::AsgInvalidNameObject,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	this->obj_name=name;
 }
@@ -93,7 +93,7 @@ void Operator::setFunction(Function *func, FunctionId func_id)
 {
 	//Raises an error if the function type is invalid
 	if(func_id > FuncRestrict)
-		throw Exception(ErrorCode::RefFunctionInvalidType,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::RefFunctionInvalidType,PGM_FUNC,PGM_FILE,PGM_LINE);
 	else if(func_id==FuncOperator)
 	{
 		//Raises an error if the function is not allocated
@@ -101,14 +101,14 @@ void Operator::setFunction(Function *func, FunctionId func_id)
 			throw Exception(Exception::getErrorMessage(ErrorCode::AsgNotAllocatedFunction)
 							.arg(this->getName(true))
 							.arg(BaseObject::getTypeName(ObjectType::Operator)),
-							ErrorCode::AsgNotAllocatedFunction,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+							ErrorCode::AsgNotAllocatedFunction,PGM_FUNC,PGM_FILE,PGM_LINE);
 		/* Raises an error if the parameter count is invalid. To be used by the operator
 		 the function must own 1 or 2 parameters */
 		else if(func->getParameterCount()==0 || func->getParameterCount() > 2)
 			throw Exception(Exception::getErrorMessage(ErrorCode::AsgFunctionInvalidParamCount)
 							.arg(this->getName())
 							.arg(BaseObject::getTypeName(ObjectType::Operator)),
-							ErrorCode::AsgFunctionInvalidParamCount,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+							ErrorCode::AsgFunctionInvalidParamCount,PGM_FUNC,PGM_FILE,PGM_LINE);
 		else
 		{
 			unsigned param_count=func->getParameterCount();
@@ -145,7 +145,7 @@ void Operator::setFunction(Function *func, FunctionId func_id)
 				throw Exception(Exception::getErrorMessage(ErrorCode::AsgFunctionInvalidParameters)
 								.arg(this->getName())
 								.arg(BaseObject::getTypeName(ObjectType::Operator)),
-								ErrorCode::AsgFunctionInvalidParameters,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+								ErrorCode::AsgFunctionInvalidParameters,PGM_FUNC,PGM_FILE,PGM_LINE);
 		}
 	}
 
@@ -157,7 +157,7 @@ void Operator::setArgumentType(PgSqlType arg_type, ArgumentId arg_id)
 {
 	//Raises an error if the argument id is invalid
 	if(arg_id > RightArg)
-		throw Exception(ErrorCode::RefOperatorArgumentInvalidType,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::RefOperatorArgumentInvalidType,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	arg_type.reset();
 	setCodeInvalidated(argument_types[arg_id] != arg_type);
@@ -168,7 +168,7 @@ void Operator::setOperator(Operator *oper, OperatorId op_id)
 {
 	//Raises an error if the operator type is invalid
 	if(op_id > OperNegator)
-		throw Exception(ErrorCode::RefOperatorInvalidType,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::RefOperatorInvalidType,PGM_FUNC,PGM_FILE,PGM_LINE);
 	else
 	{
 		/* Validating the Commutator OP: According to the PostgreSQL documentation
@@ -182,7 +182,7 @@ void Operator::setOperator(Operator *oper, OperatorId op_id)
 			throw Exception(Exception::getErrorMessage(ErrorCode::AsgInvalidCommutatorOperator)
 							.arg(oper->getSignature(true))
 							.arg(this->getSignature(true)),
-							ErrorCode::AsgFunctionInvalidParamCount,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+							ErrorCode::AsgFunctionInvalidParamCount,PGM_FUNC,PGM_FILE,PGM_LINE);
 		}
 		/* Validating Negator OP: According to the PostgreSQL documentation the negator
 		 operator must have its arguments as the same type of arguments from the
@@ -196,7 +196,7 @@ void Operator::setOperator(Operator *oper, OperatorId op_id)
 			throw Exception(Exception::getErrorMessage(ErrorCode::AsgInvalidNegatorOperator)
 							.arg(oper->getSignature(true))
 							.arg(this->getSignature(true)),
-							ErrorCode::AsgFunctionInvalidParamCount,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+							ErrorCode::AsgFunctionInvalidParamCount,PGM_FUNC,PGM_FILE,PGM_LINE);
 		}
 
 		setCodeInvalidated(operators[op_id] != oper);
@@ -220,7 +220,7 @@ Function *Operator::getFunction(FunctionId func_id)
 {
 	//Raises an error if the function type is invalid
 	if(func_id > FuncRestrict)
-		throw Exception(ErrorCode::RefOperatorInvalidType,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::RefOperatorInvalidType,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	return functions[func_id];
 }
@@ -229,7 +229,7 @@ PgSqlType Operator::getArgumentType(ArgumentId arg_id)
 {
 	//Raises an error if the argument id is invalid
 	if(arg_id > RightArg)
-		throw Exception(ErrorCode::RefOperatorArgumentInvalidType,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::RefOperatorArgumentInvalidType,PGM_FUNC,PGM_FILE,PGM_LINE);
 	return argument_types[arg_id];
 }
 
@@ -237,7 +237,7 @@ Operator *Operator::getOperator(OperatorId op_id)
 {
 	//Raises an error if the operator type is invalid
 	if(op_id > OperNegator)
-		throw Exception(ErrorCode::RefFunctionInvalidType,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::RefFunctionInvalidType,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	return operators[op_id];
 }

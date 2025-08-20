@@ -9,7 +9,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>530</width>
+    <width>587</width>
     <height>175</height>
    </rect>
   </property>
@@ -29,7 +29,7 @@
    <string>Dialog</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="../res/logoicons.qrc">
+   <iconset resource="../../../priv-plugins/res/logoicons.qrc">
     <normaloff>:/icons/icons/pgmodeler_logo.png</normaloff>:/icons/icons/pgmodeler_logo.png</iconset>
   </property>
   <layout class="QGridLayout" name="gridLayout_4">
@@ -461,6 +461,12 @@
             <verstretch>0</verstretch>
            </sizepolicy>
           </property>
+          <property name="minimumSize">
+           <size>
+            <width>80</width>
+            <height>0</height>
+           </size>
+          </property>
           <property name="text">
            <string>&amp;No</string>
           </property>
@@ -496,6 +502,12 @@
             <verstretch>0</verstretch>
            </sizepolicy>
           </property>
+          <property name="minimumSize">
+           <size>
+            <width>80</width>
+            <height>0</height>
+           </size>
+          </property>
           <property name="text">
            <string>Cancel</string>
           </property>
@@ -515,6 +527,12 @@
             <verstretch>0</verstretch>
            </sizepolicy>
           </property>
+          <property name="minimumSize">
+           <size>
+            <width>80</width>
+            <height>0</height>
+           </size>
+          </property>
           <property name="text">
            <string>&amp;Yes</string>
           </property>
@@ -533,12 +551,18 @@
          </widget>
         </item>
         <item row="0" column="2">
-         <widget class="QToolButton" name="show_errors_tb">
+         <widget class="QPushButton" name="show_errors_btn">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>80</width>
+            <height>0</height>
+           </size>
           </property>
           <property name="toolTip">
            <string/>
@@ -559,12 +583,6 @@
           <property name="checkable">
            <bool>true</bool>
           </property>
-          <property name="popupMode">
-           <enum>QToolButton::ToolButtonPopupMode::InstantPopup</enum>
-          </property>
-          <property name="toolButtonStyle">
-           <enum>Qt::ToolButtonStyle::ToolButtonTextBesideIcon</enum>
-          </property>
          </widget>
         </item>
        </layout>
@@ -576,7 +594,7 @@
  </widget>
  <tabstops>
   <tabstop>custom_option_chk</tabstop>
-  <tabstop>show_errors_tb</tabstop>
+  <tabstop>show_errors_btn</tabstop>
   <tabstop>yes_ok_btn</tabstop>
   <tabstop>no_btn</tabstop>
   <tabstop>cancel_btn</tabstop>
@@ -585,9 +603,8 @@
   <tabstop>exceptions_trw</tabstop>
  </tabstops>
  <resources>
-  <include location="../res/logoicons.qrc"/>
   <include location="../res/resources.qrc"/>
-  <include location="../res/resources.qrc"/>
+  <include location="../../../priv-plugins/res/logoicons.qrc"/>
  </resources>
  <connections/>
 </ui>

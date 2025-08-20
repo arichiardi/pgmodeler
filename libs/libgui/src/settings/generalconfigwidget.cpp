@@ -24,9 +24,9 @@
 #include "mainwindow.h"
 #include "widgets/numberedtexteditor.h"
 #include "tools/sqlexecutionwidget.h"
-#include "tools/modeldatabasediffform.h"
-#include "tools/databaseimportform.h"
-#include "tools/modelexportform.h"
+#include "tools/difftoolwidget.h"
+#include "tools/databaseimportwidget.h"
+#include "tools/modelexportwidget.h"
 
 std::map<QString, GeneralConfigWidget::WidgetState> GeneralConfigWidget::widgets_geom;
 std::map<QString, attribs_map> GeneralConfigWidget::config_params;
@@ -69,8 +69,8 @@ GeneralConfigWidget::GeneralConfigWidget(QWidget * parent) : BaseConfigWidget(pa
 	connect(unity_cmb, &QComboBox::currentIndexChanged, this, &GeneralConfigWidget::convertMarginUnity);
 	connect(autosave_interv_chk, &QCheckBox::toggled, autosave_interv_spb, &QSpinBox::setEnabled);
 	connect(paper_cmb, &QComboBox::currentIndexChanged, this,  &GeneralConfigWidget::selectPaperSize);
-	connect(save_restore_geometry_chk, &QCheckBox::toggled, reset_sizes_tb, &QToolButton::setEnabled);
-	connect(reset_sizes_tb, &QToolButton::clicked, this, &GeneralConfigWidget::resetDialogsSizes);
+	connect(save_restore_geometry_chk, &QCheckBox::toggled, reset_sizes_btn, &QPushButton::setEnabled);
+	connect(reset_sizes_btn, &QPushButton::clicked, this, &GeneralConfigWidget::resetDialogsSizes);
 
 	connect(trunc_columns_data_chk, &QCheckBox::toggled, trunc_columns_data_spb, &QComboBox::setEnabled);
 	connect(trunc_columns_data_chk, &QCheckBox::toggled, disable_inline_editor_chk, &QComboBox::setEnabled);
@@ -144,31 +144,31 @@ GeneralConfigWidget::GeneralConfigWidget(QWidget * parent) : BaseConfigWidget(pa
 	QList<QComboBox *> combos=this->findChildren<QComboBox *>();
 	QList<QRadioButton *> radios=this->findChildren<QRadioButton *>();
 
-	for(QCheckBox *chk : chk_boxes)
+	for(auto &chk : chk_boxes)
 	{
 		child_wgts.push_back(chk);
 		connect(chk, &QCheckBox::toggled, this, &GeneralConfigWidget::setConfigurationChanged);
 	}
 
-	for(QSpinBox *spin : spin_boxes)
+	for(auto &spin : spin_boxes)
 	{
 		child_wgts.push_back(spin);
 		connect(spin, &QSpinBox::valueChanged, this, &GeneralConfigWidget::setConfigurationChanged);
 	}
 
-	for(QDoubleSpinBox *dspin : dspin_boxes)
+	for(auto &dspin : dspin_boxes)
 	{
 		child_wgts.push_back(dspin);
 		connect(dspin,  &QDoubleSpinBox::valueChanged, this, &GeneralConfigWidget::setConfigurationChanged);
 	}
 
-	for(QComboBox *cmb : combos)
+	for(auto &cmb : combos)
 	{
 		child_wgts.push_back(cmb);
 		connect(cmb, &QComboBox::currentIndexChanged, this, &GeneralConfigWidget::setConfigurationChanged);
 	}
 
-	for(QRadioButton *radio : radios)
+	for(auto &radio : radios)
 	{
 		child_wgts.push_back(radio);
 		connect(radio, &QRadioButton::toggled, this, &GeneralConfigWidget::setConfigurationChanged);
@@ -176,16 +176,16 @@ GeneralConfigWidget::GeneralConfigWidget(QWidget * parent) : BaseConfigWidget(pa
 
 	connect(source_editor_sel, &FileSelectorWidget::s_selectorChanged, this, &GeneralConfigWidget::setConfigurationChanged);
 
-	connect(clear_sql_history_tb, &QToolButton::clicked, this, [](){
+	connect(clear_sql_history_btn, &QPushButton::clicked, this, [](){
 		SQLExecutionWidget::destroySQLHistory();
 	});
 
-	connect(reset_alerts_choices_tb, &QToolButton::clicked, this, &GeneralConfigWidget::resetAlertChoices);
+	connect(reset_alerts_choices_btn, &QPushButton::clicked, this, &GeneralConfigWidget::resetAlertChoices);
 }
 
 void GeneralConfigWidget::showEvent(QShowEvent *)
 {
-	reset_alerts_choices_tb->setEnabled(config_params[Attributes::Configuration][Attributes::AlertUnsavedModels] != Attributes::True ||
+	reset_alerts_choices_btn->setEnabled(config_params[Attributes::Configuration][Attributes::AlertUnsavedModels] != Attributes::True ||
 																			 config_params[Attributes::Configuration][Attributes::AlertOpenSqlTabs] != Attributes::True ||
 																			 config_params[Attributes::Configuration][Attributes::UseDefDisambiguation] == Attributes::True);
 
@@ -199,7 +199,7 @@ void GeneralConfigWidget::loadConfiguration()
 		unsigned interv=0;
 		int x=0, y=0, w=0, h=0, idx = -1;
 
-		for(QWidget *wgt : child_wgts)
+		for(auto &wgt : child_wgts)
 			wgt->blockSignals(true);
 
 		BaseConfigWidget::loadConfiguration(GlobalAttributes::GeneralConf, config_params, { Attributes::Id });
@@ -263,7 +263,7 @@ void GeneralConfigWidget::loadConfiguration()
 		source_editor_args_edt->setText(config_params[Attributes::Configuration][Attributes::SourceEditorArgs]);
 
 		save_restore_geometry_chk->setChecked(config_params[Attributes::Configuration][Attributes::SaveRestoreGeometry]==Attributes::True);
-		reset_sizes_tb->setEnabled(save_restore_geometry_chk->isChecked());
+		reset_sizes_btn->setEnabled(save_restore_geometry_chk->isChecked());
 		low_verbosity_chk->setChecked(config_params[Attributes::Configuration][Attributes::LowVerbosity]==Attributes::True);
 		escape_comments_chk->setChecked(config_params[Attributes::Configuration][Attributes::EscapeComment]==Attributes::True);
 
@@ -282,7 +282,7 @@ void GeneralConfigWidget::loadConfiguration()
 		int ui_idx = ui_language_cmb->findData(config_params[Attributes::Configuration][Attributes::UiLanguage]);
 		ui_language_cmb->setCurrentIndex(ui_idx >= 0 ? ui_idx : 0);
 
-		for(QWidget *wgt : child_wgts)
+		for(auto &wgt : child_wgts)
 			wgt->blockSignals(false);
 
 		widgets_geom.clear();
@@ -304,7 +304,7 @@ void GeneralConfigWidget::loadConfiguration()
 	}
 	catch(Exception &e)
 	{
-		throw Exception(e.getErrorMessage(), e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__, &e, e.getExtraInfo());
+		throw Exception(e.getErrorMessage(), e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e, e.getExtraInfo());
 	}
 }
 
@@ -559,7 +559,7 @@ void GeneralConfigWidget::saveConfiguration()
 	}
 	catch(Exception &e)
 	{
-		throw Exception(e.getErrorMessage(),e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__, &e);
+		throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 	}
 }
 
@@ -616,13 +616,15 @@ void GeneralConfigWidget::applyConfiguration()
 	BaseObjectView::setShadowHidden(hide_obj_shadows_chk->isChecked());
 
 	SQLExecutionWidget::setSQLHistoryMaxLength(history_max_length_spb->value());
-	ModelDatabaseDiffForm::setLowVerbosity(low_verbosity_chk->isChecked());
-	DatabaseImportForm::setLowVerbosity(low_verbosity_chk->isChecked());
-	ModelExportForm::setLowVerbosity(low_verbosity_chk->isChecked());
+	DiffToolWidget::setLowVerbosity(low_verbosity_chk->isChecked());
+	DatabaseImportWidget::setLowVerbosity(low_verbosity_chk->isChecked());
+	ModelExportWidget::setLowVerbosity(low_verbosity_chk->isChecked());
 	Connection::setIgnoreDbVersion(old_pgsql_versions_chk->isChecked());
 
 	PlainTextItemDelegate::setMaxDisplayLength(trunc_columns_data_chk->isChecked() ? trunc_columns_data_spb->value() : 0);
 	PlainTextItemDelegate::setTextEditorEnabled(trunc_columns_data_chk->isChecked() ? !disable_inline_editor_chk->isChecked() : false);
+
+	setConfigurationChanged(false);
 }
 
 void GeneralConfigWidget::restoreDefaults()
@@ -639,7 +641,7 @@ void GeneralConfigWidget::restoreDefaults()
 	}
 	catch(Exception &e)
 	{
-		throw Exception(e.getErrorMessage(),e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__, &e);
+		throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 	}
 }
 
@@ -698,5 +700,5 @@ void GeneralConfigWidget::resetAlertChoices()
 	config_params[Attributes::Configuration][Attributes::AlertUnsavedModels] = Attributes::True;
 	config_params[Attributes::Configuration][Attributes::AlertOpenSqlTabs] = Attributes::True;
 	config_params[Attributes::Configuration][Attributes::UseDefDisambiguation] = Attributes::False;
-	reset_alerts_choices_tb->setEnabled(false);
+	reset_alerts_choices_btn->setEnabled(false);
 }

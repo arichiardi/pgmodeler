@@ -44,8 +44,7 @@ class __libgui PlainTextItemDelegate : public QStyledItemDelegate {
 
 	public:
 		explicit PlainTextItemDelegate(QObject * parent, bool read_only);
-
-		virtual ~PlainTextItemDelegate();
+		~PlainTextItemDelegate() = default;
 
 		static void setMaxDisplayLength(int value);
 

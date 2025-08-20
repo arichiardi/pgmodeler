@@ -56,11 +56,6 @@ ConnectionsConfigWidget::ConnectionsConfigWidget(QWidget * parent) : BaseConfigW
 	cancel_tb->setVisible(false);
 }
 
-ConnectionsConfigWidget::~ConnectionsConfigWidget()
-{
-
-}
-
 void ConnectionsConfigWidget::hideEvent(QHideEvent *event)
 {
 	if(!event->spontaneous())
@@ -69,7 +64,7 @@ void ConnectionsConfigWidget::hideEvent(QHideEvent *event)
 		one_time_conn_edit = false;
 		host_edt->setEnabled(true);
 		port_sbp->setEnabled(true);
-		conn_btns_wgt->setVisible(true);
+		conn_btns_grp->setVisible(true);
 		add_tb->setVisible(true);
 	}
 }
@@ -80,7 +75,6 @@ void ConnectionsConfigWidget::showEvent(QShowEvent *event)
 	{
 		updateConnectionsCombo();
 		newConnection();
-		conn_attribs_tbw->setCurrentIndex(0);
 	}
 }
 
@@ -156,14 +150,14 @@ void ConnectionsConfigWidget::loadConfiguration()
 	}
 	catch(Exception &e)
 	{
-		throw Exception(e.getErrorMessage(), e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__, &e, e.getExtraInfo());
+		throw Exception(e.getErrorMessage(), e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e, e.getExtraInfo());
 	}
 }
 
 void ConnectionsConfigWidget::setOneTimeEditMode(bool one_time_edit, const QString &conn_alias, const QString &dbname, const QString &host, int port, const QString &username, const QString &password)
 {
 	one_time_conn_edit = one_time_edit;
-	conn_btns_wgt->setVisible(!one_time_edit);
+	conn_btns_grp->setVisible(!one_time_edit);
 	add_tb->setVisible(!one_time_edit);
 	host_edt->setDisabled(one_time_edit && !host.isEmpty());
 	port_sbp->setDisabled(one_time_edit && port > 0);
@@ -190,13 +184,14 @@ void ConnectionsConfigWidget::enableCertificates()
 void ConnectionsConfigWidget::enableConnectionTest()
 {
 	test_tb->setEnabled(!alias_edt->text().isEmpty() &&
-						!host_edt->text().isEmpty() &&
-						!user_edt->text().isEmpty() &&
-						!conn_db_edt->text().isEmpty());
+											!host_edt->text().isEmpty() &&
+											!user_edt->text().isEmpty() &&
+											!conn_db_edt->text().isEmpty());
+
 	add_tb->setEnabled(test_tb->isEnabled());
 	update_tb->setEnabled(test_tb->isEnabled());
 
-	if(!isConfigurationChanged())
+	if(!isConfigurationChanged() && test_tb->isEnabled())
 		setConfigurationChanged(true);
 }
 
@@ -269,7 +264,7 @@ void ConnectionsConfigWidget::duplicateConnection()
 		if(new_conn)
 			delete new_conn;
 
-		throw Exception(e.getErrorMessage(),e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__, &e);
+		throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 	}
 }
 
@@ -303,7 +298,7 @@ void ConnectionsConfigWidget::handleConnection()
 		if(add_tb->isVisible())
 			delete conn;
 
-		throw Exception(e.getErrorMessage(),e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__, &e);
+		throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 	}
 }
 
@@ -468,7 +463,7 @@ void ConnectionsConfigWidget::testConnection()
 	}
 	catch(Exception &e)
 	{
-		Messagebox::error(e, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+		Messagebox::error(e, PGM_FUNC, PGM_FILE, PGM_LINE);
 	}
 }
 
@@ -491,7 +486,7 @@ void ConnectionsConfigWidget::restoreDefaults()
 	}
 	catch(Exception &e)
 	{
-		throw Exception(e.getErrorMessage(),e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__, &e);
+		throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 	}
 }
 
@@ -556,11 +551,11 @@ void ConnectionsConfigWidget::saveConfiguration()
 		schparser.ignoreUnkownAttributes(true);
 		BaseConfigWidget::saveConfiguration(GlobalAttributes::ConnectionsConf, config_params);
 		schparser.ignoreUnkownAttributes(false);
-		//setConfigurationChanged(false);
+		setConfigurationChanged(false);
 	}
 	catch(Exception &e)
 	{
-		throw Exception(e.getErrorMessage(),e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__, &e);
+		throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 	}
 }
 
@@ -597,7 +592,7 @@ void ConnectionsConfigWidget::fillConnectionsComboBox(QComboBox *combo, bool inc
 	Connection *def_conn=nullptr;
 
 	if(!combo)
-		throw Exception(ErrorCode::OprNotAllocatedObject ,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::OprNotAllocatedObject ,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	getConnections(connections);
 

@@ -221,7 +221,7 @@
         </property>
         <property name="icon">
          <iconset resource="../../res/resources.qrc">
-          <normaloff>:/icons/icons/close1.png</normaloff>:/icons/icons/close1.png</iconset>
+          <normaloff>:/icons/icons/closetab.png</normaloff>:/icons/icons/closetab.png</iconset>
         </property>
         <property name="iconSize">
          <size>
@@ -333,7 +333,7 @@
          </spacer>
         </item>
         <item>
-         <widget class="QToolButton" name="blog_post_tb">
+         <widget class="QPushButton" name="blog_post_btn">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
             <horstretch>0</horstretch>
@@ -359,13 +359,10 @@
           <property name="checkable">
            <bool>false</bool>
           </property>
-          <property name="toolButtonStyle">
-           <enum>Qt::ToolButtonStyle::ToolButtonTextBesideIcon</enum>
-          </property>
          </widget>
         </item>
         <item>
-         <widget class="QToolButton" name="get_binary_tb">
+         <widget class="QPushButton" name="get_binary_btn">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
             <horstretch>0</horstretch>
@@ -391,16 +388,10 @@
           <property name="checkable">
            <bool>false</bool>
           </property>
-          <property name="popupMode">
-           <enum>QToolButton::ToolButtonPopupMode::InstantPopup</enum>
-          </property>
-          <property name="toolButtonStyle">
-           <enum>Qt::ToolButtonStyle::ToolButtonTextBesideIcon</enum>
-          </property>
          </widget>
         </item>
         <item>
-         <widget class="QToolButton" name="get_source_tb">
+         <widget class="QPushButton" name="get_source_btn">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
             <horstretch>0</horstretch>
@@ -426,9 +417,6 @@
           <property name="checkable">
            <bool>false</bool>
           </property>
-          <property name="toolButtonStyle">
-           <enum>Qt::ToolButtonStyle::ToolButtonTextBesideIcon</enum>
-          </property>
          </widget>
         </item>
         <item>
@@ -453,8 +441,8 @@
  </widget>
  <tabstops>
   <tabstop>changelog_txt</tabstop>
-  <tabstop>get_binary_tb</tabstop>
-  <tabstop>get_source_tb</tabstop>
+  <tabstop>get_binary_btn</tabstop>
+  <tabstop>get_source_btn</tabstop>
   <tabstop>hide_tb</tabstop>
  </tabstops>
  <resources>

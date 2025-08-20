@@ -283,7 +283,6 @@ class __libcli PgModelerCliApp: public Application {
 		MsgNoFileAssociation;
 
 		PgModelerCliApp(int argc, char **argv);
-
 		virtual ~PgModelerCliApp();
 
 		//! \brief Shows the options menu

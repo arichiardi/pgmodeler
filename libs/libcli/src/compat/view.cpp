@@ -238,17 +238,17 @@ void View::addReference(Reference &refer, Reference::SqlType sql_type, int expr_
 	{
 		//Raises an error if the expression is empty
 		if(refer.getExpression().isEmpty())
-			throw Exception(ErrorCode::AsgInvalidViewDefExpression,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+			throw Exception(ErrorCode::AsgInvalidViewDefExpression,PGM_FUNC,PGM_FILE,PGM_LINE);
 		//Raises an error if already exists a definition expression
 		else if(hasDefinitionExpression())
-			throw Exception(ErrorCode::AsgSecondViewDefExpression,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+			throw Exception(ErrorCode::AsgSecondViewDefExpression,PGM_FUNC,PGM_FILE,PGM_LINE);
 		//Raises an error if the user try to add a definition expression when already exists another references
 		else if(!references.empty())
-			throw Exception(ErrorCode::MixingViewDefExprsReferences,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+			throw Exception(ErrorCode::MixingViewDefExprsReferences,PGM_FUNC,PGM_FILE,PGM_LINE);
 	}
 	//Raises an error if the user try to add a ordinary reference when there is a reference used as definition expression
 	else if(hasDefinitionExpression())
-		throw Exception(ErrorCode::MixingViewDefExprsReferences,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::MixingViewDefExprsReferences,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	//Checks if the reference already exists
 	idx=getReferenceIndex(refer);
@@ -276,7 +276,7 @@ void View::addReference(Reference &refer, Reference::SqlType sql_type, int expr_
 			expr_list->insert(expr_list->begin() + expr_id, static_cast<unsigned>(idx));
 		//Raises an error if the expression id is invalid
 		else if(expr_id >= 0 && expr_id >= static_cast<int>(expr_list->size()))
-			throw Exception(ErrorCode::RefObjectInvalidIndex,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+			throw Exception(ErrorCode::RefObjectInvalidIndex,PGM_FUNC,PGM_FILE,PGM_LINE);
 		else
 			expr_list->push_back(static_cast<unsigned>(idx));
 
@@ -327,7 +327,7 @@ Reference View::getReference(unsigned ref_id)
 {
 	//Raises an error if the reference id is out of bound
 	if(ref_id >= references.size())
-		throw Exception(ErrorCode::RefObjectInvalidIndex,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::RefObjectInvalidIndex,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	return references[ref_id];
 }
@@ -338,7 +338,7 @@ Reference View::getReference(unsigned ref_id, Reference::SqlType sql_type)
 
 	//Raises an error if the reference id is out of bound
 	if(ref_id >= references.size())
-		throw Exception(ErrorCode::RefObjectInvalidIndex,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::RefObjectInvalidIndex,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	if(sql_type==Reference::SqlViewDef || vect_idref)
 		return references[ref_id];
@@ -354,7 +354,7 @@ Reference View::getReference(unsigned ref_id, Reference::SqlType sql_type)
 
 	//Raises an error if the reference id is out of bound
 	if(ref_id >= references.size())
-		throw Exception(ErrorCode::RefObjectInvalidIndex,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::RefObjectInvalidIndex,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	for(i=0; i < 3; i++)
 	{
@@ -401,7 +401,7 @@ void View::removeReferences()
 	std::vector<unsigned> *vect_idref=getExpressionList(sql_type);
 
 	if(expr_id >= vect_idref->size())
-		throw Exception(ErrorCode::RefObjectInvalidIndex,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::RefObjectInvalidIndex,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	vect_idref->erase(vect_idref->begin() + expr_id);
 	setCodeInvalidated(true);

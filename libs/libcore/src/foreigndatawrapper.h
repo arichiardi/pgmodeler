@@ -39,8 +39,7 @@ class __libcore ForeignDataWrapper: public BaseObject, public ForeignObject {
 
 	public:
 		ForeignDataWrapper();
-
-		virtual ~ForeignDataWrapper(){}
+		~ForeignDataWrapper() = default;
 
 		void setHandlerFunction(Function *func);
 		void setValidatorFunction(Function *func);

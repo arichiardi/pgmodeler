@@ -117,7 +117,7 @@ void Application::createUserConfiguration()
 	}
 	catch(Exception &e)
 	{
-		throw Exception(e.getErrorMessage(ErrorCode::InitialUserConfigNotCreated).arg(GlobalAttributes::getConfigurationsPath(), GlobalAttributes::getTmplConfigurationPath()), ErrorCode::InitialUserConfigNotCreated,__PRETTY_FUNCTION__,__FILE__,__LINE__, &e);
+		throw Exception(e.getErrorMessage(ErrorCode::InitialUserConfigNotCreated).arg(GlobalAttributes::getConfigurationsPath(), GlobalAttributes::getTmplConfigurationPath()), ErrorCode::InitialUserConfigNotCreated,PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 	}
 }
 
@@ -128,7 +128,7 @@ void Application::copyFilesRecursively(const QString &src_path, const QString &d
 	if(!src_file.exists())
 	{
 		throw Exception(Exception::getErrorMessage(ErrorCode::FileDirectoryNotAccessed).arg(src_path),
-										__PRETTY_FUNCTION__, __FILE__, __LINE__);
+										PGM_FUNC, PGM_FILE, PGM_LINE);
 	}
 
 	if(src_file.isDir())
@@ -138,7 +138,7 @@ void Application::copyFilesRecursively(const QString &src_path, const QString &d
 		if(!dst_dir.exists() && !dst_dir.mkpath(dst_path))
 		{
 			throw Exception(Exception::getErrorMessage(ErrorCode::FileDirectoryNotWritten).arg(dst_path),
-											 __PRETTY_FUNCTION__, __FILE__, __LINE__);
+											 PGM_FUNC, PGM_FILE, PGM_LINE);
 		}
 
 		QString new_src_path, new_dst_path;
@@ -163,7 +163,7 @@ void Application::copyFilesRecursively(const QString &src_path, const QString &d
 			new_dst_path = dst_path + dst_dir.separator() + filename;
 			fi.setFile(new_src_path);
 
-			// Ignoring the files icons-*.conf, ui-*.conf
+			// Ignoring the files icons-*.conf, ui-*.conf, diff-*.conf
 			if((filename.startsWith("icons-") ||
 					filename.startsWith("ui-")) ||
 
@@ -188,7 +188,8 @@ void Application::copyFilesRecursively(const QString &src_path, const QString &d
 
 		/* Forcing the removal of files that are not backward compatible
 		 * if they already exists in the destination folder */
-		if(dst_path.contains("-highlight"))
+		if(dst_path.contains(GlobalAttributes::HighlightFileSuffix) ||
+			 dst_path.contains(GlobalAttributes::DiffPresetsConf))
 			QFile::remove(dst_path);
 
 		file_copied = QFile::copy(src_path, dst_path);
@@ -196,7 +197,7 @@ void Application::copyFilesRecursively(const QString &src_path, const QString &d
 		if(!file_exists && !file_copied)
 		{
 			throw Exception(Exception::getErrorMessage(ErrorCode::FileDirectoryNotWritten).arg(dst_path),
-											__PRETTY_FUNCTION__, __FILE__, __LINE__);
+											PGM_FUNC, PGM_FILE, PGM_LINE);
 		}
 		else if(file_exists || file_copied)
 		{

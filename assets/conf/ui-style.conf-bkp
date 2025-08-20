@@ -1,0 +1,362 @@
+QMenuBar {
+    background-color: #41454a;
+    padding: 4px;
+}
+
+QMenuBar::item {
+    border: transparent;
+    color: palette(text);
+    padding-left: 3px;
+    padding-right: 3px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+}
+
+QMenuBar::item:disabled {
+    color: #909090;
+}
+
+QMenu::item:disabled {
+    color: #909090;
+}
+
+QToolBar {
+    background-color: palette(button);
+    border: transparent;
+}
+
+QToolBar::separator {
+    background-color: #313746;
+}
+
+ConfigurationWidget > QWidget#btns_parent_wgt > QToolButton,
+QToolBar#tools_acts_tb  > QToolButton,
+WelcomeWidget QToolButton {
+    color: palette(text);
+    border: 1px solid transparent;
+    padding: 3px;
+    background-color: transparent;
+    border-radius: 6px;
+}
+
+QToolBar#tools_acts_tb {
+    padding-right: 0;
+    padding-left: 0;
+    padding-top: 0;
+    border-right: 1px solid #41475a;
+}
+
+QToolBar#tools_acts_tb > QToolButton {
+    width: 80%;
+    margin: 0;
+}
+
+ConfigurationWidget > QWidget#btns_parent_wgt > QToolButton:checked,
+QToolBar#tools_acts_tb > QToolButton[view_btn="true"]:checked {
+    border-top:1px solid #41475a;
+    border-left: 1px solid #41475a;
+    border-bottom: 1px solid #41475a;
+    border-right: 1px solid palette(dark);
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    background-color: palette(dark);
+}
+
+ConfigurationWidget > QWidget#btns_parent_wgt {
+    border-top:1px solid #41475a;
+    border-left: 1px solid #41475a;
+    border-bottom: 1px solid #41475a;
+    border-right: 1px solid #41475a;
+    background-color: palette(window);
+}
+
+MainWindow QStackedWidget#views_stw {
+    border-top: 1px solid #41475a;
+    border-bottom: 1px solid #41475a;
+    border-right: 1px solid #41475a;
+
+    /* This margin avoids an unecessary antialiasing
+    * in the left border of the views_stw causing the
+    * breaking of "tab" effect with tools_acts_tb */
+    margin-left: 1px;
+}
+
+MainWindow > QWidget#bg_widget {
+    background-color: palette(dark);
+}
+
+MainWindow QTabWidget#models_tbw:pane {
+    border: none;
+}
+
+ModelWidget QGraphicsView {
+    border: 1px solid #41475a;
+}
+
+MainWindow QSplitter#models_tbw_parent,
+MainWindow QWidget#model_valid_parent,
+MainWindow QWidget#obj_search_parent,
+MainWindow QWidget#tool_btns_bar_wgt {
+    border: none;
+    background-color: palette(dark);
+}
+
+MainWindow QStackedWidget#views_stw QWidget#design_pg QSplitter,
+ModelValidationWidget {
+    background-color: palette(dark);
+}
+
+WelcomeWidget > QFrame#bg_frame {
+    background-color: palette(window);
+    border: 1px solid #41475a;
+}
+
+SQLToolWidget QFrame#bg_frame {
+    border: 1px solid #41475a;
+    background-color: palette(window);
+}
+
+ConfigurationWidget QFrame#bg_frame {
+    background-color: palette(dark);
+    border: none;
+}
+
+QWidget#bnts_parent_wgt > QToolButton::menu-indicator,
+QToolBar#tools_acts_tb  > QToolButton::menu-indicator {
+    image: url(":/icons/icons/h_menu_indicator.png");
+    subcontrol-origin: content;
+    subcontrol-position: right center;
+    max-width: 22px;
+    max-height: 22px;
+}
+
+QToolBar#model_acts_tb > QToolButton::menu-indicator,
+WelcomeWidget QToolButton::menu-indicator {
+    border: transparent;
+}
+
+QToolBar#tools_acts_tb::separator,
+QToolBar#model_acts_tb::separator {
+    margin-top: 3px;
+    margin-bottom: 3px;
+    background-color: #313746;
+}
+
+QToolBar#tools_acts_tb::separator {
+    height: 1px;
+}
+
+QToolBar#model_acts_tb::separator {
+    width: 1px;
+}
+
+QToolBar#model_acts_tb > QToolButton,
+ModelNavigationWidget > QToolButton {
+    padding: 3px;
+    border: none;
+    margin: 3px;
+    background-color: transparent;
+    border-radius: 4px;
+}
+
+QToolBar#model_acts_tb {
+    padding-top: 3px;
+    padding-bottom: 3px;
+}
+
+QToolBar > QToolButton#qt_toolbar_ext_button,
+QToolBar#model_acts_tb > QToolButton:checked,
+QWidget#bnts_parent_wgt > QToolButton:checked {
+    background-color:  palette(highlight);
+}
+
+ConfigurationWidget > QWidget#btns_parent_wgt > QToolButton:hover:!checked,
+QToolBar > QToolButton#qt_toolbar_ext_button,
+QToolBar#tools_acts_tb  > QToolButton:hover,
+QToolBar#model_acts_tb > QToolButton:hover,
+ModelNavigationWidget > QToolButton:hover,
+WelcomeWidget QToolButton:hover,
+QMenuBar::item:selected {
+    color: palette(text);
+    background-color: palette(highlight);
+}
+
+QToolBar#tools_acts_tb  > QToolButton:hover {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+ConfigurationWidget > QWidget#btns_parent_wgt > QToolButton:hover {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+/* Dark blue tool button */
+QToolBar > QToolButton#qt_toolbar_ext_button:pressed,
+QToolBar#model_acts_tb > QToolButton:pressed,
+QToolBar#tools_acts_tb  > QToolButton:pressed,
+ModelNavigationWidget > QToolButton:pressed,
+QWidget#bnts_parent_wgt > QToolButton:pressed,
+WelcomeWidget QToolButton:pressed,
+QMenuBar::item:pressed {
+    color: #c7c8c9;
+    background-color:#3f7c82;
+}
+
+QWidget#bnts_parent_wgt > QToolButton:disabled,
+QToolBar#tools_acts_tb  > QToolButton:disabled,
+WelcomeWidget QToolButton:disabled {
+    color: #40475b;
+}
+
+QToolBar > QToolButton#qt_toolbar_ext_button,
+QToolBar > QToolButton#qt_toolbar_ext_button:hover,
+QToolBar > QToolButton#qt_toolbar_ext_button:pressed {
+    border-radius: 0;
+}
+
+QTabBar::close-button {
+    margin-left: 5px;
+    margin-right: 0px;
+    subcontrol-position: right;
+    image: url(':/icons/icons/closetab.png');
+}
+
+QTabBar::close-button:hover {
+    image: url(':/icons/icons/closetab.png');
+}
+
+QTabBar::close-button:pressed {
+    image: url(':/icons/icons/closetab1.png');
+}
+
+CodeCompletionWidget > QWidget {
+    background-color: palette(button);
+    border: 1px solid palette(dark);
+}
+
+AboutWidget > QFrame,
+DonateWidget > QFrame,
+LayersConfigWidget > QFrame,
+ChangelogWidget > QFrame,
+UpdateNotifierWidget > QFrame,
+NewObjectOverlayWidget > QFrame,
+TaskProgressWidget > QFrame,
+ObjectRenameWidget > QFrame,
+LayersWidget > QFrame {
+    background-color: palette(button);
+    border: 1px solid palette(dark);
+    border-radius: 6px
+}
+
+NewObjectOverlayWidget > QFrame > QGroupBox > QWidget > QToolButton {
+    font-style: italic;
+    border-radius: 6px;
+    min-width: 110px;
+    padding-top: 3px;
+    padding-bottom: 3px;
+    border: none;
+}
+
+NewObjectOverlayWidget > QFrame > QGroupBox > QWidget > QToolButton:hover {
+    font-weight: bold;
+    background-color: palette(highlight);
+}
+
+NewObjectOverlayWidget > QFrame > QGroupBox > QWidget > QToolButton:pressed {
+    color: #c7c8c9;
+    background-color:#3f7c82;
+}
+
+QLineEdit > QToolButton {
+   qproperty-icon: url(":icons/icons/clearinput.png");
+}
+
+QLineEdit > QToolButton#password_show_btn {
+   qproperty-icon: url(":icons/icons/hidepwd.png");
+}
+
+QToolBar > QToolButton#qt_toolbar_ext_button {
+    qproperty-icon: none;
+}
+
+QCheckBox::indicator,
+QListWidget::indicator,
+QTableWidget::indicator {
+    width: 13px;
+    height: 13px;
+    border: 1px solid palette(dark);
+    background-color: palette(base);
+}
+
+QCheckBox::indicator:checked,
+QListWidget::indicator:checked,
+QTableWidget::indicator:checked {
+    image: url(":/images/images/checkmark_white.png");
+}
+
+QCheckBox::indicator:checked:disabled,
+QListWidget::indicator:checked:disabled,
+QTableWidget::indicator:checked:disabled {
+    image: url(":/images/images/checkmark_disabled.png");
+}
+
+QCheckBox::indicator:pressed,
+QListWidget::indicator:pressed,
+QTableWidget::indicator:pressed  {
+    background-color: palette(button);
+}
+
+QSplitter::handle:horizontal {
+	image: url(':/images/images/hsplitter_handle_dark.png');
+	width: 4px;
+	margin: 1px;
+}
+
+QSplitter::handle:vertical {
+	image: url(':/images/images/vsplitter_handle_dark.png');
+	height: 4px;
+	margin: 1px;
+}
+
+SceneInfoWidget QFrame {
+    background-color: palette(button);
+    border-radius: 4px;
+}
+
+SceneInfoWidget > QFrame,
+SceneInfoWidget QFrame#separator_ln,
+SceneInfoWidget QFrame#separator_ln2 {
+    border: 1px solid #41475a;
+}
+
+ChangelogWidget > QFrame QFrame#separator_ln {
+    border: 1px solid palette(dark);
+}
+
+DataGridWidget QGroupBox#tab_info_gb {
+	padding-bottom: 1px;
+	padding-top: 1px;
+}
+
+DataGridWidget > QGroupBox#tab_info_gb > QFrame#separator_ln {
+    border: 1px solid palette(mid);
+}
+
+AppearanceConfigWidget QGroupBox#ui_gb > QToolButton#icon_small_tb {
+    qproperty-iconSize: 28px 28px;
+}
+
+AppearanceConfigWidget QGroupBox#ui_gb > QToolButton#icon_medium_tb {
+    qproperty-iconSize: 38px 38px;
+}
+
+AppearanceConfigWidget QGroupBox#ui_gb > QToolButton#icon_big_tb {
+    qproperty-iconSize: 48px 48px;
+}
+
+RelationshipConfigWidget > QGroupBox#conn_mode_gb > QToolButton {
+	qproperty-iconSize: 197px 50px;
+    padding-left: 4px;
+    padding-right: 4px;
+}

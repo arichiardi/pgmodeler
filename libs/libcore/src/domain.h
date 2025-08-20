@@ -45,8 +45,7 @@ class __libcore Domain: public BaseObject{
 
 	public:
 		Domain();
-
-		virtual ~Domain(){}
+		~Domain() = default;
 
 		void addCheckConstraint(const QString &name, const QString &expr);
 

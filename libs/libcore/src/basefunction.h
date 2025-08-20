@@ -71,8 +71,7 @@ class __libcore BaseFunction: public BaseObject {
 		static const QRegularExpression ConfigParamPattern;
 
 		BaseFunction();
-
-		virtual ~BaseFunction() {}
+		virtual ~BaseFunction() = default;
 
 		//! \brief Sets the function name updating its signature
 		void setName(const QString &name);

@@ -42,8 +42,7 @@ class __libgui HtmlItemDelegate : public PlainTextItemDelegate {
 		static const QRegularExpression TagRegExp;
 
 		HtmlItemDelegate(QObject * parent = nullptr, bool ignore_tags_sz_hint = false);
-
-		virtual ~HtmlItemDelegate();
+		~HtmlItemDelegate() = default;
 
 		QSize sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const;
 

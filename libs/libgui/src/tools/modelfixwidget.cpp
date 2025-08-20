@@ -16,10 +16,10 @@
 # Also, you can get the complete GNU General Public License at <http://www.gnu.org/licenses/>
 */
 
-#include "modelfixform.h"
+#include "modelfixwidget.h"
 #include "globalattributes.h"
 
-const QString ModelFixForm::PgModelerCli {
+const QString ModelFixWidget::PgModelerCli {
 #ifdef Q_OS_WIN
 	"pgmodeler-cli.exe"
 #else
@@ -27,7 +27,7 @@ const QString ModelFixForm::PgModelerCli {
 #endif
 };
 
-ModelFixForm::ModelFixForm(QWidget *parent, Qt::WindowFlags f) : QDialog(parent, f)
+ModelFixWidget::ModelFixWidget(QWidget *parent) : QWidget(parent)
 {
 	setupUi(this);
 
@@ -67,34 +67,52 @@ ModelFixForm::ModelFixForm(QWidget *parent, Qt::WindowFlags f) : QDialog(parent,
 	dbg_output_wgt = new DebugOutputWidget(this);
 	output_lt->addWidget(dbg_output_wgt);
 
-	connect(&pgmodeler_cli_proc, &QProcess::readyReadStandardOutput, this, &ModelFixForm::updateOutput);
-	connect(&pgmodeler_cli_proc, &QProcess::readyReadStandardError, this, &ModelFixForm::updateOutput);
-	connect(&pgmodeler_cli_proc, &QProcess::finished, this, &ModelFixForm::handleProcessFinish);
-	connect(fix_btn, &QPushButton::clicked, this, &ModelFixForm::fixModel);
-	connect(input_file_sel, &FileSelectorWidget::s_selectorChanged, this, &ModelFixForm::enableFix);
-	connect(output_file_sel, &FileSelectorWidget::s_selectorChanged, this, &ModelFixForm::enableFix);
-	connect(pgmodeler_cli_sel, &FileSelectorWidget::s_selectorChanged, this, &ModelFixForm::enableFix);
-	connect(close_btn, &QPushButton::clicked, this, &ModelFixForm::close);
+	connect(&pgmodeler_cli_proc, &QProcess::readyReadStandardOutput, this, &ModelFixWidget::updateOutput);
+	connect(&pgmodeler_cli_proc, &QProcess::readyReadStandardError, this, &ModelFixWidget::updateOutput);
+	connect(&pgmodeler_cli_proc, &QProcess::finished, this, &ModelFixWidget::handleProcessFinish);
 
-	connect(cancel_btn, &QPushButton::clicked, this, [this](){
-		cancelFix();
-	});
+	connect(input_file_sel, &FileSelectorWidget::s_selectorChanged, this, &ModelFixWidget::enableFix);
+	connect(output_file_sel, &FileSelectorWidget::s_selectorChanged, this, &ModelFixWidget::enableFix);
+	connect(pgmodeler_cli_sel, &FileSelectorWidget::s_selectorChanged, this, &ModelFixWidget::enableFix);
 
 	resetFixForm();
 }
 
-void ModelFixForm::setExtraCliArgs(const QStringList &extra_args)
+void ModelFixWidget::setExtraCliArgs(const QStringList &extra_args)
 {
 	extra_cli_args = extra_args;
 }
 
-void ModelFixForm::resetFixForm()
+void ModelFixWidget::setInputModel(const QString &filename, bool gen_out_filename)
+{
+	input_file_sel->setSelectedFile(filename);
+
+	if(gen_out_filename)
+	{
+		QFileInfo fi(filename);
+
+		output_file_sel->setSelectedFile(fi.absolutePath() +
+																		 GlobalAttributes::DirSeparator +
+																		 fi.completeBaseName() +
+																		 "_fixed" +
+																		 QDateTime::currentDateTime().toString("_yyyyMMdd_hhmmss.") +
+																		 fi.suffix());
+	}
+}
+
+bool ModelFixWidget::isProcessRunning()
+{
+	return pgmodeler_cli_proc.state() == QProcess::Running;
+}
+
+void ModelFixWidget::resetFixForm()
 {
 	pgmodeler_cli_lbl->setVisible(false);
 	pgmodeler_cli_sel->setVisible(false);
 	input_file_sel->clearSelector();
 	output_file_sel->clearSelector();
 
+	dbg_output_wgt->clear();
 	dbg_output_wgt->logMessage(tr("Waiting for the process to start..."));
 	dbg_output_wgt->showActionButtons(false);
 
@@ -102,65 +120,59 @@ void ModelFixForm::resetFixForm()
 	enableFixOptions(true);
 
 	progress_pb->setVisible(false);
-	cancel_btn->setVisible(false);
 }
 
-void ModelFixForm::enableFixOptions(bool enable)
+void ModelFixWidget::enableFixOptions(bool enable)
 {
-	fix_btn->setEnabled(enable);
 	output_file_sel->setEnabled(enable);
 	input_file_sel->setEnabled(enable);
 	fix_tries_sb->setEnabled(enable);
 	load_model_chk->setEnabled(enable);
 }
 
-void ModelFixForm::closeEvent(QCloseEvent *event)
-{
-	if(pgmodeler_cli_proc.state() == QProcess::Running)
-		event->ignore();
-	else
-		resetFixForm();
-}
-
-int ModelFixForm::exec()
+void ModelFixWidget::showEvent(QShowEvent *event)
 {
 	pgmodeler_cli_sel->setSelectedFile(GlobalAttributes::getPgModelerCLIPath());
-	return QDialog::exec();
 }
 
-void ModelFixForm::enableFix()
+void ModelFixWidget::enableFix()
 {
 	pgmodeler_cli_sel->setVisible(pgmodeler_cli_sel->hasWarning());
 	pgmodeler_cli_lbl->setVisible(pgmodeler_cli_sel->hasWarning());
 
-	fix_btn->setEnabled(!input_file_sel->hasWarning() && !input_file_sel->getSelectedFile().isEmpty() &&
-											!output_file_sel->hasWarning() && !output_file_sel->getSelectedFile().isEmpty() &&
-											!pgmodeler_cli_sel->hasWarning() && !pgmodeler_cli_sel->getSelectedFile().isEmpty());
+	emit s_modelFixEnabled(isFixEnabled());
 }
 
-void ModelFixForm::fixModel()
+bool ModelFixWidget::isFixEnabled()
 {
-	QString cmd = QString("\"%1\"");
+	return !input_file_sel->hasWarning() && !input_file_sel->getSelectedFile().isEmpty() &&
+				 !output_file_sel->hasWarning() && !output_file_sel->getSelectedFile().isEmpty() &&
+				 !pgmodeler_cli_sel->hasWarning() && !pgmodeler_cli_sel->getSelectedFile().isEmpty();
+}
+
+void ModelFixWidget::fixModel()
+{
 	QStringList args;
 
-#ifdef Q_OS_MACOS
-	cmd+=" pgmodeler-cli";
-#endif
+	/* If extra CLI arguments list is not empty,
+	 * we expect that it contains an special fix operation
+	 * argument (which can be from a separate plugin), so,
+	 * in that case, we override the normal --fix-model and
+	 * let the external code to handle the fix operation */
+	if(!extra_cli_args.isEmpty())
+		args.append(extra_cli_args);
+	else
+		args.append("--fix-model");
 
-	args.append("--fix-model");
 	args.append("--fix-tries");
 	args.append(QString::number(fix_tries_sb->value()));
 	args.append("--input");
 	args.append(input_file_sel->getSelectedFile());
 	args.append("--output");
 	args.append(output_file_sel->getSelectedFile());
-	args.append(extra_cli_args);
 
 	progress_pb->setValue(0);
 	progress_pb->setVisible(true);
-	cancel_btn->setEnabled(true);
-	cancel_btn->setVisible(true);
-
 	dbg_output_wgt->clear();
 
 	enableFixOptions(false);
@@ -169,26 +181,32 @@ void ModelFixForm::fixModel()
 	pgmodeler_cli_proc.setArguments(args);
 	pgmodeler_cli_proc.setProgram(pgmodeler_cli_sel->getSelectedFile());
 	pgmodeler_cli_proc.start();
+
+	emit s_modelFixStarted();
 }
 
-void ModelFixForm::cancelFix()
+void ModelFixWidget::cancelFix()
 {
-	cancel_btn->setEnabled(false);
 	pgmodeler_cli_proc.terminate();
 	pgmodeler_cli_proc.waitForFinished();
 	dbg_output_wgt->logMessage(QString("\n%1\n").arg(tr("** Process cancelled by the user!")));
 	enableFixOptions(true);
+
+	emit s_modelFixFinished();
 }
 
-void ModelFixForm::updateOutput()
+void ModelFixWidget::updateOutput()
 {
+	static QRegularExpression prog_rx { "^\\[\\d+\\%\\]" },
+	perc_rx { "(?!(\\d))(\\W)" };
+
 	QString txt;
 
 	//Append both stdout and stderr
 	txt.append(pgmodeler_cli_proc.readAllStandardOutput());
 	txt.append(pgmodeler_cli_proc.readAllStandardError());
 
-	if(txt.contains(QRegularExpression("^\\[\\d+\\%\\]")))
+	if(txt.contains(prog_rx))
 	{
 		QStringList list = txt.split(QChar::LineFeed, Qt::SkipEmptyParts);
 		int pos = -1;
@@ -199,7 +217,7 @@ void ModelFixForm::updateOutput()
 			// Extracting the progress value to display in the progress bar widget
 			pos = str.indexOf("]");
 			prog_str = str.mid(0, pos);
-			prog_str.remove(QRegularExpression("(?!(\\d))(\\W)"));
+			prog_str.remove(perc_rx);
 
 			if(prog_str.toInt() >= progress_pb->value())
 			{
@@ -214,25 +232,31 @@ void ModelFixForm::updateOutput()
 	dbg_output_wgt->logMessage(txt.trimmed());
 }
 
-void ModelFixForm::handleProcessFinish(int res)
+void ModelFixWidget::handleProcessFinish(int res)
 {
 	enableFixOptions(true);
 	pgmodeler_cli_proc.blockSignals(true);
-	cancel_btn->setEnabled(false);
 	dbg_output_wgt->showActionButtons(true);
+
+	emit s_modelFixFinished();
 
 	if(res == 0)
 	{
 		progress_pb->setValue(100);
 
-		/* If the model as sucessfully fixed and user
-		 requested the loading */
+		// If the model was sucessfully fixed and user requested the loading
 		if(load_model_chk->isChecked())
 		{
-			//Emit a signal indicating the file to be loaded
+			//Emitting a signal indicating the file to be loaded
 			emit s_modelLoadRequested(output_file_sel->getSelectedFile());
-			close();
+			resetFixForm();
 		}
+	}
+	else
+	{
+		dbg_output_wgt->logMessage("");
+		dbg_output_wgt->logMessage(tr("** Executed command was:"));
+		dbg_output_wgt->logMessage("> " + pgmodeler_cli_proc.program() + " " + pgmodeler_cli_proc.arguments().join(" "));
 	}
 }
 

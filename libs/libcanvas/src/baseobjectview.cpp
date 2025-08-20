@@ -419,7 +419,7 @@ void BaseObjectView::configureObjectSelection()
 	{
 		rect_item->setRect(this->boundingRect());
 		rect_item->setPos(0, 0);
-		rect_item->setBorderRadius(12);
+		rect_item->setBorderRadius(RoundedRectItem::DefaultRadius);
 		rect_item->setBrush(this->getFillStyle(Attributes::ObjSelection));
 		rect_item->setPen(this->getBorderStyle(Attributes::ObjSelection));
 	}

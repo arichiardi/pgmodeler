@@ -112,7 +112,7 @@ class __libgui SnippetsConfigWidget: public BaseConfigWidget, public Ui::Snippet
 	public slots:
 		virtual void restoreDefaults() override;
 
-		friend class ConfigurationForm;
+		friend class ConfigurationWidget;
 };
 
 #endif

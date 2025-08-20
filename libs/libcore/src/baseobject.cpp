@@ -403,12 +403,12 @@ void BaseObject::setName(const QString &name)
 	if(!isValidName(aux_name))
 	{
 		if(aux_name.isEmpty())
-			throw Exception(ErrorCode::AsgEmptyNameObject,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+			throw Exception(ErrorCode::AsgEmptyNameObject,PGM_FUNC,PGM_FILE,PGM_LINE);
 		//If the name is quoted we add 2 bytes to the maximum in order to check if it exceeds the limit
 		else if(aux_name.size() > (ObjectNameMaxLength + (is_quoted ? 2 : 0)))
-			throw Exception(ErrorCode::AsgLongNameObject,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+			throw Exception(ErrorCode::AsgLongNameObject,PGM_FUNC,PGM_FILE,PGM_LINE);
 		else
-			throw Exception(ErrorCode::AsgInvalidNameObject,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+			throw Exception(ErrorCode::AsgInvalidNameObject,PGM_FUNC,PGM_FILE,PGM_LINE);
 	}
 
 	aux_name.remove('"');
@@ -419,7 +419,7 @@ void BaseObject::setName(const QString &name)
 void BaseObject::setAlias(const QString &alias)
 {
 	if(alias.size() > ObjectNameMaxLength)
-		throw Exception(ErrorCode::AsgLongNameObject,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::AsgLongNameObject,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	this->alias = alias;
 	setCodeInvalidated(this->alias != alias);
@@ -596,11 +596,11 @@ void BaseObject::setSchema(BaseObject *schema)
 	if(!schema)
 		throw Exception(Exception::getErrorMessage(ErrorCode::AsgNotAllocatedSchema)
 						.arg(this->obj_name, this->getTypeName()),
-						ErrorCode::AsgNotAllocatedSchema,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+						ErrorCode::AsgNotAllocatedSchema,PGM_FUNC,PGM_FILE,PGM_LINE);
 	else if(schema && schema->getObjectType()!=ObjectType::Schema)
-		throw Exception(ErrorCode::AsgInvalidSchemaObject,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::AsgInvalidSchemaObject,PGM_FUNC,PGM_FILE,PGM_LINE);
 	else if(!acceptsSchema())
-		throw Exception(ErrorCode::AsgInvalidSchemaObject,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::AsgInvalidSchemaObject,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	setCodeInvalidated(this->schema != schema);
 	this->schema = schema;
@@ -609,9 +609,9 @@ void BaseObject::setSchema(BaseObject *schema)
 void BaseObject::setOwner(BaseObject *owner)
 {
 	if(owner && owner->getObjectType()!=ObjectType::Role)
-		throw Exception(ErrorCode::AsgInvalidRoleObject,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::AsgInvalidRoleObject,PGM_FUNC,PGM_FILE,PGM_LINE);
 	else if(!acceptsOwner())
-		throw Exception(ErrorCode::AsgRoleObjectInvalidType,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::AsgRoleObjectInvalidType,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	setCodeInvalidated(this->owner != owner);
 	this->owner = owner;
@@ -620,9 +620,9 @@ void BaseObject::setOwner(BaseObject *owner)
 void BaseObject::setTablespace(BaseObject *tablespace)
 {
 	if(tablespace && tablespace->getObjectType()!=ObjectType::Tablespace)
-		throw Exception(ErrorCode::AsgInvalidTablespaceObject,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::AsgInvalidTablespaceObject,PGM_FUNC,PGM_FILE,PGM_LINE);
 	else if(!acceptsTablespace())
-		throw Exception(ErrorCode::AsgTablespaceInvalidObject,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::AsgTablespaceInvalidObject,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	setCodeInvalidated(this->tablespace != tablespace);
 	this->tablespace = tablespace;
@@ -631,9 +631,9 @@ void BaseObject::setTablespace(BaseObject *tablespace)
 void BaseObject::setCollation(BaseObject *collation)
 {
 	if(collation && !acceptsCollation())
-		throw Exception(ErrorCode::AsgInvalidCollationObject,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::AsgInvalidCollationObject,PGM_FUNC,PGM_FILE,PGM_LINE);
 	if(collation && collation->getObjectType()!=ObjectType::Collation)
-		throw Exception(ErrorCode::AsgInvalidCollationObject,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::AsgInvalidCollationObject,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	setCodeInvalidated(this->collation != collation);
 	this->collation = collation;
@@ -642,7 +642,7 @@ void BaseObject::setCollation(BaseObject *collation)
 void BaseObject::setAppendedSQL(const QString &sql)
 {
 	if(!acceptsCustomSQL())
-		throw Exception(ErrorCode::AsgCustomSQLObjectInvalidType,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::AsgCustomSQLObjectInvalidType,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	setCodeInvalidated(this->appended_sql != sql);
 	this->appended_sql=sql;
@@ -651,7 +651,7 @@ void BaseObject::setAppendedSQL(const QString &sql)
 void BaseObject::setPrependedSQL(const QString &sql)
 {
 	if(!acceptsCustomSQL())
-		throw Exception(ErrorCode::AsgCustomSQLObjectInvalidType,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::AsgCustomSQLObjectInvalidType,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	setCodeInvalidated(this->prepended_sql != sql);
 	this->prepended_sql=sql;
@@ -995,9 +995,9 @@ QString BaseObject::getSourceCode(SchemaParser::CodeType def_type, bool reduced_
 				throw Exception(Exception::getErrorMessage(ErrorCode::AsgObjectInvalidDefinition)
 								.arg(this->getName(true))
 								.arg(this->getTypeName()),
-								ErrorCode::AsgObjectInvalidDefinition,__PRETTY_FUNCTION__,__FILE__,__LINE__,&e);
+								ErrorCode::AsgObjectInvalidDefinition,PGM_FUNC,PGM_FILE,PGM_LINE,&e);
 			else
-				throw Exception(e.getErrorMessage(),e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__,&e);
+				throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE,&e);
 		}
 	}
 
@@ -1027,11 +1027,11 @@ void BaseObject::swapObjectsIds(BaseObject *obj1, BaseObject *obj2, bool enable_
 {
 	//Raises an error if some of the objects aren't allocated
 	if(!obj1 || !obj2)
-		throw Exception(ErrorCode::OprNotAllocatedObject,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::OprNotAllocatedObject,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	//Raises an error if the involved objects are the same
 	if(obj1==obj2)
-		throw Exception(ErrorCode::InvIdSwapSameObject,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::InvIdSwapSameObject,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	//Raises an error if the some of the objects are system objects
 	if(obj1->isSystemObject())
@@ -1039,7 +1039,7 @@ void BaseObject::swapObjectsIds(BaseObject *obj1, BaseObject *obj2, bool enable_
 		throw Exception(Exception::getErrorMessage(ErrorCode::OprReservedObject)
 						.arg(obj1->getName())
 						.arg(obj1->getTypeName()),
-						ErrorCode::OprReservedObject,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+						ErrorCode::OprReservedObject,PGM_FUNC,PGM_FILE,PGM_LINE);
 	}
 
 	if(obj2->isSystemObject())
@@ -1047,7 +1047,7 @@ void BaseObject::swapObjectsIds(BaseObject *obj1, BaseObject *obj2, bool enable_
 		throw Exception(Exception::getErrorMessage(ErrorCode::OprReservedObject)
 						.arg(obj2->getName())
 						.arg(obj2->getTypeName()),
-						ErrorCode::OprReservedObject,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+						ErrorCode::OprReservedObject,PGM_FUNC,PGM_FILE,PGM_LINE);
 	}
 
 	//Raises an error if the object is object is cluster level and the swap of these types isn't enabled
@@ -1058,7 +1058,7 @@ void BaseObject::swapObjectsIds(BaseObject *obj1, BaseObject *obj2, bool enable_
 
 		 obj1->getObjectType() != obj2->getObjectType())
 	{
-		throw Exception(ErrorCode::InvIdSwapInvalidObjectType,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::InvIdSwapInvalidObjectType,PGM_FUNC,PGM_FILE,PGM_LINE);
 	}
 
 	unsigned id_bkp=obj1->object_id;
@@ -1070,12 +1070,12 @@ void BaseObject::updateObjectId(BaseObject *obj)
 {
 	//Raises an error if some of the objects aren't allocated
 	if(!obj)
-		throw Exception(ErrorCode::OprNotAllocatedObject,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::OprNotAllocatedObject,PGM_FUNC,PGM_FILE,PGM_LINE);
 	else  if(obj->isSystemObject())
 		throw Exception(Exception::getErrorMessage(ErrorCode::OprReservedObject)
 						.arg(obj->getName())
 						.arg(obj->getTypeName()),
-						ErrorCode::OprReservedObject,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+						ErrorCode::OprReservedObject,PGM_FUNC,PGM_FILE,PGM_LINE);
 	else
 		obj->object_id=++global_id;
 }
@@ -1166,7 +1166,7 @@ void BaseObject::setPgSQLVersion(const QString &version)
 	}
 	catch(Exception &e)
 	{
-		throw Exception(e.getErrorMessage(), e.getErrorCode(), __PRETTY_FUNCTION__, __FILE__, __LINE__, &e);
+		throw Exception(e.getErrorMessage(), e.getErrorCode(), PGM_FUNC, PGM_FILE, PGM_LINE, &e);
 	}
 }
 
@@ -1306,9 +1306,9 @@ bool BaseObject::isCodeDiffersFrom(const QString &xml_def1, const QString &xml_d
 bool BaseObject::isCodeDiffersFrom(BaseObject *object, const QStringList &ignored_attribs, const QStringList &ignored_tags)
 {
 	if(!object)
-		throw Exception(ErrorCode::OprNotAllocatedObject,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::OprNotAllocatedObject,PGM_FUNC,PGM_FILE,PGM_LINE);
 	else if(object->getObjectType()!=this->getObjectType())
-		throw Exception(ErrorCode::OprObjectInvalidType,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::OprObjectInvalidType,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	try
 	{
@@ -1318,7 +1318,7 @@ bool BaseObject::isCodeDiffersFrom(BaseObject *object, const QStringList &ignore
 	}
 	catch(Exception &e)
 	{
-		throw Exception(e.getErrorMessage(), e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__, &e);
+		throw Exception(e.getErrorMessage(), e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 	}
 }
 
@@ -1369,7 +1369,7 @@ QString BaseObject::getDropCode(bool cascade)
 	}
 	catch(Exception &e)
 	{
-		throw Exception(e.getErrorMessage(), e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__, &e);
+		throw Exception(e.getErrorMessage(), e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 	}
 }
 
@@ -1387,7 +1387,7 @@ QString BaseObject::getAlterCode(QString sch_name, attribs_map &attribs, bool ig
 	}
 	catch(Exception &e)
 	{
-		throw Exception(e.getErrorMessage(),e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__,&e);
+		throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE,&e);
 	}
 }
 
@@ -1411,12 +1411,12 @@ QString BaseObject::getAlterCode(BaseObject *object)
 QString BaseObject::getAlterCode(BaseObject *object, bool ignore_name_diff)
 {
 	if(!object)
-		throw Exception(ErrorCode::OprNotAllocatedObject,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::OprNotAllocatedObject,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	QString alter;
 
 	if(object->obj_type!=this->obj_type)
-		throw Exception(ErrorCode::OprObjectInvalidType,__PRETTY_FUNCTION__,__FILE__,__LINE__);
+		throw Exception(ErrorCode::OprObjectInvalidType,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	setBasicAttributes(true);
 
@@ -1449,7 +1449,7 @@ QString BaseObject::getAlterCode(BaseObject *object, bool ignore_name_diff)
 	}
 	catch(Exception &e)
 	{
-		throw Exception(e.getErrorMessage(),e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__,&e);
+		throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE,&e);
 	}
 
 	return alter;
@@ -1481,7 +1481,7 @@ QString BaseObject::getAlterCommentDefinition(BaseObject *object, attribs_map at
 	}
 	catch(Exception &e)
 	{
-		throw Exception(e.getErrorMessage(),e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__,&e);
+		throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE,&e);
 	}
 }
 
@@ -1633,8 +1633,16 @@ void BaseObject::updateDependencies()
 
 void BaseObject::updateDependencies(const std::vector<BaseObject *> &dep_objs, const std::vector<BaseObject *> &old_deps)
 {
-	for(auto &old_dep : old_deps)
-		unsetDependency(old_dep);
+	/* If the custom list of old dependencies is emtpy, by default,
+	 * the current dependencies will be unset */
+	if(old_deps.empty())
+		clearDependencies();
+	// Otherwise we unset only the dependencies provided in old_deps
+	else
+	{
+		for(auto &old_dep : old_deps)
+			unsetDependency(old_dep);
+	}
 
 	std::vector<BaseObject *> aux_deps = {
 		schema, tablespace, owner, collation

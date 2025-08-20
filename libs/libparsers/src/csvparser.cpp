@@ -49,7 +49,7 @@ CsvDocument CsvParser::parseFile(const QString &filename)
 	}
 	catch(Exception &e)
 	{
-		throw Exception(e.getErrorMessage(), e.getErrorCode(), __PRETTY_FUNCTION__,__FILE__,__LINE__, &e);
+		throw Exception(e.getErrorMessage(), e.getErrorCode(), PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 	}
 }
 
@@ -95,7 +95,7 @@ CsvDocument CsvParser::parseBuffer(const QString &csv_buf)
 	}
 	catch(Exception &e)
 	{
-		throw Exception(e.getErrorMessage(), e.getErrorCode(), __PRETTY_FUNCTION__,__FILE__,__LINE__, &e);
+		throw Exception(e.getErrorMessage(), e.getErrorCode(), PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 	}
 }
 
@@ -179,7 +179,7 @@ QString CsvParser::extractValue()
 	if(delim_open && !delim_closed && delim_cnt != 1)
 	{
 		throw Exception(Exception::getErrorMessage(ErrorCode::MalformedCsvMissingDelim).arg(text_delim).arg(curr_row +1),
-										ErrorCode::MalformedCsvMissingDelim, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+										ErrorCode::MalformedCsvMissingDelim, PGM_FUNC, PGM_FILE, PGM_LINE);
 	}
 
 	return value;

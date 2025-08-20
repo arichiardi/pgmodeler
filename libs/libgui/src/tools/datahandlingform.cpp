@@ -32,7 +32,7 @@ DataHandlingForm::DataHandlingForm(QWidget * parent, Qt::WindowFlags f): QDialog
 	QToolButton *btn = nullptr;
 	QFont fnt;
 
-	for(auto &obj : bnts_parent_wgt->children())
+	for(auto &obj : btns_parent_wgt->children())
 	{
 		btn = dynamic_cast<QToolButton *>(obj);
 		if(!btn) continue;
@@ -87,7 +87,7 @@ void DataHandlingForm::setAttributes(const attribs_map &conn_params, const QStri
 {
 	if(!BaseTable::isBaseTable(obj_type))
 	{
-		Messagebox::error(ErrorCode::OprObjectInvalidType, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+		Messagebox::error(ErrorCode::OprObjectInvalidType, PGM_FUNC, PGM_FILE, PGM_LINE);
 		return;
 	}
 
@@ -115,7 +115,7 @@ void DataHandlingForm::setAttributes(const attribs_map &conn_params, const QStri
 	}
 	catch(Exception &e)
 	{
-		Messagebox::error(e, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+		Messagebox::error(e, PGM_FUNC, PGM_FILE, PGM_LINE);
 	}
 }
 
@@ -299,7 +299,7 @@ void DataHandlingForm::addDataGrid(const QString &schema, const QString &table, 
 	}
 	catch(Exception &e)
 	{
-		Messagebox::error(e, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+		Messagebox::error(e, PGM_FUNC, PGM_FILE, PGM_LINE);
 	}
 }
 
@@ -323,7 +323,7 @@ void DataHandlingForm::listTables()
 	}
 	catch(Exception &e)
 	{
-		Messagebox::error(e, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+		Messagebox::error(e, PGM_FUNC, PGM_FILE, PGM_LINE);
 	}
 }
 
@@ -387,7 +387,7 @@ void DataHandlingForm::listObjects(QComboBox *combo, std::vector<ObjectType> obj
 	catch(Exception &e)
 	{
 		catalog.closeConnection();
-		throw Exception(e.getErrorMessage(), e.getErrorCode(),__PRETTY_FUNCTION__,__FILE__,__LINE__, &e);
+		throw Exception(e.getErrorMessage(), e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 	}
 }
 
@@ -403,7 +403,7 @@ void DataHandlingForm::resizeEvent(QResizeEvent *event)
 
 	if(refresh_tb->toolButtonStyle() != style)
 	{
-		for(auto obj : bnts_parent_wgt->children())
+		for(auto obj : btns_parent_wgt->children())
 		{
 			btn = qobject_cast<QToolButton *>(obj);
 
@@ -481,7 +481,7 @@ bool DataHandlingForm::eventFilter(QObject *object, QEvent *event)
 		 object->metaObject()->className() == QString("QMenu"))
 	{
 		QMenu *menu = dynamic_cast<QMenu *>(object);
-		QWidget *btn = bnts_parent_wgt->childAt(bnts_parent_wgt->mapFromGlobal(QCursor::pos()));
+		QWidget *btn = btns_parent_wgt->childAt(btns_parent_wgt->mapFromGlobal(QCursor::pos()));
 
 		/* Sometime the button can be null indicating that the menu was called by right clicking
 		 * in the data grid items. In that case, we just ignore skip the menu position adjustment */
@@ -506,7 +506,7 @@ void DataHandlingForm::openNewWindow(const attribs_map &conn_params, const QStri
 {
 	if(!BaseTable::isBaseTable(obj_type))
 	{
-		Messagebox::error(ErrorCode::OprObjectInvalidType, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+		Messagebox::error(ErrorCode::OprObjectInvalidType, PGM_FUNC, PGM_FILE, PGM_LINE);
 		return;
 	}
 
@@ -525,6 +525,6 @@ void DataHandlingForm::openNewWindow(const attribs_map &conn_params, const QStri
 	}
 	catch(Exception &e)
 	{
-		Messagebox::error(e, __PRETTY_FUNCTION__, __FILE__, __LINE__);
+		Messagebox::error(e, PGM_FUNC, PGM_FILE, PGM_LINE);
 	}
 }

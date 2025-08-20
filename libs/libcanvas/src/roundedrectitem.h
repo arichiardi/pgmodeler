@@ -75,6 +75,8 @@ class __libcanvas RoundedRectItem: public QAbstractGraphicsShapeItem {
 		QVector<QPointF> calculatePoints(QPointF start_pnt, double start_angle, double end_angle);
 
 	public:
+		static constexpr double DefaultRadius = 9.0;
+
 		explicit RoundedRectItem(QGraphicsItem *parent = 0);
 
 		void setBorderRadius(double radius);
