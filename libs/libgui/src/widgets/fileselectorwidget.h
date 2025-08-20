@@ -109,7 +109,7 @@ class __libgui FileSelectorWidget: public QWidget, public Ui::FileSelectorWidget
 		void setCustomWarning(const QString &warn_msg);
 
 		//! \brief Clears the custom warning message
-		void clearCustomWarning(void);
+		void clearCustomWarning();
 
 		/*! \brief Configures the selector as readonly. This will cause
 		 * the clear input button to be hidden, the input field to be set as readonly and

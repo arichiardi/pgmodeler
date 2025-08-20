@@ -27,7 +27,6 @@
 
 #include "ui_metadatahandlingwidget.h"
 #include "widgets/modelwidget.h"
-#include "utils/htmlitemdelegate.h"
 #include "widgets/fileselectorwidget.h"
 #include "tools/modeldbselectorwidget.h"
 
@@ -35,41 +34,34 @@ class __libgui MetadataHandlingWidget: public QWidget, public Ui::MetadataHandli
 	Q_OBJECT
 
 	private:
-		ModelWidget *model_wgt;
-
-		HtmlItemDelegate *htmlitem_deleg;
-
 		QTreeWidgetItem *root_item;
 
 		FileSelectorWidget *backup_file_sel;
 
-		ModelDbSelectorWidget *extract_model_sel,
-
-		*apply_model_sel;
-
-		void showEvent(QShowEvent *);
-		void showOutput(bool show);
+		ModelDbSelectorWidget *extract_model_sel, *apply_model_sel;
 
 		enum MetaOpType {
 			OpExtractRestore,
 			OpExtractOnly,
-			OpRestoreBackup
+			OpRestoreOnly
 		};
 
 	public:
 		MetadataHandlingWidget(QWidget * parent = nullptr);
-		void setModelWidget(ModelWidget *model_wgt);
+
 		void updateModels(const QList<ModelWidget *> &models);
+		bool isMetadataHandlingEnabled();
+
+	public slots:
+		void handleObjectsMetada();
 
 	private slots:
 		void updateProgress(int progress, QString msg, unsigned type_id);
-		void handleObjectsMetada();
 		void enableMetadataHandling();
 		void selectAllOptions();
 		void configureSelector();
 
 	signals:
-		void s_metadataHandled();
 		void s_metadataHandlingEnabled(bool);
 };
 

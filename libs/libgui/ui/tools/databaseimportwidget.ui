@@ -1368,6 +1368,9 @@
             <property name="wordWrap">
              <bool>false</bool>
             </property>
+            <attribute name="headerVisible">
+             <bool>false</bool>
+            </attribute>
             <attribute name="headerMinimumSectionSize">
              <number>25</number>
             </attribute>

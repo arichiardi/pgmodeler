@@ -727,7 +727,7 @@ void ModelValidationHelper::checkUselessUqConstrs()
 		if(valid_canceled)
 			break;
 
-		table = dynamic_cast<Table *>(tab);
+		table = dynamic_cast<PhysicalTable *>(tab);
 		pk = table->getPrimaryKey();
 
 		if(!pk)

@@ -140,9 +140,14 @@ void ModelFixWidget::enableFix()
 	pgmodeler_cli_sel->setVisible(pgmodeler_cli_sel->hasWarning());
 	pgmodeler_cli_lbl->setVisible(pgmodeler_cli_sel->hasWarning());
 
-	emit s_modelFixEnabled(!input_file_sel->hasWarning() && !input_file_sel->getSelectedFile().isEmpty() &&
-												 !output_file_sel->hasWarning() && !output_file_sel->getSelectedFile().isEmpty() &&
-												 !pgmodeler_cli_sel->hasWarning() && !pgmodeler_cli_sel->getSelectedFile().isEmpty());
+	emit s_modelFixEnabled(isFixEnabled());
+}
+
+bool ModelFixWidget::isFixEnabled()
+{
+	return !input_file_sel->hasWarning() && !input_file_sel->getSelectedFile().isEmpty() &&
+				 !output_file_sel->hasWarning() && !output_file_sel->getSelectedFile().isEmpty() &&
+				 !pgmodeler_cli_sel->hasWarning() && !pgmodeler_cli_sel->getSelectedFile().isEmpty();
 }
 
 void ModelFixWidget::fixModel()

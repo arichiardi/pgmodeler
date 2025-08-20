@@ -165,8 +165,8 @@ void ModelDbSelectorWidget::updateModels(const QList<ModelWidget *> &models)
 	else
 		model_cmb->addItem(tr("Found %1 model(s)").arg(models.size()));
 
-	for(auto &model : models)
-		model_cmb->addItem(model->getDatabaseModel()->getName(), QVariant::fromValue<void *>(model));
+	for(auto &model_wgt : models)
+		model_cmb->addItem(model_wgt->getDatabaseModel()->getName(), QVariant::fromValue<void *>(model_wgt));
 
 	model_cmb->blockSignals(false);
 

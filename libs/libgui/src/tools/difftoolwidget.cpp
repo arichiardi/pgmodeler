@@ -127,19 +127,7 @@ DiffToolWidget::DiffToolWidget(QWidget *parent) : BaseConfigWidget (parent)
 	mode_btn_grp->addButton(model_to_db_tb);
 	mode_btn_grp->setExclusive(true);
 
-	connect(mode_btn_grp, &QButtonGroup::buttonToggled, this, [this]()
-	{
-		input_sel_wgt->setSelectMode(model_to_db_tb->isChecked() || model_to_model_tb->isChecked() ?
-																	 ModelDbSelectorWidget::SelectModel : ModelDbSelectorWidget::SelectDatabase);
-
-		compared_sel_wgt->setSelectMode(model_to_model_tb->isChecked() ?
-																		 ModelDbSelectorWidget::SelectModel : ModelDbSelectorWidget::SelectDatabase);
-
-		settings_tbw->setTabEnabled(1, false);
-		settings_tbw->setTabEnabled(2, false);
-		enableDiffMode();
-	});
-
+	connect(mode_btn_grp, &QButtonGroup::buttonToggled, this, &DiffToolWidget::selectDiffMode);
 	connect(gen_filters_from_log_chk, &QCheckBox::toggled, dates_wgt, &QWidget::setVisible);
 	connect(start_date_chk, &QCheckBox::toggled, this, &DiffToolWidget::enableFilterByDate);
 	connect(end_date_chk, &QCheckBox::toggled, this, &DiffToolWidget::enableFilterByDate);
@@ -158,9 +146,9 @@ DiffToolWidget::DiffToolWidget(QWidget *parent) : BaseConfigWidget (parent)
 	});
 
 	connect(pgsql_ver_chk, &QCheckBox::toggled, pgsql_ver_cmb, &QComboBox::setEnabled);
-	connect(store_in_file_rb, &QRadioButton::clicked, this, &DiffToolWidget::enableDiffMode);
-	connect(apply_on_server_rb, &QRadioButton::clicked, this, &DiffToolWidget::enableDiffMode);
-	connect(file_sel, &FileSelectorWidget::s_selectorChanged, this, &DiffToolWidget::enableDiffMode);
+	connect(store_in_file_rb, &QRadioButton::clicked, this, &DiffToolWidget::enableDiffControls);
+	connect(apply_on_server_rb, &QRadioButton::clicked, this, &DiffToolWidget::enableDiffControls);
+	connect(file_sel, &FileSelectorWidget::s_selectorChanged, this, &DiffToolWidget::enableDiffControls);
 	connect(generate_btn, &QPushButton::clicked, this, __slot(this, DiffToolWidget::startDiff));
 
 	connect(store_in_file_rb, &QRadioButton::clicked, store_in_file_wgt, &QWidget::setEnabled);
@@ -258,6 +246,8 @@ DiffToolWidget::DiffToolWidget(QWidget *parent) : BaseConfigWidget (parent)
 	apply_on_server_btn->setEnabled(false);
 	open_in_sql_tool_btn->setEnabled(false);
 #endif
+
+	selectDiffMode();
 }
 
 DiffToolWidget::~DiffToolWidget()
@@ -291,6 +281,19 @@ void DiffToolWidget::updateModels(const QList<ModelWidget *> &models)
 {
 	input_sel_wgt->updateModels(models);
 	compared_sel_wgt->updateModels(models);
+}
+
+void DiffToolWidget::selectDiffMode()
+{
+	input_sel_wgt->setSelectMode(model_to_db_tb->isChecked() || model_to_model_tb->isChecked() ?
+																 ModelDbSelectorWidget::SelectModel : ModelDbSelectorWidget::SelectDatabase);
+
+	compared_sel_wgt->setSelectMode(model_to_model_tb->isChecked() ?
+																	 ModelDbSelectorWidget::SelectModel : ModelDbSelectorWidget::SelectDatabase);
+
+	settings_tbw->setTabEnabled(1, false);
+	settings_tbw->setTabEnabled(2, false);
+	enableDiffControls();
 }
 
 void DiffToolWidget::showEvent(QShowEvent *event)
@@ -458,7 +461,7 @@ void DiffToolWidget::clearOutput()
 	ignore_tb->setText("0");
 }
 
-void DiffToolWidget::enableDiffMode()
+void DiffToolWidget::enableDiffControls()
 {
 	if(model_to_model_tb->isChecked())
 	{
@@ -821,7 +824,7 @@ void DiffToolWidget::resetButtons()
 	cancel_btn->setEnabled(false);
 	settings_tbw->setTabEnabled(0, true);
 	apply_on_server_btn->setVisible(false);
-	enableDiffMode();
+	enableDiffControls();
 	enablePartialDiff();
 }
 
@@ -1247,7 +1250,7 @@ void DiffToolWidget::selectPreset()
 
 	store_in_file_rb->setChecked(conf[Attributes::StoreInFile] == Attributes::True);
 	apply_on_server_rb->setChecked(conf[Attributes::ApplyOnServer] == Attributes::True);
-	enableDiffMode();
+	enableDiffControls();
 
 	keep_cluster_objs_chk->setChecked(conf[Attributes::KeepClusterObjs] == Attributes::True);
 	keep_obj_perms_chk->setChecked(conf[Attributes::KeepObjsPerms] == Attributes::True);
@@ -1451,7 +1454,7 @@ void DiffToolWidget::selectModels()
 		compared_model_wgt = nullptr;
 	}
 
-	enableDiffMode();
+	enableDiffControls();
 	enablePartialDiff();
 
 	inv_model_alert_frm->setVisible((input_model_wgt && input_model_wgt->getDatabaseModel()->isInvalidated()) ||

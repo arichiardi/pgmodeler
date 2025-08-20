@@ -63,6 +63,8 @@ class __libgui ModelFixWidget: public QWidget, public Ui::ModelFixWidget {
 
 		bool isProcessRunning();
 
+		bool isFixEnabled();
+
 	public slots:
 		void fixModel();
 		void cancelFix();

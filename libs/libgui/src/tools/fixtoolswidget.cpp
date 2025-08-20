@@ -63,9 +63,21 @@ void FixToolsWidget::setCurrentTool()
 		connect(model_fix_wgt, &ModelFixWidget::s_modelFixFinished, this, [this](){
 			cancel_btn->setEnabled(false);
 		});
+
+		run_tool_btn->setEnabled(model_fix_wgt->isFixEnabled());
 	}
 	else
 	{
+		disconnect(model_fix_wgt, nullptr, run_tool_btn, nullptr);
+		disconnect(run_tool_btn, nullptr, model_fix_wgt, nullptr);
+		disconnect(cancel_btn, nullptr, model_fix_wgt, nullptr);
 
+		connect(metadata_wgt, &MetadataHandlingWidget::s_metadataHandlingEnabled, run_tool_btn, &QPushButton::setEnabled);
+		connect(run_tool_btn, &QPushButton::clicked, metadata_wgt, &MetadataHandlingWidget::handleObjectsMetada);
+
+		run_tool_btn->setEnabled(metadata_wgt->isMetadataHandlingEnabled());
 	}
+
+	cancel_btn->setEnabled(false);
+	cancel_btn->setVisible(tools_tbw->currentIndex() == 0);
 }

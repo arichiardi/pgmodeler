@@ -175,7 +175,8 @@ class __libgui DiffToolWidget: public BaseConfigWidget, public Ui::DiffToolWidge
 		void updateModels(const QList<ModelWidget *> &models);
 
 	private slots:		
-		void enableDiffMode();
+		void selectDiffMode();
+		void enableDiffControls();
 		void startDiff();
 
 		/*! \brief This method cancel any running thread emitting an signal

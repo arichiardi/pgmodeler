@@ -2128,6 +2128,7 @@ void MainWindow::showFixMessage(Exception &e, const QString &filename)
 	{
 		ModelFixWidget *model_fix_wgt = fix_tools_wgt->findChild<ModelFixWidget *>();
 		model_fix_wgt->setInputModel(filename, true);
+		fix_tools_wgt->tools_tbw->setCurrentIndex(0);
 		action_fix->setChecked(true);
 	}
 }

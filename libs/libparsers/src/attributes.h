@@ -39,6 +39,7 @@ namespace Attributes {
 	AdminRoles("admin-roles"),
 	AlertUnsavedModels("alert-unsaved-models"),
 	AlertOpenSqlTabs("alert-open-sqltabs"),
+	AlertApplyMetadata("alert-apply-metadata"),
 	Alias("alias"),
 	Alignment("alignment"),
 	AlignObjsToGrid("align-objs-to-grid"),
