@@ -559,8 +559,8 @@ void DiffToolWidget::startDiff()
 	generate_btn->setEnabled(false);
 
 	settings_tbw->setTabEnabled(0, false);
-	settings_tbw->setTabEnabled(1, false);
-	settings_tbw->setTabEnabled(2, true);
+	settings_tbw->setTabEnabled(1, true);
+	settings_tbw->setTabEnabled(2, false);
 	settings_tbw->setCurrentIndex(1);
 
 	/* The diff mode selected is different from model to model.
@@ -759,7 +759,7 @@ void DiffToolWidget::exportDiff(bool confirm)
 		cancelOperation(true);
 	else
 	{
-		process_paused=true;
+		process_paused = true;
 		settings_tbw->setCurrentIndex(2);
 		settings_tbw->setTabEnabled(2, true);
 		apply_on_server_btn->setVisible(true);
@@ -964,7 +964,7 @@ void DiffToolWidget::handleDiffFinished()
 	sqlcode_txt->setPlainText(code);
 #endif
 
-	settings_tbw->setTabEnabled(1, true);
+	settings_tbw->setTabEnabled(2, true);
 	diff_thread->quit();
 
 	if(store_in_file_rb->isChecked())

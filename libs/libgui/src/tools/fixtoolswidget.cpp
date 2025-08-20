@@ -34,7 +34,7 @@ FixToolsWidget::FixToolsWidget(QWidget *parent) : QWidget(parent)
 
 bool FixToolsWidget::isToolRunning()
 {
-	return model_fix_wgt->isProcessRunning(); /* || metadata_wgt->isThreadRunning(); */
+	return model_fix_wgt->isProcessRunning();
 }
 
 void FixToolsWidget::updateModels(const QList<ModelWidget *> &models)
