@@ -40,7 +40,7 @@ SchemaEditorForm::SchemaEditorForm(QWidget *parent) : QWidget(parent)
 	setupUi(this);
 	setWindowTitle(windowTitle() + " " + GlobalAttributes::PgModelerVersion);
 
-	for(auto &obj : bnts_parent_wgt->children())
+	for(auto &obj : btns_parent_wgt->children())
 	{
 		btn = dynamic_cast<QToolButton *>(obj);
 		if(!btn) continue;
