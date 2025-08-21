@@ -94,7 +94,8 @@ const QString PgModelerCliApp::PartialDiff {"--partial"};
 const QString PgModelerCliApp::Force {"--force"};
 const QString PgModelerCliApp::StartDate {"--start-date"};
 const QString PgModelerCliApp::EndDate {"--end-date"};
-const QString PgModelerCliApp::CompareTo {"--compare-to"};
+const QString PgModelerCliApp::CompareDb {"--compare-db"};
+const QString PgModelerCliApp::CompareFile {"--compare-file"};
 const QString PgModelerCliApp::SaveDiff {"--save"};
 const QString PgModelerCliApp::ApplyDiff {"--apply"};
 const QString PgModelerCliApp::NoDiffPreview {"--no-preview"};
@@ -143,7 +144,7 @@ std::map<QString, bool> PgModelerCliApp::long_opts {
 	{ ImportExtensionObjs, false },	{ FilterObjects, true },	{ ForceChildren, true },
 	{ OnlyMatching, false },	{ MatchByName, false },	{ DebugMode, false },
 	{ PartialDiff, false },	{ StartDate, true },	{ EndDate, true },
-	{ CompareTo, true },	{ SaveDiff, false },	{ ApplyDiff, false },
+	{ CompareDb, true }, { CompareFile, true },	{ SaveDiff, false },	{ ApplyDiff, false },
 	{ NoDiffPreview, false },	{ DropClusterObjs, false },	{ RevokePermissions, false },
 	{ DropMissingObjs, false },	{ ForceDropColsConstrs, false },	{ RenameDb, false },
 	{ NoSequenceReuse, false },	{ NoCascadeDrop, false },
@@ -171,7 +172,7 @@ attribs_map PgModelerCliApp::short_opts {
 	{ IgnoreImportErrors, "-ie" },	{ ImportSystemObjs, "-is" },	{ ImportExtensionObjs, "-ix" },
 	{ FilterObjects, "-fo" },	{ MatchByName, "-mn" },	{ ForceChildren, "-fc" },
 	{ OnlyMatching, "-om" },	{ DebugMode, "-d" },	{ PartialDiff, "-pd" },
-	{ StartDate, "-st" },	{ EndDate, "-et" },	{ CompareTo, "-ct" },
+	{ StartDate, "-st" },	{ EndDate, "-et" },	{ CompareDb, "-cd" }, { CompareFile, "-cf" },
 	{ SaveDiff, "-sd" },	{ ApplyDiff, "-ad" },	{ NoDiffPreview, "-np" },
 	{ DropClusterObjs, "-dc" },	{ RevokePermissions, "-rv" },	{ DropMissingObjs, "-dm" },
 	{ ForceDropColsConstrs, "-fd" },	{ RenameDb, "-rn" },
@@ -199,10 +200,11 @@ std::map<QString, QStringList> PgModelerCliApp::accepted_opts {
 										FilterObjects, OnlyMatching, MatchByName, ForceChildren, DebugMode, ConnAlias,
 										Host, Port, User, Passwd, InitialDb, CommentsAsAliases }},
 
-	{{ Diff }, { Input, PgSqlVer, IgnoreDuplicates, IgnoreErrorCodes, CompareTo, PartialDiff, Force,
-								StartDate, EndDate, SaveDiff, ApplyDiff, NoDiffPreview, DropClusterObjs, RevokePermissions,
-								DropMissingObjs, ForceDropColsConstrs, RenameDb, NoCascadeDrop,
-								NoSequenceReuse, RecreateUnmod, ReplaceModified, ForceReCreateObjs, NonTransactional }},
+	{{ Diff }, { Input, PgSqlVer, IgnoreDuplicates, IgnoreErrorCodes, CompareDb, CompareFile,
+							 PartialDiff, Force, StartDate, EndDate, SaveDiff, ApplyDiff, NoDiffPreview,
+							 DropClusterObjs, RevokePermissions, DropMissingObjs, ForceDropColsConstrs,
+							 RenameDb, NoCascadeDrop, NoSequenceReuse, RecreateUnmod, ReplaceModified,
+							 ForceReCreateObjs, NonTransactional }},
 
 	{{ DbmMimeType }, { SystemWide, Force }},
 	{{ FixModel },	{ Input, Output, FixTries }},
@@ -319,7 +321,7 @@ PgModelerCliApp::PgModelerCliApp(int argc, char **argv) : Application(argc, argv
 				if(!extra_connection.isConfigured())
 					extra_connection = connection;
 
-				extra_connection.setConnectionParam(Connection::ParamDbName, parsed_opts[CompareTo]);
+				extra_connection.setConnectionParam(Connection::ParamDbName, parsed_opts[CompareDb]);
 			}
 
 			if(!silent_mode && export_hlp && import_hlp && diff_hlp)
@@ -574,7 +576,8 @@ void PgModelerCliApp::showMenu()
 	printText();
 
 	printText(tr("Diff options: "));
-	printText(tr(" %1, %2 [DBNAME]\t  The database used in the comparison. All generated SQL code is applied to it.").arg(short_opts[CompareTo], CompareTo));
+	printText(tr(" %1, %2 [FILE]\t  The database model file used in the comparison. This option implies the use of option %3.").arg(short_opts[CompareFile], CompareFile, SaveDiff));
+	printText(tr(" %1, %2 [DBNAME]\t  The database used in the comparison. All generated SQL code is applied to it.").arg(short_opts[CompareDb], CompareDb));
 	printText(tr(" %1, %2\t\t\t  Switches to partial diff operation. Provide object filters using the import option %3.").arg(short_opts[PartialDiff], PartialDiff, FilterObjects));
 	printText(tr(" %1, %2\t\t\t  Forces a full diff if the provided filters fail to retrieve objects for a partial diff operation.").arg(short_opts[Force], Force));
 	printText(tr(" %1, %2\t\t  Matches database model objects with modification dates starting from the specified date. (Only for partial diff)").arg(short_opts[StartDate], StartDate));
@@ -696,10 +699,10 @@ void PgModelerCliApp::showMenu()
 	printText(tr("** The partial diff operation always forces the options %1 and %2 = %3 for more reliable results.").arg(OnlyMatching, ForceChildren, AllChildren));
 	printText(tr("   * The options %1 and %2 accept ISO8601 date/time format: `yyyy-MM-dd hh:mm:ss'.").arg(StartDate, EndDate));
 	printText();
-	printText(tr("** When diffing between two databases (%1 and %2), you can specify separate connections/aliases.").arg(InputDb, CompareTo));
+	printText(tr("** When diffing between two databases (%1 and %2), you can specify separate connections/aliases.").arg(InputDb, CompareDb));
 	printText(tr("   If only one connection is specified, it will be used for both the input database and the comparison database."));
 	printText(tr("   To specify a second connection, append `1' to any connection parameter listed above."));
-	printText(tr("   This associates the connection exclusively with %1.").arg(CompareTo));
+	printText(tr("   This associates the connection exclusively with %1.").arg(CompareDb));
 	printText();
 
 	if(!plugin_load_errors.isEmpty())
@@ -877,17 +880,27 @@ void PgModelerCliApp::parseOptions(attribs_map &opts)
 
 		if(diff)
 		{
+			// If the user wants to compare two models we force the use of --save
+			if(opts.count(CompareFile) && !opts.count(SaveDiff))
+				 opts[SaveDiff] = Attributes::True;
+
 			if(!opts.count(Input) && !opts.count(InputDb))
 				throw Exception(tr("No input file or database was specified!"), ErrorCode::Custom,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 			if(opts.count(Input) && opts.count(InputDb))
 				throw Exception(tr("The input file and the input database can't be used at the same time!"), ErrorCode::Custom,PGM_FUNC,PGM_FILE,PGM_LINE);
 
-			if(!opts.count(CompareTo))
-				throw Exception(tr("No database to be compared was specified!"), ErrorCode::Custom,PGM_FUNC,PGM_FILE,PGM_LINE);
+			if(!opts.count(CompareDb) && !opts.count(CompareFile))
+				throw Exception(tr("No database or model file to be compared was specified!"), ErrorCode::Custom,PGM_FUNC,PGM_FILE,PGM_LINE);
+
+			if(opts.count(InputDb) && opts.count(CompareFile))
+				throw Exception(tr("The diff between a database and a model isn't supported!"), ErrorCode::Custom,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 			if(!opts.count(SaveDiff) && !opts.count(ApplyDiff))
 				throw Exception(tr("No diff action (save or apply) was specified!"), ErrorCode::Custom,PGM_FUNC,PGM_FILE,PGM_LINE);
+
+			if(opts.count(CompareFile) && opts.count(ApplyDiff))
+				throw Exception(tr("The option `%1' can't be used together with `%2'!").arg(CompareFile, ApplyDiff), ErrorCode::Custom,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 			if(opts.count(SaveDiff) && opts[Output].isEmpty())
 				throw Exception(tr("No output file for the diff code was specified!"), ErrorCode::Custom,PGM_FUNC,PGM_FILE,PGM_LINE);
@@ -2354,7 +2367,7 @@ void PgModelerCliApp::diffModelDatabase()
 				printMessage(tr("Applying diff to the database `%1'...").arg(dbname));
 				export_hlp->setExportToDBMSParams(diff_hlp->getDiffDefinition(),
 												 &extra_connection,
-												 parsed_opts[CompareTo],
+												 parsed_opts[CompareDb],
 												 parsed_opts.count(IgnoreDuplicates),
 												 !parsed_opts.count(NonTransactional));
 
