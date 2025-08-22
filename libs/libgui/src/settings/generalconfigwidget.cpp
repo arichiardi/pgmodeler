@@ -187,8 +187,18 @@ void GeneralConfigWidget::showEvent(QShowEvent *)
 {
 	reset_alerts_choices_btn->setEnabled(config_params[Attributes::Configuration][Attributes::AlertUnsavedModels] != Attributes::True ||
 																			 config_params[Attributes::Configuration][Attributes::AlertOpenSqlTabs] != Attributes::True ||
-																			 config_params[Attributes::Configuration][Attributes::UseDefDisambiguation] == Attributes::True);
+																			 config_params[Attributes::Configuration][Attributes::UseDefDisambiguation] == Attributes::True ||
+																			 config_params[Attributes::Configuration][Attributes::AlertApplyMetadata] == Attributes::False);
 
+}
+
+void GeneralConfigWidget::resetAlertChoices()
+{
+	config_params[Attributes::Configuration][Attributes::AlertUnsavedModels] = Attributes::True;
+	config_params[Attributes::Configuration][Attributes::AlertOpenSqlTabs] = Attributes::True;
+	config_params[Attributes::Configuration][Attributes::UseDefDisambiguation] = Attributes::False;
+	config_params[Attributes::Configuration][Attributes::AlertApplyMetadata] = Attributes::True;
+	reset_alerts_choices_btn->setEnabled(false);
 }
 
 void GeneralConfigWidget::loadConfiguration()
@@ -206,7 +216,8 @@ void GeneralConfigWidget::loadConfiguration()
 
 		if(!config_params[Attributes::Configuration].count(Attributes::AlertUnsavedModels) ||
 			 !config_params[Attributes::Configuration].count(Attributes::AlertOpenSqlTabs) ||
-			 !config_params[Attributes::Configuration].count(Attributes::UseDefDisambiguation))
+			 !config_params[Attributes::Configuration].count(Attributes::UseDefDisambiguation) ||
+			 !config_params[Attributes::Configuration].count(Attributes::AlertApplyMetadata))
 			resetAlertChoices();
 
 		oplist_size_spb->setValue((config_params[Attributes::Configuration][Attributes::OpListSize]).toUInt());
@@ -693,12 +704,4 @@ void GeneralConfigWidget::resetDialogsSizes()
 
 	if(Messagebox::isAccepted(res))
 		widgets_geom.clear();
-}
-
-void GeneralConfigWidget::resetAlertChoices()
-{
-	config_params[Attributes::Configuration][Attributes::AlertUnsavedModels] = Attributes::True;
-	config_params[Attributes::Configuration][Attributes::AlertOpenSqlTabs] = Attributes::True;
-	config_params[Attributes::Configuration][Attributes::UseDefDisambiguation] = Attributes::False;
-	reset_alerts_choices_btn->setEnabled(false);
 }
