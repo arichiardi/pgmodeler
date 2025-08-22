@@ -224,7 +224,7 @@ PgModelerCliApp::PgModelerCliApp(int argc, char **argv) : Application(argc, argv
 
 		has_fix_log = false;
 		buffer_size = 0;
-		model = nullptr;
+		input_model = nullptr;
 		scene = nullptr;
 		xmlparser = nullptr;
 		zoom = 1;
@@ -287,15 +287,15 @@ PgModelerCliApp::PgModelerCliApp(int argc, char **argv) : Application(argc, argv
 
 		if(!parsed_opts.empty())
 		{
-			model=new DatabaseModel;
-			xmlparser=model->getXMLParser();
+			input_model=new DatabaseModel;
+			xmlparser=input_model->getXMLParser();
 			silent_mode=(parsed_opts.count(Silent));
 
 			//If the export is to png or svg loads additional configurations
 			if(parsed_opts.count(ExportToPng) || parsed_opts.count(ExportToSvg) || parsed_opts.count(ImportDb))
 			{
-				connect(model, &DatabaseModel::s_objectAdded, this, &PgModelerCliApp::handleObjectAddition);
-				connect(model, &DatabaseModel::s_objectRemoved, this, &PgModelerCliApp::handleObjectRemoval);
+				connect(input_model, &DatabaseModel::s_objectAdded, this, &PgModelerCliApp::handleObjectAddition);
+				connect(input_model, &DatabaseModel::s_objectRemoved, this, &PgModelerCliApp::handleObjectRemoval);
 
 				//Load the appearance settings including grid and delimiter options
 				AppearanceConfigWidget appearance_wgt;
@@ -314,7 +314,7 @@ PgModelerCliApp::PgModelerCliApp(int argc, char **argv) : Application(argc, argv
 					connection.setConnectionParam(Connection::ParamDbName, parsed_opts[InputDb]);
 			}
 
-			if(parsed_opts.count(Diff))
+			if(parsed_opts.count(Diff) && parsed_opts.count(CompareDb))
 			{
 				configureConnection(true);
 
@@ -341,7 +341,7 @@ PgModelerCliApp::PgModelerCliApp(int argc, char **argv) : Application(argc, argv
 
 PgModelerCliApp::~PgModelerCliApp()
 {
-	bool show_flush_msg = model && model->getObjectCount() > 0;
+	bool show_flush_msg = input_model && input_model->getObjectCount() > 0;
 
 	if(show_flush_msg)
 		printMessage(tr("Flushing used memory..."));
@@ -349,7 +349,7 @@ PgModelerCliApp::~PgModelerCliApp()
 	if(scene)
 		delete scene;
 
-	delete model;
+	delete input_model;
 
 	if(export_hlp)
 		delete export_hlp;
@@ -1211,7 +1211,7 @@ void PgModelerCliApp::extractObjectXML()
 	if(model_version < "1.0.0" && !aux_layers.contains("Default"))
 		aux_layers.prepend("Default,");
 
-	model->setLayers(aux_layers);
+	input_model->setLayers(aux_layers);
 
 	//Active layers
 	attr_start = attr_end;
@@ -1228,7 +1228,7 @@ void PgModelerCliApp::extractObjectXML()
 	for(auto &id : active_layers.trimmed().split(';', Qt::SkipEmptyParts))
 		act_layers_ids.push_back(id.toUInt());
 
-	model->setActiveLayers(act_layers_ids);
+	input_model->setActiveLayers(act_layers_ids);
 	buf.remove(0, dbm_start);
 
 	//Checking if the header ends on a role declaration
@@ -1375,7 +1375,7 @@ void PgModelerCliApp::recreateObjects()
 	if(max_tries==0)
 		max_tries=1;
 
-	model->createSystemObjects(false);
+	input_model->createSystemObjects(false);
 
 	while(!objs_xml.isEmpty())
 	{
@@ -1399,7 +1399,7 @@ void PgModelerCliApp::recreateObjects()
 			 * to the new format introduced by 1.1.0-beta */
 			if(model_version <= "1.1.0-alpha1" && xml_def.contains(start_tag.arg(BaseObject::getSchemaName(ObjectType::View))))
 			{
-				CompatNs::View * view = CompatNs::createLegacyView(xml_def, model);
+				CompatNs::View * view = CompatNs::createLegacyView(xml_def, input_model);
 				xml_def = CompatNs::convertToNewView(view);
 			}
 
@@ -1410,7 +1410,7 @@ void PgModelerCliApp::recreateObjects()
 			xmlparser->getElementAttributes(attribs);
 
 			if(obj_type==ObjectType::Database)
-				model->configureDatabase(attribs);
+				input_model->configureDatabase(attribs);
 			else
 			{
 				if(obj_type==ObjectType::Table)
@@ -1432,12 +1432,12 @@ void PgModelerCliApp::recreateObjects()
 				if(obj_type!=ObjectType::Relationship ||
 						(obj_type==ObjectType::Relationship && !xml_def.contains(QString("\"%1\"").arg(Attributes::RelationshipFk))))
 				{
-					object=model->createObject(obj_type);
+					object=input_model->createObject(obj_type);
 
 					if(object)
 					{
 						if(!dynamic_cast<TableObject *>(object) && obj_type!=ObjectType::Relationship && obj_type!=ObjectType::BaseRelationship)
-							model->addObject(object);
+							input_model->addObject(object);
 
 						curr_size += xml_def.size();
 						printMessage(QString("[%1%] %2")
@@ -1536,7 +1536,7 @@ void PgModelerCliApp::recreateObjects()
 			else
 			{
 				printMessage(tr("** WARNING: There are objects that maybe can't be fixed. Trying again... (tries %1/%2)").arg(tries, max_tries));
-				model->validateRelationships();
+				input_model->validateRelationships();
 				objs_xml = fail_objs;
 				objs_xml.append(constr);
 				fail_objs.clear();
@@ -1551,7 +1551,7 @@ void PgModelerCliApp::recreateObjects()
 
 	for(auto &rl : member_roles)
 	{
-		role = model->getRole(rl.first);
+		role = input_model->getRole(rl.first);
 
 		if(!role)
 		{
@@ -1561,7 +1561,7 @@ void PgModelerCliApp::recreateObjects()
 
 		for(auto &name : rl.second)
 		{
-			mem_role = model->getRole(name);
+			mem_role = input_model->getRole(name);
 
 			if(!mem_role)
 			{
@@ -1583,7 +1583,7 @@ void PgModelerCliApp::recreateObjects()
 	// Reconstructing the persisted change log if present
 	if(!changelog.isEmpty())
 	{
-		model->setPersistedChangelog(true);
+		input_model->setPersistedChangelog(true);
 		xmlparser->restartParser();
 		xmlparser->loadXMLBuffer(changelog);
 
@@ -1594,7 +1594,7 @@ void PgModelerCliApp::recreateObjects()
 				try
 				{
 					xmlparser->getElementAttributes(attribs);
-					model->addChangelogEntry(attribs[Attributes::Signature], attribs[Attributes::Type],
+					input_model->addChangelogEntry(attribs[Attributes::Signature], attribs[Attributes::Type],
 																		attribs[Attributes::Action], attribs[Attributes::Date]);
 				}
 				catch(Exception &e)
@@ -1969,7 +1969,7 @@ void PgModelerCliApp::fixOpClassesFamiliesReferences(QString &obj_xml)
 			{
 				aux_obj_name=signature.arg(obj_name, idx_type);
 
-				if(model->getObjectIndex(aux_obj_name, ref_obj_type) >= 0)
+				if(input_model->getObjectIndex(aux_obj_name, ref_obj_type) >= 0)
 				{
 					//Replacing the old signature with the corrected form
 					aux_obj_name.replace("\"", UtilsNs::EntityQuot);
@@ -1998,17 +1998,17 @@ void PgModelerCliApp::fixModel()
 	printMessage(tr("Updating relationships..."));
 
 	// Forcing a full relationship revalidation so the special objects can be created properly
-	if(model->getObjectCount(ObjectType::Relationship) > 0)
+	if(input_model->getObjectCount(ObjectType::Relationship) > 0)
 	{
-		model->storeSpecialObjectsXML();
-		model->disconnectRelationships();
-		model->validateRelationships();
+		input_model->storeSpecialObjectsXML();
+		input_model->disconnectRelationships();
+		input_model->validateRelationships();
 	}
 
-	model->updateTablesFKRelationships();
+	input_model->updateTablesFKRelationships();
 
 	printMessage(tr("Saving fixed output model..."));
-	model->saveModel(parsed_opts[Output], SchemaParser::XmlCode);
+	input_model->saveModel(parsed_opts[Output], SchemaParser::XmlCode);
 
 	if(!has_fix_log)
 		printMessage(tr("Model successfully fixed!"));
@@ -2022,10 +2022,10 @@ void PgModelerCliApp::fixModel()
 void PgModelerCliApp::loadModel()
 {
 	//Create the systems objects on model before loading it
-	model->createSystemObjects(false);
+	input_model->createSystemObjects(false);
 
 	//Load the model file
-	model->loadModel(parsed_opts[Input]);
+	input_model->loadModel(parsed_opts[Input]);
 
 	/* The scene object is created only when some options are used
 	 * so we need to check it if is not null to avoid segfaults */
@@ -2033,15 +2033,15 @@ void PgModelerCliApp::loadModel()
 	{
 		scene->blockSignals(true);
 
-		scene->addLayers(model->getLayers(), false);
-		scene->setActiveLayers(model->getActiveLayers());
-		scene->setLayerColors(ObjectsScene::LayerNameColor, model->getLayerNameColors());
-		scene->setLayerColors(ObjectsScene::LayerRectColor, model->getLayerRectColors());
-		scene->setLayerNamesVisible(model->isLayerNamesVisible());
-		scene->setLayerRectsVisible(model->isLayerRectsVisible());
+		scene->addLayers(input_model->getLayers(), false);
+		scene->setActiveLayers(input_model->getActiveLayers());
+		scene->setLayerColors(ObjectsScene::LayerNameColor, input_model->getLayerNameColors());
+		scene->setLayerColors(ObjectsScene::LayerRectColor, input_model->getLayerRectColors());
+		scene->setLayerNamesVisible(input_model->isLayerNamesVisible());
+		scene->setLayerRectsVisible(input_model->isLayerRectsVisible());
 
 		scene->adjustSceneRect(true);
-		model->setObjectsModified({ ObjectType::Schema });
+		input_model->setObjectsModified({ ObjectType::Schema });
 
 		scene->blockSignals(false);
 	}
@@ -2091,7 +2091,7 @@ void PgModelerCliApp::exportModel()
 		else
 			printMessage(tr("Export to output directory: %1").arg(parsed_opts[Output]));
 
-		export_hlp->exportToSQL(model, parsed_opts[Output], parsed_opts[PgSqlVer],
+		export_hlp->exportToSQL(input_model, parsed_opts[Output], parsed_opts[PgSqlVer],
 														parsed_opts.count(Split) > 0,
 														code_gen_option,
 														parsed_opts.count(GenDropScript) > 0);
@@ -2100,7 +2100,7 @@ void PgModelerCliApp::exportModel()
 	else if(parsed_opts.count(ExportToDict))
 	{
 		printMessage(tr("Export to data dictionary: %1").arg(parsed_opts[Output]));
-		export_hlp->exportToDataDict(model, parsed_opts[Output],
+		export_hlp->exportToDataDict(input_model, parsed_opts[Output],
 																 parsed_opts.count(NoIndex) == 0,
 																 parsed_opts.count(Split) > 0,
 																 parsed_opts.count(Markdown) > 0);
@@ -2113,7 +2113,7 @@ void PgModelerCliApp::exportModel()
 		if(parsed_opts.count(IgnoreErrorCodes))
 			export_hlp->setIgnoredErrors(parsed_opts[IgnoreErrorCodes].split(','));
 
-		export_hlp->exportToDBMS(model, connection, parsed_opts[PgSqlVer],
+		export_hlp->exportToDBMS(input_model, connection, parsed_opts[PgSqlVer],
 								parsed_opts.count(IgnoreDuplicates),
 								parsed_opts.count(DropDatabase),
 								parsed_opts.count(DropObjects),
@@ -2209,177 +2209,205 @@ void PgModelerCliApp::importDatabase(DatabaseModel *model, Connection conn)
 
 void PgModelerCliApp::diffModelDatabase()
 {
-	DatabaseModel *model_aux = new DatabaseModel();
+	DatabaseModel *compared_model = new DatabaseModel();
 	QString dbname;
 	std::vector<BaseObject *> filtered_objs;
+	bool is_compare_db = parsed_opts.count(CompareDb);
 
-	printMessage(tr("Starting diff process..."));
-
-	if(!parsed_opts[Input].isEmpty())
-		printMessage(tr("Input model: %1").arg(parsed_opts[Input]));
-	else
-		printMessage(tr("Input database: %1").arg(connection.getConnectionId(true, true)));
-
-	dbname = extra_connection.getConnectionId(true, true);
-	printMessage(tr("Compare to: %1").arg(dbname));
-
-	if(!parsed_opts[Input].isEmpty())
+	try
 	{
-		printMessage(tr("Loading input model..."));
-		loadModel();
+		printMessage(tr("Starting diff process..."));
 
-		if(parsed_opts.count(PartialDiff))
+		if(!parsed_opts[Input].isEmpty())
+			printMessage(tr("Input model: %1").arg(parsed_opts[Input]));
+		else
+			printMessage(tr("Input database: %1").arg(connection.getConnectionId(true, true)));
+
+		if(is_compare_db)
 		{
-			QString search_attr = parsed_opts.count(MatchByName) ? Attributes::Name : Attributes::Signature;
+			dbname = extra_connection.getConnectionId(true, true);
+			printMessage(tr("Compare to: %1").arg(dbname));
+		}
+		else
+			printMessage(tr("Compare to: %1").arg(parsed_opts[CompareFile]));
 
-			// Filtering by modification date always forces the signature matching
-			if(start_date.isValid() || end_date.isValid())
-				obj_filters.append(model->getFiltersFromChangelog(start_date, end_date));
+		if(!parsed_opts[Input].isEmpty())
+		{
+			printMessage(tr("Loading input model..."));
+			loadModel();
 
-			filtered_objs = model->findObjects(obj_filters, search_attr);
-
-			/* We need to finish the diff if no object was found based on the filters
-			 * this will avoid the diff between an empty database model and a full database model
-			 * which may produce unexpected results like try to recreate all objects from the database
-			 * model that contains objects */
-			if(filtered_objs.empty())
+			if(parsed_opts.count(PartialDiff))
 			{
-				printMessage(tr("No object was retrieved using the provided filter(s)."));
+				QString search_attr = parsed_opts.count(MatchByName) ? Attributes::Name : Attributes::Signature;
 
-				if(!parsed_opts.count(Force))
+				// Filtering by modification date always forces the signature matching
+				if(start_date.isValid() || end_date.isValid())
+					obj_filters.append(input_model->getFiltersFromChangelog(start_date, end_date));
+
+				filtered_objs = input_model->findObjects(obj_filters, search_attr);
+
+				/* We need to finish the diff if no object was found based on the filters
+				 * this will avoid the diff between an empty database model and a full database model
+				 * which may produce unexpected results like try to recreate all objects from the database
+				 * model that contains objects */
+				if(filtered_objs.empty())
 				{
-					printMessage(tr("Use the option `%1' to force a full diff in this case.").arg(Force));
-					printMessage(tr("The diff process will not continue!\n"));
-					return;
+					printMessage(tr("No object was retrieved using the provided filter(s)."));
+
+					if(!parsed_opts.count(Force))
+					{
+						printMessage(tr("Use the option `%1' to force a full diff in this case.").arg(Force));
+						printMessage(tr("The diff process will not continue!\n"));
+						return;
+					}
+					else
+						printMessage(tr("Switching to full diff..."));
 				}
 				else
-					printMessage(tr("Switching to full diff..."));
+				{
+					/* Special case: when performing a partial diff between a model and a database
+					 * and in the set of filtered model objects we have one or more many-to-many, inheritance or partitioning
+					 * relationships we need to inject filters to force the retrieval of the all involved tables in those relationships
+					 * from the destination database,this way we avoid the diff try to create everytime all tables
+					 * in the those relationships. */
+					obj_filters.append(ModelsDiffHelper::getRelationshipFilters(filtered_objs, search_attr == Attributes::Signature));
+				}
 			}
-			else
-			{
-				/* Special case: when performing a partial diff between a model and a database
-				 * and in the set of filtered model objects we have one or more many-to-many, inheritance or partitioning
-				 * relationships we need to inject filters to force the retrieval of the all involved tables in those relationships
-				 * from the destination database,this way we avoid the diff try to create everytime all tables
-				 * in the those relationships. */
-				obj_filters.append(ModelsDiffHelper::getRelationshipFilters(filtered_objs, search_attr == Attributes::Signature));
-			}
-		}
-	}
-	else
-	{
-		printMessage(tr("Importing the database `%1'...").arg(connection.getConnectionId(true, true)));
-		importDatabase(model, connection);
-	}
-
-	printMessage(tr("Importing the database `%1'...").arg(dbname));
-	importDatabase(model_aux, extra_connection);
-
-	diff_hlp->setModels(model, model_aux);
-	diff_hlp->setFilteredObjects(filtered_objs);
-	diff_hlp->setDiffOption(ModelsDiffHelper::OptKeepClusterObjs, !parsed_opts.count(DropClusterObjs));
-	diff_hlp->setDiffOption(ModelsDiffHelper::OptCascadeMode, !parsed_opts.count(NoCascadeDrop));
-	diff_hlp->setDiffOption(ModelsDiffHelper::OptRecreateUnmodifiable, parsed_opts.count(RecreateUnmod));
-	diff_hlp->setDiffOption(ModelsDiffHelper::OptReplaceModified, parsed_opts.count(ReplaceModified));
-	diff_hlp->setDiffOption(ModelsDiffHelper::OptKeepObjectPerms, !parsed_opts.count(RevokePermissions));
-	diff_hlp->setDiffOption(ModelsDiffHelper::OptReuseSequences, !parsed_opts.count(NoSequenceReuse));
-	diff_hlp->setDiffOption(ModelsDiffHelper::OptPreserveDbName, !parsed_opts.count(RenameDb));
-	diff_hlp->setDiffOption(ModelsDiffHelper::OptDontDropMissingObjs, !parsed_opts.count(DropMissingObjs));
-	diff_hlp->setDiffOption(ModelsDiffHelper::OptDropMissingColsConstr, !parsed_opts.count(ForceDropColsConstrs));
-
-	diff_hlp->setForcedRecreateTypeNames(parsed_opts[ForceReCreateObjs].split(',', Qt::SkipEmptyParts));
-
-	if(!parsed_opts[PgSqlVer].isEmpty())
-		diff_hlp->setPgSQLVersion(parsed_opts[PgSqlVer]);
-	else
-	{
-		extra_connection.connect();
-		diff_hlp->setPgSQLVersion(extra_connection.getPgSQLVersion(true));
-		extra_connection.close();
-	}
-
-	printMessage(tr("Comparing the generated models..."));
-	diff_hlp->diffModels();
-
-	if(diff_hlp->getDiffDefinition().isEmpty())
-		printMessage(tr("No differences were detected."));
-	else
-	{
-		if(parsed_opts.count(SaveDiff))
-		{
-			printMessage(tr("Saving diff to file `%1'").arg(parsed_opts[Output]));
-			UtilsNs::saveFile(parsed_opts[Output], diff_hlp->getDiffDefinition().toUtf8());
 		}
 		else
 		{
-			bool apply_diff = true;
+			printMessage(tr("Importing the database `%1'...").arg(connection.getConnectionId(true, true)));
+			importDatabase(input_model, connection);
+		}
 
-			if(!parsed_opts.count(NoDiffPreview))
+		// Importing the compared database
+		if(parsed_opts.count(CompareDb))
+		{
+			printMessage(tr("Importing the database `%1'...").arg(dbname));
+			importDatabase(compared_model, extra_connection);
+		}
+		// Otherwise we load the model from file (param CompareFile)
+		else
+		{
+			printMessage(tr("Loading compared model..."));
+			compared_model->createSystemObjects(false);
+			compared_model->loadModel(parsed_opts[CompareFile]);
+		}
+
+		diff_hlp->setModels(input_model, compared_model);
+		diff_hlp->setFilteredObjects(filtered_objs);
+		diff_hlp->setDiffOption(ModelsDiffHelper::OptKeepClusterObjs, !parsed_opts.count(DropClusterObjs));
+		diff_hlp->setDiffOption(ModelsDiffHelper::OptCascadeMode, !parsed_opts.count(NoCascadeDrop));
+		diff_hlp->setDiffOption(ModelsDiffHelper::OptRecreateUnmodifiable, parsed_opts.count(RecreateUnmod));
+		diff_hlp->setDiffOption(ModelsDiffHelper::OptReplaceModified, parsed_opts.count(ReplaceModified));
+		diff_hlp->setDiffOption(ModelsDiffHelper::OptKeepObjectPerms, !parsed_opts.count(RevokePermissions));
+		diff_hlp->setDiffOption(ModelsDiffHelper::OptReuseSequences, !parsed_opts.count(NoSequenceReuse));
+		diff_hlp->setDiffOption(ModelsDiffHelper::OptPreserveDbName, !parsed_opts.count(RenameDb));
+		diff_hlp->setDiffOption(ModelsDiffHelper::OptDontDropMissingObjs, !parsed_opts.count(DropMissingObjs));
+		diff_hlp->setDiffOption(ModelsDiffHelper::OptDropMissingColsConstr, !parsed_opts.count(ForceDropColsConstrs));
+
+		diff_hlp->setForcedRecreateTypeNames(parsed_opts[ForceReCreateObjs].split(',', Qt::SkipEmptyParts));
+
+		if(!parsed_opts[PgSqlVer].isEmpty())
+			diff_hlp->setPgSQLVersion(parsed_opts[PgSqlVer]);
+		else if(is_compare_db)
+		{
+			extra_connection.connect();
+			diff_hlp->setPgSQLVersion(extra_connection.getPgSQLVersion(true));
+			extra_connection.close();
+		}
+
+		printMessage(tr("Comparing the generated models..."));
+		diff_hlp->diffModels();
+
+		if(diff_hlp->getDiffDefinition().isEmpty())
+			printMessage(tr("No differences were detected."));
+		else
+		{
+			if(parsed_opts.count(SaveDiff))
 			{
-				QString res, buff, line;
-				QTextStream in(stdin), preview;
+				printMessage(tr("Saving diff to file `%1'").arg(parsed_opts[Output]));
+				UtilsNs::saveFile(parsed_opts[Output], diff_hlp->getDiffDefinition().toUtf8());
+			}
+			else
+			{
+				bool apply_diff = true;
 
-				buff += "\n** Press ENTER to scroll the preview **\n";
-				buff += "\n### DIFF PREVIEW ###\n\n";
-				buff += diff_hlp->getDiffDefinition();
-				buff += "\n### END OF PREVIEW  ###\n\n";
-
-				preview.setString(&buff, QIODevice::ReadOnly);
-
-				while(!preview.atEnd())
+				if(!parsed_opts.count(NoDiffPreview))
 				{
-					line = preview.readLine();
-					res.append(line + '\n');
+					QString res, buff, line;
+					QTextStream in(stdin), preview;
 
-					if(res.count(QChar('\n')) >= 30 || preview.atEnd())
+					buff += "\n** Press ENTER to scroll the preview **\n";
+					buff += "\n### DIFF PREVIEW ###\n\n";
+					buff += diff_hlp->getDiffDefinition();
+					buff += "\n### END OF PREVIEW  ###\n\n";
+
+					preview.setString(&buff, QIODevice::ReadOnly);
+
+					while(!preview.atEnd())
 					{
-						out << res;
-						out.flush();
-						res.clear();
+						line = preview.readLine();
+						res.append(line + '\n');
 
-						if(!preview.atEnd())
-							in.readLine();
+						if(res.count(QChar('\n')) >= 30 || preview.atEnd())
+						{
+							out << res;
+							out.flush();
+							res.clear();
+
+							if(!preview.atEnd())
+								in.readLine();
+						}
+					}
+
+					out << Qt::endl;
+					out << tr("** WARNING: You are about to apply the generated diff code to the server. Some data can be lost in the process!") << Qt::endl;
+
+					do
+					{
+						out << tr("** Proceed with the diff applying? (yes/no) > ");
+						out.flush();
+
+						in.skipWhiteSpace();
+						res = in.readLine();
+					}
+					while(res.toLower() != tr("yes") && res.toLower() != tr("no"));
+
+					if(res.toLower() == tr("no"))
+					{
+						apply_diff = false;
+						printMessage(tr("Diff code not applied to the server."));
 					}
 				}
 
-				out << Qt::endl;
-				out << tr("** WARNING: You are about to apply the generated diff code to the server. Some data can be lost in the process!") << Qt::endl;
-
-				do
+				if(apply_diff)
 				{
-					out << tr("** Proceed with the diff applying? (yes/no) > ");
-					out.flush();
+					printMessage(tr("Applying diff to the database `%1'...").arg(dbname));
+					export_hlp->setExportToDBMSParams(diff_hlp->getDiffDefinition(),
+													 &extra_connection,
+													 parsed_opts[CompareDb],
+													 parsed_opts.count(IgnoreDuplicates),
+													 !parsed_opts.count(NonTransactional));
 
-					in.skipWhiteSpace();
-					res = in.readLine();
+					if(parsed_opts.count(IgnoreErrorCodes))
+						export_hlp->setIgnoredErrors(parsed_opts[IgnoreErrorCodes].split(','));
+
+					export_hlp->exportToDBMS();
 				}
-				while(res.toLower() != tr("yes") && res.toLower() != tr("no"));
-
-				if(res.toLower() == tr("no"))
-				{
-					apply_diff = false;
-					printMessage(tr("Diff code not applied to the server."));
-				}
-			}
-
-			if(apply_diff)
-			{
-				printMessage(tr("Applying diff to the database `%1'...").arg(dbname));
-				export_hlp->setExportToDBMSParams(diff_hlp->getDiffDefinition(),
-												 &extra_connection,
-												 parsed_opts[CompareDb],
-												 parsed_opts.count(IgnoreDuplicates),
-												 !parsed_opts.count(NonTransactional));
-
-				if(parsed_opts.count(IgnoreErrorCodes))
-					export_hlp->setIgnoredErrors(parsed_opts[IgnoreErrorCodes].split(','));
-
-				export_hlp->exportToDBMS();
 			}
 		}
-	}
 
-	printMessage(tr("Diff successfully ended!\n"));
+		printMessage(tr("Diff successfully ended!\n"));
+		delete compared_model;
+	}
+	catch(Exception &e)
+	{
+		if(compared_model)
+			delete compared_model;
+
+		throw Exception(e.getErrorMessage(), e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
+	}
 }
 
 void PgModelerCliApp::updateMimeType()

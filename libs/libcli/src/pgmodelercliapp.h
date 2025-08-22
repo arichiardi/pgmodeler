@@ -69,8 +69,8 @@ class __libcli PgModelerCliApp: public Application {
 		//! \brief Diff helper object
 		ModelsDiffHelper *diff_hlp;
 
-		//! \brief Reference database model
-		DatabaseModel *model;
+		//! \brief Input database model
+		DatabaseModel *input_model;
 
 		//! \brief Graphical scene used to export the model to png
 		ObjectsScene *scene;
