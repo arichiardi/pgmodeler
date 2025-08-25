@@ -1030,7 +1030,7 @@ int PgModelerCliApp::exec()
 				else if(import_db)
 					importDatabase();
 				else if(diff)
-					diffModelDatabase();
+					diffModels();
 				else if(export_op)
 					exportModel();
 				else
@@ -2207,7 +2207,7 @@ void PgModelerCliApp::importDatabase(DatabaseModel *model, Connection conn)
 	}
 }
 
-void PgModelerCliApp::diffModelDatabase()
+void PgModelerCliApp::diffModels()
 {
 	DatabaseModel *compared_model = new DatabaseModel();
 	QString dbname;

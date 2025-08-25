@@ -311,7 +311,7 @@ class __libcli PgModelerCliApp: public Application {
 		void fixModel();
 		void exportModel();
 		void importDatabase();
-		void diffModelDatabase();
+		void diffModels();
 		void updateMimeType();
 		void createConfigurations();
 		void listConnections();
