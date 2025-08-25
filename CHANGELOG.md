@@ -1,6 +1,161 @@
 Changelog
 ---------
 
+v2.0.0-alpha
+------
+<em>Release date: September 12, 2025</em><br/>
+
+* [New] Added support for diff two models in CLI.
+* [New] MetadataHandlingWidget is now fully operational within FixToolsWidget.
+* [New] Added the method ModelDbSelectorWidget::clearSelection.
+* [New] Added the method Catalog::getServerVersion.
+* [New] Created the method updateConnections on ModelValidationWidget, DatabaseImportWidget, DiffToolWidget and SQLToolWidget so it can be called when the signal s_connectionsUpdateRequested is captured.
+* [New] Added the class ModelDBPickerWidget that encapsulates features to select model or databases to be used in diff process.
+* [New] Created the function GuiUtilsNs::createWidgetInParent.
+* [New] Added the method ModelWidget::setInteractive that toggles the interaction over the model.
+* [New] Added a model selector in ModelExportWidget.
+* [New] Created aliases to macros __FILE__, __LINE__ and __PRETTY_FUNCTION__.
+* [New] Added an icon for welcome view.
+* [Change] Renamed PgModelerCliApp::diffModelDatabase to diffModels.
+* [Change] Minor adjustment in GeneralConfigWidget::resetAlertChoices to reset the Attributes::AlertApplyMetadata parameter.
+* [Change] Minor UI adjustment in relationshipconfigwidget.ui.
+* [Change] Minor UI adjustment in SchemaEditorForm.
+* [Change] Renamed MetadataHandlingForm to MetadataHandlingWidget.
+* [Change] Adjusting MetadataHandlingWidget UI.
+* [Change] Extra adjustments in ModelFixWidget.
+* [Change] Changed ModelFixForm to ModelFixWidget since it now run integrated to main window.
+* [Change] Adjusting FixToolsWidget to run both model fix and metadata handling.
+* [Change] Adjusted the display of the view Fix in MainWindow.
+* [Change] Adjusted the layout of relationshipconfigwidget.ui.
+* [Change] Start adding the model fix widget and metadata handling in a dedicated tab in main window.
+* [Change] Minor size adjustment in configurationwidget.ui.
+* [Change] Minor adjustment in DatabaseImportWidget::s_importFinished to send a bool flag indicating if the signal was sent during import error.
+* [Change] Minor adjustment in DiffToolWidget to disable import options group when user selects model -> model diff.
+* [Change] Adjusted the method Application::copyFilesRecursively to ignore the diff-presets.conf from previous versions of pgModeler.
+* [Change] Minor improvement in DiffToolWidget presets saving/loading.
+* [Change] Minor adjustment in DiffToolWidget.
+* [Change] Adjusted the invalidated model alert display in ModelExportWidget.
+* [Change] Removed the tab "Partial diff" and moved all controls related to it to the main tab.
+* [Change] Reorganized the diff widget UI.
+* [Change] Removed unused components in DiffToolWidget.
+* [Change] Minor adjustments in ModelDbSelectorWidget.
+* [Change] Start adding support for selecting models to diff from ModelDbPickerWidget.
+* [Change] DiffToolWidget now compares two databases by using the db selection in ModelDbPickerWidget.
+* [Change] Additional adjustments in ModelDBPickerWidget.
+* [Change] Start to change DiffToolWidget to include model <-> model diff mode.
+* [Change] Minor adjustment in DatabaseImportWidget and ModelExportWidget to block changes in the model while the operations are running.
+* [Change] Removed the close button from DiffToolWidget.
+* [Change] Removed the old diff tool class ModelDatabaseDiffForm.
+* [Change] Minor css adjustments.
+* [Change] Adjustments on MainWindow to start/stop timers when the diff operation starts/stops.
+* [Change] Diff tool is now integrated to the main window.
+* [Change] Finished moving model export operation to the "Export view".
+* [Change] Ajusted some icon sizes in icons-*.conf.
+* [Change] Minor ui adjustment in configurationwidget.ui and mainwindow.ui.
+* [Change] Minor adjustments in UI.
+* [Change] Converted ModelExportWidget export mode radio boxes into tool buttons.
+* [Change] Renamed the method exec to setModel in ModelExportWidget.
+* [Change] Adjusted MainWindow::updateConnections to update model export widget connections.
+* [Change] Additional UI adjustments in AppearanceConfigWidget and ConfigurationWidget.
+* [Change] Minor adjustments in UI of configuration widgets.
+* [Change] Adjusting the UI of ConfigurationWidget.
+* [Change] Starting the UI adjustments in ModelExportWidget.
+* [Change] Finished the UI changes in DatabaseImportWidget.
+* [Change] Minor adjustments in DatabaseImportWidget.
+* [Change] Adjusted the UI of configuration widgets.
+* [Change] The database import form is now a widget embedded in the main window on "Import" view.
+* [Change] Minor ui adjustments in ModelObjectsWidget and DatabaseImportForm.
+* [Change] Minor adjustment in light theme.
+* [Change] Adjusted the UI of ModelObjectsWidget and OperationListWidget.
+* [Change] Finished the conversion of QToolButtons to QPushButton.
+* [Change] Changing some QToolButton to QPushButton for better semantics.
+* [Change] Adjustments in the light themes.
+* [Change] Finished the UI adjustments in DataHandlingForm.
+* [Change] Starting the adjustments of DataHandlingForm.
+* [Change] Adjusted the ui-style.conf.
+* [Change] Adjusted the ui-style.conf.
+* [Change] Minor adjustments in AppearanceConfigWidget.
+* [Change] Minor adjustment in settings widgets ui.
+* [Change] Adjusted the ui of PluginsConfigWidget and SnippetsConfigWidget.
+* [Change] Adjusted the UI for AppearanceConfigWidget and RelationshipConfigWidget.
+* [Change] Adjusting the ui of RelationshipConfigWidget.
+* [Change] Finished the ui adjustments in AppearanceConfigWidget.
+* [Change] Adjusting the ui of AppearanceConfigWidget.
+* [Change] Adjusted the behavior of MainWindow::closeEvent to discard any unchanged models.
+* [Change] Adjusted the destructors declarations.
+* [Change] Removed the class ConfigurationForm.
+* [Change] Minor adjustment in ConnectionsConfigWidget::openConnectionsConfiguration.
+* [Change] Removed the use of deprecated method ConfigurationWidget::getConfigurationWidget(int).
+* [Change] Adjusted the icons sizes in icons-*.conf.
+* [Change] Adjusted the UI in GeneralConfigWidget and AppearanceConfigWidget.
+* [Change] Adjusted the UI behavior on ConfigurationWidget.
+* [Change] Minor improvement on BaseConfigWidget.
+* [Change] Now, in MainWindow, if the user changes the settings without applying, he/she will be asked to apply or revert changes before switching the current view.
+* [Change] Adjusting the ConfigurationWidget UI.
+* [Change] Adjusting GeneralConfigWidget to fit in the new ConfigurationWidget UI.
+* [Change] Start moving the settings widgets from a form to a widget used as a settings view in main window.
+* [Change] Adjusted the tab close button icon.
+* [Change] Adjusted the border radius of table objects.
+* [Change] Modified the default color of canvas objects in dark theme.
+* [Change] More ui adjustments.
+* [Change] Layout adjustments in mainwindow.ui.
+* [Change] Another round of css changes.
+* [Change] Adjusted the layout classes used to arrange the view widgets in MainWindow's stack widget.
+* [Change] Adjusting ui-styles.conf.
+* [Change] Ajusted the default colors of the dark pallete.
+* [Change] Commented some changes in ui-style.conf.
+* [Change] Adjusted ui-style.conf.
+* [Change] Adjustement in ui-style.conf.
+* [Change] More adjustments in ui-style.conf.
+* [Change] Changed the ui-style.conf.
+* [Change] Adjusted ui-style.conf.
+* [Change] Updates on ui-style.conf.
+* [Change] Added some more customization on widgets styles.
+* [Change] Starting to modify stylesheets.
+* [Change] Updated the windows icons of all app subprojects.
+* [Change] Minor adjustment in logo images.
+* [Change] Adjusted the splash screen display.
+* [Change] Adjusted the logo design/color to match icon set colors.
+* [Change] Minor adjustment in resource files.
+* [Change] Reverted the name of action related to initial view from "Home" to "Welcome".
+* [Change] Changed the Welcome action to Home in MainWindow.
+* [Change] Updating the icon colors.
+* [Change] Adjusted the windows version build.
+* [Change] Changed deprecated define Q_OS_MAC to Q_OS_MACOS.
+* [Change] Changed deprecated define Q_OS_MAC to Q_OS_MACOS.
+* [Change] Minor adjustments in LinuxPaths.cmake and WindowsPaths.cmake.
+* [Change] Adjustments in .cmake files.
+* [Change] Updated .gitignore.
+* [Change] Extra adjustments in .cmake files.
+* [Change] Refactored CMakeLists.txt to remove duplicated code.
+* [Change] Refactored the CMakeLists.txt in apps and libs subprojects.
+* [Change] Adjustements in .cmake files.
+* [Change] Added a .cmake file to control plugins builds params.
+* [Change] Adjusted the build scripts in libcli and libgui to detect the presence of private plugins.
+* [Change] Adjusted the use of custom/extra build options in BuildConfs.cmake.
+* [Change] Forcing the Qt version to >= 6.4.3 in find_packages().
+* [Change] Added a variable TARGET in CMakeLists.txt on all subprojects to avoid repeating target name in all instructions where it is used.
+* [Change] Adjusted the CMakeLists.txt of all tests.
+* [Change] Adjusted the CMakeLists.txt.
+* [Change] Moved basic build settings to BuildConfs.cmake.
+* [Change] Moved assets installation routines to InstallAssets.cmake.
+* [Change] Forcing AUTORCC option to build resources into binaries.
+* [Change] The main libraries and binaries now build on cmake.
+* [Change] Another round of cmake build adjustments.
+* [Change] Updated .gitignore.
+* [Change] Removed .pro/.pri files.
+* [Change] Added CMakeLists.txt files generated by qmake2cmake.
+* [Fix] Minor fix in DiffToolWidget.
+* [Fix] Minor fix in relationshipconfigwidget.ui.
+* [Fix] Minor fix in databaseimportwidget.ui.
+* [Fix] Fixed the warning icon display in FileSelectorWidget.
+* [Fix] Fixed a bug that was causing columns that were part of PKs not to be removed by the user (issue #2016).
+* [Fix] Minor fix in difftoolwidget.ui.
+* [Fix] Fixed a bug in DatabaseImportWidget that was allocating threads everytime the showEvent was triggered.
+* [Fix] Minor fix in build process.
+* [Fix] Fixed the catalog query for constraint for PostgreSQL 17.
+* [Fix] Minor fix in libcli/CMakeLists.txt.
+
 v1.2.0
 ------
 <em>Release date: May 9, 2025</em><br/>
@@ -731,7 +886,7 @@ v1.1.0-alpha
 * [Change] Minor adjustment in ObjectFinderWidget.
 * [Change] Minor adjustment in schemaeditorform.ui.
 * [Change] Minor refactor in TableObjectView, Connection, SchemaParser.
-* [Change] Moved the copy actions in SQL results grid context menu to an action named the "Selection" in the same menu. 
+* [Change] Moved the copy actions in SQL results grid context menu to an action named the "Selection" in the same menu.
 * [Change] Now the ColumnDataEditWidget instances have their geometry saved/restored.
 * [Change] Replace the QPlainTextEdit by NumberedTextEditor in ColumnDataWidget.
 * [Change] Refactored DatabaseImportHelper::createObject in such a way to use a map of bind methods to perform operations instead of using a long list of switch/case to determine which method must be called to create the object during reverse engineering.
@@ -862,7 +1017,7 @@ v1.0.0
 * [Change] Replaced the object type filter in ModelObjectsWidget with an instance of ObjectTypesListWidget.
 * [Change] Moved the method ObjectFinderWidget::updateObjectTable to GuiUtilsNs.
 * [Change] Minor refactor by replacing hardcoded references to .dbm extension by GlobalAttributes::DbModelExt.
-* [Change] Changed the location where the MainWindow::s_modelSaved signal is emitted. 
+* [Change] Changed the location where the MainWindow::s_modelSaved signal is emitted.
 * [Change] Minor adjustment in the plugin's info dialog.
 * [Change] Minor adjust in icons CSS.
 * [Change] Changed the position of the recent model actions.
@@ -1318,7 +1473,7 @@ v0.9.4
 * [Fix] Minor fix in deployment script to support new libicui versions.
 * [Fix] Minor fix in order to set read/write permissions when copying configuration files with read-only permissions.
 * [Fix] Minor fix in CLI to avoid the usage of '-platform offscreen' when calling the application.
-* [Fix] Fixed a bug in file selectors on ModelExportForm that was not allowing to select output folders on Windows and macOs. 
+* [Fix] Fixed a bug in file selectors on ModelExportForm that was not allowing to select output folders on Windows and macOs.
 
 v0.9.4-beta1
 ------
@@ -1357,7 +1512,7 @@ v0.9.4-beta
 * [New] Added the shortcut Alt+C to trigger the cancel action in DatabaseImportForm ModelDatabaseDiffForm and ModelExportForm.
 * [New] Added support for the generation of GRANT/REVOKE commands to control roles memberships via the diff process.
 * [New] Added a fix step to reconfigure roles membership considering the deprecation of Role:RefRole attribute.
-* [New] Added support for included columns on indexes. 
+* [New] Added support for included columns on indexes.
 * [New] Added the ability to reference view columns on indexes.
 * [New] Added support to use view's SimpleColumn in ColumnPickerWidget as well as Index.
 * [New] Added .dtd extension to SchemaEditorForm::showFileDialog.
@@ -2062,7 +2217,7 @@ v0.9.2-alpha1
 <em>Release date: December 17, 2018</em><br/>
 
 * [New] Added support for scene layers.
-* [New] Added support for view's columns importing in DatabaseImportHelper. 
+* [New] Added support for view's columns importing in DatabaseImportHelper.
 * [New] Added the ability to load view columns from database model file in DatabaseModel::createView.
 * [New] Added a tab "Columns" in ReferenceWidget where the user will be able to insert columns to be used as view columns.
 * [New] Added support for pagination of tables and views columns pagination.
@@ -2513,7 +2668,7 @@ v0.9.0-beta
 * [New] Enabled the usage of NewObjectOverlayWidget for views.
 * [Change] Changed the default characters used to escape values in DataManipulationForm and TableDataWidget from {} to // due to problems with json data.
 * [Change] Improved the file manipulation in SQLExecutionWidget. Added option to save the commands to the current file or in another file (save as).
-* [Change] Minor improvements done in Linux deployment script to support multiarch systems. 
+* [Change] Minor improvements done in Linux deployment script to support multiarch systems.
 * [Change] View's children (indexes, rules, triggers) are now listed under their respective parent view in DatabaseExplorerWidget.
 * [Change] Minor improvement in ElementsWidget to disable/hide columns combo when creating index elements for a index associated to a view.
 * [Change] Improved the diff between the complete database and a partial model representing it.
@@ -3190,7 +3345,7 @@ v0.8.0-beta2
 * [Fix] Fix on GeneralConfigWidget that was not saving code completion enabling status.
 * [Fix] Fixed some bugs on libobjrenderer classes that was causing crashes in some models arrangements. Now graphical objects are effectively deallocated only when the whole scene is destroyed.
 * [Fix] Minor improvement on OperationList::removeOperations to avoid crashes if a pool object is destroyed outside the operation history (e.g. relationship invalidation).
-* [Fix] Several fixes on OperationList to minimize the crashes when undoing/redoing operations. 
+* [Fix] Several fixes on OperationList to minimize the crashes when undoing/redoing operations.
 * [Fix] Minor fix on validation process that was failing sometimes to use temporary names feature.
 * [Fix] Minor fix on ModelsDiffHelper to correctly recreate foreign keys that references recreated primary keys.
 * [Fix] Minor fix on Table::removeObject to change not-null state of columns only when the removed object is a primary key.
