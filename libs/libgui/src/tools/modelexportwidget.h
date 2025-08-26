@@ -99,6 +99,9 @@ class __libgui ModelExportWidget: public QWidget, public Ui::ModelExportWidget {
 		/*! \brief This signal is emitted whenever the user changes the connections settings
 		within this widget without use the main configurations dialog */
 		void s_connectionsUpdateRequested();
+
+		void s_exportStarted();
+		void s_exportFinished();
 };
 
 #endif

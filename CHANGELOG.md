@@ -5,49 +5,37 @@ v2.0.0-alpha
 ------
 <em>Release date: September 12, 2025</em><br/>
 
-* [New] Added support for diff two models in CLI.
-* [New] MetadataHandlingWidget is now fully operational within FixToolsWidget.
+* [New] Added support for diff two models in CLI and GUI.
 * [New] Added the method ModelDbSelectorWidget::clearSelection.
 * [New] Added the method Catalog::getServerVersion.
-* [New] Created the method updateConnections on ModelValidationWidget, DatabaseImportWidget, DiffToolWidget and SQLToolWidget so it can be called when the signal s_connectionsUpdateRequested is captured.
-* [New] Added the class ModelDBPickerWidget that encapsulates features to select model or databases to be used in diff process.
+* [New] Created the method updateConnections on ModelValidationWidget, DatabaseImportWidget, DiffToolWidget and SQLToolWidget.
+* [New] Added the class ModelDbSelectorWidget that encapsulates features to select model or databases to be used where models or database need to be selected.
 * [New] Created the function GuiUtilsNs::createWidgetInParent.
 * [New] Added the method ModelWidget::setInteractive that toggles the interaction over the model.
-* [New] Added a model selector in ModelExportWidget.
-* [New] Created aliases to macros __FILE__, __LINE__ and __PRETTY_FUNCTION__.
-* [New] Added an icon for welcome view.
-* [Change] Renamed PgModelerCliApp::diffModelDatabase to diffModels.
-* [Change] Minor adjustment in GeneralConfigWidget::resetAlertChoices to reset the Attributes::AlertApplyMetadata parameter.
-* [Change] Minor UI adjustment in relationshipconfigwidget.ui.
-* [Change] Minor UI adjustment in SchemaEditorForm.
+* [New] Created aliases PGM_FILE, PGM_LINE and PGM_FUNC that refers respectively to macros __FILE__, __LINE__ and __PRETTY_FUNCTION__.
+* [New] Added a dedicated icon for the Welcome view.
+* [New] Added the widget FixToolsWidget, integrated to main window, that runs both the model fix and metadata handling operations.
+* [Change] Refactored parts of the UI in ModelExportWidget to include a ModelDbSelectorWidget instance.
 * [Change] Renamed MetadataHandlingForm to MetadataHandlingWidget.
+* [Change] MetadataHandlingWidget is now part of FixToolsWidget.
+* [Change] Renamed the method PgModelerCliApp::diffModelDatabase to diffModels.
+* [Change] Minor adjustment in GeneralConfigWidget::resetAlertChoices to reset the Attributes::AlertApplyMetadata parameter.
+* [Change] Minor UI adjustment in RelationshipConfigWidget.
+* [Change] Minor UI adjustment in SchemaEditorForm.
 * [Change] Adjusting MetadataHandlingWidget UI.
-* [Change] Extra adjustments in ModelFixWidget.
-* [Change] Changed ModelFixForm to ModelFixWidget since it now run integrated to main window.
-* [Change] Adjusting FixToolsWidget to run both model fix and metadata handling.
+* [Change] Renamed the class ModelFixForm to ModelFixWidget since it now run integrated to FixToolsWidget.
 * [Change] Adjusted the display of the view Fix in MainWindow.
-* [Change] Adjusted the layout of relationshipconfigwidget.ui.
-* [Change] Start adding the model fix widget and metadata handling in a dedicated tab in main window.
-* [Change] Minor size adjustment in configurationwidget.ui.
+* [Change] Minor size adjustment in ConfigurationWidget.
 * [Change] Minor adjustment in DatabaseImportWidget::s_importFinished to send a bool flag indicating if the signal was sent during import error.
-* [Change] Minor adjustment in DiffToolWidget to disable import options group when user selects model -> model diff.
+* [Change] Minor adjustment in DiffToolWidget to disable the import options group when user selects model -> model diff.
 * [Change] Adjusted the method Application::copyFilesRecursively to ignore the diff-presets.conf from previous versions of pgModeler.
-* [Change] Minor improvement in DiffToolWidget presets saving/loading.
-* [Change] Minor adjustment in DiffToolWidget.
+* [Change] Minor improvement in DiffToolWidget presets saving and loading.
 * [Change] Adjusted the invalidated model alert display in ModelExportWidget.
-* [Change] Removed the tab "Partial diff" and moved all controls related to it to the main tab.
+* [Change] Removed the tab "Partial diff" and moved all controls related to it to the main tab in DiffToolWidget.
 * [Change] Reorganized the diff widget UI.
 * [Change] Removed unused components in DiffToolWidget.
-* [Change] Minor adjustments in ModelDbSelectorWidget.
-* [Change] Start adding support for selecting models to diff from ModelDbPickerWidget.
-* [Change] DiffToolWidget now compares two databases by using the db selection in ModelDbPickerWidget.
-* [Change] Additional adjustments in ModelDBPickerWidget.
-* [Change] Start to change DiffToolWidget to include model <-> model diff mode.
 * [Change] Minor adjustment in DatabaseImportWidget and ModelExportWidget to block changes in the model while the operations are running.
-* [Change] Removed the close button from DiffToolWidget.
-* [Change] Removed the old diff tool class ModelDatabaseDiffForm.
-* [Change] Minor css adjustments.
-* [Change] Adjustments on MainWindow to start/stop timers when the diff operation starts/stops.
+* [Change] Adjustments on MainWindow to start/stop timers when a diff, import or export operation starts/stops.
 * [Change] Diff tool is now integrated to the main window.
 * [Change] Finished moving model export operation to the "Export view".
 * [Change] Ajusted some icon sizes in icons-*.conf.

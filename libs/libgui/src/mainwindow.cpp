@@ -774,6 +774,14 @@ void MainWindow::connectSignalsToSlots()
 		stopTimers(false);
 	});
 
+	connect(model_export_wgt, &ModelExportWidget::s_exportStarted, this, [this](){
+		stopTimers(true);
+	});
+
+	connect(model_export_wgt, &ModelExportWidget::s_exportFinished, this, [this](){
+		stopTimers(false);
+	});
+
 	connect(diff_tool_wgt, &DiffToolWidget::s_loadDiffInSQLTool, this, &MainWindow::loadDiffInSQLTool);
 
 	connect(fix_tools_wgt, &FixToolsWidget::s_modelLoadRequested,

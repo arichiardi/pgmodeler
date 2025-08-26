@@ -299,8 +299,6 @@ void ModelExportWidget::exportModel()
 				export_hlp.setExportToSVGParams(model_wgt->scene, img_file_sel->getSelectedFile(),
 																				show_grid_chk->isChecked(),
 																				show_delim_chk->isChecked());
-
-			export_thread->start();
 		}
 		else
 		{
@@ -318,7 +316,6 @@ void ModelExportWidget::exportModel()
 																				pgsqlvers_cmb->currentText(), sql_split_rb->isChecked(),
 																				static_cast<DatabaseModel::CodeGenMode>(code_options_cmb->currentIndex()),
 																				gen_drop_file_chk->isChecked());
-				export_thread->start();
 			}
 			else if(export_to_dict_tb->isChecked())
 			{
@@ -326,7 +323,6 @@ void ModelExportWidget::exportModel()
 																						 incl_index_chk->isChecked(),
 																						 dict_mode_cmb->currentIndex() == 1,
 																						 dict_format_cmb->currentIndex() == 1);
-				export_thread->start();
 			}
 			//Exporting directly to DBMS
 			else
@@ -348,10 +344,11 @@ void ModelExportWidget::exportModel()
 
 				if(ignore_error_codes_chk->isChecked())
 					export_hlp.setIgnoredErrors(error_codes_edt->text().simplified().split(' '));
-
-				export_thread->start();
 			}
 		}
+
+		export_thread->start();
+		emit s_exportStarted();
 	}
 	catch(Exception &e)
 	{
@@ -430,6 +427,8 @@ void ModelExportWidget::finishExport(const QString &msg)
 		delete viewp;
 		viewp=nullptr;
 	}
+
+	emit s_exportFinished();
 }
 
 void ModelExportWidget::enableExportModes(bool value)
