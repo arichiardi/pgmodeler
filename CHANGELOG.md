@@ -1,6 +1,14 @@
 Changelog
 ---------
 
+v1.2.1
+------
+<em>Release date: August 29, 2025</em><br/>
+
+* [Fix] Fixed a bug in ModelValidationHelper that could lead to a crash when validating foreign tables.
+* [Fix] Fixed a bug that was causing columns that were part of PKs not to be removed by the user's request.
+* [Fix] Fixed the constraint's catalog query in PostgreSQL 17.
+
 v1.2.0
 ------
 <em>Release date: May 9, 2025</em><br/>
