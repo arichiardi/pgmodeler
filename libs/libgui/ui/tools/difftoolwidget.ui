@@ -49,7 +49,7 @@
     <number>3</number>
    </property>
    <item>
-    <widget class="QSplitter" name="splitter">
+    <widget class="QSplitter" name="h_splitter">
      <property name="orientation">
       <enum>Qt::Orientation::Horizontal</enum>
      </property>
@@ -95,12 +95,6 @@
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
-         </property>
-         <property name="minimumSize">
-          <size>
-           <width>1150</width>
-           <height>0</height>
-          </size>
          </property>
          <property name="currentIndex">
           <number>0</number>

@@ -21,7 +21,6 @@
 #include "guiutilsns.h"
 #include <QTemporaryFile>
 #include "utilsns.h"
-#include "settings/connectionsconfigwidget.h"
 #include "pgsqlversions.h"
 #include <QButtonGroup>
 
@@ -61,6 +60,7 @@ DiffToolWidget::DiffToolWidget(QWidget *parent) : BaseConfigWidget (parent)
 
 	pd_splitter->setSizes({ 500, 500 });
 	opts_splitter->setSizes({ 500, 500 });
+	h_splitter->setSizes({900, 600});
 
 	sqlcode_txt = GuiUtilsNs::createNumberedTextEditor(sqlcode_wgt);
 	sqlcode_txt->setReadOnly(true);
