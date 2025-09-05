@@ -71,7 +71,7 @@ DatabaseImportWidget::DatabaseImportWidget(QWidget *parent) : QWidget(parent)
 	buttons_wgt->setEnabled(false);
 
 	splitter->setSizes({ 500, 500 });
-	h_splitter->setSizes({900, 600});
+	h_splitter->setSizes({750, 750});
 
 	connect(by_oid_chk,  &QCheckBox::toggled, this, qOverload<>(&DatabaseImportWidget::filterObjects));
 

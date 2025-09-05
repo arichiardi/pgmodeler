@@ -47,7 +47,7 @@ ConfigurationWidget::ConfigurationWidget(QWidget *parent) : QWidget(parent)
 		});
 	}
 
-	h_splitter->setSizes({1000, 500});
+	h_splitter->setSizes({700, 800});
 
 	connect(revert_btn, &QPushButton::clicked, this, &ConfigurationWidget::__discardConfiguration);
 	connect(apply_btn,  &QPushButton::clicked, this, __slot(this, ConfigurationWidget::applyConfiguration));

@@ -74,7 +74,6 @@ GeneralConfigWidget::GeneralConfigWidget(QWidget * parent) : BaseConfigWidget(pa
 
 	connect(trunc_columns_data_chk, &QCheckBox::toggled, trunc_columns_data_spb, &QComboBox::setEnabled);
 	connect(trunc_columns_data_chk, &QCheckBox::toggled, disable_inline_editor_chk, &QComboBox::setEnabled);
-	connect(trunc_columns_data_chk, &QCheckBox::toggled, bytes_lbl, &QLabel::setEnabled);
 
 	config_params[Attributes::Configuration][Attributes::GridSize]="";
 	config_params[Attributes::Configuration][Attributes::OpListSize]="";
@@ -281,8 +280,6 @@ void GeneralConfigWidget::loadConfiguration()
 		trunc_columns_data_spb->setValue(config_params[Attributes::Configuration][Attributes::ColumnTruncThreshold].toInt());
 
 		trunc_columns_data_spb->setEnabled(trunc_columns_data_chk->isChecked());
-		bytes_lbl->setEnabled(trunc_columns_data_chk->isChecked());
-
 		disable_inline_editor_chk->setChecked(config_params[Attributes::Configuration][Attributes::DisableInlineEditor]==Attributes::True);
 		disable_inline_editor_chk->setEnabled(disable_inline_editor_chk->isChecked());
 

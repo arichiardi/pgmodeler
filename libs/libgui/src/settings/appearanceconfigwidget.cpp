@@ -215,7 +215,7 @@ AppearanceConfigWidget::AppearanceConfigWidget(QWidget * parent) : BaseConfigWid
 
 	delimiters_color_cp = new ColorPickerWidget(1, this);
 	delimiters_color_cp->setButtonToolTip(0, tr("Define a custom color for the page delimiter lines"));
-	delimiters_color_lt->addWidget(delimiters_color_cp);
+	delimiters_color_lt->insertWidget(0, delimiters_color_cp);
 
 	QGridLayout *grid = dynamic_cast<QGridLayout *>(objects_gb->layout());
 	grid->addWidget(elem_color_cp, 3, 1, 1, 4);

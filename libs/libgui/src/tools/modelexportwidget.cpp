@@ -79,7 +79,7 @@ ModelExportWidget::ModelExportWidget(QWidget *parent) : QWidget(parent)
 	radios_grp->addButton(export_to_dict_tb);
 	radios_grp->addButton(export_to_img_tb);
 
-	h_splitter->setSizes({900, 600});
+	h_splitter->setSizes({750, 750});
 
 	connect(model_sel_wgt, &ModelDbSelectorWidget::s_selectionChanged, this, [this](){
 		model_wgt = model_sel_wgt->getSelectedModel();

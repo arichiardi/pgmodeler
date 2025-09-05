@@ -60,7 +60,7 @@ DiffToolWidget::DiffToolWidget(QWidget *parent) : BaseConfigWidget (parent)
 
 	pd_splitter->setSizes({ 485, 515 });
 	opts_splitter->setSizes({ 700, 300 });
-	h_splitter->setSizes({900, 600});
+	h_splitter->setSizes({750, 750});
 
 	sqlcode_txt = GuiUtilsNs::createNumberedTextEditor(sqlcode_wgt);
 	sqlcode_txt->setReadOnly(true);
