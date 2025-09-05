@@ -21,7 +21,6 @@
 #include "guiutilsns.h"
 #include <QTemporaryFile>
 #include "utilsns.h"
-#include "settings/connectionsconfigwidget.h"
 #include "pgsqlversions.h"
 #include <QButtonGroup>
 
@@ -59,8 +58,9 @@ DiffToolWidget::DiffToolWidget(QWidget *parent) : BaseConfigWidget (parent)
 	vbox->addWidget(pd_filter_wgt);
 	pd_filter_wgt->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
 
-	pd_splitter->setSizes({ 500, 500 });
-	opts_splitter->setSizes({ 500, 500 });
+	pd_splitter->setSizes({ 485, 515 });
+	opts_splitter->setSizes({ 700, 300 });
+	h_splitter->setSizes({900, 600});
 
 	sqlcode_txt = GuiUtilsNs::createNumberedTextEditor(sqlcode_wgt);
 	sqlcode_txt->setReadOnly(true);

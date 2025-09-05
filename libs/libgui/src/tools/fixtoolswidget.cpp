@@ -28,6 +28,8 @@ FixToolsWidget::FixToolsWidget(QWidget *parent) : QWidget(parent)
 	model_fix_wgt = GuiUtilsNs::createWidgetInParent<ModelFixWidget>(fix_pg);
 	metadata_wgt = GuiUtilsNs::createWidgetInParent<MetadataHandlingWidget>(metadata_pg);
 
+	h_splitter->setSizes({900, 600});
+
 	connect(tools_tbw, &QTabWidget::currentChanged, this, &FixToolsWidget::setCurrentTool);
 	setCurrentTool();
 }
