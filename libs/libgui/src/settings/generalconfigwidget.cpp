@@ -250,8 +250,7 @@ void GeneralConfigWidget::loadConfiguration()
 		print_pg_num_chk->setChecked(config_params[Attributes::Configuration][Attributes::PrintPgNum]==Attributes::True);
 
 		paper_cmb->setCurrentIndex((config_params[Attributes::Configuration][Attributes::PaperType]).toUInt());
-		portrait_rb->setChecked(config_params[Attributes::Configuration][Attributes::PaperOrientation]==Attributes::Portrait);
-		landscape_rb->setChecked(config_params[Attributes::Configuration][Attributes::PaperOrientation]==Attributes::Landscape);
+		orientation_cmb->setCurrentIndex(config_params[Attributes::Configuration][Attributes::PaperOrientation] == Attributes::Landscape ? 0 : 1);
 
 		margin=config_params[Attributes::Configuration][Attributes::PaperMargin].split(',');
 		custom_size=config_params[Attributes::Configuration][Attributes::PaperCustomSize].split(',');
@@ -443,7 +442,9 @@ void GeneralConfigWidget::saveConfiguration()
 		config_params[Attributes::Configuration][Attributes::OpListSize]=QString::number(oplist_size_spb->value());
 		config_params[Attributes::Configuration][Attributes::AutoSaveInterval]=QString::number(autosave_interv_chk->isChecked() ? autosave_interv_spb->value() : 0);
 		config_params[Attributes::Configuration][Attributes::PaperType]=QString::number(paper_cmb->currentIndex());
-		config_params[Attributes::Configuration][Attributes::PaperOrientation]=(portrait_rb->isChecked() ? Attributes::Portrait : Attributes::Landscape);
+		config_params[Attributes::Configuration][Attributes::PaperOrientation]=(orientation_cmb->currentIndex()  == 0 ? Attributes::Landscape : Attributes::Portrait);
+				/* (portrait_rb->isChecked() ? Attributes::Portrait : Attributes::Landscape); */
+
 		config_params[Attributes::Configuration][Attributes::CanvasCornerMove]=(corner_move_chk->isChecked() ? Attributes::True : "");
 		config_params[Attributes::Configuration][Attributes::InvertRangeSelTrigger]=(invert_rangesel_chk->isChecked() ? Attributes::True : "");
 		config_params[Attributes::Configuration][Attributes::CheckUpdate]=(check_update_chk->isChecked() ? Attributes::True : "");
@@ -594,7 +595,7 @@ void GeneralConfigWidget::applyConfiguration()
 		page_sz = QPageSize(QSizeF(width_spb->value(), height_spb->value()), QPageSize::Point);
 
 	page_lt.setPageSize(page_sz);
-	page_lt.setOrientation(portrait_rb->isChecked() ? QPageLayout::Portrait : QPageLayout::Landscape);
+	page_lt.setOrientation(orientation_cmb->currentIndex() == 0 ? QPageLayout::Landscape : QPageLayout::Portrait);
 	page_lt.setMargins(QMarginsF(left_marg->value(), top_marg->value(), right_marg->value(), bottom_marg->value()));
 	ObjectsScene::setPageLayout(page_lt);
 
@@ -683,7 +684,6 @@ void GeneralConfigWidget::selectPaperSize()
 {
 	bool visible=paper_cmb->currentIndex()==paper_cmb->count()-1;
 
-	custom_lbl->setVisible(visible);
 	width_lbl->setVisible(visible);
 	height_lbl->setVisible(visible);
 	width_spb->setVisible(visible);
