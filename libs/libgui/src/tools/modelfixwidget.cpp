@@ -49,7 +49,7 @@ ModelFixWidget::ModelFixWidget(QWidget *parent) : QWidget(parent)
 	output_file_sel->setAllowFilenameInput(true);
 	output_file_sel->setFileIsMandatory(true);
 	output_file_sel->setWindowTitle(tr("Select output file"));
-	model_fix_grid->addWidget(output_file_sel, 2, 2);
+	output_sel_lt->insertWidget(0, output_file_sel);
 
 	pgmodeler_cli_sel = new FileSelectorWidget(this);
 	pgmodeler_cli_sel->setObjectName("pgmodeler_cli_sel");
@@ -75,6 +75,9 @@ ModelFixWidget::ModelFixWidget(QWidget *parent) : QWidget(parent)
 	connect(output_file_sel, &FileSelectorWidget::s_selectorChanged, this, &ModelFixWidget::enableFix);
 	connect(pgmodeler_cli_sel, &FileSelectorWidget::s_selectorChanged, this, &ModelFixWidget::enableFix);
 
+	connect(input_file_sel, &FileSelectorWidget::s_selectorChanged, gen_filename_tb, &QToolButton::setEnabled);
+	connect(gen_filename_tb, &QToolButton::clicked, this, &ModelFixWidget::generateOutputFilename);
+
 	resetFixForm();
 }
 
@@ -88,16 +91,19 @@ void ModelFixWidget::setInputModel(const QString &filename, bool gen_out_filenam
 	input_file_sel->setSelectedFile(filename);
 
 	if(gen_out_filename)
-	{
-		QFileInfo fi(filename);
+		generateOutputFilename();
+}
 
-		output_file_sel->setSelectedFile(fi.absolutePath() +
-																		 GlobalAttributes::DirSeparator +
-																		 fi.completeBaseName() +
-																		 "_fixed" +
-																		 QDateTime::currentDateTime().toString("_yyyyMMdd_hhmmss.") +
-																		 fi.suffix());
-	}
+void ModelFixWidget::generateOutputFilename()
+{
+	QFileInfo fi(input_file_sel->getSelectedFile());
+
+	output_file_sel->setSelectedFile(fi.absolutePath() +
+																	 GlobalAttributes::DirSeparator +
+																	 fi.completeBaseName() +
+																	 "_fixed" +
+																	 QDateTime::currentDateTime().toString("_yyyyMMdd_hhmmss.") +
+																	 fi.suffix());
 }
 
 bool ModelFixWidget::isProcessRunning()

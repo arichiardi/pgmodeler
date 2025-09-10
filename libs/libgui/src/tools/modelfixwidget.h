@@ -74,6 +74,7 @@ class __libgui ModelFixWidget: public QWidget, public Ui::ModelFixWidget {
 		void enableFix();
 		void updateOutput();
 		void handleProcessFinish(int res);
+		void generateOutputFilename();
 
 	signals:
 		void s_modelLoadRequested(QString);

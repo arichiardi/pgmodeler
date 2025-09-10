@@ -265,6 +265,39 @@
         </property>
        </widget>
       </item>
+      <item row="2" column="2">
+       <layout class="QHBoxLayout" name="output_sel_lt">
+        <item>
+         <widget class="QToolButton" name="gen_filename_tb">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="toolTip">
+           <string>&lt;p&gt;Generate a filename/path based on the input filename and appeding the suffix &lt;strong&gt;_fixed_YYYYMMDD_hhmmss&lt;/strong&gt;&lt;/p&gt;</string>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+          <property name="icon">
+           <iconset resource="../../res/resources.qrc">
+            <normaloff>:/icons/icons/refresh.png</normaloff>:/icons/icons/refresh.png</iconset>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>25</width>
+            <height>25</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
      </layout>
     </widget>
    </item>
