@@ -151,11 +151,6 @@ bool SQLToolWidget::eventFilter(QObject *object, QEvent *event)
 	return QWidget::eventFilter(object, event);
 }
 
-/* void SQLToolWidget::setPluginsButtons(const QList<QToolButton *> &list)
-{
-	plugins_btns = list;
-} */
-
 void SQLToolWidget::resizeEvent(QResizeEvent *)
 {
 	setCornerButtonPos();
@@ -179,11 +174,11 @@ void SQLToolWidget::setCornerButtonPos()
 		}
 
 		if(left_btn && left_btn->isVisible())
-			px = corner_wgt->geometry().left() + 1;
+			px = corner_wgt->geometry().left() + 2;
 		else
-			px = tab_bar->tabRect(idx).right() + 1;
+			px = tab_bar->tabRect(idx).right() + 2;
 
-		py = tab_bar->height() - sql_exec_corner_tb->height() - 2;
+		py = tab_bar->height() - sql_exec_corner_tb->height() - 3;
 
 		sql_exec_corner_tb->raise();
 		sql_exec_corner_tb->move(px, py);

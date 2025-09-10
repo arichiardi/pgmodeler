@@ -109,6 +109,7 @@ GeneralConfigWidget::GeneralConfigWidget(QWidget * parent) : BaseConfigWidget(pa
 	config_params[Attributes::Configuration][Attributes::SaveRestoreGeometry]="";
 	config_params[Attributes::Configuration][Attributes::LowVerbosity]="";
 	config_params[Attributes::Configuration][Attributes::DefaultSchema]="";
+	config_params[Attributes::Configuration][Attributes::HideEmptyObjGroups]="";
 
 	selectPaperSize();
 
@@ -286,6 +287,8 @@ void GeneralConfigWidget::loadConfiguration()
 		hide_obj_sel_info_chk->setChecked(config_params[Attributes::Configuration][Attributes::HideObjectsSelInfo]==Attributes::True);
 		hide_cur_pos_zoom_info_chk->setChecked(config_params[Attributes::Configuration][Attributes::HideCurPosZoomInfo]==Attributes::True);
 
+		hide_empty_obj_grps_chk->setChecked(config_params[Attributes::Configuration][Attributes::HideEmptyObjGroups]==Attributes::True);
+
 		int ui_idx = ui_language_cmb->findData(config_params[Attributes::Configuration][Attributes::UiLanguage]);
 		ui_language_cmb->setCurrentIndex(ui_idx >= 0 ? ui_idx : 0);
 
@@ -440,7 +443,6 @@ void GeneralConfigWidget::saveConfiguration()
 		config_params[Attributes::Configuration][Attributes::AutoSaveInterval]=QString::number(autosave_interv_chk->isChecked() ? autosave_interv_spb->value() : 0);
 		config_params[Attributes::Configuration][Attributes::PaperType]=QString::number(paper_cmb->currentIndex());
 		config_params[Attributes::Configuration][Attributes::PaperOrientation]=(orientation_cmb->currentIndex()  == 0 ? Attributes::Landscape : Attributes::Portrait);
-				/* (portrait_rb->isChecked() ? Attributes::Portrait : Attributes::Landscape); */
 
 		config_params[Attributes::Configuration][Attributes::CanvasCornerMove]=(corner_move_chk->isChecked() ? Attributes::True : "");
 		config_params[Attributes::Configuration][Attributes::InvertRangeSelTrigger]=(invert_rangesel_chk->isChecked() ? Attributes::True : "");
@@ -497,6 +499,8 @@ void GeneralConfigWidget::saveConfiguration()
 
 		config_params[Attributes::Configuration][Attributes::HideObjectsSelInfo]=(hide_obj_sel_info_chk->isChecked() ? Attributes::True : "");
 		config_params[Attributes::Configuration][Attributes::HideCurPosZoomInfo]=(hide_cur_pos_zoom_info_chk->isChecked() ? Attributes::True : "");
+
+		config_params[Attributes::Configuration][Attributes::HideEmptyObjGroups]=(hide_empty_obj_grps_chk->isChecked() ? Attributes::True : "");
 
 		config_params[Attributes::Configuration][Attributes::File]="";
 		config_params[Attributes::Configuration][Attributes::RecentModels]="";

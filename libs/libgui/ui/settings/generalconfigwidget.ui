@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>822</width>
+    <width>944</width>
     <height>1035</height>
    </rect>
   </property>
@@ -582,7 +582,20 @@
            </property>
           </widget>
          </item>
-         <item row="6" column="0">
+         <item row="8" column="0" colspan="2">
+          <spacer name="verticalSpacer_2">
+           <property name="orientation">
+            <enum>Qt::Orientation::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>40</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item row="5" column="1">
           <widget class="QCheckBox" name="old_pgsql_versions_chk">
            <property name="toolTip">
             <string>&lt;p&gt;pgModeler will try to connect to older server versions (below 10) in a minimum compatibility mode. &lt;strong&gt;WARNING:&lt;/strong&gt; this option may cause the diff and import processes to fail or produce unreliable results. Also, it can lead to data loss when handling table data. Enable this option at &lt;strong&gt;your own risk&lt;/strong&gt;!&lt;/p&gt;</string>
@@ -598,20 +611,20 @@
            </property>
           </widget>
          </item>
-         <item row="8" column="0" colspan="2">
-          <spacer name="verticalSpacer_2">
-           <property name="orientation">
-            <enum>Qt::Orientation::Vertical</enum>
+         <item row="6" column="1">
+          <widget class="QCheckBox" name="hide_empty_obj_grps_chk">
+           <property name="toolTip">
+            <string>&lt;p&gt;Toggles the hiding of empty object groups in the objects trees, providing a cleaner view of the database structure. This option affects both the database explorer widget and the database import widget. For this option to take effect, it is necessary to reload any populated database object tree.&lt;/p&gt;</string>
            </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>20</width>
-             <height>40</height>
-            </size>
+           <property name="text">
+            <string>Hide empty groups in objects trees</string>
            </property>
-          </spacer>
+           <property name="checked">
+            <bool>false</bool>
+           </property>
+          </widget>
          </item>
-         <item row="7" column="0">
+         <item row="6" column="0">
           <widget class="QCheckBox" name="code_completion_chk">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">

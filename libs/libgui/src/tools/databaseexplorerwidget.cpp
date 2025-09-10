@@ -1122,7 +1122,10 @@ void DatabaseExplorerWidget::listObjects()
 		if(quick_refresh)
 			qApp->setOverrideCursor(Qt::WaitCursor);
 
-		DatabaseImportWidget::listObjects(import_helper, objects_trw, false, false, true, quick_refresh, sort_column);
+		DatabaseImportWidget::listObjects(import_helper, objects_trw, false,
+																			GeneralConfigWidget::getConfigurationParam(Attributes::Configuration, Attributes::HideEmptyObjGroups) == Attributes::True ?
+																			DatabaseImportWidget::HideEmptyGrps : DatabaseImportWidget::NoGrpsFlag,
+																			true, quick_refresh, sort_column);
 
 		QTreeWidgetItem *root = new QTreeWidgetItem, *curr_root = nullptr;
 
@@ -1694,15 +1697,17 @@ void DatabaseExplorerWidget::updateItem(QTreeWidgetItem *item, bool restore_tree
 			configureImportHelper();
 
 			//Updates the group type only
-			if(obj_id==0 || (!BaseTable::isBaseTable(obj_type) && obj_type!=ObjectType::Schema))
-				gen_items=DatabaseImportWidget::updateObjectsTree(import_helper, objects_trw, { obj_type }, false, false, root, sch_name, tab_name);
+			if(obj_id == 0 || (!BaseTable::isBaseTable(obj_type) && obj_type!=ObjectType::Schema))
+				gen_items = DatabaseImportWidget::updateObjectsTree(import_helper, objects_trw, { obj_type }, false,
+																														DatabaseImportWidget::HideEmptyGrps, root, sch_name, tab_name);
 			else
 				//Updates all child objcts when the selected object is a schema or table or view
-				gen_items=DatabaseImportWidget::updateObjectsTree(import_helper, objects_trw,
-																BaseObject::getChildObjectTypes(obj_type), false, false, root, sch_name, tab_name);
+				gen_items = DatabaseImportWidget::updateObjectsTree(import_helper, objects_trw,
+																														BaseObject::getChildObjectTypes(obj_type), false,
+																														DatabaseImportWidget::HideEmptyGrps, root, sch_name, tab_name);
 
 			//Creating dummy items for schemas and tables
-			if(obj_type==ObjectType::Schema || BaseTable::isBaseTable(obj_type))
+			if(obj_type == ObjectType::Schema || BaseTable::isBaseTable(obj_type))
 			{
 				for(auto &item : gen_items)
 				{

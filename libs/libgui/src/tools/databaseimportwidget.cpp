@@ -23,6 +23,7 @@
 #include "utilsns.h"
 #include "defaultlanguages.h"
 #include "settings/connectionsconfigwidget.h"
+#include "settings/generalconfigwidget.h"
 #include "objectslistmodel.h"
 
 bool DatabaseImportWidget::low_verbosity {false};
@@ -71,7 +72,7 @@ DatabaseImportWidget::DatabaseImportWidget(QWidget *parent) : QWidget(parent)
 	buttons_wgt->setEnabled(false);
 
 	splitter->setSizes({ 500, 500 });
-	h_splitter->setSizes({750, 750});
+	h_splitter->setSizes({800, 700});
 
 	connect(by_oid_chk,  &QCheckBox::toggled, this, qOverload<>(&DatabaseImportWidget::filterObjects));
 
@@ -520,7 +521,7 @@ void DatabaseImportWidget::listObjects()
 	{
 		if(database_cmb->currentIndex() > 0)
 		{
-			Connection *conn=reinterpret_cast<Connection *>(connections_cmb->itemData(connections_cmb->currentIndex()).value<void *>());
+			Connection *conn = reinterpret_cast<Connection *>(connections_cmb->itemData(connections_cmb->currentIndex()).value<void *>());
 			QStringList obj_filter = objs_filter_wgt->getObjectFilters();
 
 			dbg_output_wgt->showActionButtons(false);
@@ -573,7 +574,10 @@ Do you really want to proceed?"),
 				db_objects_tw->clear();
 				GuiUtilsNs::populateObjectsTable(filtered_objs_view, std::vector<attribs_map>());
 				db_objects_stw->setCurrentIndex(0);
-				DatabaseImportWidget::listObjects(*import_helper, db_objects_tw, true, true, false);
+				DatabaseImportWidget::listObjects(*import_helper, db_objects_tw, true,
+																					GeneralConfigWidget::getConfigurationParam(Attributes::Configuration, Attributes::HideEmptyObjGroups) == Attributes::True ?
+																					DatabaseImportWidget::HideDisableEmptyGrps : DatabaseImportWidget::DisableEmptyGrps,
+																					false);
 				objs_parent_wgt->setEnabled(db_objects_tw->topLevelItemCount() > 0);
 			}
 		}
@@ -951,7 +955,7 @@ void DatabaseImportWidget::listDatabases(DatabaseImportHelper &import_helper, QC
 }
 
 void DatabaseImportWidget::listObjects(DatabaseImportHelper &import_helper, QTreeWidget *tree_wgt, bool checkable_items,
-																		 bool disable_empty_grps, bool create_db_item, bool create_dummy_item, int sort_by)
+																			 ObjGroupsFlag group_flags, bool create_db_item, bool create_dummy_item, int sort_by)
 {
 	TaskProgressWidget task_prog_wgt;
 
@@ -959,9 +963,9 @@ void DatabaseImportWidget::listObjects(DatabaseImportHelper &import_helper, QTre
 	{
 		if(tree_wgt)
 		{
-			QTreeWidgetItem *db_item=nullptr, *item=nullptr;
+			QTreeWidgetItem *db_item = nullptr, *item = nullptr;
 			std::vector<QTreeWidgetItem *> sch_items, tab_items;
-			double inc=0, inc1=0, aux_prog=0;
+			double inc = 0, inc1 = 0, aux_prog = 0;
 
 			if(!create_dummy_item)
 			{
@@ -990,54 +994,66 @@ void DatabaseImportWidget::listObjects(DatabaseImportHelper &import_helper, QTre
 				db_item->setToolTip(0, QString("OID: %1").arg(attribs[0].at(Attributes::Oid)));
 				tree_wgt->addTopLevelItem(db_item);
 			}
+			else
+				/* If the database item is not created we use the invisible root item in the tree widget
+				 * so we can correctly apply the disabled/hidden statuses in database level object items */
+				db_item = tree_wgt->invisibleRootItem();
 
 			//Retrieving and listing the cluster scoped objects
-			sch_items=DatabaseImportWidget::updateObjectsTree(import_helper, tree_wgt,
-																											BaseObject::getChildObjectTypes(ObjectType::Database),
-																											checkable_items, disable_empty_grps, db_item);
+			sch_items = DatabaseImportWidget::updateObjectsTree(import_helper, tree_wgt,
+																													BaseObject::getChildObjectTypes(ObjectType::Database),
+																													checkable_items, group_flags, db_item);
 
 			if(create_dummy_item)
 			{
-				while(!sch_items.empty())
+				for(auto &sch_item : sch_items)
 				{
-					item=new QTreeWidgetItem(sch_items.back());
+					item = new QTreeWidgetItem(sch_item);
 					item->setText(0, "...");
 					item->setData(ObjectOtherData, Qt::UserRole, QVariant::fromValue<int>(-1));
-					sch_items.pop_back();
 				}
 			}
 			else
 			{
 				ObjectType obj_type = ObjectType::BaseObject;
-				aux_prog=task_prog_wgt.progress_pb->value();
-				inc=40/static_cast<double>(sch_items.size());
+				aux_prog = task_prog_wgt.progress_pb->value();
+				inc = 40/static_cast<double>(sch_items.size());
 
-				while(!sch_items.empty())
+				for(auto &sch_item : sch_items)
 				{
-					task_prog_wgt.updateProgress(static_cast<int>(aux_prog), tr("Retrieving objects of schema `%1'...").arg(sch_items.back()->text(0)), enum_t(ObjectType::Schema));
+					task_prog_wgt.updateProgress(static_cast<int>(aux_prog),
+																			 tr("Retrieving objects of schema `%1'...")
+																			 .arg(sch_item->text(0)), enum_t(ObjectType::Schema));
 
 					//Retrieving and listing the schema scoped objects
-					tab_items=DatabaseImportWidget::updateObjectsTree(import_helper, tree_wgt,
-																													BaseObject::getChildObjectTypes(ObjectType::Schema),
-																													checkable_items, disable_empty_grps, sch_items.back(), sch_items.back()->text(0));
+					tab_items = DatabaseImportWidget::updateObjectsTree(import_helper, tree_wgt,
+																															BaseObject::getChildObjectTypes(ObjectType::Schema),
+																															checkable_items, group_flags, sch_item, sch_item->text(0));
 
-					inc1=(60/static_cast<double>(tab_items.size()))/static_cast<double>(sch_items.size());
+					inc1 = (60 /static_cast<double>(tab_items.size()))/static_cast<double>(sch_items.size());
 
-					while(!tab_items.empty())
+					for(auto &tab_item : tab_items)
 					{
-						aux_prog+=inc1;
-						if(aux_prog > 99)	aux_prog=99;
+						aux_prog += inc1;
 
-						obj_type = static_cast<ObjectType>(tab_items.back()->data(ObjectTypeId, Qt::UserRole).toUInt());
-						task_prog_wgt.updateProgress(static_cast<int>(aux_prog), tr("Retrieving objects of `%1' (%2)...").arg(tab_items.back()->text(0)).arg(BaseObject::getTypeName(obj_type)), enum_t(obj_type));
+						if(aux_prog > 99)
+							aux_prog = 99;
+
+						obj_type = static_cast<ObjectType>(tab_item->data(ObjectTypeId, Qt::UserRole).toUInt());
+
+						task_prog_wgt.updateProgress(static_cast<int>(aux_prog),
+																				 tr("Retrieving objects of `%1' (%2)...")
+																				 .arg(tab_item->text(0), BaseObject::getTypeName(obj_type)), enum_t(obj_type));
+
 						DatabaseImportWidget::updateObjectsTree(import_helper, tree_wgt,
-																									BaseObject::getChildObjectTypes(obj_type), checkable_items, disable_empty_grps,
-																									tab_items.back(), sch_items.back()->text(0), tab_items.back()->text(0));
-						tab_items.pop_back();
+																										BaseObject::getChildObjectTypes(obj_type), checkable_items, group_flags,
+																										tab_item, sch_item->text(0), tab_item->text(0));
 					}
 
-					aux_prog+=inc;
-					if(aux_prog > 99)	aux_prog=99;
+					aux_prog += inc;
+
+					if(aux_prog > 99)
+						aux_prog = 99;
 
 					task_prog_wgt.progress_pb->setValue(static_cast<int>(aux_prog));
 					sch_items.pop_back();
@@ -1066,175 +1082,188 @@ void DatabaseImportWidget::listObjects(DatabaseImportHelper &import_helper, QTre
 }
 
 std::vector<QTreeWidgetItem *> DatabaseImportWidget::updateObjectsTree(DatabaseImportHelper &import_helper, QTreeWidget *tree_wgt, std::vector<ObjectType> types, bool checkable_items,
-																																bool disable_empty_grps, QTreeWidgetItem *root, const QString &schema, const QString &table)
+																																			 ObjGroupsFlag group_flags, QTreeWidgetItem *root, const QString &schema, const QString &table)
 {
+	if(!tree_wgt)
+		return std::vector<QTreeWidgetItem *>();
+
 	std::vector<QTreeWidgetItem *> items_vect;
+	QTreeWidgetItem *group = nullptr, *item = nullptr;
+	QFont grp_fnt = tree_wgt->font();
+	attribs_map extra_attribs = {{Attributes::FilterTableTypes, Attributes::True}};
+	QString tooltip = QString("OID: %1"), name, label;
+	bool child_checked = false,
+			disable_empty_grps = (group_flags & DisableEmptyGrps) == DisableEmptyGrps,
+			hide_empty_grps = (group_flags & HideEmptyGrps) == HideEmptyGrps;
+	std::vector<attribs_map> objects_vect;
+	std::map<ObjectType, QTreeWidgetItem *> gen_groups;
+	ObjectType obj_type;
+	QList<QTreeWidgetItem*> groups_list;
+	unsigned oid=0;
+	int start=-1, end=-1;
+	std::map<QString, QString> constr_icons = { { Attributes::PkConstr, "constraint_pk" },
+																							{ Attributes::FkConstr, "constraint_fk" },
+																							{ Attributes::UqConstr, "constraint_uq" },
+																							{ Attributes::CkConstr, "constraint_ck" },
+																							{ Attributes::ExConstr, "constraint_ex" } };
 
-	if(tree_wgt)
+	grp_fnt.setItalic(true);
+	tree_wgt->blockSignals(true);
+	tree_wgt->setUpdatesEnabled(false);
+	tree_wgt->setSortingEnabled(false);
+
+	try
 	{
-		QTreeWidgetItem *group=nullptr, *item=nullptr;
-		QFont grp_fnt=tree_wgt->font();
-		attribs_map extra_attribs={{Attributes::FilterTableTypes, Attributes::True}};
-		QString tooltip=QString("OID: %1"), name, label;
-		bool child_checked=false;
-		std::vector<attribs_map> objects_vect;
-		std::map<ObjectType, QTreeWidgetItem *> gen_groups;
-		ObjectType obj_type;
-		QList<QTreeWidgetItem*> groups_list;
-		unsigned oid=0;
-		int start=-1, end=-1;
-		std::map<QString, QString> constr_icons = { { Attributes::PkConstr, "constraint_pk" },
-																								{ Attributes::FkConstr, "constraint_fk" },
-																								{ Attributes::UqConstr, "constraint_uq" },
-																								{ Attributes::CkConstr, "constraint_ck" },
-																								{ Attributes::ExConstr, "constraint_ex" } };
-
-		grp_fnt.setItalic(true);
-		tree_wgt->blockSignals(true);
-		tree_wgt->setUpdatesEnabled(false);
-		tree_wgt->setSortingEnabled(false);
-
-		try
+		for(ObjectType grp_type : types)
 		{
-			for(ObjectType grp_type : types)
-			{
-				//Create a group item for the current type
-				group=new QTreeWidgetItem(root);
-				group->setIcon(0, QIcon(GuiUtilsNs::getIconPath(BaseObject::getSchemaName(grp_type))));
-				group->setFont(0, grp_fnt);
-				group->setText(0, BaseObject::getTypeName(grp_type) + " (0)");
+			//Create a group item for the current type
+			group = new QTreeWidgetItem(root);
+			group->setIcon(0, QIcon(GuiUtilsNs::getIconPath(BaseObject::getSchemaName(grp_type))));
+			group->setFont(0, grp_fnt);
+			group->setText(0, BaseObject::getTypeName(grp_type) + " (0)");
 
-				//Group items does contains a zero valued id to indicate that is not a valide object
-				group->setData(ObjectId, Qt::UserRole, 0);
-				group->setData(ObjectTypeId, Qt::UserRole, enum_t(grp_type));
-				group->setData(ObjectCount, Qt::UserRole, 0);
-				group->setData(ObjectSchema, Qt::UserRole, schema);
-				group->setData(ObjectTable, Qt::UserRole, table);
-				group->setData(ObjectGroupId, Qt::UserRole, -(enum_t(grp_type) + (root ? root->data(ObjectId, 0).toUInt() : 0)));
+			//Group items does contains a zero valued id to indicate that is not a valide object
+			group->setData(ObjectId, Qt::UserRole, 0);
+			group->setData(ObjectTypeId, Qt::UserRole, enum_t(grp_type));
+			group->setData(ObjectCount, Qt::UserRole, 0);
+			group->setData(ObjectSchema, Qt::UserRole, schema);
+			group->setData(ObjectTable, Qt::UserRole, table);
+			group->setData(ObjectGroupId, Qt::UserRole, -(enum_t(grp_type) + (root ? root->data(ObjectId, 0).toUInt() : 0)));
 
-				gen_groups[grp_type]=group;
-				groups_list.push_back(group);
-			}
-
-			objects_vect = import_helper.getObjects(types, schema, table, extra_attribs);
-
-			for(attribs_map &attribs : objects_vect)
-			{
-				obj_type=static_cast<ObjectType>(attribs[Attributes::ObjectType].toUInt());
-				group=gen_groups[obj_type];
-				group->setData(ObjectCount, Qt::UserRole,
-											 group->data(ObjectCount, Qt::UserRole).toUInt() + 1);
-
-				//Creates individual items for each object of the current type
-				oid=attribs[Attributes::Oid].toUInt();
-
-				attribs[Attributes::Name].remove(QRegularExpression("( )(without)( time zone)"));
-				label=name=attribs[Attributes::Name];
-
-				//Removing the trailing type string from op. families or op. classes names
-				if(obj_type==ObjectType::OpFamily || obj_type==ObjectType::OpClass)
-				{
-					start=name.indexOf(QChar('['));
-					end=name.lastIndexOf(QChar(']'));
-					name.remove(start, (end-start)+1);
-					name=name.trimmed();
-				}
-
-				item=new QTreeWidgetItem(group);
-
-				if(obj_type == ObjectType::Constraint)
-					item->setIcon(0, QIcon(GuiUtilsNs::getIconPath(constr_icons[attribs[Attributes::ExtraInfo]])));
-				else
-					item->setIcon(0, QIcon(GuiUtilsNs::getIconPath(obj_type)));
-
-				item->setText(0, label);
-				item->setText(ObjectId, attribs[Attributes::Oid].rightJustified(10, '0'));
-				item->setData(ObjectId, Qt::UserRole, attribs[Attributes::Oid].toUInt());
-				item->setData(ObjectName, Qt::UserRole, name);
-
-				if(checkable_items)
-				{
-					/* If the current import helper has objects filter we will not mark the items in the tree as check
-					 * since only the ones matching the object types are checked in the final step of the tree creation */
-					if(/*!has_obj_filters &&*/
-						 ((oid > import_helper.getLastSystemOID()) ||
-							(obj_type==ObjectType::Schema && name=="public") ||
-							(obj_type==ObjectType::Column && root && root->data(0, Qt::UserRole).toUInt() > import_helper.getLastSystemOID())))
-					{
-						item->setCheckState(0, Qt::Checked);
-						child_checked=true;
-					}
-					else
-						item->setCheckState(0, Qt::Unchecked);
-
-					//Disabling items that refers to PostgreSQL's built-in data types
-					if(obj_type==ObjectType::Type && oid <= import_helper.getLastSystemOID())
-					{
-						item->setDisabled(true);
-						item->setToolTip(0, tr("This is a PostgreSQL built-in data type and cannot be imported."));
-					}
-					//Disabling items that refers to pgModeler's built-in system objects
-					else if((obj_type==ObjectType::Tablespace && (name=="pg_default" || name=="pg_global")) ||
-									(obj_type==ObjectType::Role && (name=="postgres")) ||
-									(obj_type==ObjectType::Schema && (name=="pg_catalog" || name=="public")) ||
-									(obj_type==ObjectType::Language && (name.toLower() == DefaultLanguages::C ||
-																											name.toLower() == DefaultLanguages::Sql ||
-																											name.toLower() == DefaultLanguages::PlPgsql)))
-					{
-						item->setFont(0, grp_fnt);
-						item->setForeground(0, BaseObjectView::getFontStyle(Attributes::ProtColumn).foreground());
-						item->setToolTip(0, tr("This is a pgModeler's built-in object. It will be ignored if checked by user."));
-					}
-				}
-
-				//Stores the object's OID as the first data of the item
-				item->setData(ObjectId, Qt::UserRole, oid);
-
-				if(!item->toolTip(0).isEmpty())
-					item->setToolTip(0,item->toolTip(0) + "\n" + tooltip.arg(oid));
-				else
-					item->setToolTip(0,tooltip.arg(oid));
-
-				//Stores the object's type as the second data of the item
-				item->setData(ObjectTypeId, Qt::UserRole, enum_t(obj_type));
-
-				//Stores the schema and the table's name of the object
-				item->setData(ObjectSchema, Qt::UserRole, schema);
-				item->setData(ObjectTable, Qt::UserRole, table);
-
-				if(obj_type==ObjectType::Schema || BaseTable::isBaseTable(obj_type))
-					items_vect.push_back(item);
-			}
-
-			//Updating the object count in each group
-			for(ObjectType grp_type : types)
-			{
-				group=gen_groups[grp_type];
-				group->setDisabled(disable_empty_grps && group->data(ObjectCount, Qt::UserRole).toUInt() == 0);
-				group->setText(0, BaseObject::getTypeName(grp_type) + QString(" (%1)").arg(group->data(ObjectCount, Qt::UserRole).toUInt()));
-
-				if(checkable_items)
-				{
-					if(!group->isDisabled() && child_checked)
-						group->setCheckState(0, Qt::Checked);
-					else
-						group->setCheckState(0, Qt::Unchecked);
-				}
-			}
-
-			tree_wgt->addTopLevelItems(groups_list);
-			tree_wgt->setUpdatesEnabled(true);
-			tree_wgt->blockSignals(false);
+			gen_groups[grp_type] = group;
+			groups_list.push_back(group);
 		}
-		catch(Exception &e)
+
+		objects_vect = import_helper.getObjects(types, schema, table, extra_attribs);
+
+		for(attribs_map &attribs : objects_vect)
 		{
-			throw Exception(e.getErrorMessage(), e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
+			obj_type = static_cast<ObjectType>(attribs[Attributes::ObjectType].toUInt());
+			group = gen_groups[obj_type];
+			group->setData(ObjectCount, Qt::UserRole,
+										 group->data(ObjectCount, Qt::UserRole).toUInt() + 1);
+
+			//Creates individual items for each object of the current type
+			oid = attribs[Attributes::Oid].toUInt();
+
+			attribs[Attributes::Name].remove(QRegularExpression("( )(without)( time zone)"));
+			label = name = attribs[Attributes::Name];
+
+			//Removing the trailing type string from op. families or op. classes names
+			if(obj_type == ObjectType::OpFamily || obj_type == ObjectType::OpClass)
+			{
+				start = name.indexOf(QChar('['));
+				end = name.lastIndexOf(QChar(']'));
+				name.remove(start, (end-start)+1);
+				name = name.trimmed();
+			}
+
+			item = new QTreeWidgetItem(group);
+
+			if(obj_type == ObjectType::Constraint)
+				item->setIcon(0, QIcon(GuiUtilsNs::getIconPath(constr_icons[attribs[Attributes::ExtraInfo]])));
+			else
+				item->setIcon(0, QIcon(GuiUtilsNs::getIconPath(obj_type)));
+
+			item->setText(0, label);
+			item->setText(ObjectId, attribs[Attributes::Oid].rightJustified(10, '0'));
+			item->setData(ObjectId, Qt::UserRole, attribs[Attributes::Oid].toUInt());
+			item->setData(ObjectName, Qt::UserRole, name);
+
+			if(checkable_items)
+			{
+				/* If the current import helper has objects filter we will not mark the items in the tree as check
+				 * since only the ones matching the object types are checked in the final step of the tree creation */
+				if(/*!has_obj_filters &&*/
+					 ((oid > import_helper.getLastSystemOID()) ||
+						(obj_type == ObjectType::Schema && name == "public") ||
+						(obj_type == ObjectType::Column && root && root->data(0, Qt::UserRole).toUInt() > import_helper.getLastSystemOID())))
+				{
+					item->setCheckState(0, Qt::Checked);
+					child_checked=true;
+				}
+				else
+					item->setCheckState(0, Qt::Unchecked);
+
+				//Disabling items that refers to PostgreSQL's built-in data types
+				if(obj_type == ObjectType::Type && oid <= import_helper.getLastSystemOID())
+				{
+					item->setDisabled(true);
+					item->setToolTip(0, tr("This is a PostgreSQL built-in data type and cannot be imported."));
+				}
+				//Disabling items that refers to pgModeler's built-in system objects
+				else if((obj_type == ObjectType::Tablespace && (name == "pg_default" || name == "pg_global")) ||
+								(obj_type == ObjectType::Role && (name == "postgres")) ||
+								(obj_type == ObjectType::Schema && (name == "pg_catalog" || name == "public")) ||
+								(obj_type == ObjectType::Language && (name.toLower() == DefaultLanguages::C ||
+																										name.toLower() == DefaultLanguages::Sql ||
+																										name.toLower() == DefaultLanguages::PlPgsql)))
+				{
+					item->setFont(0, grp_fnt);
+					item->setForeground(0, BaseObjectView::getFontStyle(Attributes::ProtColumn).foreground());
+					item->setToolTip(0, tr("This is a pgModeler's built-in object. It will be ignored if checked by user."));
+				}
+			}
+
+			//Stores the object's OID as the first data of the item
+			item->setData(ObjectId, Qt::UserRole, oid);
+
+			if(!item->toolTip(0).isEmpty())
+				item->setToolTip(0,item->toolTip(0) + "\n" + tooltip.arg(oid));
+			else
+				item->setToolTip(0,tooltip.arg(oid));
+
+			//Stores the object's type as the second data of the item
+			item->setData(ObjectTypeId, Qt::UserRole, enum_t(obj_type));
+
+			//Stores the schema and the table's name of the object
+			item->setData(ObjectSchema, Qt::UserRole, schema);
+			item->setData(ObjectTable, Qt::UserRole, table);
+
+			if(obj_type==ObjectType::Schema || BaseTable::isBaseTable(obj_type))
+				items_vect.push_back(item);
 		}
+
+		//Updating the object count in each group
+		unsigned item_cnt = 0;
+
+		for(auto &grp_type : types)
+		{
+			group = gen_groups[grp_type];
+
+			item_cnt = group->data(ObjectCount, Qt::UserRole).toUInt();
+			group->setDisabled(disable_empty_grps && item_cnt == 0);
+			group->setHidden(hide_empty_grps && item_cnt == 0);
+
+			group->setText(0, BaseObject::getTypeName(grp_type) +
+												QString(" (%1)").arg(item_cnt));
+
+			if(checkable_items)
+			{
+				if(!group->isDisabled() && child_checked)
+					group->setCheckState(0, Qt::Checked);
+				else
+					group->setCheckState(0, Qt::Unchecked);
+			}
+		}
+
+		tree_wgt->addTopLevelItems(groups_list);
+		tree_wgt->setUpdatesEnabled(true);
+		tree_wgt->blockSignals(false);
+
+		return items_vect;
 	}
-	return items_vect;
+	catch(Exception &e)
+	{
+		throw Exception(e.getErrorMessage(), e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
+	}
 }
 
 void DatabaseImportWidget::updateConnections()
 {
 	ConnectionsConfigWidget::fillConnectionsComboBox(connections_cmb, true, Connection::OpImport);
+
+	db_objects_tw->clear();
+	database_cmb->clear();
+	enableImportControls(false);
 }

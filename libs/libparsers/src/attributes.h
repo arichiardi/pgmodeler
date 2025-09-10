@@ -315,6 +315,7 @@ namespace Attributes {
 	HbaFile("hba-file"),
 	Height("height"),
 	HideDescription("hide-description"),
+	HideEmptyObjGroups("hide-empty-obj-groups"),
 	HideExtAttribs("hide-ext-attribs"),
 	HideObjShadows("hide-obj-shadows"),
 	HideRelName("hide-rel-name"),

@@ -101,19 +101,28 @@ class __libgui DatabaseImportWidget: public QWidget, public Ui::DatabaseImportWi
 	public:
 		//! \brief Constants used to access the tree widget items data
 		enum ObjectAttrId {
-			ObjectId=1,
-			ObjectTypeId=2,
-			ObjectName=3,
-			ObjectSchema=4,
-			ObjectTable=5,
-			ObjectAttribs=6, //Stores the object's attributes returned by catalog query
-			ObjectOtherData=7, //General purpose usage
-			ObjectCount=8,
-			ObjectSource=9,
+			ObjectId = 1,
+			ObjectTypeId = 2,
+			ObjectName = 3,
+			ObjectSchema = 4,
+			ObjectTable = 5,
+			ObjectAttribs = 6, //Stores the object's attributes returned by catalog query
+			ObjectOtherData = 7, //General purpose usage
+			ObjectCount = 8,
+			ObjectSource = 9,
 
 			/* Special field that stores an internal group id in the form -(object type code + root item id [if not null]).
 			 * This is use to save and restore tree state */
-			ObjectGroupId=10
+			ObjectGroupId = 10
+		};
+
+		/*! \brief Constants used to control the visibility/enabled status of empty
+		 * object groups in database object trees */
+		enum ObjGroupsFlag {
+			NoGrpsFlag = 0,
+			HideEmptyGrps = 1,
+			DisableEmptyGrps = 2,
+			HideDisableEmptyGrps = 3
 		};
 
 		/*! \brief This constant holds the maximum amount of objects in a database to be imported
@@ -145,7 +154,7 @@ class __libgui DatabaseImportWidget: public QWidget, public Ui::DatabaseImportWi
 		item representing the database itself. The parameter 'create_dummy_item' create an empty child item that represent schema or table
 		child. In this case the generation of schema's or table's children need to be done manually. */
 		static void listObjects(DatabaseImportHelper &import_helper, QTreeWidget *tree_wgt, bool checkable_items,
-														bool disable_empty_grps, bool create_db_item, bool create_dummy_item = false,
+														ObjGroupsFlag group_flags, bool create_db_item, bool create_dummy_item = false,
 														int sort_by = 0);
 
 		/*! \brief Fills a table widget by searching only objects matching the filters configured in the provided import helper
@@ -162,8 +171,8 @@ class __libgui DatabaseImportWidget: public QWidget, public Ui::DatabaseImportWi
 		This method automatically returns a list of QTreeWidgetItem when the vector "types" contains ObjectType::ObjSchema or ObjectType::Table or ObjectType::View,
 		The sort_by param indicates the column index in which the tree should be sorted by. When the sort_by is negative not sorting will be performed.*/
 		static std::vector<QTreeWidgetItem *> updateObjectsTree(DatabaseImportHelper &import_helper, QTreeWidget *tree_wgt, std::vector<ObjectType> types,
-																											 bool checkable_items=false, bool disable_empty_grps=true, QTreeWidgetItem *root=nullptr,
-																											 const QString &schema="", const QString &table="");
+																											 bool checkable_items = false, ObjGroupsFlag group_flags = NoGrpsFlag, QTreeWidgetItem *root = nullptr,
+																											 const QString &schema = "", const QString &table = "");
 
 		//! \brief Updates the connections combo with the latest loaded connection settings
 		void updateConnections();
