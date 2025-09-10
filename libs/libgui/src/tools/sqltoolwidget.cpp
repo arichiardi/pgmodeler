@@ -178,7 +178,7 @@ void SQLToolWidget::setCornerButtonPos()
 		else
 			px = tab_bar->tabRect(idx).right() + 2;
 
-		py = tab_bar->height() - sql_exec_corner_tb->height() - 3;
+		py = tab_bar->height() - sql_exec_corner_tb->height() - 4;
 
 		sql_exec_corner_tb->raise();
 		sql_exec_corner_tb->move(px, py);
