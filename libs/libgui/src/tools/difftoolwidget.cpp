@@ -1446,7 +1446,6 @@ void DiffToolWidget::selectModels()
 	{
 		compared_model_wgt = compared_sel_wgt->getSelectedModel();
 		compared_model = compared_model_wgt->getDatabaseModel();
-		compared_model_wgt->setInteractive(false);
 	}
 	else
 	{
