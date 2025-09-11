@@ -221,7 +221,7 @@ namespace GuiUtilsNs {
 	 * orphan one, meaning the user needs to take care of its destruction */
 	template<class WgtClass, typename ...CtorArgs,
 					 std::enable_if_t<std::is_base_of_v<QWidget, WgtClass>, bool> = true>
-	extern __libgui WgtClass *createWidgetInParent(int lt_margins, CtorArgs... new_wgt_ctor_args)
+	WgtClass *createWidgetInParent(int lt_margins, CtorArgs... new_wgt_ctor_args)
 	{
 		WgtClass *new_wgt = new WgtClass(new_wgt_ctor_args...);
 		QWidget *parent = qobject_cast<QWidget *>(new_wgt->parent());
@@ -243,7 +243,7 @@ namespace GuiUtilsNs {
 	 * the object is an orphan one, meaning the user needs to take care of its destruction */
 	template<class WgtClass, typename ...CtorArgs,
 					 std::enable_if_t<std::is_base_of_v<QWidget, WgtClass>, bool> = true>
-	extern __libgui WgtClass *createWidgetInParent(CtorArgs... new_wgt_ctor_args)
+	WgtClass *createWidgetInParent(CtorArgs... new_wgt_ctor_args)
 	{
 		return createWidgetInParent<WgtClass>(0, new_wgt_ctor_args...);
 	}
