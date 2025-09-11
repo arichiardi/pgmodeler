@@ -687,7 +687,6 @@ void MainWindow::connectSignalsToSlots()
 	connect(action_diff, &QAction::toggled, this, &MainWindow::validateBeforeOperation);
 
 	connect(action_bug_report, &QAction::triggered, this, &MainWindow::reportBug);
-	connect(action_handle_metadata, &QAction::triggered, this, &MainWindow::handleObjectsMetadata);
 	connect(action_compact_view, &QAction::triggered, this, &MainWindow::toggleCompactView);
 
 	connect(objects_btn, &QPushButton::toggled, model_objs_parent, &QWidget::setVisible);
@@ -2182,8 +2181,6 @@ void MainWindow::updateToolsState(bool model_closed)
 	action_magnifier->setEnabled(enabled && current_model->getCurrentZoom() < 1);
 	action_expand_canvas->setEnabled(enabled);
 
-	action_handle_metadata->setEnabled(enabled);
-
 	if(!model_closed && current_model && models_tbw->count() > 0)
 	{
 		action_undo->setEnabled(current_model->op_list->isUndoAvailable());
@@ -2541,22 +2538,6 @@ void MainWindow::removeOperations()
 		current_model->op_list->removeOperations();
 		oper_list_wgt->updateOperationList();
 	}
-}
-
-void MainWindow::handleObjectsMetadata()
-{
-	//MetadataHandlingWidget objs_meta_frm(nullptr, Qt::Dialog | Qt::WindowMinMaxButtonsHint | Qt::WindowCloseButtonHint);
-
-	/*objs_meta_frm.setModelWidget(current_model);
-	objs_meta_frm.setModelWidgets(model_nav_wgt->getModelWidgets());
-
-	connect(&objs_meta_frm, &MetadataHandlingForm::s_metadataHandled, model_objs_wgt, &ModelObjectsWidget::updateObjectsView);
-	connect(&objs_meta_frm, &MetadataHandlingForm::s_metadataHandled, layers_cfg_wgt, &LayersConfigWidget::updateLayersList);
-
-	GuiUtilsNs::resizeDialog(&objs_meta_frm);
-	GeneralConfigWidget::restoreWidgetGeometry(&objs_meta_frm);
-	objs_meta_frm.exec();
-	GeneralConfigWidget::saveWidgetGeometry(&objs_meta_frm);*/
 }
 
 void MainWindow::arrangeObjects()

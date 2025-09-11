@@ -1394,18 +1394,6 @@
     <string>Restore Session</string>
    </property>
   </action>
-  <action name="action_fix_model">
-   <property name="icon">
-    <iconset resource="../res/resources.qrc">
-     <normaloff>:/icons/icons/fixobject.png</normaloff>:/icons/icons/fixobject.png</iconset>
-   </property>
-   <property name="text">
-    <string>Model's structure</string>
-   </property>
-   <property name="toolTip">
-    <string>Performs the model structure fix routine</string>
-   </property>
-  </action>
   <action name="action_update_found">
    <property name="checkable">
     <bool>true</bool>
@@ -1558,21 +1546,6 @@
    </property>
    <property name="toolTip">
     <string>Help pgModeler by donating!</string>
-   </property>
-  </action>
-  <action name="action_handle_metadata">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="icon">
-    <iconset resource="../res/resources.qrc">
-     <normaloff>:/icons/icons/objmetadata.png</normaloff>:/icons/icons/objmetadata.png</iconset>
-   </property>
-   <property name="text">
-    <string>Objects metadata</string>
-   </property>
-   <property name="toolTip">
-    <string>Perform the objects metadata handling</string>
    </property>
   </action>
   <action name="action_compact_view">

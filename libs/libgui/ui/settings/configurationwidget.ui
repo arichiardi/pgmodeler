@@ -9,7 +9,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1299</width>
+    <width>1112</width>
     <height>627</height>
    </rect>
   </property>
@@ -31,16 +31,16 @@
     <number>5</number>
    </property>
    <property name="leftMargin">
-    <number>3</number>
+    <number>2</number>
    </property>
    <property name="topMargin">
     <number>3</number>
    </property>
    <property name="rightMargin">
-    <number>3</number>
+    <number>2</number>
    </property>
    <property name="bottomMargin">
-    <number>3</number>
+    <number>2</number>
    </property>
    <item>
     <widget class="QSplitter" name="h_splitter">
@@ -53,10 +53,10 @@
      <property name="childrenCollapsible">
       <bool>false</bool>
      </property>
-     <widget class="QWidget" name="">
+     <widget class="QWidget" name="layoutWidget">
       <layout class="QHBoxLayout" name="horizontalLayout">
        <property name="spacing">
-        <number>4</number>
+        <number>3</number>
        </property>
        <item>
         <layout class="QVBoxLayout" name="verticalLayout">

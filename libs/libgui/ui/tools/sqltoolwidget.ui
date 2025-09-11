@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1395</width>
-    <height>1464</height>
+    <width>1135</width>
+    <height>1417</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -21,16 +21,16 @@
   </property>
   <layout class="QGridLayout" name="sqltool_grid">
    <property name="leftMargin">
-    <number>3</number>
+    <number>2</number>
    </property>
    <property name="topMargin">
     <number>3</number>
    </property>
    <property name="rightMargin">
-    <number>3</number>
+    <number>2</number>
    </property>
    <property name="bottomMargin">
-    <number>3</number>
+    <number>2</number>
    </property>
    <property name="spacing">
     <number>0</number>

@@ -390,7 +390,6 @@ class __libgui MainWindow: public QMainWindow, public Ui::MainWindow {
 		void changeCurrentView(bool checked);
 		void reportBug();
 		void removeOperations();
-		void handleObjectsMetadata();
 		void restoreTemporaryModels();
 		void arrangeObjects();
 		void toggleCompactView();
