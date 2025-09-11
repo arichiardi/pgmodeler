@@ -43,7 +43,7 @@ ViewWidget::ViewWidget(QWidget *parent): BaseObjectWidget(parent, ObjectType::Vi
 	sql_definition_hl->loadConfiguration(GlobalAttributes::getSQLHighlightConfPath());
 
 	vbox = new QVBoxLayout(sql_definition_tab);
-	vbox->setContentsMargins(GuiUtilsNs::LtMargin,GuiUtilsNs::LtMargin,GuiUtilsNs::LtMargin,GuiUtilsNs::LtMargin);
+	vbox->setContentsMargins(GuiUtilsNs::LtMargins);
 	vbox->addWidget(alert_frm);
 	vbox->addWidget(sql_definition_txt);
 
@@ -53,7 +53,7 @@ ViewWidget::ViewWidget(QWidget *parent): BaseObjectWidget(parent, ObjectType::Vi
 																				ObjectType::Procedure } , true, this);
 
 	vbox = new QVBoxLayout(view_refs_tab);
-	vbox->setContentsMargins(GuiUtilsNs::LtMargin,GuiUtilsNs::LtMargin,GuiUtilsNs::LtMargin,GuiUtilsNs::LtMargin);
+	vbox->setContentsMargins(GuiUtilsNs::LtMargins);
 	vbox->addWidget(obj_refs_wgt);
 	vbox->addWidget(obj_refs_wgt);
 
@@ -63,7 +63,7 @@ ViewWidget::ViewWidget(QWidget *parent): BaseObjectWidget(parent, ObjectType::Vi
 	sql_preview_hl->loadConfiguration(GlobalAttributes::getSQLHighlightConfPath());
 
 	vbox = new QVBoxLayout(sql_preview_tab);
-	vbox->setContentsMargins(GuiUtilsNs::LtMargin,GuiUtilsNs::LtMargin,GuiUtilsNs::LtMargin,GuiUtilsNs::LtMargin);
+	vbox->setContentsMargins(GuiUtilsNs::LtMargins);
 	vbox->addWidget(sql_preview_txt);
 
 	tag_sel=new ObjectSelectorWidget(ObjectType::Tag, this);
@@ -71,7 +71,7 @@ ViewWidget::ViewWidget(QWidget *parent): BaseObjectWidget(parent, ObjectType::Vi
 
 	custom_cols_wgt = new SimpleColumnsWidget(this);
 	vbox = new QVBoxLayout(columns_tab);
-	vbox->setContentsMargins(GuiUtilsNs::LtMargin,GuiUtilsNs::LtMargin,GuiUtilsNs::LtMargin,GuiUtilsNs::LtMargin);
+	vbox->setContentsMargins(GuiUtilsNs::LtMargins);
 	vbox->addWidget(custom_cols_wgt);
 
 	//Configuring the table objects that stores the triggers and rules
@@ -86,7 +86,7 @@ ViewWidget::ViewWidget(QWidget *parent): BaseObjectWidget(parent, ObjectType::Vi
 
 		grid=new QGridLayout;
 		grid->addWidget(tab, 0, 0, 1, 1);
-		grid->setContentsMargins(GuiUtilsNs::LtMargin,GuiUtilsNs::LtMargin,GuiUtilsNs::LtMargin,GuiUtilsNs::LtMargin);
+		grid->setContentsMargins(GuiUtilsNs::LtMargins);
 		attributes_tbw->widget(tab_id)->setLayout(grid);
 		tab_id++;
 

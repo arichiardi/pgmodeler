@@ -54,7 +54,7 @@ ObjectSearchWidget::ObjectSearchWidget(QWidget *parent) : QWidget(parent)
 	vbox->addWidget(exact_match_chk);
 	vbox->addWidget(case_sensitive_chk);
 
-	vbox->setContentsMargins(GuiUtilsNs::LtMargin,GuiUtilsNs::LtMargin,GuiUtilsNs::LtMargin,GuiUtilsNs::LtMargin);
+	vbox->setContentsMargins(GuiUtilsNs::LtMargins);
 	vbox->setSpacing(GuiUtilsNs::LtSpacing);
 	filter_wgt->setLayout(vbox);
 

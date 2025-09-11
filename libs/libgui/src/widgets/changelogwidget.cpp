@@ -189,8 +189,7 @@ void ChangelogWidget::inspectChangelog()
 	base_form.setMainWidget(data_tbw);
 	base_form.setButtonConfiguration(Messagebox::OkButton);
 	base_form.apply_ok_btn->setShortcut(QKeySequence("Enter"));
-	base_form.main_frm->layout()->setContentsMargins(GuiUtilsNs::LtMargin, GuiUtilsNs::LtMargin,
-																									 GuiUtilsNs::LtMargin, GuiUtilsNs::LtMargin);
+	base_form.main_frm->layout()->setContentsMargins(GuiUtilsNs::LtMargins);
 
 	GeneralConfigWidget::restoreWidgetGeometry(&base_form, this->metaObject()->className());
 	base_form.exec();

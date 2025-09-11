@@ -39,7 +39,7 @@ IndexWidget::IndexWidget(QWidget *parent): BaseObjectWidget(parent, ObjectType::
 
 	incl_cols_picker_wgt = new ColumnPickerWidget(this);
 	QVBoxLayout *vbox = new QVBoxLayout(attributes_tbw->widget(2));
-	vbox->setContentsMargins(GuiUtilsNs::LtMargin,GuiUtilsNs::LtMargin,GuiUtilsNs::LtMargin,GuiUtilsNs::LtMargin);
+	vbox->setContentsMargins(GuiUtilsNs::LtMargins);
 	vbox->addWidget(incl_cols_picker_wgt);
 
 	configureFormLayout(index_grid, ObjectType::Index);

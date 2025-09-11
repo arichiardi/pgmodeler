@@ -138,42 +138,42 @@ void LayersConfigWidget::removeLayer(bool clear)
 	else
 		msg = tr("Delete the selected layer will cause objects in it to be moved to the default layer. Do you want to proceed?");
 
-	if(Messagebox::isAccepted(Messagebox::confirm(msg)))
+	if(!Messagebox::isAccepted(Messagebox::confirm(msg)))
+		return;
+
+	if(clear)
 	{
-		if(clear)
+		model->scene->removeLayers();
+
+		while(layers_tab->rowCount() > 1)
 		{
-			model->scene->removeLayers();
+			disconnect(rect_color_pickers.last(), nullptr, this, nullptr);
+			rect_color_pickers.removeLast();
 
-			while(layers_tab->rowCount() > 1)
-			{
-				disconnect(rect_color_pickers.last(), nullptr, nullptr, nullptr);
-				rect_color_pickers.removeLast();
+			disconnect(name_color_pickers.last(), nullptr, this, nullptr);
+			name_color_pickers.removeLast();
 
-				disconnect(name_color_pickers.last(), nullptr, nullptr, nullptr);
-				name_color_pickers.removeLast();
-
-				layers_tab->setRowCount(layers_tab->rowCount() - 1);
-			}
+			layers_tab->setRowCount(layers_tab->rowCount() - 1);
 		}
-		else if(layers_tab->currentRow() > 0)
-		{
-			int row = layers_tab->currentRow();
-
-			item = layers_tab->item(layers_tab->currentRow(), 0);
-			model->scene->removeLayer(item->text());
-
-			disconnect(rect_color_pickers.at(row), nullptr, nullptr, nullptr);
-			rect_color_pickers.removeAt(row);
-
-			disconnect(name_color_pickers.at(row), nullptr, nullptr, nullptr);
-			name_color_pickers.removeAt(row);
-
-			layers_tab->removeRow(row);
-		}
-
-		layers_tab->clearSelection();
-		enableButtons();
 	}
+	else if(layers_tab->currentRow() > 0)
+	{
+		int row = layers_tab->currentRow();
+
+		item = layers_tab->item(layers_tab->currentRow(), 0);
+		model->scene->removeLayer(item->text());
+
+		disconnect(rect_color_pickers.at(row), nullptr, this, nullptr);
+		rect_color_pickers.removeAt(row);
+
+		disconnect(name_color_pickers.at(row), nullptr, this, nullptr);
+		name_color_pickers.removeAt(row);
+
+		layers_tab->removeRow(row);
+	}
+
+	layers_tab->clearSelection();
+	enableButtons();
 }
 
 void LayersConfigWidget::updateLayerColors(int layer_idx)
@@ -326,7 +326,7 @@ void LayersConfigWidget::__addLayer(const QString &name, Qt::CheckState chk_stat
 
 	color_picker = new ColorPickerWidget(1, layers_tab);
 	color_picker->setButtonToolTip(0, tr("Layer name color"));
-	color_picker->layout()->setContentsMargins(GuiUtilsNs::LtMargin,GuiUtilsNs::LtMargin,GuiUtilsNs::LtMargin,GuiUtilsNs::LtMargin);
+	color_picker->layout()->setContentsMargins(GuiUtilsNs::LtMargins);
 	color_picker->setColor(0, QColor(0,0,0));
 	name_color_pickers.append(color_picker);
 
@@ -339,16 +339,16 @@ void LayersConfigWidget::__addLayer(const QString &name, Qt::CheckState chk_stat
 
 	color_picker = new ColorPickerWidget(1, layers_tab);
 	color_picker->setButtonToolTip(0, tr("Layer rectangle color"));
-	color_picker->layout()->setContentsMargins(5,5,5,5);
+	color_picker->layout()->setContentsMargins(GuiUtilsNs::LtMargins);
 	color_picker->generateRandomColors();
 	rect_color_pickers.append(color_picker);
+
 	connect(color_picker, &ColorPickerWidget::s_colorChanged, this, &LayersConfigWidget::updateLayerColors);
 	connect(color_picker, &ColorPickerWidget::s_colorsChanged, this, [this]() {
 		updateLayerColors();
 	});
 
 	layers_tab->setCellWidget(row, 2, color_picker);
-
 	layers_tab->horizontalHeader()->setStretchLastSection(false);
 	layers_tab->resizeRowsToContents();
 	layers_tab->resizeColumnsToContents();

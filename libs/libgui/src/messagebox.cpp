@@ -119,8 +119,7 @@ int Messagebox::show(Exception e, const QString &msg, IconType icon_type, Button
 		raw_stack_txt->setLineNumbersVisible(false);
 		raw_stack_txt->setWordWrap(true);
 		GuiUtilsNs::configureTextEditFont(raw_stack_txt, font().pointSizeF());
-		stacktrace_tbw->widget(2)->layout()->setContentsMargins(GuiUtilsNs::LtMargin, GuiUtilsNs::LtMargin,
-																														GuiUtilsNs::LtMargin, GuiUtilsNs::LtMargin);
+		stacktrace_tbw->widget(2)->layout()->setContentsMargins(GuiUtilsNs::LtMargins);
 	}
 
 	raw_stack_txt->setPlainText(e.getExceptionsText());

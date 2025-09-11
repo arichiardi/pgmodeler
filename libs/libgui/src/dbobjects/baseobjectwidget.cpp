@@ -413,7 +413,7 @@ void BaseObjectWidget::configureFormLayout(QGridLayout *grid, ObjectType obj_typ
 		baseobject_grid = grid;
 	}
 
-	baseobject_grid->setContentsMargins(GuiUtilsNs::LtMargin,GuiUtilsNs::LtMargin,GuiUtilsNs::LtMargin,GuiUtilsNs::LtMargin);
+	baseobject_grid->setContentsMargins(GuiUtilsNs::LtMargins);
 	configureFormFields(obj_type, obj_type != ObjectType::BaseObject);
 }
 
@@ -524,7 +524,7 @@ QFrame *BaseObjectWidget::generateInformationFrame(const QString &msg)
 	info_frm->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
 
 	grid = new QGridLayout(info_frm);
-	grid->setContentsMargins(GuiUtilsNs::LtMargin,GuiUtilsNs::LtMargin,GuiUtilsNs::LtMargin,GuiUtilsNs::LtMargin);
+	grid->setContentsMargins(GuiUtilsNs::LtMargins);
 	grid->setObjectName("grid");
 
 	ico_lbl = new QLabel(info_frm);
@@ -546,7 +546,7 @@ QFrame *BaseObjectWidget::generateInformationFrame(const QString &msg)
 	msg_lbl->setText(msg);
 
 	grid->addWidget(msg_lbl, 0, 1, 1, 1);
-	grid->setContentsMargins(GuiUtilsNs::LtMargin,GuiUtilsNs::LtMargin,GuiUtilsNs::LtMargin,GuiUtilsNs::LtMargin);
+	grid->setContentsMargins(GuiUtilsNs::LtMargins);
 
 	return info_frm;
 }
@@ -623,7 +623,7 @@ QFrame *BaseObjectWidget::generateVersionWarningFrame(std::map<QString, std::vec
 							Generating SQL code for versions other than those specified in the fields' tooltips may create incompatible code."));
 
 	grid->addWidget(msg_lbl, 0, 1, 1, 1);
-	grid->setContentsMargins(GuiUtilsNs::LtMargin,GuiUtilsNs::LtMargin,GuiUtilsNs::LtMargin,GuiUtilsNs::LtMargin);
+	grid->setContentsMargins(GuiUtilsNs::LtMargins);
 
 	alert_frm->adjustSize();
 	return alert_frm;

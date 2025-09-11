@@ -49,7 +49,7 @@ ElementsTableWidget::ElementsTableWidget(QWidget *parent) : QWidget(parent)
 	elements_tab->setHeaderLabel(tr("Sorting"), 5);
 	elements_tab->setHeaderLabel(tr("Nulls"), 6);
 
-	vbox->setContentsMargins(GuiUtilsNs::LtMargin,GuiUtilsNs::LtMargin,GuiUtilsNs::LtMargin,GuiUtilsNs::LtMargin);
+	vbox->setContentsMargins(GuiUtilsNs::LtMargins);
 	vbox->addWidget(elements_tab);
 
 	connect(elements_tab, &CustomTableWidget::s_rowAdded, this, &ElementsTableWidget::addElement);

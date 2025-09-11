@@ -31,8 +31,7 @@ PluginsConfigWidget::PluginsConfigWidget(QWidget *parent) : BaseConfigWidget(par
 	root_dir_sel->setSelectedFile(GlobalAttributes::getPluginsPath());
 
 	QVBoxLayout *vbox = new QVBoxLayout(plugins_root_gb);
-	vbox->setContentsMargins(GuiUtilsNs::LtMargin, GuiUtilsNs::LtMargin,
-													 GuiUtilsNs::LtMargin, GuiUtilsNs::LtMargin);
+	vbox->setContentsMargins(GuiUtilsNs::LtMargins);
 	vbox->addWidget(root_dir_sel);
 
 	plugins_tab = new CustomTableWidget(CustomTableWidget::EditButton |
@@ -46,8 +45,7 @@ PluginsConfigWidget::PluginsConfigWidget(QWidget *parent) : BaseConfigWidget(par
 	connect(plugins_tab, &CustomTableWidget::s_rowEdited, this, &PluginsConfigWidget::showPluginInfo);
 
 	vbox = new QVBoxLayout(loaded_plugins_gb);
-	vbox->setContentsMargins(GuiUtilsNs::LtMargin, GuiUtilsNs::LtMargin,
-													 GuiUtilsNs::LtMargin, GuiUtilsNs::LtMargin);
+	vbox->setContentsMargins(GuiUtilsNs::LtMargins);
 	vbox->addWidget(plugins_tab);
 	loaded_plugins_gb->setLayout(vbox);
 }

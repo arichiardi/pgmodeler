@@ -708,10 +708,10 @@ ModelWidget::~ModelWidget()
 	/* If there are copied/cutted objects that belongs to the database model
 	 being destroyed, then the cut/copy operation are cancelled by emptying
 	 the lists, avoiding crashes when trying to paste them */
-	if((!copied_objects.empty() && copied_objects[0]->getDatabase()==db_model) ||
-			(!cut_objects.empty() && cut_objects[0]->getDatabase()==db_model))
+	if((!copied_objects.empty() && copied_objects[0]->getDatabase() == db_model) ||
+			(!cut_objects.empty() && cut_objects[0]->getDatabase() == db_model))
 	{
-		cut_operation=false;
+		cut_operation = false;
 		copied_objects.clear();
 		cut_objects.clear();
 	}

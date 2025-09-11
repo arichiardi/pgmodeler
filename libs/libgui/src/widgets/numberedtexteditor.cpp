@@ -67,8 +67,7 @@ NumberedTextEditor::NumberedTextEditor(QWidget * parent, bool act_btns_enabled, 
 		font.setPointSizeF(font.pointSizeF() * 0.90);
 
 		QVBoxLayout *top_wgt_lt = new QVBoxLayout;
-		top_wgt_lt->setContentsMargins(GuiUtilsNs::LtMargin, GuiUtilsNs::LtMargin,
-																	 GuiUtilsNs::LtMargin, GuiUtilsNs::LtMargin);
+		top_wgt_lt->setContentsMargins(GuiUtilsNs::LtMargins);
 		top_widget = new QWidget(this);
 		top_widget->setObjectName("top_widget");
 		top_widget->setAutoFillBackground(true);
@@ -83,8 +82,7 @@ NumberedTextEditor::NumberedTextEditor(QWidget * parent, bool act_btns_enabled, 
 		search_wgt->setObjectName("search_wgt");
 		search_wgt->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
 		search_wgt->setVisible(false);
-		search_wgt->layout()->setContentsMargins(GuiUtilsNs::LtMargin, GuiUtilsNs::LtMargin,
-																						 GuiUtilsNs::LtMargin, GuiUtilsNs::LtMargin);
+		search_wgt->layout()->setContentsMargins(GuiUtilsNs::LtMargins);
 
 		QHBoxLayout *buttons_lt = new QHBoxLayout;
 		buttons_lt->setContentsMargins(0, 0, 0, 0);

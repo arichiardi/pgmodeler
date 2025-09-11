@@ -30,7 +30,7 @@ ConstraintWidget::ConstraintWidget(QWidget *parent): BaseObjectWidget(parent, Ob
 
 	excl_elems_tab=new ElementsTableWidget(this);
 	grid=new QGridLayout;
-	grid->setContentsMargins(GuiUtilsNs::LtMargin,GuiUtilsNs::LtMargin,GuiUtilsNs::LtMargin,GuiUtilsNs::LtMargin);
+	grid->setContentsMargins(GuiUtilsNs::LtMargins);
 	grid->addWidget(excl_elems_tab,0,0);
 	excl_elems_grp->setLayout(grid);
 
@@ -43,7 +43,7 @@ ConstraintWidget::ConstraintWidget(QWidget *parent): BaseObjectWidget(parent, Ob
 
 	QVBoxLayout *vbox = new QVBoxLayout(columns_tbw->widget(0));
 	vbox->addWidget(col_picker_wgt);
-	vbox->setContentsMargins(GuiUtilsNs::LtMargin,GuiUtilsNs::LtMargin,GuiUtilsNs::LtMargin,GuiUtilsNs::LtMargin);
+	vbox->setContentsMargins(GuiUtilsNs::LtMargins);
 
 	dynamic_cast<QGridLayout *>(columns_tbw->widget(1)->layout())->addWidget(ref_table_sel, 0,1,1,2);
 	dynamic_cast<QGridLayout *>(columns_tbw->widget(1)->layout())->addWidget(ref_col_picker_wgt, 3,0,1,3);

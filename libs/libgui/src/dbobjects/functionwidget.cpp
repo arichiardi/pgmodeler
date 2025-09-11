@@ -77,7 +77,7 @@ FunctionWidget::FunctionWidget(QWidget *parent): BaseFunctionWidget(parent, Obje
 
 	vbox = new QVBoxLayout;
 	vbox->addWidget(return_tab);
-	vbox->setContentsMargins(GuiUtilsNs::LtMargin,GuiUtilsNs::LtMargin,GuiUtilsNs::LtMargin,GuiUtilsNs::LtMargin);
+	vbox->setContentsMargins(GuiUtilsNs::LtMargins);
 	ret_table_gb->setLayout(vbox);
 	ret_table_gb->setVisible(false);
 

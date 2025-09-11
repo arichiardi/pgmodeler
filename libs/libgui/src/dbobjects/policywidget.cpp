@@ -51,7 +51,7 @@ PolicyWidget::PolicyWidget(QWidget *parent): BaseObjectWidget(parent, ObjectType
 																				 .arg(BaseObject::getTypeName(ObjectType::Policy).toLower()));
 	vbox->addWidget(frame);
 	frame->setParent(this);
-	vbox->setContentsMargins(GuiUtilsNs::LtMargin,GuiUtilsNs::LtMargin,GuiUtilsNs::LtMargin,GuiUtilsNs::LtMargin);
+	vbox->setContentsMargins(GuiUtilsNs::LtMargins);
 	attribs_tbw->widget(0)->setLayout(vbox);
 
 	command_cmb->addItems(PolicyCmdType::getTypes());

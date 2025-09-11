@@ -1680,8 +1680,7 @@ void MainWindow::applyZoom()
 
 void MainWindow::removeModelActions()
 {
-	QList<QAction *> act_list;
-	act_list=tools_acts_tb->actions();
+	QList<QAction *> act_list = tools_acts_tb->actions();
 
 	while(act_list.size() > ToolsActionsCount)
 	{
@@ -1728,8 +1727,7 @@ void MainWindow::closeModel(int model_id)
 			model_nav_wgt->removeModel(model_id);
 			model_tree_states.remove(model);
 			model_tree_v_pos.remove(model);
-
-			disconnect(model, nullptr, nullptr, nullptr);
+			model->deleteLater();
 
 			//Remove the temporary file related to the closed model
 			QDir arq_tmp;
@@ -1745,9 +1743,9 @@ void MainWindow::closeModel(int model_id)
 		}
 	}
 
-	if(models_tbw->count()==0)
+	if(models_tbw->count() == 0)
 	{
-		current_model=nullptr;
+		current_model = nullptr;
 		setCurrentModel();
 		model_save_timer.stop();
 		tmpmodel_save_timer.stop();

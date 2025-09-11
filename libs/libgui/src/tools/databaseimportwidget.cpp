@@ -52,8 +52,7 @@ DatabaseImportWidget::DatabaseImportWidget(QWidget *parent) : QWidget(parent)
 
 	objs_filter_wgt = new ObjectsFilterWidget(this);
 	QVBoxLayout *vbox = new QVBoxLayout(filter_gb);
-	vbox->setContentsMargins(GuiUtilsNs::LtMargin, GuiUtilsNs::LtMargin,
-													 GuiUtilsNs::LtMargin, GuiUtilsNs::LtMargin);
+	vbox->setContentsMargins(GuiUtilsNs::LtMargins);
 	vbox->addWidget(objs_filter_wgt);
 
 	htmlitem_del=new HtmlItemDelegate(this);
@@ -61,8 +60,7 @@ DatabaseImportWidget::DatabaseImportWidget(QWidget *parent) : QWidget(parent)
 
 	dbg_output_wgt = new DebugOutputWidget(this);
 	vbox = new QVBoxLayout(settings_tbw->widget(2));
-	vbox->setContentsMargins(GuiUtilsNs::LtMargin, GuiUtilsNs::LtMargin,
-													 GuiUtilsNs::LtMargin, GuiUtilsNs::LtMargin);
+	vbox->setContentsMargins(GuiUtilsNs::LtMargins);
 	vbox->addWidget(dbg_output_wgt);
 
 	settings_tbw->setTabEnabled(1, false);

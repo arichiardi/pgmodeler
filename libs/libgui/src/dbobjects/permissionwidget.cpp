@@ -51,7 +51,7 @@ PermissionWidget::PermissionWidget(QWidget *parent): BaseObjectWidget(parent, Ob
 
 	grid=new QGridLayout;
 	grid->addWidget(roles_tab,0,0,1,1);
-	grid->setContentsMargins(GuiUtilsNs::LtMargin,GuiUtilsNs::LtMargin,GuiUtilsNs::LtMargin,GuiUtilsNs::LtMargin);
+	grid->setContentsMargins(GuiUtilsNs::LtMargins);
 	roles_gb->setLayout(grid);
 
 	permissions_tab=new CustomTableWidget(CustomTableWidget::RemoveButton |
@@ -67,7 +67,7 @@ PermissionWidget::PermissionWidget(QWidget *parent): BaseObjectWidget(parent, Ob
 
 	grid=new QGridLayout;
 	grid->addWidget(permissions_tab,0,0,1,1);
-	grid->setContentsMargins(GuiUtilsNs::LtMargin,GuiUtilsNs::LtMargin,GuiUtilsNs::LtMargin,GuiUtilsNs::LtMargin);
+	grid->setContentsMargins(GuiUtilsNs::LtMargins);
 	permissions_gb->setLayout(grid);
 
 	for(i=Permission::PrivSelect; i<=Permission::PrivUsage; i++)
