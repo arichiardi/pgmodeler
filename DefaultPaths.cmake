@@ -20,8 +20,8 @@ add_compile_definitions(
     SCHEMASDIR="${PGM_SCHEMASDIR}")
 
 if(APPLE)
-	set(PGSQL_INC /Library/PostgreSQL/15/include)
-	set(PGSQL_LIBS /Library/PostgreSQL/15/lib/libpq.dylib)
+	set(PGSQL_INC /Library/PostgreSQL/17/include)
+	set(PGSQL_LIBS /Library/PostgreSQL/17/lib/libpq.dylib)
 
 	set(XML2_INC /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/libxml2)
 	set(XML2_LIBS /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib/libxml2.tbd)
