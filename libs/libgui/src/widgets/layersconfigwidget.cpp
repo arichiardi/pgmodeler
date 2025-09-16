@@ -134,9 +134,9 @@ void LayersConfigWidget::removeLayer(bool clear)
 	QString msg;
 
 	if(clear)
-		msg = tr("This action will delete all layers (except the default one) and the objects in them will be moved to the default layer. Do you want to proceed?");
+		msg = tr("This action will delete all layers (except the default one), and the objects within them will be moved to the default layer. Do you want to proceed?");
 	else
-		msg = tr("Delete the selected layer will cause objects in it to be moved to the default layer. Do you want to proceed?");
+		msg = tr("Deleting the selected layer will cause the objects within it to be moved to the default layer. Do you want to proceed?");
 
 	if(!Messagebox::isAccepted(Messagebox::confirm(msg)))
 		return;
