@@ -32,7 +32,7 @@ function(print_build_summary)
     message("")
 
     message("* To change a variable's value run cmake again from source root and setting the new value, e.g.:")
-    message("  > cmake -S . -DPGM_PREFIX=/usr/local -B ./cmake-build --fresh CMakeList.txt \n")
+    message("  > cmake -S . -DPGM_PREFIX=/usr/local -B ./cmake-build --fresh \n")
     message("* To proceed with build process run: ")
     message("  > cmake --build ./cmake-build --target all\n")
     message("* To install the compiled files run:")
