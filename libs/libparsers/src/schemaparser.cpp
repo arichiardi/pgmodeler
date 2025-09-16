@@ -276,7 +276,7 @@ bool SchemaParser::parseInclude(const QString &include_ln, QString &src_buf, qin
 		{
 			throw Exception(Exception::getErrorMessage(ErrorCode::InvalidInclude)
 											.arg(filename).arg(getCurrentLine()).arg(getCurrentColumn()) + " " +
-											QString(QT_TR_NOOP("No such include file `%1'.")).arg(fi.absoluteFilePath()),
+											QString(QT_TR_NOOP("Include file `%1' not found.")).arg(fi.absoluteFilePath()),
 											ErrorCode::InvalidInclude, PGM_FUNC, PGM_FILE, PGM_LINE,
 											nullptr, fi.absoluteFilePath());
 		}
@@ -296,7 +296,7 @@ bool SchemaParser::parseInclude(const QString &include_ln, QString &src_buf, qin
 			{
 				throw Exception(Exception::getErrorMessage(ErrorCode::InvalidInclude)
 												.arg(filename).arg(getCurrentLine()).arg(getCurrentColumn()) + " " +
-												QString(QT_TR_NOOP("The included file `%1' contains one or more `%2' statements. This isn't currently supported!")).arg(fi.absoluteFilePath(), TokenInclude),
+												QString(QT_TR_NOOP("The included file `%1' contains one or more `%2' statements. Nested file inclusion is not currently supported!")).arg(fi.absoluteFilePath(), TokenInclude),
 												ErrorCode::InvalidInclude, PGM_FUNC, PGM_FILE, PGM_LINE,
 												nullptr, fi.absoluteFilePath());
 			}
@@ -529,7 +529,7 @@ QString SchemaParser::getPlainText()
 		line = start_line;
 
 		throw Exception(getParseError(ErrorCode::InvalidSyntax,
-										QString(QT_TR_NOOP("Plain text expression is unbalanced or is not properly enclosed by `%1%2'."))
+										QString(QT_TR_NOOP("Plain text expression is unbalanced or not properly enclosed by `%1%2'."))
 										.arg(CharStartPlainText).arg(CharEndPlainText)),
 										ErrorCode::InvalidSyntax, PGM_FUNC, PGM_FILE, PGM_LINE);
 	}
@@ -570,7 +570,7 @@ QString SchemaParser::getConditional()
 	if(error)
 	{
 		throw Exception(getParseError(ErrorCode::InvalidSyntax,
-										QString(QT_TR_NOOP("Expected a valid conditional instruction token starting with `%1' and followed by, at least, a letter.")).arg(CharStartConditional)),
+										QString(QT_TR_NOOP("Expected a valid conditional instruction token starting with `%1' and followed by at least one letter.")).arg(CharStartConditional)),
 										ErrorCode::InvalidSyntax, PGM_FUNC, PGM_FILE, PGM_LINE);
 	}
 
@@ -646,7 +646,7 @@ QString SchemaParser::getMetaOrEscapedToken(bool is_escaped)
 		if(is_escaped)
 			extra_msg = QString(QT_TR_NOOP("Expected a valid escaped character token starting with `%1' and followed by a single character.")).arg(start_chr);
 		else
-			extra_msg = QString(QT_TR_NOOP("Expected a valid metacharacter token starting with `%1' and followed by, at least, a letter.")).arg(start_chr);
+			extra_msg = QString(QT_TR_NOOP("Expected a valid metacharacter token starting with `%1' and followed by at least one letter.")).arg(start_chr);
 
 		throw Exception(getParseError(ErrorCode::InvalidSyntax, extra_msg),
 										ErrorCode::InvalidSyntax, PGM_FUNC, PGM_FILE, PGM_LINE);
@@ -783,7 +783,7 @@ bool SchemaParser::evaluateComparisonExpr()
 					else
 					{
 						error = true;
-						extra_error_msg = QString(QT_TR_NOOP("Expected a valid operator token composed by, at least, two characters in the set `%1'.")).arg(valid_op_chrs);
+						extra_error_msg = QString(QT_TR_NOOP("Expected a valid operator token composed of at least two characters from the set `%1'.")).arg(valid_op_chrs);
 					}
 				}
 				else
@@ -853,7 +853,7 @@ void SchemaParser::defineAttribute()
 
 					if(attributes.count(attrib)==0 && !ignore_unk_atribs)
 					{
-						throw Exception(getParseError(ErrorCode::UnkownAttribute),
+						throw Exception(getParseError(ErrorCode::UnkownAttribute, "", attrib),
 														ErrorCode::UnkownAttribute, PGM_FUNC, PGM_FILE, PGM_LINE);
 					}
 
