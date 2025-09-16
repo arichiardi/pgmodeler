@@ -27,8 +27,7 @@ ObjectsFilterWidget::ObjectsFilterWidget(QWidget *parent) : QWidget(parent)
 
 	setupUi(this);
 
-	hint_lbl->setText(tr("Using a pattern in <strong>%1</strong> mode in which no wildcard character <strong>%2</strong> \
-is present has the same effect as performing an exact match searching on the names or signatures.")
+	hint_lbl->setText(tr("Using a pattern in <strong>%1</strong> mode where no wildcard character <strong>%2</strong> is present has the same effect as performing an exact match search on the names or signatures.")
 											 .arg(UtilsNs::FilterWildcard)
 											 .arg(UtilsNs::WildcardChar));
 
@@ -61,7 +60,7 @@ is present has the same effect as performing an exact match searching on the nam
 		tab_objs_lst->addItem(item);
 	}
 
-	action_only_matching = new QAction(tr("Only macthing"), this);
+	action_only_matching = new QAction(tr("Only matching"), this);
 	action_only_matching->setCheckable(true);
 	action_only_matching->setChecked(true);
 
