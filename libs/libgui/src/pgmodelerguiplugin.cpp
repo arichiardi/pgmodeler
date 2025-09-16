@@ -33,7 +33,7 @@ PgModelerGuiPlugin::PgModelerGuiPlugin()
 	gridLayout=new QGridLayout;
 
 	widget=new QWidget;
-	widget->setWindowTitle(QT_TRANSLATE_NOOP("PgModelerGuiPlugin", "Plug-in information"));
+	widget->setWindowTitle(QT_TRANSLATE_NOOP("PgModelerGuiPlugin", "Plugin information"));
 
 	gridLayout->setHorizontalSpacing(GuiUtilsNs::LtSpacing);
 	gridLayout->setVerticalSpacing(GuiUtilsNs::LtSpacing);
@@ -165,7 +165,7 @@ void PgModelerGuiPlugin::postInitPlugin()
 {
 	if(!main_window)
 	{
-		throw Exception(QT_TRANSLATE_NOOP("PgModelerGuiPlugin", "Trying to perform a post initialization on a plug-in without initializing the application's main window!"),
+		throw Exception(QT_TRANSLATE_NOOP("PgModelerGuiPlugin", "Attempting to post-initialize a plugin without initializing the application's main window!"),
 										ErrorCode::Custom, PGM_FUNC, PGM_FILE, PGM_LINE);
 	}
 }
