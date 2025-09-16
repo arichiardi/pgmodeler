@@ -3,6 +3,37 @@
    "cmake.generator": "Unix Makefiles",
    "cmake.configureSettings": {
         "PLUS_VERSION": "ON",
-        "PGM_PREFIX": "${workspaceFolder}/build"
+        "PGM_PREFIX": "${workspaceFolder}/build",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON" // Generate the compile_commands.json file for better IDE integration
+    },
+
+    // Intelisense configurations
+    "C_Cpp.default.compileCommands": "${workspaceFolder}/cmake-build/compile_commands.json",
+    "C_Cpp.intelliSenseEngine": "Default",    
+    "C_Cpp.autocomplete": "Default",           
+    "C_Cpp.autocompleteAddParentheses": true, 
+    "C_Cpp.hoverEnabled": true,                 
+    "C_Cpp.errorSquiggles": "Enabled",     
+
+    // Forcing intellisense to use clang++ as compiler
+    "C_Cpp.default.compilerPath": "/usr/bin/clang++",
+    "C_Cpp.default.cStandard": "c17",
+    "C_Cpp.default.cppStandard": "c++17",
+    "C_Cpp.default.intelliSenseMode": "linux-clang-x64",
+    "files.associations": {
+        "*.embeddedhtml": "html",
+        "ostream": "cpp"
+    },
+
+    // Hiding build artifacts and moc generated files from the explorer
+    "files.exclude": {
+        "**/moc/**": true,      
+        "**/obj/**": true, 
+        "**/CMakeFiles/**": true,
+        "**/*.o": true,         
+        "**/*.a": true,         
+        "**/*.so": true,
+        ".github": true,
+        ".qtc_clangd": true
     }
 }
