@@ -322,7 +322,7 @@ void ModelValidationWidget::updateValidation(ValidationInfo val_info)
 	}
 	else if(val_info.getValidationType() == ValidationInfo::SqlValidationError)
 	{
-		label->setText(tr("SQL validation failed due to the error(s) below. <strong>NOTE:</strong><em> Errors during SQL validation don't invalidate the model but may affect operations like <strong>export</strong> and <strong>diff</strong>.</em>"));
+		label->setText(tr("SQL validation failed due to the error(s) below. <strong>NOTE:</strong><em> Errors during SQL validation do not invalidate the model but may affect operations like <strong>export</strong> and <strong>diff</strong>.</em>"));
 	}
 	else if(val_info.getValidationType() == ValidationInfo::MissingExtension)
 	{
