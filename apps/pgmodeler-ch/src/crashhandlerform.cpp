@@ -202,7 +202,7 @@ void CrashHandlerForm::setAnalysisMode(bool value)
 	else
 	{
 		title_lbl->setText(tr("Oh no! pgModeler just crashed!"));
-		msg_lbl->setText(tr("We apologize for what happened! It's clear that a nasty bug caused that. Please, fill out the form below describing your actions that somehow caused the unexpected closing. This will help us to investigate the causes and provide the proper fix for the problem."));
+		msg_lbl->setText(tr("We apologize for what happened! It is clear that a nasty bug caused that. Please, fill out the form below describing your actions that somehow caused the unexpected closing. This will help us to investigate the causes and provide the proper fix for the problem."));
 	}
 }
 
