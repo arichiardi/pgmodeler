@@ -2964,7 +2964,7 @@ void DatabaseImportHelper::createColumns()
 
 			if(!tab)
 			{
-				throw Exception(tr("Trying to create column(s) in the table `%1' that doesn't exist in the model!").arg(tab_signature),
+				throw Exception(tr("Trying to create column(s) in the table `%1' that does not exist in the model!").arg(tab_signature),
 												ErrorCode::Custom, PGM_FUNC, PGM_FILE, PGM_LINE);
 			}
 
