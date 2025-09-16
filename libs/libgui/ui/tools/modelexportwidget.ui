@@ -228,7 +228,7 @@
                     </font>
                    </property>
                    <property name="text">
-                    <string>&lt;strong&gt;WARNING:&lt;/strong&gt; the input model is in &lt;strong&gt;invalidated&lt;/strong&gt; state. It's strongly recommended that the export operation be performed over a &lt;strong&gt;validated&lt;/strong&gt; model to avoid code generation and/or deployment issues.</string>
+                    <string>&lt;strong&gt;WARNING:&lt;/strong&gt; the input model is in &lt;strong&gt;invalidated&lt;/strong&gt; state. It is strongly recommended that the export operation be performed over a &lt;strong&gt;validated&lt;/strong&gt; model to avoid code generation and/or deployment issues.</string>
                    </property>
                    <property name="wordWrap">
                     <bool>true</bool>
