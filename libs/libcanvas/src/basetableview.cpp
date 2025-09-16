@@ -464,7 +464,7 @@ void BaseTableView::__configureObject(double width)
 						"`" + tab->getName(true) +
 						"' (" + tab->getTypeName() + ")" +
 						QString("\n%1 Id: %2").arg(UtilsNs::DataSeparator, QString::number(tab->getObjectId())) +
-						tr("\n%1 Connected rels: %2").arg(UtilsNs::DataSeparator, QString::number(this->getConnectRelsCount()));
+						tr("\n%1 Connected relationships: %2").arg(UtilsNs::DataSeparator, QString::number(this->getConnectRelsCount()));
 
 	if(!tab->getAlias().isEmpty())
 		table_tooltip += QString("\n%1 Alias: %2").arg(UtilsNs::DataSeparator, tab->getAlias());
