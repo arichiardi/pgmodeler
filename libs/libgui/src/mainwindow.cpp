@@ -2407,7 +2407,7 @@ void MainWindow::showDemoVersionWarning(bool exit_msg)
 	else
 	{
 		msg_box.show(tr("Info"),
-					 tr("Thank you for testing pgModeler! Don't forget that you can support this project by <a href='%2'>buying a full binary copy</a> using the promo code <strong>DEMOTESTER</strong> to receive a special discount. Also, you can get the <a href='%3'>source code</a> and compile it yourself, instructions are on the site.")
+					 tr("Thank you for testing pgModeler! Do not forget that you can support this project by <a href='%2'>buying a full binary copy</a> using the promo code <strong>DEMOTESTER</strong> to receive a special discount. Also, you can get the <a href='%3'>source code</a> and compile it yourself, instructions are on the site.")
 							.arg(GlobalAttributes::PgModelerDownloadURL + "?purchase=true&promocode=DEMOTESTER", GlobalAttributes::PgModelerDownloadURL + "?source=true"),
 							Messagebox::InfoIcon, Messagebox::OkButton);
 	}
