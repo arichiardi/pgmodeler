@@ -134,7 +134,7 @@ namespace GuiUtilsNs {
 
 			if(obj_type != ObjectType::Database && curr_val != disable)
 			{
-				int res = Messagebox::confirm(QString(QT_TR_NOOP("Do you want to apply the <strong>SQL %1 status</strong> to the object's references too? This will avoid problems when exporting or validating the model."))
+				int res = Messagebox::confirm(QString(QT_TR_NOOP("Do you want to apply the <strong>SQL %1 status</strong> to the object's references as well? This will prevent issues when exporting or validating the model."))
 																			.arg(disable ? QT_TR_NOOP("disabling") : QT_TR_NOOP("enabling")));
 
 				if(Messagebox::isAccepted(res))
@@ -287,7 +287,7 @@ namespace GuiUtilsNs {
 			 * the production or reduntant/useless information on the exception message box */
 			if(static_cast<unsigned>(idx) >= Exception::MaximumStackSize)
 			{
-				text = QT_TR_NOOP("Other %1 error(s) were suppressed due to stacktrace size limits.");
+				text = QT_TR_NOOP("An additional %1 error(s) were suppressed due to the stack trace size limit.");
 				text = text.arg(list.size() - idx);
 				createOutputTreeItem(exceptions_trw, text, QPixmap(getIconPath("alert")), item, false, false);
 				break;
