@@ -1,0 +1,8 @@
+{
+   "cmake.buildDirectory": "${workspaceFolder}/cmake-build",
+   "cmake.generator": "Unix Makefiles",
+   "cmake.configureSettings": {
+        "PLUS_VERSION": "ON",
+        "PGM_PREFIX": "${workspaceFolder}/build"
+    }
+}
