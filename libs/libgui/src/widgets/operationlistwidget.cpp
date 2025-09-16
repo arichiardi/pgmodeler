@@ -204,7 +204,7 @@ void OperationListWidget::redoOperation()
 
 void OperationListWidget::removeOperations()
 {
-	int res = Messagebox::confirm(tr("Delete the executed operations history is an irreversible action, do you want to continue?"));
+	int res = Messagebox::confirm(tr("Deleting the executed operations history is an irreversible action. Do you want to continue?"));
 
 	if(Messagebox::isAccepted(res))
 	{
