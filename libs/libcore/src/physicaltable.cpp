@@ -1598,7 +1598,7 @@ QString PhysicalTable::getInitialDataCommands()
 	}
 	catch(Exception &e)
 	{
-		return tr("/* Failed to create initial data commands! \n\n %1 */").arg(e.getErrorMessage());
+		return tr("/* Failed to create initial data commands!\n\n%1 */").arg(e.getErrorMessage());
 	}
 
 	if(csv_doc.isEmpty())
