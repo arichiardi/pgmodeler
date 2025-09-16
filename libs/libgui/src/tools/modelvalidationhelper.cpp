@@ -369,7 +369,7 @@ void ModelValidationHelper::validateModel()
 				{
 					warn_count++;
 					emitValidationFinished();
-					emit s_validationInfoGenerated(ValidationInfo(tr("There are pending errors! SQL validation will not be executed.")));
+					emit s_validationInfoGenerated(ValidationInfo(tr("There are pending errors! SQL validation will not be performed.")));
 				}
 			}
 		}
@@ -712,7 +712,8 @@ void ModelValidationHelper::checkInvalidatedRels()
 void ModelValidationHelper::checkUselessUqConstrs()
 {
 	PhysicalTable *table = nullptr;
-	Constraint *pk = nullptr, *uq = nullptr;
+	Constraint *pk = nullptr;
+	Constraint *uq = nullptr;
 	std::vector<BaseObject *> tabs;
 
 	tabs.assign(db_model->getObjectList(ObjectType::Table)->begin(),
