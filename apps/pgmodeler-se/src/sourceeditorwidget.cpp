@@ -235,7 +235,7 @@ void SourceEditorWidget::validateSyntax()
 		schparser.loadBuffer(editor_txt->toPlainText());
 		schparser.getSourceCode({});
 
-		Messagebox::info(tr("No lexical or sytactical errors found."));
+		Messagebox::info(tr("No lexical or syntactical errors found."));
 	}
 	catch(Exception &e)
 	{
