@@ -758,7 +758,7 @@ void DataGridWidget::retrievePKColumns(Catalog &catalog)
 		warning_frm->setVisible(pks.empty());
 
 		if(pks.empty())
-			warning_lbl->setText(tr("The table doesn't have a primary key! Updates and deletes will be performed by considering all columns as primary key. <strong>WARNING:</strong> these operations can affect more than one row."));
+			warning_lbl->setText(tr("The table does not have a primary key! Updates and deletes will be performed by considering all columns as primary key. <strong>WARNING:</strong> these operations can affect more than one row."));
 		else
 			table_oid = pks[0][Attributes::Table].toUInt();
 
