@@ -533,7 +533,7 @@ void PgModelerCliApp::showMenu()
 	printText(tr(" %1, %2\t\t  Draws the grid in the exported image.").arg(short_opts[ShowGrid], ShowGrid));
 	printText(tr(" %1, %2\t\t  Draws the page delimiters in the exported image.").arg(short_opts[ShowDelimiters], ShowDelimiters));
 	printText(tr(" %1, %2\t\t  Each page will be exported in a separate image. (Only for PNG images)").arg(short_opts[PageByPage], PageByPage));
-	printText(tr(" %1, %2\t  Does not use the original canvas color in the exported image; instead, uses a white background. (PNG images only)").arg(short_opts[OverrideBgColor], OverrideBgColor));
+	printText(tr(" %1, %2\t  Overrides the original canvas color in the exported image, using a white background instead. (PNG images only)").arg(short_opts[OverrideBgColor], OverrideBgColor));
 	printText(tr(" %1, %2 [FACTOR]\t\t  Applies zoom (in percent) before exporting to an image. Accepted zoom range: %3 to %4 (PNG images only)").arg(short_opts[ZoomFactor], ZoomFactor).arg(ModelWidget::MinimumZoom).arg(ModelWidget::MaximumZoom));
 	printText();
 
@@ -584,7 +584,7 @@ void PgModelerCliApp::showMenu()
 	printText(tr(" %1, %2\t\t  Matches database model objects with modification dates ending on the specified date. (Only for partial diff)").arg(short_opts[EndDate], EndDate));
 	printText(tr(" %1, %2\t\t\t  Saves the generated diff code to the output file.").arg(short_opts[SaveDiff], SaveDiff));
 	printText(tr(" %1, %2\t\t\t  Applies the generated diff code to the database server.").arg(short_opts[ApplyDiff], ApplyDiff));
-	printText(tr(" %1, %2\t\t  Does not preview the generated diff code before applying it to the server.").arg(short_opts[NoDiffPreview], NoDiffPreview));
+	printText(tr(" %1, %2\t\t  Skips previewing the generated diff code before applying it to the server.").arg(short_opts[NoDiffPreview], NoDiffPreview));
 	printText(tr(" %1, %2\t  Drops cluster-level objects like roles and tablespaces.").arg(short_opts[DropClusterObjs], DropClusterObjs));
 	printText(tr(" %1, %2\t\t  Revokes existing permissions on the database. New permissions configured in the input model are still applied.").arg(short_opts[RevokePermissions], RevokePermissions));
 	printText(tr(" %1, %2\t\t  Generates DROP commands for objects present in the source model but missing in the compared database.").arg(short_opts[DropMissingObjs], DropMissingObjs));
