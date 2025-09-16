@@ -245,7 +245,7 @@ void Connection::connect()
 		else
 		{
 			QTextStream err(stderr);
-			err << QT_TR_NOOP("ERROR: trying to open an already stablished connection.") << Qt::endl
+			err << QT_TR_NOOP("ERROR: trying to open an already established connection.") << Qt::endl
 				<< "Conn. info: [ " << connection_str << "]" << Qt::endl;
 			this->close();
 		}
