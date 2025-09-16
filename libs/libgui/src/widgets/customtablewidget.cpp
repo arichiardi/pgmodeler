@@ -553,7 +553,7 @@ void CustomTableWidget::removeRow()
 	unsigned row_idx = table_tbw->currentRow();
 
 	if(conf_exclusion)
-		res = Messagebox::confirm(tr("Do you really want to remove the selected item(s)?"));
+		res = Messagebox::confirm(tr("Are you sure you want to remove the selected item(s)?"));
 
 	if(!conf_exclusion || (conf_exclusion && Messagebox::isAccepted(res)))
 	{
@@ -609,7 +609,7 @@ void CustomTableWidget::removeRows()
 		/* Only shows the confirmation message if the conf_exclusion is set and the user called the method
 			 activating the 'remove_all_tb' button */
 		if(conf_exclusion && sender_obj == remove_all_tb)
-			res = Messagebox::confirm(tr("Do you really want to remove all the items?"));
+			res = Messagebox::confirm(tr("Are you sure you want to remove all the items?"));
 
 		if(!conf_exclusion || (conf_exclusion && sender_obj != remove_all_tb) ||
 				(conf_exclusion &&  sender_obj == remove_all_tb && Messagebox::isAccepted(res)))
