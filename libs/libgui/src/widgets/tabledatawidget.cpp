@@ -191,7 +191,7 @@ void TableDataWidget::deleteRows()
 
 void TableDataWidget::deleteColumns()
 {
-	int res = Messagebox::confirm(tr("Delete columns is an irreversible action! Do you really want to proceed?"));
+	int res = Messagebox::confirm(tr("Deleting columns is an irreversible action! Are you sure you want to proceed?"));
 
 	if(Messagebox::isAccepted(res))
 	{
@@ -225,7 +225,7 @@ void TableDataWidget::clearRows(bool confirm)
 	int res = Messagebox::Rejected;
 
 	if(confirm)
-		res = Messagebox::confirm(tr("Remove all rows is an irreversible action! Do you really want to proceed?"));
+		res = Messagebox::confirm(tr("Removing all rows is an irreversible action! Are you sure you want to proceed?"));
 
 	if(!confirm || Messagebox::isAccepted(res))
 	{
@@ -237,7 +237,7 @@ void TableDataWidget::clearRows(bool confirm)
 
 void TableDataWidget::clearColumns()
 {
-	int res = Messagebox::confirm(tr("Remove all columns is an irreversible action! Do you really want to proceed?"));
+	int res = Messagebox::confirm(tr("Removing all columns is an irreversible action! Are you sure you want to proceed?"));
 
 	if(Messagebox::isAccepted(res))
 	{
