@@ -42,7 +42,7 @@ AttributesTogglerItem::AttributesTogglerItem(QGraphicsItem *parent) : RoundedRec
 	buttons[PrevAttribsPageBtn]->setToolTip(tr("Displays the previous attributes page"));
 	buttons[NextExtAttribsPageBtn]->setToolTip(tr("Displays the next extended attributes page"));
 	buttons[PrevExtAttribsPageBtn]->setToolTip(tr("Displays the previous extended attributes page"));
-	buttons[PaginationTogglerBtn]->setToolTip(tr("Toggles the attributes pagination on the object"));
+	buttons[PaginationTogglerBtn]->setToolTip(tr("Toggles attributes pagination for the object"));
 
 	has_ext_attribs = false;
 	pagination_enabled = false;
