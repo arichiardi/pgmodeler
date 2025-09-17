@@ -137,7 +137,7 @@
             <bool>true</bool>
            </property>
            <property name="toolTip">
-            <string>Cancel edition</string>
+            <string>Cancel editing</string>
            </property>
            <property name="text">
             <string/>
