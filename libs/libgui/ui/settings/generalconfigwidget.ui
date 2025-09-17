@@ -752,7 +752,7 @@
             </sizepolicy>
            </property>
            <property name="toolTip">
-            <string>&lt;p&gt;Hide the schema names of the user-defined types referenced by columns. This option affects only the graphical objects, the code generation will keep displaying user-defined types names fully schema-qualified.&lt;/p&gt;</string>
+            <string>&lt;p&gt;Hide the schema names of the user-defined types referenced by columns. This option will affect only the graphical objects, the code generation will keep displaying user-defined types names fully schema-qualified.&lt;/p&gt;</string>
            </property>
            <property name="statusTip">
             <string/>
@@ -990,7 +990,7 @@
             </sizepolicy>
            </property>
            <property name="toolTip">
-            <string>&lt;p&gt;Hide the schema names of the user-defined types referenced by columns. This option affects only the graphical objects, the code generation will keep displaying user-defined types names fully schema-qualified.&lt;/p&gt;</string>
+            <string>&lt;p&gt;Hide the schema names of the user-defined types referenced by columns. This option will affect only the graphical objects, the code generation will keep displaying user-defined types names fully schema-qualified.&lt;/p&gt;</string>
            </property>
            <property name="statusTip">
             <string/>
