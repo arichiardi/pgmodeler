@@ -426,7 +426,7 @@
                   </size>
                  </property>
                  <property name="toolTip">
-                  <string>Toogle the model validation widget</string>
+                  <string>Toggle the model validation widget</string>
                  </property>
                  <property name="text">
                   <string>&amp;Validation</string>
