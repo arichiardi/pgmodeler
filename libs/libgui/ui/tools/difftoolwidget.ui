@@ -1117,7 +1117,7 @@
                        </size>
                       </property>
                       <property name="toolTip">
-                       <string>&lt;p&gt;Instead of using an ALTER command to modify the selected object kinds, a DROP and CREATE will be used for a full modification. This option does not affects the database object itself.&lt;/p&gt;</string>
+                       <string>&lt;p&gt;Instead of using an ALTER command to modify the selected object kinds, a DROP and CREATE will be used for a full modification. This option does not affect the database object itself.&lt;/p&gt;</string>
                       </property>
                       <property name="text">
                        <string>Force re-creation (0)</string>
