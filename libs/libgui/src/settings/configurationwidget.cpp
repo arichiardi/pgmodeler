@@ -65,10 +65,11 @@ ConfigurationWidget::ConfigurationWidget(QWidget *parent) : QWidget(parent)
 		btn_group->addButton(btn);
 
 		fnt = btn->font();
-		fnt.setWeight(QFont::Normal);
+		fnt.setWeight(QFont::Medium);
 		btn->setFont(fnt);
 		btn->setProperty(Attributes::ObjectId.toStdString().c_str(), view_idx++);
-		GuiUtilsNs::createDropShadow(btn, 1, 1, 5);
+		GuiUtilsNs::configureWidgetFont(btn, GuiUtilsNs::MediumFontFactor);
+		//GuiUtilsNs::createDropShadow(btn, 1, 1, 5);
 	}
 
 	connect(btn_group, &QButtonGroup::buttonToggled, this, [this](QAbstractButton *btn){

@@ -681,7 +681,6 @@ namespace GuiUtilsNs {
 
 	void createDropShadow(QWidget *wgt, int x_offset, int y_offset, int radius, const QColor &color)
 	{
-		return; 
 		QGraphicsDropShadowEffect *shadow=nullptr;
 
 		shadow=new QGraphicsDropShadowEffect(wgt);
@@ -694,8 +693,6 @@ namespace GuiUtilsNs {
 
 	void updateDropShadow(QWidget *wgt)
 	{
-		return;
-		
 		QColor color { qApp->palette().color(QPalette::Shadow) };
 		int radius = 6, x = 1, y = 1;
 

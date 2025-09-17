@@ -227,16 +227,6 @@ void MainWindow::configureMenusActionsWidgets()
 	act_more->setIcon(QIcon(GuiUtilsNs::getIconPath("moreactions")));
 	act_more->setToolTip(tr("Additional actions over the model"));
 
-	//fix_menu.addAction(action_fix_model);
-	//fix_menu.addAction(action_handle_metadata);
-
-	//QAction *act_fix = fix_menu.menuAction();
-	//act_fix->setIcon(QIcon(GuiUtilsNs::getIconPath("fix")));
-	//act_fix->setText(tr("Fix"));
-	//tools_acts_tb->insertAction(action_configure, fix_menu.menuAction());
-	//QToolButton *tool_btn = qobject_cast<QToolButton *>(tools_acts_tb->widgetForAction(fix_menu.menuAction()));
-	//tool_btn->setPopupMode(QToolButton::InstantPopup);
-
 	QToolButton *tool_btn = nullptr;
 
 	QAction *act_arrange_objs = canvas_menu->insertMenu(action_compact_view, &arrange_menu);
@@ -388,17 +378,18 @@ void MainWindow::configureMenusActionsWidgets()
 			continue;
 
 		font = btn->font();
-		font.setWeight(QFont::Normal);
+		font.setWeight(QFont::Medium);
 		btn->setFont(font);
+		GuiUtilsNs::configureWidgetFont(btn, GuiUtilsNs::MediumFontFactor);
 
 		/* Setting a name for the action's tool button so it can
 		 * be uniquely identified when handling styles via Qt Stylesheets */
 		btn->setObjectName(act->objectName() + "_tb");
 		btn->setProperty("view_btn", true);
-		GuiUtilsNs::createDropShadow(btn, 1, 1, 5);
+		//GuiUtilsNs::createDropShadow(btn, 1, 1, 5);
 	}
 
-	for(auto &act : model_acts_tb->actions())
+	/* for(auto &act : model_acts_tb->actions())
 	{
 		btn = qobject_cast<QToolButton *>(model_acts_tb->widgetForAction(act));
 
@@ -406,7 +397,7 @@ void MainWindow::configureMenusActionsWidgets()
 			continue;
 
 		GuiUtilsNs::createDropShadow(btn, 1, 1, 5);
-	}
+	} */
 
 	ToolsActionsCount = tools_acts_tb->actions().size();
 	QList<QAction *> actions = model_acts_tb->actions();
@@ -1534,9 +1525,10 @@ void MainWindow::setCurrentModel()
 		for(auto &btn : btns)
 		{
 			font = btn->font();
-			font.setWeight(QFont::Normal);
+			font.setWeight(QFont::Medium);
 			btn->setFont(font);
-			GuiUtilsNs::updateDropShadow(btn);
+			GuiUtilsNs::configureWidgetFont(btn, GuiUtilsNs::MediumFontFactor);
+			//GuiUtilsNs::updateDropShadow(btn);
 		}
 
 		edit_menu->addAction(current_model->action_copy);

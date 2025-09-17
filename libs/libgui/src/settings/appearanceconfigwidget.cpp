@@ -1103,7 +1103,7 @@ void AppearanceConfigWidget::applyUiStyleSheet()
 		/* Forcing the title element of group box to have a font size 85% of
 		 * the app's original/global font size */
 		ui_stylesheet.append(QString("\n QGroupBox { font-size: %1pt; font-weight: bold; }")
-												 .arg(qApp->font().pointSizeF() * 0.85).toUtf8());
+												 .arg(qApp->font().pointSizeF() * 0.80).toUtf8());
 
 		qApp->setStyleSheet(ui_stylesheet);
 

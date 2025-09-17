@@ -38,9 +38,10 @@ DataHandlingForm::DataHandlingForm(QWidget * parent, Qt::WindowFlags f): QDialog
 		if(!btn) continue;
 
 		fnt = btn->font();
-		fnt.setWeight(QFont::Normal);
+		fnt.setWeight(QFont::Medium);
 		btn->setFont(fnt);
-		GuiUtilsNs::updateDropShadow(btn);
+		GuiUtilsNs::configureWidgetFont(btn, GuiUtilsNs::MediumFontFactor);
+		//GuiUtilsNs::updateDropShadow(btn);
 	}
 
 	refresh_tb->setToolTip(refresh_tb->toolTip() + QString(" (%1)").arg(refresh_tb->shortcut().toString()));

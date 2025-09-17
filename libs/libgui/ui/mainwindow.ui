@@ -47,9 +47,6 @@
   <property name="styleSheet">
    <string notr="true"/>
   </property>
-  <property name="toolButtonStyle">
-   <enum>Qt::ToolButtonStyle::ToolButtonTextOnly</enum>
-  </property>
   <property name="animated">
    <bool>false</bool>
   </property>
@@ -109,7 +106,7 @@
          <number>2</number>
         </property>
         <property name="topMargin">
-         <number>2</number>
+         <number>3</number>
         </property>
         <property name="rightMargin">
          <number>2</number>
