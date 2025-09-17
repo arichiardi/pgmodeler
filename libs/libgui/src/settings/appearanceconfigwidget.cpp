@@ -32,26 +32,26 @@ std::map<QString, attribs_map> AppearanceConfigWidget::config_params;
 QString AppearanceConfigWidget::UiThemeId;
 
 std::map<QPalette::ColorRole, QStringList> AppearanceConfigWidget::dark_ui_colors {
-	{ QPalette::Light, {"#15171e", "#15171e", "#15171e"} },
-	{ QPalette::Midlight, {"#191b23", "#191b23", "#191b23"} },
-	{ QPalette::Mid, {"#1c1f28", "#1c1f28", "#1c1f28"} },
-	{ QPalette::Button, {"#272b37", "#272b37", "#21242e"} },
-	{ QPalette::Dark, {"#363b4b", "#363b4b", "#292d3a"} },
-	{ QPalette::Base, {"#191d28", "#191d28", "#191d28"} },
-	{ QPalette::Window, {"#232933", "#1f242d", "#000000"} },
-	{ QPalette::Shadow, {"#000000", "#000000", "#000000"} },
-	{ QPalette::Text, {"#eff0f1", "#eff0f1", "#626c76"} },
-	{ QPalette::BrightText, {"#ffffff", "#ffffff", "#ffffff"} },
-	{ QPalette::ButtonText, {"#eff0f1", "#eff0f1", "#626c76"} },
-	{ QPalette::WindowText, {"#eff0f1", "#eff0f1", "#626c76"} },
-	{ QPalette::Highlight, {"#26a5b1", "#4d99a0", "#3f7c82"} },
-	{ QPalette::HighlightedText, {"#eff0f1", "#eff0f1", "#25292c"} },
-	{ QPalette::Link, {"#2980b9", "#2980b9", "#2980b9"} },
-	{ QPalette::LinkVisited, {"#7f8c8d", "#7f8c8d", "#7f8c8d"} },
-	{ QPalette::AlternateBase, {"#222837", "#222837", "#222837"} },
-	{ QPalette::ToolTipBase, {"#31363b", "#31363b", "#31363b"} },
-	{ QPalette::ToolTipText, {"#eff0f1", "#eff0f1", "#eff0f1"} },
-	{ QPalette::PlaceholderText, {"#48494b", "#48494b", "#48494b"} }
+    { QPalette::Light, {"#070912", "#070912", "#070912"} },
+    { QPalette::Midlight, {"#0b0d16", "#0b0d16", "#0b0d16"} },
+    { QPalette::Mid, {"#0e111b", "#0e111b", "#0e111b"} },
+    { QPalette::Button, {"#191d29", "#191d29", "#131621"} },
+    { QPalette::Dark, {"#282d3d", "#282d3d", "#1b1f2c"} },
+    { QPalette::Base, {"#171d2a", "#171d2a", "#171d2a"} },
+    { QPalette::Window, {"#151b25", "#111720", "#000000"} },
+    { QPalette::Shadow, {"#000000", "#000000", "#000000"} },
+    { QPalette::Text, {"#e1e2e5", "#e1e2e5", "#545e68"} },
+    { QPalette::BrightText, {"#f1f1f1", "#f1f1f1", "#f1f1f1"} },
+    { QPalette::ButtonText, {"#e1e2e5", "#e1e2e5", "#545e68"} },
+    { QPalette::WindowText, {"#e1e2e5", "#e1e2e5", "#545e68"} },
+    { QPalette::Highlight, {"#1897a3", "#3f8c92", "#316874"} },
+    { QPalette::HighlightedText, {"#e1e2e5", "#e1e2e5", "#171b1e"} },
+    { QPalette::Link, {"#1a72ab", "#1a72ab", "#1a72ab"} },
+    { QPalette::LinkVisited, {"#717e7f", "#717e7f", "#717e7f"} },
+    { QPalette::AlternateBase, {"#141a29", "#141a29", "#141a29"} },
+    { QPalette::ToolTipBase, {"#23282d", "#23282d", "#23282d"} },
+    { QPalette::ToolTipText, {"#e1e2e5", "#e1e2e5", "#e1e2e5"} },
+    { QPalette::PlaceholderText, {"#3a3c3e", "#3a3c3e", "#3a3c3e"} }
 };
 
 std::map<QPalette::ColorRole, QStringList> AppearanceConfigWidget::light_ui_colors {
