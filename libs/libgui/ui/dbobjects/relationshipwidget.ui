@@ -188,7 +188,7 @@
                </sizepolicy>
               </property>
               <property name="toolTip">
-               <string>&lt;p&gt;The receiver's primary key will be composed by the generated foreign key columns.&lt;/p&gt;</string>
+               <string>&lt;p&gt;The receiver's primary key will be composed of the generated foreign key columns.&lt;/p&gt;</string>
               </property>
               <property name="statusTip">
                <string/>
@@ -683,7 +683,7 @@
              <enum>Qt::FocusPolicy::WheelFocus</enum>
             </property>
             <property name="toolTip">
-             <string>Use the values defined on settings dialogs for the fields below</string>
+             <string>Use the values defined in settings dialogs for the fields below</string>
             </property>
             <property name="text">
              <string>Use global settings</string>
