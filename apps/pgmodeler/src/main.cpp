@@ -16,6 +16,7 @@
 # Also, you can get the complete GNU General Public License at <http://www.gnu.org/licenses/>
 */
 
+#include "customuistyle.h"
 #include "pgmodelerapp.h"
 #include "mainwindow.h"
 #include <signal.h>
@@ -83,8 +84,6 @@ void startCrashHandler(int signal)
 	exit(1 + system(cmd.toStdString().c_str()));
 }
 
-
-
 int main(int argc, char **argv)
 {
 	try
@@ -97,7 +96,11 @@ int main(int argc, char **argv)
 		PgModelerApp app(argc,argv);
 		int res=0;
 
-		//Loading the application splash screen
+		/* Setting the application custom style, this must be done before creating any widget
+		 * Currently it only controls the pixel metrics of small icons in menus */
+		app.setStyle(new CustomUiStyle());
+
+		// Loading the application splash screen
 		QSplashScreen splash;
 		QPixmap pix(":images/images/pgmodeler_splash.png");
 
