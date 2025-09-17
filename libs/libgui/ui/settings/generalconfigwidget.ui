@@ -124,7 +124,7 @@
             </sizepolicy>
            </property>
            <property name="toolTip">
-            <string>Check if there is a new version on the server at the startup</string>
+            <string>Check for new version on server at startup</string>
            </property>
            <property name="text">
             <string>Check updates:</string>
@@ -150,7 +150,7 @@
             </sizepolicy>
            </property>
            <property name="text">
-            <string>Save dialogs sizes</string>
+            <string>Save dialog sizes</string>
            </property>
           </widget>
          </item>
