@@ -254,7 +254,7 @@
                      </sizepolicy>
                     </property>
                     <property name="toolTip">
-                     <string>&lt;p&gt;Resolve some of the object's dependencies by querying the catalog when a needed object does not exists on the loaded set. In some cases it is necessary to combine this option with others below. This option does not apply to database level objects like role, tablespace and language as well for data types, extensions.&lt;/p&gt;</string>
+                     <string>&lt;p&gt;Resolve some of the object's dependencies by querying the catalog when a needed object does not exist on the loaded set. In some cases it is necessary to combine this option with others below. This option does not apply to database level objects like role, tablespace and language as well for data types, extensions.&lt;/p&gt;</string>
                     </property>
                     <property name="statusTip">
                      <string/>
@@ -443,7 +443,7 @@
                      </sizepolicy>
                     </property>
                     <property name="toolTip">
-                     <string>&lt;p&gt;Enables the import of system built-in objects. It is recommended to select only those objects that are directly referenced by the ones to be imported. WARNING: Try to import a huge set of system objects can bloat the resultant model or even crash pgModeler due to memory/cpu overuse.&lt;/p&gt;</string>
+                     <string>&lt;p&gt;Enables the import of system built-in objects. It is recommended to select only those objects that are directly referenced by the ones to be imported. WARNING: Trying to import a huge set of system objects can bloat the resultant model or even crash pgModeler due to memory/cpu overuse.&lt;/p&gt;</string>
                     </property>
                     <property name="statusTip">
                      <string/>
@@ -878,7 +878,7 @@
                        </size>
                       </property>
                       <property name="toolTip">
-                       <string>Quick filters the tree items</string>
+                       <string>Quickly filters the tree items</string>
                       </property>
                       <property name="text">
                        <string>...</string>
