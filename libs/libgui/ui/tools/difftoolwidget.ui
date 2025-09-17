@@ -794,7 +794,7 @@
                        </size>
                       </property>
                       <property name="toolTip">
-                       <string>&lt;p&gt;Compares the model and the input database generating a diff and applying it directly to the latter. &lt;strong&gt;WARNING:&lt;/strong&gt; this mode causes irreversible changes on the database and in case of failure the original structure is not restored, so make sure to have a backup before proceed.&lt;/p&gt;</string>
+                       <string>&lt;p&gt;Compares the model and the input database generating a diff and applying it directly to the latter. &lt;strong&gt;WARNING:&lt;/strong&gt; this mode causes irreversible changes on the database and in case of failure the original structure is not restored, so make sure to have a backup before proceeding.&lt;/p&gt;</string>
                       </property>
                       <property name="statusTip">
                        <string/>
