@@ -531,7 +531,7 @@
                   </size>
                  </property>
                  <property name="toolTip">
-                  <string>Handle the changelog settings</string>
+                  <string>Manage changelog settings</string>
                  </property>
                  <property name="text">
                   <string>C&amp;hangelog</string>
@@ -687,7 +687,7 @@
                   <item>
                    <widget class="QLabel" name="bg_saving_lbl">
                     <property name="text">
-                     <string>Saving temp. models</string>
+                     <string>Saving temporary models</string>
                     </property>
                    </widget>
                   </item>
