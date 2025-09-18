@@ -17,6 +17,8 @@
 */
 
 #include "customuistyle.h"
+#include <QToolBar>
+#include <QApplication>
 
 QMap<QStyle::PixelMetric, int> CustomUiStyle::pixel_metrics;
 
@@ -40,11 +42,123 @@ CustomUiStyle::~CustomUiStyle()
 
 }
 
-int CustomUiStyle::pixelMetric(QStyle::PixelMetric metric, const QStyleOption * option, const QWidget * widget) const
+int CustomUiStyle::pixelMetric(QStyle::PixelMetric metric, const QStyleOption *option, const QWidget *widget) const
 {
 	if(pixel_metrics.contains(metric))
 		return pixel_metrics[metric];
 
 	// Use the default pixel metric attribute value if there's no custom value defined
 	return QProxyStyle::pixelMetric(metric, option, widget);
+}
+
+void CustomUiStyle::drawItemPixmap(QPainter *painter, const QRect &rect, 
+																	 int alignment, const QPixmap &pixmap) const
+{
+	qreal curr_opacity = painter->opacity();
+	
+	// Check if the painter opacity is low (indicating disabled widget)
+	if (curr_opacity < 0.9) 
+	{
+		painter->save();
+		QPixmap grayed_pixmap = createGrayMaskedPixmap(pixmap);
+		QProxyStyle::drawItemPixmap(painter, rect, alignment, grayed_pixmap);
+		painter->restore();
+		return;
+	}
+	
+	QProxyStyle::drawItemPixmap(painter, rect, alignment, pixmap);
+}
+
+void CustomUiStyle::drawControl(ControlElement element, const QStyleOption *option,
+																QPainter *painter, const QWidget *widget) const
+{
+	// Only apply special handling to specific toolbar button labels
+	if(element == CE_ToolButtonLabel && option && !(option->state & State_Enabled)) 
+	{
+		const QStyleOptionToolButton *tb_option = 
+					qstyleoption_cast<const QStyleOptionToolButton *>(option);
+			
+		// Check if this is a QToolButton from a QToolBar (has QAction)
+		if(tb_option && widget && widget->parent()) 
+		{
+			QToolBar *toolbar = qobject_cast<QToolBar*>(widget->parent());
+			if(toolbar) 
+			{
+				// This is a QToolButton in a QToolBar, use default behavior
+				// The icon will be handled by generatedIconPixmap
+				QProxyStyle::drawControl(element, option, painter, widget);
+				return;
+			}
+		}
+	}
+	
+	// For all other elements, use default behavior without opacity changes
+	QProxyStyle::drawControl(element, option, painter, widget);
+}
+
+void CustomUiStyle::drawPrimitive(PrimitiveElement element, const QStyleOption *option,
+																	QPainter *painter, const QWidget *widget) const
+{
+	// Use default behavior without opacity changes for primitives
+	QProxyStyle::drawPrimitive(element, option, painter, widget);
+}
+
+QPixmap CustomUiStyle::generatedIconPixmap(QIcon::Mode icon_mode, const QPixmap &pixmap,
+																					 const QStyleOption *option) const
+{
+	// Generate grayscale version for disabled icons
+	if(icon_mode == QIcon::Disabled) 
+		return createGrayMaskedPixmap(pixmap);
+			
+	return QProxyStyle::generatedIconPixmap(icon_mode, pixmap, option);
+}
+
+QPixmap CustomUiStyle::createGrayMaskedPixmap(const QPixmap &original) const
+{
+	if(original.isNull()) 
+		return original;
+		
+	// Convert to QImage for desaturation and color blending
+	QImage image = original.toImage().convertToFormat(QImage::Format_ARGB32);
+	QRgb *line = nullptr, pixel;
+	QColor mask_color = qApp->palette().color(QPalette::Disabled, QPalette::Window);
+	int gray = 0, final_r = 0, 
+			final_g = 0, final_b = 0, alpha = 0,
+			mask_r = mask_color.red(),
+			mask_g = mask_color.green(),
+			mask_b = mask_color.blue();
+
+	// Apply desaturation (grayscale conversion) and blend with color
+	for(int y = 0; y < image.height(); ++y) 
+	{
+		// Get pointer to the start of the scan line
+		line = reinterpret_cast<QRgb *>(image.scanLine(y));
+
+		for(int x = 0; x < image.width(); ++x) 
+		{
+			pixel = line[x];
+			alpha = qAlpha(pixel);
+					
+			// Appky only to non-transparent pixels
+			if(alpha > 0) 
+			{
+				// Convert to grayscale using standard luminance formula
+				gray = qGray(pixel);  // qGray uses formula: (11*r + 16*g + 5*b)/32
+							
+				// Blend grayscale with the target mask color 
+				final_r = (gray * (1.0 - BlendFactor)) + (mask_r * BlendFactor);
+				final_g = (gray * (1.0 - BlendFactor)) + (mask_g * BlendFactor);
+				final_b = (gray * (1.0 - BlendFactor)) + (mask_b * BlendFactor);
+
+				// Ensure values are in valid range [0-255]
+				final_r = qBound(0, final_r, 255);
+				final_g = qBound(0, final_g, 255);
+				final_b = qBound(0, final_b, 255);
+							
+				line[x] = qRgba(final_r, final_g, final_b, alpha);
+			}
+		}
+	}
+	
+	return QPixmap::fromImage(image);
 }

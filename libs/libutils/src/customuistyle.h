@@ -30,10 +30,22 @@ all widgets in the application.
 #include "utilsglobal.h"
 #include <QProxyStyle>
 #include <QMap>
+#include <QStyleOption>
+#include <QPainter>
+#include <QWidget>
+#include <QPixmap>
+#include <QImage>
+#include <QIcon>
 
 class __libutils CustomUiStyle : public QProxyStyle {
 	private:
 		static QMap<PixelMetric, int> pixel_metrics;
+
+		// Color to blend with the grayscale icon (dark theme color)
+    static constexpr int BlendColorR = 0x15; // 21
+    static constexpr int BlendColorG = 0x1b; // 27
+    static constexpr int BlendColorB = 0x25; // 37
+    static constexpr qreal BlendFactor = 0.7;  // How much to blend with the color
 
 	public:
 		CustomUiStyle();
@@ -42,11 +54,25 @@ class __libutils CustomUiStyle : public QProxyStyle {
 
 		virtual ~CustomUiStyle();
 
-		/*! \brief Defines a custom pixel metric attribute value globally. Which means, all instancess
-		 *  of this class will share the same pixel metrics values */
+		/*! \brief Defines a custom pixel metric attribute value globally.
+		 * Which means, all instances of this class will share the same pixel metrics values */
 		static void setPixelMetricValue(PixelMetric metric, int value);
 
-		int pixelMetric(PixelMetric metric, const QStyleOption * option = 0, const QWidget * widget = 0) const;
+		int pixelMetric(PixelMetric metric, const QStyleOption * option = 0, const QWidget * widget = 0) const override;
+
+		QPixmap createGrayMaskedPixmap(const QPixmap &original) const;
+
+		 void drawItemPixmap(QPainter *painter, const QRect &rect, 
+												 int alignment, const QPixmap &pixmap) const override;
+
+    void drawControl(ControlElement element, const QStyleOption *option, 
+										 QPainter *painter, const QWidget *widget) const override;
+										
+    void drawPrimitive(PrimitiveElement element, const QStyleOption *option,
+			                 QPainter *painter, const QWidget *widget) const override;
+											
+    QPixmap generatedIconPixmap(QIcon::Mode iconMode, const QPixmap &pixmap,
+			                          const QStyleOption *option) const override;
 };
 
 #endif
