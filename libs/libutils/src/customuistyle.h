@@ -67,7 +67,7 @@ class __libutils CustomUiStyle : public QProxyStyle {
 
     void drawControl(ControlElement element, const QStyleOption *option, 
 										 QPainter *painter, const QWidget *widget) const override;
-										
+
     void drawPrimitive(PrimitiveElement element, const QStyleOption *option,
 			                 QPainter *painter, const QWidget *widget) const override;
 											

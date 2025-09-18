@@ -105,5 +105,22 @@
         "**/*.so": true,
         ".github": true,
         ".qtc_clangd": true
+    },
+
+    "editor.tokenColorCustomizations": {
+        "textMateRules": [
+            {
+                "scope": [
+                    "comment.block",      
+                    "comment.block.documentation",
+                    "comment.line.double-slash" 
+                ],
+                "settings": {
+                    "foreground": "#808080",
+                    //"fontStyle": "italic" 
+                }
+            }
+        ]
+    
     }
 }

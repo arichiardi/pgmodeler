@@ -447,7 +447,7 @@ void DataGridWidget::retrieveData()
 		emit s_editEnabled(!col_names.isEmpty());
 		emit s_exportEnabled(results_tbw->rowCount() > 0);
 
-		result_info_wgt->setVisible(results_tbw->rowCount() > 0);
+		result_info_frm->setVisible(results_tbw->rowCount() > 0);
 		result_info_lbl->setText(QString("<em>[%1]</em> ").arg(end_dt.toString("hh:mm:ss.zzz")) +
 								 tr("Row(s) returned: <strong>%1</strong> in <em><strong>%2</strong></em> ").arg(results_tbw->rowCount()).arg(exec_time_str) +
 								 tr("<em>(Limit: <strong>%1</strong> rows)</em>").arg(limit_spb->value()==0 ? tr("none") : QString::number(limit_spb->value())));
@@ -519,7 +519,7 @@ void DataGridWidget::retrieveData()
 
 void DataGridWidget::resetDataGrid()
 {
-	result_info_wgt->setVisible(false);
+	result_info_frm->setVisible(false);
 	results_tbw->setRowCount(0);
 	results_tbw->setColumnCount(0);
 	warning_frm->setVisible(false);

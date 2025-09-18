@@ -82,6 +82,7 @@ void CustomUiStyle::drawControl(ControlElement element, const QStyleOption *opti
 		if(tb_option && widget && widget->parent()) 
 		{
 			QToolBar *toolbar = qobject_cast<QToolBar*>(widget->parent());
+
 			if(toolbar) 
 			{
 				// This is a QToolButton in a QToolBar, use default behavior
@@ -91,7 +92,7 @@ void CustomUiStyle::drawControl(ControlElement element, const QStyleOption *opti
 			}
 		}
 	}
-	
+
 	// For all other elements, use default behavior without opacity changes
 	QProxyStyle::drawControl(element, option, painter, widget);
 }
@@ -99,6 +100,80 @@ void CustomUiStyle::drawControl(ControlElement element, const QStyleOption *opti
 void CustomUiStyle::drawPrimitive(PrimitiveElement element, const QStyleOption *option,
 																	QPainter *painter, const QWidget *widget) const
 {
+	// Frame elements that need to be customized
+  if((element == PE_Frame || element == PE_FrameLineEdit || 
+		  element == PE_FrameGroupBox || element == PE_FrameTabWidget || 
+      element == PE_FrameWindow) && 
+     option && painter && widget)
+  {
+    bool customize = false, has_round_corners = false;
+    
+    // Lista de classes base para verificar
+    static const QStringList target_classes = {
+      "QLineEdit",
+      "QPlainTextEdit", 
+      "QTreeWidget",
+      "QTreeView",
+      "NumberedTextEditor"
+    };
+    
+    for(auto &class_name : target_classes)
+    {
+			// We customize widgets that inherit from the target classes
+      if(widget->inherits(class_name.toStdString().c_str()))
+      {
+        customize = true;
+				has_round_corners = (class_name == "QLineEdit" || 
+														 class_name == "QPlainTextEdit"); 
+        break;
+      }
+    }
+    
+		// If the widget itself is not a target class, check its parent hierarchy
+    if(!customize)
+    {
+      const QWidget *parent = widget->parentWidget();
+
+      while(parent && !customize)
+      {
+        for(auto &class_name : target_classes)
+        {
+          if(parent->inherits(class_name.toStdString().c_str()))
+          {
+            customize = true;
+						has_round_corners = (class_name == "QLineEdit" || 
+																 class_name == "QPlainTextEdit"); 
+            break;
+          }
+        }
+        parent = parent->parentWidget();
+      }
+    }
+    
+		// If it is one of the target classes, customize the border
+    if(customize)
+    {
+      painter->save();
+      
+      // Use the border color based on QPalette color but a bit ligther
+      QColor border_color = qApp->palette().color(QPalette::Dark).lighter(150);
+      QPen border_pen(border_color);
+      border_pen.setWidth(1);
+      painter->setPen(border_pen);
+      
+			if(has_round_corners)
+			{
+				painter->setRenderHints(QPainter::Antialiasing, true);     
+				painter->drawRoundedRect(option->rect, 4, 4);    
+			}
+			else
+				painter->drawRect(option->rect.adjusted(0, 0, -1, -1));      
+      
+			painter->restore();
+      return;
+    }
+  }
+
 	// Use default behavior without opacity changes for primitives
 	QProxyStyle::drawPrimitive(element, option, painter, widget);
 }

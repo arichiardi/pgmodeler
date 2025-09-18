@@ -60,7 +60,7 @@ NumberedTextEditor::NumberedTextEditor(QWidget * parent, bool act_btns_enabled, 
 
 	if(act_btns_enabled)
 	{
-		QPalette pal = this->palette();
+		//QPalette pal = this->palette();
 		QFont font = this->font();
 
 		show_act_btns = true;
@@ -73,8 +73,8 @@ NumberedTextEditor::NumberedTextEditor(QWidget * parent, bool act_btns_enabled, 
 		top_widget->setAutoFillBackground(true);
 		top_widget->setLayout(top_wgt_lt);
 
-		pal.setColor(QPalette::Window, LineNumbersWidget::getBackgroundColor());
-		top_widget->setPalette(pal);
+		//pal.setColor(QPalette::Window, LineNumbersWidget::getBackgroundColor());
+		//top_widget->setPalette(pal);
 		top_widget->setVisible(act_btns_enabled);
 		top_widget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
 
@@ -771,13 +771,13 @@ void NumberedTextEditor::resizeWidgets()
 	if(top_widget && show_act_btns)
 	{
 		top_widget->setStyleSheet(QString("QWidget#%1 { background-color: %2; }")
-															.arg(top_widget->objectName(), line_numbers_wgt->getBackgroundColor().name()));									
-
+															.arg(top_widget->objectName(), line_numbers_wgt->getBackgroundColor().name()));
+		
 		top_widget->setGeometry(lt_margin, rect.top(),
 														width, top_widget->height());
 	}
 
-	QString border_pal = AppearanceConfigWidget::isDarkUiTheme() ? "midlight" : "mid",
+	QString border_pal = AppearanceConfigWidget::isDarkUiTheme() ? "dark" : "mid",
 
 			vp_style = QString("QWidget#%1 { \
 														background-color: palette(base); \
