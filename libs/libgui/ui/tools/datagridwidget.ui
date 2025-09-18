@@ -689,7 +689,7 @@
           </property>
           <widget class="QGroupBox" name="filter_grp">
            <property name="title">
-            <string>&amp;Expression</string>
+            <string>Expression</string>
            </property>
            <layout class="QGridLayout" name="gridLayout_11">
             <property name="leftMargin">
@@ -727,7 +727,7 @@
           </widget>
           <widget class="QGroupBox" name="order_by_grp">
            <property name="title">
-            <string>&amp;Order &amp;&amp; Limit</string>
+            <string>Order &amp;&amp; Limit</string>
            </property>
            <layout class="QGridLayout" name="gridLayout_7">
             <property name="leftMargin">
