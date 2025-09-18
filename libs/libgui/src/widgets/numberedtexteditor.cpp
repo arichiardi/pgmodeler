@@ -792,7 +792,7 @@ void NumberedTextEditor::resizeWidgets()
 	viewport()->setStyleSheet(vp_style);
 
 	setStyleSheet(QString("NumberedTextEditor { background-color: palette(window); border: 1px solid palette(%1); }")
-								.arg(AppearanceConfigWidget::isDarkUiTheme() ? "midlight" : "mid"));
+								.arg(AppearanceConfigWidget::isDarkUiTheme() ? "dark" : "mid"));
 }
 
 int NumberedTextEditor::getLineNumbersWidth()

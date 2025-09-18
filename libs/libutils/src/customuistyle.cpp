@@ -85,8 +85,6 @@ void CustomUiStyle::drawControl(ControlElement element, const QStyleOption *opti
 
 			if(toolbar) 
 			{
-				// This is a QToolButton in a QToolBar, use default behavior
-				// The icon will be handled by generatedIconPixmap
 				QProxyStyle::drawControl(element, option, painter, widget);
 				return;
 			}
@@ -108,12 +106,13 @@ void CustomUiStyle::drawPrimitive(PrimitiveElement element, const QStyleOption *
   {
     bool customize = false, has_round_corners = false;
     
-    // Lista de classes base para verificar
-    static const QStringList target_classes = {
+	   static const QStringList target_classes = {
       "QLineEdit",
       "QPlainTextEdit", 
       "QTreeWidget",
       "QTreeView",
+			"QTableView",
+			"QTableWidget",
       "NumberedTextEditor"
     };
     
@@ -156,7 +155,7 @@ void CustomUiStyle::drawPrimitive(PrimitiveElement element, const QStyleOption *
       painter->save();
       
       // Use the border color based on QPalette color but a bit ligther
-      QColor border_color = qApp->palette().color(QPalette::Dark).lighter(150);
+      QColor border_color = qApp->palette().color(QPalette::Dark).lighter(130);
       QPen border_pen(border_color);
       border_pen.setWidth(1);
       painter->setPen(border_pen);
@@ -164,10 +163,10 @@ void CustomUiStyle::drawPrimitive(PrimitiveElement element, const QStyleOption *
 			if(has_round_corners)
 			{
 				painter->setRenderHints(QPainter::Antialiasing, true);     
-				painter->drawRoundedRect(option->rect, 4, 4);    
+				painter->drawRoundedRect(option->rect, 3, 3);    
 			}
 			else
-				painter->drawRect(option->rect.adjusted(0, 0, -1, -1));      
+				painter->drawRect(option->rect.adjusted(1, 1, -1, -1));      
       
 			painter->restore();
       return;

@@ -40,12 +40,7 @@ all widgets in the application.
 class __libutils CustomUiStyle : public QProxyStyle {
 	private:
 		static QMap<PixelMetric, int> pixel_metrics;
-
-		// Color to blend with the grayscale icon (dark theme color)
-    static constexpr int BlendColorR = 0x15; // 21
-    static constexpr int BlendColorG = 0x1b; // 27
-    static constexpr int BlendColorB = 0x25; // 37
-    static constexpr qreal BlendFactor = 0.7;  // How much to blend with the color
+    static constexpr qreal BlendFactor = 0.7;
 
 	public:
 		CustomUiStyle();

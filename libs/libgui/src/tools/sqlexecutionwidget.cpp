@@ -35,7 +35,7 @@ SQLExecutionWidget::SQLExecutionWidget(QWidget * parent) : QWidget(parent)
 	setupUi(this);
 
 	output_wgt->setVisible(false);
-	plugins_wgts_stc->setVisible(false);
+	plugins_wgts_stw->setVisible(false);
 	sql_cmd_splitter->setSizes({800, 200});
 
 	sql_cmd_txt=GuiUtilsNs::createNumberedTextEditor(sql_cmd_wgt);
@@ -79,6 +79,9 @@ SQLExecutionWidget::SQLExecutionWidget(QWidget * parent) : QWidget(parent)
 	file_tb->setToolTip(file_tb->toolTip() + QString(" (%1)").arg(file_tb->shortcut().toString()));
 	output_tb->setToolTip(output_tb->toolTip() + QString(" (%1)").arg(output_tb->shortcut().toString()));
 	clear_all_tb->setToolTip(clear_all_tb->toolTip() + QString(" (%1)").arg(clear_all_tb->shortcut().toString()));
+
+	for(auto &btn : top_btns_wgt->findChildren<QToolButton *>())
+		GuiUtilsNs::configureWidgetFont(btn, GuiUtilsNs::MediumFontFactor);
 
 	results_tbw->setItemDelegate(new PlainTextItemDelegate(this, true));
 
@@ -279,6 +282,7 @@ void SQLExecutionWidget::installPluginWidgets(QToolButton *btn, QWidget *wgt)
 	/* Forcing the button to have the same features of all other buttons in the
 	 * top area when they lie */
 	btn->setIconSize(run_sql_tb->iconSize());
+	btn->setFont(run_sql_tb->font());
 	btn->setSizePolicy(run_sql_tb->sizePolicy());
 	btn->setToolButtonStyle(run_sql_tb->toolButtonStyle());
 	btn->setAutoRaise(run_sql_tb->autoRaise());
@@ -289,7 +293,7 @@ void SQLExecutionWidget::installPluginWidgets(QToolButton *btn, QWidget *wgt)
 	int idx = -1;
 
 	if(wgt)
-		idx = plugins_wgts_stc->addWidget(wgt);
+		idx = plugins_wgts_stw->addWidget(wgt);
 
 	btn->setProperty(Attributes::Index.toStdString().c_str(), idx);
 }
@@ -315,10 +319,10 @@ void SQLExecutionWidget::togglePluginButton(bool checked)
 	int wgt_idx = p_btn->property(Attributes::Index.toStdString().c_str()).toInt();
 
 	// Disabling updates prevents flickering when hidding the stacked widgets
-	plugins_wgts_stc->setUpdatesEnabled(false);
-	plugins_wgts_stc->setVisible(checked && wgt_idx >= 0);
-	plugins_wgts_stc->setCurrentIndex(wgt_idx);
-	plugins_wgts_stc->setUpdatesEnabled(true);
+	plugins_wgts_stw->setUpdatesEnabled(false);
+	plugins_wgts_stw->setVisible(checked && wgt_idx >= 0);
+	plugins_wgts_stw->setCurrentIndex(wgt_idx);
+	plugins_wgts_stw->setUpdatesEnabled(true);
 }
 
 void SQLExecutionWidget::setConnection(Connection conn)
