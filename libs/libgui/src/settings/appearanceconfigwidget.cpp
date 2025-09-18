@@ -56,7 +56,7 @@ std::map<QPalette::ColorRole, QStringList> AppearanceConfigWidget::dark_ui_color
 
 std::map<QPalette::ColorRole, QStringList> AppearanceConfigWidget::light_ui_colors {
 	{ QPalette::WindowText, {"#232627", "#232627", "#777878"} },
-	{ QPalette::Button, {"#e4e5e6", "#e4e5e6", "#e4e5e6"} },
+	{ QPalette::Button, {"#e2e3e4", "#e2e3e4", "#e2e3e4"} },
 	{ QPalette::Light, {"#ffffff", "#ffffff", "#ffffff"} },
 	{ QPalette::Midlight, {"#dadbdc", "#b0b1b2", "#b0b1b2"} },
 	{ QPalette::Mid, {"#a8a9aa", "#9fa0a1", "#9fa0a1"} },
