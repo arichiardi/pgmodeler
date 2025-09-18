@@ -771,8 +771,7 @@ void NumberedTextEditor::resizeWidgets()
 	if(top_widget && show_act_btns)
 	{
 		top_widget->setStyleSheet(QString("QWidget#%1 { background-color: %2; }")
-															.arg(line_numbers_wgt->getBackgroundColor().name(),
-															top_widget->objectName()));
+															.arg(top_widget->objectName(), line_numbers_wgt->getBackgroundColor().name()));									
 
 		top_widget->setGeometry(lt_margin, rect.top(),
 														width, top_widget->height());
