@@ -44,9 +44,9 @@ ModelNavigationWidget::ModelNavigationWidget(QWidget *parent): QWidget(parent)
 	next_tb->setToolTip(next_tb->toolTip() + QString(" (%1)").arg(next_tb->shortcut().toString()));
 	close_tb->setToolTip(close_tb->toolTip() + QString(" (%1)").arg(close_tb->shortcut().toString()));
 
-	GuiUtilsNs::createDropShadow(previous_tb, 1, 1, 5);
-	GuiUtilsNs::createDropShadow(next_tb, 1, 1, 5);
-	GuiUtilsNs::createDropShadow(close_tb, 1, 1, 5);
+	//GuiUtilsNs::createDropShadow(previous_tb, 1, 1, 5);
+	//GuiUtilsNs::createDropShadow(next_tb, 1, 1, 5);
+	//GuiUtilsNs::createDropShadow(close_tb, 1, 1, 5);
 }
 
 int ModelNavigationWidget::getCurrentIndex()

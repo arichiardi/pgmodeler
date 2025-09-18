@@ -48,7 +48,7 @@ std::map<QPalette::ColorRole, QStringList> AppearanceConfigWidget::dark_ui_color
     { QPalette::HighlightedText, {"#e1e2e5", "#e1e2e5", "#171b1e"} },
     { QPalette::Link, {"#1a72ab", "#1a72ab", "#1a72ab"} },
     { QPalette::LinkVisited, {"#717e7f", "#717e7f", "#717e7f"} },
-    { QPalette::AlternateBase, {"#141a29", "#141a29", "#141a29"} },
+    { QPalette::AlternateBase, {"#111623", "#111623", "#111623"} },
     { QPalette::ToolTipBase, {"#23282d", "#23282d", "#23282d"} },
     { QPalette::ToolTipText, {"#e1e2e5", "#e1e2e5", "#e1e2e5"} },
     { QPalette::PlaceholderText, {"#3a3c3e", "#3a3c3e", "#3a3c3e"} }
@@ -957,7 +957,7 @@ void AppearanceConfigWidget::applyUiTheme()
 	if(ui_theme == Attributes::Dark)
 	{
 		// Forcing QMenu class to use a lighter base color
-		pal.setColor(QPalette::Base, color_map->at(QPalette::Mid).at(0));
+		pal.setColor(QPalette::Base, color_map->at(QPalette::Base).at(0));
 		qApp->setPalette(pal, "QMenu");
 	}
 

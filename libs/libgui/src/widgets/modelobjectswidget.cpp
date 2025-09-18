@@ -46,11 +46,8 @@ ModelObjectsWidget::ModelObjectsWidget(bool simplified_view, QWidget *parent) : 
 	visibleobjects_grp->setVisible(false);
 	filter_wgt->setVisible(simplified_view);
 
-	/* Since the frame border is modified via Qt stylesheets
-	 * we need to deactivate it using css too since using
-	 * setFrameStyle has no effect */
 	if(simplified_view)
-		content_frm->setStyleSheet("QFrame#content_frm { border: none; }");
+		model_objs_grid->setContentsMargins(GuiUtilsNs::LtMargins);
 
 	connect(objectstree_tw, &QTreeWidget::itemPressed, this, &ModelObjectsWidget::selectObject);
 	connect(objectstree_tw, &QTreeWidget::itemPressed, this, &ModelObjectsWidget::showObjectMenu);

@@ -652,6 +652,11 @@ bool ConnectionsConfigWidget::openConnectionsConfiguration(bool one_time_edit,
 	});
 
 	conn_cfg_wgt.setOneTimeEditMode(one_time_edit, conn_alias, dbname, host, port, username, password);
+	
+	/* Workaround to hide the border of the bg_frame when running
+	 * ConnectionsConfigWidget in standalone mode */
+	conn_cfg_wgt.bg_frame->setStyleSheet("QFrame { border: none; }");
+
 	parent_form.setWindowTitle(tr("Edit database connections"));
 	parent_form.setWindowFlags(Qt::Dialog | Qt::WindowMinimizeButtonHint | Qt::WindowCloseButtonHint);
 	parent_form.setMainWidget(&conn_cfg_wgt);
