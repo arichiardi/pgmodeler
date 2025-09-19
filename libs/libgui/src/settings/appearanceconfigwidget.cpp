@@ -60,7 +60,7 @@ std::map<QPalette::ColorRole, QStringList> AppearanceConfigWidget::light_ui_colo
 	{ QPalette::Light, {"#ffffff", "#ffffff", "#ffffff"} },
 	{ QPalette::Midlight, {"#dadbdc", "#b0b1b2", "#b0b1b2"} },
 	{ QPalette::Mid, {"#a8a9aa", "#9fa0a1", "#9fa0a1"} },
-	{ QPalette::Dark, {"#777878", "#777878", "#777878"} },
+	{ QPalette::Dark, {"#909090", "#868686", "#777878"} },
 	{ QPalette::Text, {"#232627", "#232627", "#777878"} },
 	{ QPalette::BrightText, {"#ffffff", "#ffffff", "#ffffff"} },
 	{ QPalette::ButtonText, {"#232627", "#232627", "#777878"} },

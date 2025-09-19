@@ -166,7 +166,7 @@ void CustomUiStyle::drawPrimitive(PrimitiveElement element, const QStyleOption *
 				painter->drawRoundedRect(option->rect, 3, 3);    
 			}
 			else
-				painter->drawRect(option->rect.adjusted(1, 1, -1, -1));      
+				painter->drawRect(option->rect.adjusted(0, 0, -1, -1));      
       
 			painter->restore();
       return;
