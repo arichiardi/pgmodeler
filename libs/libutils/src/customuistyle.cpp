@@ -19,6 +19,7 @@
 #include "customuistyle.h"
 #include <QToolBar>
 #include <QApplication>
+#include <QPainterPath>
 
 QMap<QStyle::PixelMetric, int> CustomUiStyle::pixel_metrics;
 
@@ -98,6 +99,57 @@ void CustomUiStyle::drawControl(ControlElement element, const QStyleOption *opti
 void CustomUiStyle::drawPrimitive(PrimitiveElement element, const QStyleOption *option,
 																	QPainter *painter, const QWidget *widget) const
 {
+	// Handle QToolButton with simple border styling
+	if(element == PE_PanelButtonTool && option && painter && widget)
+	{
+		painter->save();
+		painter->setRenderHint(QPainter::Antialiasing, true);
+		
+		// Base colors for normal state - lighter background and contrasting border
+		QColor base_background = qApp->palette().color(QPalette::Button).lighter(220);
+		QColor base_border = qApp->palette().color(QPalette::Dark).lighter(160);
+		
+		QColor background_color = base_background;
+		// Usar a cor mais clara (antes usada nas bordas superior/esquerda) como cor base da borda
+		QColor border_color = base_border.lighter(150);
+		
+		// Adjust colors based on button state using the base colors as reference
+		if(!(option->state & State_Enabled))
+		{
+			// Disabled state: darker than base colors
+			background_color = base_background.darker(130);
+			border_color = border_color.darker(130);
+		}
+		else if(option->state & (State_Sunken | State_On))
+		{
+			// Pressed/Checked state: darker than base colors
+			background_color = base_background.darker(115);
+			border_color = border_color.darker(115);
+		}
+		else if(option->state & State_MouseOver)
+		{
+			// Hover state: slightly lighter than base colors
+			background_color = base_background.lighter(105);
+			border_color = border_color.lighter(105);
+		}
+		
+		// Draw background with rounded corners (4px)
+		painter->setBrush(background_color);
+		painter->setPen(Qt::NoPen);
+		painter->drawRoundedRect(option->rect, 4, 4);
+		
+		// Desenhar borda uniforme (flat) usando retângulo arredondado
+		painter->setRenderHint(QPainter::Antialiasing, true);
+		painter->setPen(QPen(border_color, 1));
+		painter->setBrush(Qt::NoBrush);
+		
+		// Desenhar retângulo de borda arredondada sem ajuste
+		painter->drawRoundedRect(option->rect, 4, 4);
+		
+		painter->restore();
+		return;
+	}
+
 	// Frame elements that need to be customized
   if((element == PE_Frame || element == PE_FrameLineEdit || 
 		  element == PE_FrameGroupBox || element == PE_FrameTabWidget || 
@@ -165,7 +217,7 @@ void CustomUiStyle::drawPrimitive(PrimitiveElement element, const QStyleOption *
 				painter->setRenderHints(QPainter::Antialiasing, true);     
 				painter->drawRoundedRect(option->rect, 3, 3);    
 			}
-			else
+			else	
 				painter->drawRect(option->rect.adjusted(0, 0, -1, -1));      
       
 			painter->restore();
