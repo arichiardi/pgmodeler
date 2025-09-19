@@ -66,6 +66,9 @@ class __libutils CustomUiStyle : public QProxyStyle {
     void drawPrimitive(PrimitiveElement element, const QStyleOption *option,
 			                 QPainter *painter, const QWidget *widget) const override;
 											
+		void drawComplexControl(ComplexControl control, const QStyleOptionComplex *option,
+													  QPainter *painter, const QWidget *widget) const override;
+											
     QPixmap generatedIconPixmap(QIcon::Mode iconMode, const QPixmap &pixmap,
 			                          const QStyleOption *option) const override;
 };

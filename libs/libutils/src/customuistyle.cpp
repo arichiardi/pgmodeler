@@ -18,6 +18,7 @@
 
 #include "customuistyle.h"
 #include <QToolBar>
+#include <QToolButton>
 #include <QApplication>
 
 QMap<QStyle::PixelMetric, int> CustomUiStyle::pixel_metrics;
@@ -98,6 +99,66 @@ void CustomUiStyle::drawControl(ControlElement element, const QStyleOption *opti
 void CustomUiStyle::drawPrimitive(PrimitiveElement element, const QStyleOption *option,
 																	QPainter *painter, const QWidget *widget) const
 {
+	// Custom flat style for QToolButton with rounded corners - NO shadows
+	if((element == PE_PanelButtonTool || element == PE_FrameButtonTool || 
+		  element == PE_PanelButtonCommand || element == PE_PanelButtonBevel) && widget)
+	{
+		const QToolButton *tool_button = qobject_cast<const QToolButton*>(widget);
+		
+		if(tool_button && option && painter)
+		{
+			painter->save();
+			painter->setRenderHint(QPainter::Antialiasing, true);
+			
+			// Disable any shadow effects completely
+			painter->setCompositionMode(QPainter::CompositionMode_SourceOver);
+			
+			// Get base colors from palette
+			QColor dark_color = option->palette.color(QPalette::Dark);
+			QColor button_color = option->palette.color(QPalette::Button);
+			QColor border_color = dark_color;
+			QColor bg_color;
+			
+			// Adjust background color based on button state
+			if(!(option->state & State_Enabled))
+			{
+				// Disabled: use QPalette::Button color
+				bg_color = button_color;
+			}
+			else if(option->state & (State_Sunken | State_On))
+			{
+				// Pressed or checked: 120 points lighter than QPalette::Button
+				bg_color = button_color.lighter(120);
+			}
+			else if(option->state & State_MouseOver)
+			{
+				// Hover: 150 points lighter than QPalette::Dark
+				bg_color = dark_color.lighter(150);
+			}
+			else
+			{
+				// Normal state: 120 points lighter than QPalette::Dark
+				bg_color = dark_color.lighter(120);
+			}
+			
+			// Draw completely flat rounded background (no shadows)
+			painter->setBrush(bg_color);
+			painter->setPen(Qt::NoPen);
+			painter->drawRoundedRect(option->rect, 4, 4);
+			
+			// Draw flat rounded border (no 3D effects)
+			QPen border_pen(border_color);
+			border_pen.setWidth(1);
+			border_pen.setStyle(Qt::SolidLine);
+			painter->setPen(border_pen);
+			painter->setBrush(Qt::NoBrush);
+			painter->drawRoundedRect(option->rect.adjusted(0, 0, -1, -1), 4, 4);
+			
+			painter->restore();
+			return;
+		}
+	}
+	
 	// Frame elements that need to be customized
   if((element == PE_Frame || element == PE_FrameLineEdit || 
 		  element == PE_FrameGroupBox || element == PE_FrameTabWidget || 
@@ -115,7 +176,7 @@ void CustomUiStyle::drawPrimitive(PrimitiveElement element, const QStyleOption *
 			"QTableWidget",
       "NumberedTextEditor"
     };
-    
+
     for(auto &class_name : target_classes)
     {
 			// We customize widgets that inherit from the target classes
@@ -175,6 +236,64 @@ void CustomUiStyle::drawPrimitive(PrimitiveElement element, const QStyleOption *
 
 	// Use default behavior without opacity changes for primitives
 	QProxyStyle::drawPrimitive(element, option, painter, widget);
+}
+
+void CustomUiStyle::drawComplexControl(ComplexControl control, const QStyleOptionComplex *option,
+																			 QPainter *painter, const QWidget *widget) const
+{
+	// Handle QToolButton complex control to ensure completely flat appearance
+	if(control == CC_ToolButton && widget)
+	{
+		const QToolButton *tool_button = qobject_cast<const QToolButton*>(widget);
+		const QStyleOptionToolButton *tb_option = 
+					qstyleoption_cast<const QStyleOptionToolButton *>(option);
+		
+		if(tool_button && tb_option && painter)
+		{
+			// Draw button background without any 3D effects or shadows
+			if(tb_option->subControls & SC_ToolButton)
+			{
+				QStyleOptionToolButton button_opt = *tb_option;
+				button_opt.subControls = SC_ToolButton;
+				
+				// Remove ALL 3D state flags to ensure flat appearance
+				button_opt.state &= ~(State_Raised | State_Sunken);
+				button_opt.features &= ~(QStyleOptionToolButton::HasMenu);
+				
+				// Use our custom flat primitive drawing
+				drawPrimitive(PE_PanelButtonTool, &button_opt, painter, widget);
+			}
+			
+			// Draw button content (icon/text) without any shadow effects
+			if(tb_option->subControls & SC_ToolButton)
+			{
+				QStyleOptionToolButton content_opt = *tb_option;
+				content_opt.subControls = SC_ToolButton;
+				
+				// Remove shadow-related state flags
+				content_opt.state &= ~(State_Raised | State_Sunken);
+				
+				drawControl(CE_ToolButtonLabel, &content_opt, painter, widget);
+			}
+			
+			// Draw the menu indicator if present (also flat)
+			if(tb_option->subControls & SC_ToolButtonMenu)
+			{
+				QStyleOptionToolButton menu_opt = *tb_option;
+				menu_opt.subControls = SC_ToolButtonMenu;
+				
+				// Remove 3D effects from menu indicator
+				menu_opt.state &= ~(State_Raised | State_Sunken);
+				
+				QProxyStyle::drawComplexControl(control, &menu_opt, painter, widget);
+			}
+			
+			return;
+		}
+	}
+	
+	// Use default behavior for other complex controls
+	QProxyStyle::drawComplexControl(control, option, painter, widget);
 }
 
 QPixmap CustomUiStyle::generatedIconPixmap(QIcon::Mode icon_mode, const QPixmap &pixmap,
