@@ -110,26 +110,64 @@ void CustomUiStyle::drawPrimitive(PrimitiveElement element, const QStyleOption *
 		QColor base_border = qApp->palette().color(QPalette::Dark).lighter(160);
 		
 		QColor background_color = base_background;
-		// Usar a cor mais clara (antes usada nas bordas superior/esquerda) como cor base da borda
 		QColor border_color = base_border.lighter(150);
+		
+		// Check if widget has a custom background color (for color picker buttons)
+		if(widget)
+		{
+			QPalette widget_palette = widget->palette();
+			QColor widget_bg = widget_palette.color(QPalette::Button);
+			QColor default_bg = qApp->palette().color(QPalette::Button);
+			
+			// If the widget has a custom background color, use it as base
+			if(widget_bg != default_bg)
+			{
+				background_color = widget_bg;
+				// Keep the same border color for consistency
+			}
+		}
 		
 		// Adjust colors based on button state using the base colors as reference
 		if(!(option->state & State_Enabled))
 		{
 			// Disabled state: darker than base colors
-			background_color = base_background.darker(130);
+			if(widget && widget->palette().color(QPalette::Button) != qApp->palette().color(QPalette::Button))
+			{
+				// For custom colors, just make them slightly darker
+				background_color = background_color.darker(130);
+			}
+			else
+			{
+				background_color = base_background.darker(130);
+			}
 			border_color = border_color.darker(130);
 		}
 		else if(option->state & (State_Sunken | State_On))
 		{
 			// Pressed/Checked state: darker than base colors
-			background_color = base_background.darker(115);
+			if(widget && widget->palette().color(QPalette::Button) != qApp->palette().color(QPalette::Button))
+			{
+				// For custom colors, just make them slightly darker
+				background_color = background_color.darker(115);
+			}
+			else
+			{
+				background_color = base_background.darker(115);
+			}
 			border_color = border_color.darker(115);
 		}
 		else if(option->state & State_MouseOver)
 		{
 			// Hover state: slightly lighter than base colors
-			background_color = base_background.lighter(105);
+			if(widget && widget->palette().color(QPalette::Button) != qApp->palette().color(QPalette::Button))
+			{
+				// For custom colors, just make them slightly lighter
+				background_color = background_color.lighter(105);
+			}
+			else
+			{
+				background_color = base_background.lighter(105);
+			}
 			border_color = border_color.lighter(105);
 		}
 		
