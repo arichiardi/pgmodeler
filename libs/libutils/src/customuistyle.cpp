@@ -359,18 +359,19 @@ void CustomUiStyle::drawPrimitivePanelButtonTool(PrimitiveElement element, const
 			border_color = border_color.lighter(105);
 		}
 		
-		// Draw background with rounded corners (4px)
+		// Draw background with rounded corners (5px)
 		painter->setBrush(background_color);
 		painter->setPen(Qt::NoPen);
-		painter->drawRoundedRect(option->rect, 4, 4);
+		painter->drawRoundedRect(option->rect, 5, 5);
 		
-		// Desenhar borda uniforme (flat) usando retângulo arredondado
+		// Desenhar borda uniforme (flat) usando retângulo arredondado - evitar sobreposição
 		painter->setRenderHint(QPainter::Antialiasing, true);
+		QRectF border_rect = QRectF(option->rect).adjusted(0.5, 0.5, -0.5, -0.5);
 		painter->setPen(QPen(border_color, 1));
 		painter->setBrush(Qt::NoBrush);
 		
 		// Desenhar retângulo de borda arredondada sem ajuste
-		painter->drawRoundedRect(option->rect, 4, 4);
+		painter->drawRoundedRect(border_rect, 5, 5);
 		
 		painter->restore();
 		return;
@@ -415,12 +416,13 @@ void CustomUiStyle::drawPrimitivePanelButtonCommand(PrimitiveElement element, co
 	// Draw background with rounded corners
 	painter->setBrush(background_color);
 	painter->setPen(Qt::NoPen);
-	painter->drawRoundedRect(option->rect, 4, 4);
+	painter->drawRoundedRect(option->rect, 5, 5);
 	
-	// Draw uniform flat border
+	// Draw uniform flat border - use slightly inset rect to avoid overlap artifacts
+	QRectF border_rect = QRectF(option->rect).adjusted(0.5, 0.5, -0.5, -0.5);
 	painter->setPen(QPen(border_color, 1));
 	painter->setBrush(Qt::NoBrush);
-	painter->drawRoundedRect(option->rect, 4, 4);
+	painter->drawRoundedRect(border_rect, 5, 5);
 	
 	painter->restore();
 }
@@ -455,12 +457,13 @@ void CustomUiStyle::drawPrimitiveFrameTabWidget(PrimitiveElement element, const 
 	// Draw background with rounded corners
 	painter->setBrush(background_color);
 	painter->setPen(Qt::NoPen);
-	painter->drawRoundedRect(option->rect, 4, 4);
+	painter->drawRoundedRect(option->rect, 5, 5);
 	
-	// Draw uniform flat border
+	// Draw uniform flat border - use slightly inset rect to avoid overlap artifacts
+	QRectF border_rect = QRectF(option->rect).adjusted(0.5, 0.5, -0.5, -0.5);
 	painter->setPen(QPen(border_color, 1));
 	painter->setBrush(Qt::NoBrush);
-	painter->drawRoundedRect(option->rect, 4, 4);
+	painter->drawRoundedRect(border_rect, 5, 5);
 	
 	painter->restore();
 }
@@ -589,10 +592,10 @@ void CustomUiStyle::drawPrimitiveFrameElements(PrimitiveElement element, const Q
 		if(has_round_corners)
 		{
 			painter->setRenderHints(QPainter::Antialiasing, true);     
-			painter->drawRoundedRect(option->rect, 3, 3);    
+			painter->drawRoundedRect(option->rect, 4, 4);    
 		}
 		else	
-			painter->drawRect(option->rect.adjusted(0, 0, -1, -1));      
+			painter->drawRect(option->rect);      
 		
 		painter->restore();
 		return;
