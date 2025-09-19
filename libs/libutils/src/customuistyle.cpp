@@ -101,45 +101,108 @@ void CustomUiStyle::drawControl(ControlElement element, const QStyleOption *opti
 			painter->save();
 			painter->setRenderHint(QPainter::Antialiasing, true);
 			
-			// Use same color scheme for consistency
+			// Use same color scheme as QTabWidget (PE_FrameTabWidget) for consistency
 			QColor base_background = qApp->palette().color(QPalette::Button).lighter(220);
 			QColor base_border = qApp->palette().color(QPalette::Dark).lighter(160);
+			QColor highlight_color = qApp->palette().color(QPalette::Highlight);
 			
 			QColor background_color = base_background;
 			QColor border_color = base_border.lighter(150);
+			QRect tab_rect = option->rect;
 			
-			// Adjust colors based on tab state
+			// Determine tab position and orientation
+			QTabBar::Shape shape = tab_option->shape;
+			bool is_selected = (option->state & State_Selected);
+			bool is_first = (tab_option->position == QStyleOptionTab::Beginning ||
+											 tab_option->position == QStyleOptionTab::OnlyOneTab);
+			bool is_last = (tab_option->position == QStyleOptionTab::End ||
+											tab_option->position == QStyleOptionTab::OnlyOneTab);
+			
+			// Adjust colors based on tab state using same logic as QToolButton
 			if(!(option->state & State_Enabled))
 			{
+				// Disabled state: darker than base colors
 				background_color = base_background.darker(130);
 				border_color = border_color.darker(130);
 			}
-			else if(option->state & State_Selected)
+			else if(is_selected)
 			{
+				// Selected tab: lighter/brighter than base for clear distinction (ACTIVE)
 				background_color = base_background.lighter(110);
-				border_color = border_color.lighter(110);
+				border_color = highlight_color.lighter(130);
 			}
 			else if(option->state & State_MouseOver)
 			{
+				// Hover state: slightly lighter than base colors
 				background_color = base_background.lighter(105);
 				border_color = border_color.lighter(105);
+			}
+			else
+			{
+				// Inactive tabs: slightly darker than base for distinction
+				background_color = base_background.darker(110);
+				border_color = border_color;
+			}
+			
+			// Create custom shape based on tab orientation for flat design
+			QRect draw_rect = tab_rect;
+			int radius = 6;
+			
+			if(shape == QTabBar::RoundedNorth || shape == QTabBar::TriangularNorth)
+			{
+				// Top tabs - desloca para baixo para esconder cantos inferiores arredondados
+				draw_rect.setHeight(tab_rect.height() + radius);
+				
+				// Para abas inativas, diminuir altura em 5px para simular deseleção
+				if(!is_selected)
+				{
+					draw_rect.moveTop(tab_rect.top() + 5);
+					tab_rect.moveTop(tab_rect.top() + 5);
+				}
+			}
+			else
+			{
+				// Para outras orientações, usar retângulo simples por enquanto
+				// (implementar depois uma por vez)
 			}
 			
 			// Draw background with rounded corners
 			painter->setBrush(background_color);
 			painter->setPen(Qt::NoPen);
-			painter->drawRoundedRect(option->rect, 4, 4);
+			if(shape == QTabBar::RoundedNorth || shape == QTabBar::TriangularNorth)
+			{
+				painter->drawRoundedRect(draw_rect, radius, radius);
+			}
+			else
+			{
+				painter->drawRect(tab_rect);
+			}
 			
-			// Draw uniform flat border
-			painter->setPen(QPen(border_color, 1));
-			painter->setBrush(Qt::NoBrush);
-			painter->drawRoundedRect(option->rect, 4, 4);
+			// Draw border with subtle flat styling (sem linha de destaque para abas ativas)
+			if(!is_selected)
+			{
+				// Non-selected tabs get subtle border
+				painter->setPen(QPen(border_color, 1));
+				painter->setBrush(Qt::NoBrush);
+				if(shape == QTabBar::RoundedNorth || shape == QTabBar::TriangularNorth)
+				{
+					painter->drawRoundedRect(draw_rect, radius, radius);
+				}
+				else
+				{
+					painter->drawRect(tab_rect);
+				}
+			}
+			// Abas ativas não têm borda adicional (apenas o background diferenciado)
 			
 			painter->restore();
 			
-			// Draw the tab text
+			// Draw the tab text with proper contrast
 			QStyleOptionTab text_option = *tab_option;
-			text_option.palette.setColor(QPalette::ButtonText, qApp->palette().color(QPalette::ButtonText));
+			QColor text_color = is_selected ? 
+				qApp->palette().color(QPalette::WindowText) :
+				qApp->palette().color(QPalette::WindowText).lighter(110);
+			text_option.palette.setColor(QPalette::ButtonText, text_color);
 			QProxyStyle::drawControl(CE_TabBarTabLabel, &text_option, painter, widget);
 			return;
 		}
@@ -324,45 +387,60 @@ void CustomUiStyle::drawPrimitive(PrimitiveElement element, const QStyleOption *
 		return;
 	}
 
-	// Handle individual QTabBar tabs with flat design styling
+	// Handle QTabBar base frame with improved flat design integration
 	if(element == PE_FrameTabBarBase && option && painter && widget)
 	{
 		painter->save();
 		painter->setRenderHint(QPainter::Antialiasing, true);
 		
-		// Use same color scheme for consistency
+		// Use same color scheme as QTabWidget for uniformity
 		QColor base_background = qApp->palette().color(QPalette::Button).lighter(220);
-		QColor base_border = qApp->palette().color(QPalette::Dark).lighter(160);
+		QColor border_color = qApp->palette().color(QPalette::Dark).lighter(160).lighter(150);
 		
-		QColor background_color = base_background;
-		QColor border_color = base_border.lighter(150);
+		// Determine orientation if available
+		const QStyleOptionTabBarBase *tab_base_option = 
+			qstyleoption_cast<const QStyleOptionTabBarBase *>(option);
 		
-		// Adjust colors based on tab state
-		if(!(option->state & State_Enabled))
-		{
-			background_color = base_background.darker(130);
-			border_color = border_color.darker(130);
-		}
-		else if(option->state & State_Selected)
-		{
-			background_color = base_background.lighter(110);
-			border_color = border_color.lighter(110);
-		}
-		else if(option->state & State_MouseOver)
-		{
-			background_color = base_background.lighter(105);
-			border_color = border_color.lighter(105);
-		}
+		QRect frame_rect = option->rect;
 		
-		// Draw background with rounded corners (only top corners for tabs)
-		painter->setBrush(background_color);
+		// Draw a subtle background that integrates with the tabs
+		painter->setBrush(base_background);
 		painter->setPen(Qt::NoPen);
-		painter->drawRoundedRect(option->rect, 4, 4);
+		painter->drawRect(frame_rect);
 		
-		// Draw uniform flat border
+		// Draw a subtle border line only where needed
 		painter->setPen(QPen(border_color, 1));
-		painter->setBrush(Qt::NoBrush);
-		painter->drawRoundedRect(option->rect, 4, 4);
+		
+		if(tab_base_option)
+		{
+			QTabBar::Shape shape = tab_base_option->shape;
+			
+			if(shape == QTabBar::RoundedNorth || shape == QTabBar::TriangularNorth)
+			{
+				// For top tabs, draw line at bottom
+				painter->drawLine(frame_rect.bottomLeft(), frame_rect.bottomRight());
+			}
+			else if(shape == QTabBar::RoundedSouth || shape == QTabBar::TriangularSouth)
+			{
+				// For bottom tabs, draw line at top
+				painter->drawLine(frame_rect.topLeft(), frame_rect.topRight());
+			}
+			else if(shape == QTabBar::RoundedWest || shape == QTabBar::TriangularWest)
+			{
+				// For left tabs, draw line at right
+				painter->drawLine(frame_rect.topRight(), frame_rect.bottomRight());
+			}
+			else if(shape == QTabBar::RoundedEast || shape == QTabBar::TriangularEast)
+			{
+				// For right tabs, draw line at left
+				painter->drawLine(frame_rect.topLeft(), frame_rect.bottomLeft());
+			}
+		}
+		else
+		{
+			// Default: draw bottom line
+			painter->drawLine(frame_rect.bottomLeft(), frame_rect.bottomRight());
+		}
 		
 		painter->restore();
 		return;
