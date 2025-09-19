@@ -150,6 +150,50 @@ void CustomUiStyle::drawPrimitive(PrimitiveElement element, const QStyleOption *
 		return;
 	}
 
+	// Handle QPushButton with flat design styling
+	if(element == PE_PanelButtonCommand && option && painter && widget)
+	{
+		painter->save();
+		painter->setRenderHint(QPainter::Antialiasing, true);
+		
+		// Use same color scheme as QToolButton for consistency
+		QColor base_background = qApp->palette().color(QPalette::Button).lighter(220);
+		QColor base_border = qApp->palette().color(QPalette::Dark).lighter(160);
+		
+		QColor background_color = base_background;
+		QColor border_color = base_border.lighter(150);
+		
+		// Adjust colors based on button state
+		if(!(option->state & State_Enabled))
+		{
+			background_color = base_background.darker(130);
+			border_color = border_color.darker(130);
+		}
+		else if(option->state & (State_Sunken | State_On))
+		{
+			background_color = base_background.darker(115);
+			border_color = border_color.darker(115);
+		}
+		else if(option->state & State_MouseOver)
+		{
+			background_color = base_background.lighter(105);
+			border_color = border_color.lighter(105);
+		}
+		
+		// Draw background with rounded corners
+		painter->setBrush(background_color);
+		painter->setPen(Qt::NoPen);
+		painter->drawRoundedRect(option->rect, 4, 4);
+		
+		// Draw uniform flat border
+		painter->setPen(QPen(border_color, 1));
+		painter->setBrush(Qt::NoBrush);
+		painter->drawRoundedRect(option->rect, 4, 4);
+		
+		painter->restore();
+		return;
+	}
+
 	// Frame elements that need to be customized
   if((element == PE_Frame || element == PE_FrameLineEdit || 
 		  element == PE_FrameGroupBox || element == PE_FrameTabWidget || 
