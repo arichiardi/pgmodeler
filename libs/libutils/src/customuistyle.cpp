@@ -92,6 +92,59 @@ void CustomUiStyle::drawControl(ControlElement element, const QStyleOption *opti
 		}
 	}
 
+	// Handle individual QTabBar tabs with flat design styling
+	if(element == CE_TabBarTab && option && painter && widget)
+	{
+		const QStyleOptionTab *tab_option = qstyleoption_cast<const QStyleOptionTab *>(option);
+		if(tab_option)
+		{
+			painter->save();
+			painter->setRenderHint(QPainter::Antialiasing, true);
+			
+			// Use same color scheme for consistency
+			QColor base_background = qApp->palette().color(QPalette::Button).lighter(220);
+			QColor base_border = qApp->palette().color(QPalette::Dark).lighter(160);
+			
+			QColor background_color = base_background;
+			QColor border_color = base_border.lighter(150);
+			
+			// Adjust colors based on tab state
+			if(!(option->state & State_Enabled))
+			{
+				background_color = base_background.darker(130);
+				border_color = border_color.darker(130);
+			}
+			else if(option->state & State_Selected)
+			{
+				background_color = base_background.lighter(110);
+				border_color = border_color.lighter(110);
+			}
+			else if(option->state & State_MouseOver)
+			{
+				background_color = base_background.lighter(105);
+				border_color = border_color.lighter(105);
+			}
+			
+			// Draw background with rounded corners
+			painter->setBrush(background_color);
+			painter->setPen(Qt::NoPen);
+			painter->drawRoundedRect(option->rect, 4, 4);
+			
+			// Draw uniform flat border
+			painter->setPen(QPen(border_color, 1));
+			painter->setBrush(Qt::NoBrush);
+			painter->drawRoundedRect(option->rect, 4, 4);
+			
+			painter->restore();
+			
+			// Draw the tab text
+			QStyleOptionTab text_option = *tab_option;
+			text_option.palette.setColor(QPalette::ButtonText, qApp->palette().color(QPalette::ButtonText));
+			QProxyStyle::drawControl(CE_TabBarTabLabel, &text_option, painter, widget);
+			return;
+		}
+	}
+
 	// For all other elements, use default behavior without opacity changes
 	QProxyStyle::drawControl(element, option, painter, widget);
 }
@@ -219,6 +272,89 @@ void CustomUiStyle::drawPrimitive(PrimitiveElement element, const QStyleOption *
 		}
 		
 		// Draw background with rounded corners
+		painter->setBrush(background_color);
+		painter->setPen(Qt::NoPen);
+		painter->drawRoundedRect(option->rect, 4, 4);
+		
+		// Draw uniform flat border
+		painter->setPen(QPen(border_color, 1));
+		painter->setBrush(Qt::NoBrush);
+		painter->drawRoundedRect(option->rect, 4, 4);
+		
+		painter->restore();
+		return;
+	}
+
+	// Handle QTabBar with flat design styling
+	if(element == PE_FrameTabWidget && option && painter && widget)
+	{
+		painter->save();
+		painter->setRenderHint(QPainter::Antialiasing, true);
+		
+		// Use same color scheme for consistency
+		QColor base_background = qApp->palette().color(QPalette::Button).lighter(220);
+		QColor base_border = qApp->palette().color(QPalette::Dark).lighter(160);
+		
+		QColor background_color = base_background;
+		QColor border_color = base_border.lighter(150);
+		
+		// Adjust colors based on state
+		if(!(option->state & State_Enabled))
+		{
+			background_color = base_background.darker(130);
+			border_color = border_color.darker(130);
+		}
+		else if(option->state & State_MouseOver)
+		{
+			background_color = base_background.lighter(105);
+			border_color = border_color.lighter(105);
+		}
+		
+		// Draw background with rounded corners
+		painter->setBrush(background_color);
+		painter->setPen(Qt::NoPen);
+		painter->drawRoundedRect(option->rect, 4, 4);
+		
+		// Draw uniform flat border
+		painter->setPen(QPen(border_color, 1));
+		painter->setBrush(Qt::NoBrush);
+		painter->drawRoundedRect(option->rect, 4, 4);
+		
+		painter->restore();
+		return;
+	}
+
+	// Handle individual QTabBar tabs with flat design styling
+	if(element == PE_FrameTabBarBase && option && painter && widget)
+	{
+		painter->save();
+		painter->setRenderHint(QPainter::Antialiasing, true);
+		
+		// Use same color scheme for consistency
+		QColor base_background = qApp->palette().color(QPalette::Button).lighter(220);
+		QColor base_border = qApp->palette().color(QPalette::Dark).lighter(160);
+		
+		QColor background_color = base_background;
+		QColor border_color = base_border.lighter(150);
+		
+		// Adjust colors based on tab state
+		if(!(option->state & State_Enabled))
+		{
+			background_color = base_background.darker(130);
+			border_color = border_color.darker(130);
+		}
+		else if(option->state & State_Selected)
+		{
+			background_color = base_background.lighter(110);
+			border_color = border_color.lighter(110);
+		}
+		else if(option->state & State_MouseOver)
+		{
+			background_color = base_background.lighter(105);
+			border_color = border_color.lighter(105);
+		}
+		
+		// Draw background with rounded corners (only top corners for tabs)
 		painter->setBrush(background_color);
 		painter->setPen(Qt::NoPen);
 		painter->drawRoundedRect(option->rect, 4, 4);
