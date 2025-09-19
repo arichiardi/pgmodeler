@@ -73,6 +73,27 @@ void CustomUiStyle::drawItemPixmap(QPainter *painter, const QRect &rect,
 void CustomUiStyle::drawControl(ControlElement element, const QStyleOption *option,
 																QPainter *painter, const QWidget *widget) const
 {
+	// Handle CE_ToolButtonLabel
+	if(element == CE_ToolButtonLabel)
+	{
+		drawControlToolButtonLabel(element, option, painter, widget);
+		return;
+	}
+
+	// Handle CE_TabBarTab
+	if(element == CE_TabBarTab)
+	{
+		drawControlTabBarTab(element, option, painter, widget);
+		return;
+	}
+
+	// For all other elements, use default behavior without opacity changes
+	QProxyStyle::drawControl(element, option, painter, widget);
+}
+
+void CustomUiStyle::drawControlToolButtonLabel(ControlElement element, const QStyleOption *option,
+																																				QPainter *painter, const QWidget *widget) const
+{
 	// Only apply special handling to specific toolbar button labels
 	if(element == CE_ToolButtonLabel && option && !(option->state & State_Enabled)) 
 	{
@@ -92,6 +113,13 @@ void CustomUiStyle::drawControl(ControlElement element, const QStyleOption *opti
 		}
 	}
 
+	// For all other elements, use default behavior
+	QProxyStyle::drawControl(element, option, painter, widget);
+}
+
+void CustomUiStyle::drawControlTabBarTab(ControlElement element, const QStyleOption *option,
+																																				QPainter *painter, const QWidget *widget) const
+{
 	// Handle individual QTabBar tabs with flat design styling
 	if(element == CE_TabBarTab && option && painter && widget)
 	{
@@ -114,9 +142,9 @@ void CustomUiStyle::drawControl(ControlElement element, const QStyleOption *opti
 			QTabBar::Shape shape = tab_option->shape;
 			bool is_selected = (option->state & State_Selected);
 			bool is_first = (tab_option->position == QStyleOptionTab::Beginning ||
-											 tab_option->position == QStyleOptionTab::OnlyOneTab);
+													 tab_option->position == QStyleOptionTab::OnlyOneTab);
 			bool is_last = (tab_option->position == QStyleOptionTab::End ||
-											tab_option->position == QStyleOptionTab::OnlyOneTab);
+													 tab_option->position == QStyleOptionTab::OnlyOneTab);
 			
 			// Adjust colors based on tab state using same logic as QToolButton
 			if(!(option->state & State_Enabled))
@@ -208,12 +236,56 @@ void CustomUiStyle::drawControl(ControlElement element, const QStyleOption *opti
 		}
 	}
 
-	// For all other elements, use default behavior without opacity changes
+	// For all other elements, use default behavior
 	QProxyStyle::drawControl(element, option, painter, widget);
 }
 
 void CustomUiStyle::drawPrimitive(PrimitiveElement element, const QStyleOption *option,
 																	QPainter *painter, const QWidget *widget) const
+{
+	// Handle PE_PanelButtonTool
+	if(element == PE_PanelButtonTool)
+	{
+		drawPrimitivePanelButtonTool(element, option, painter, widget);
+		return;
+	}
+
+	// Handle PE_PanelButtonCommand
+	if(element == PE_PanelButtonCommand)
+	{
+		drawPrimitivePanelButtonCommand(element, option, painter, widget);
+		return;
+	}
+
+	// Handle PE_FrameTabWidget
+	if(element == PE_FrameTabWidget)
+	{
+		drawPrimitiveFrameTabWidget(element, option, painter, widget);
+		return;
+	}
+
+	// Handle PE_FrameTabBarBase
+	if(element == PE_FrameTabBarBase)
+	{
+		drawPrimitiveFrameTabBarBase(element, option, painter, widget);
+		return;
+	}
+
+	// Handle frame elements (PE_Frame, PE_FrameLineEdit, etc.)
+	if(element == PE_Frame || element == PE_FrameLineEdit || 
+		 element == PE_FrameGroupBox || element == PE_FrameTabWidget || 
+		 element == PE_FrameWindow)
+	{
+		drawPrimitiveFrameElements(element, option, painter, widget);
+		return;
+	}
+
+	// Use default behavior without opacity changes for primitives
+	QProxyStyle::drawPrimitive(element, option, painter, widget);
+}
+
+void CustomUiStyle::drawPrimitivePanelButtonTool(PrimitiveElement element, const QStyleOption *option,
+																																						QPainter *painter, const QWidget *widget) const
 {
 	// Handle QToolButton with simple border styling
 	if(element == PE_PanelButtonTool && option && painter && widget)
@@ -304,224 +376,229 @@ void CustomUiStyle::drawPrimitive(PrimitiveElement element, const QStyleOption *
 		return;
 	}
 
-	// Handle QPushButton with flat design styling
-	if(element == PE_PanelButtonCommand && option && painter && widget)
-	{
-		painter->save();
-		painter->setRenderHint(QPainter::Antialiasing, true);
-		
-		// Use same color scheme as QToolButton for consistency
-		QColor base_background = qApp->palette().color(QPalette::Button).lighter(220);
-		QColor base_border = qApp->palette().color(QPalette::Dark).lighter(160);
-		
-		QColor background_color = base_background;
-		QColor border_color = base_border.lighter(150);
-		
-		// Adjust colors based on button state
-		if(!(option->state & State_Enabled))
-		{
-			background_color = base_background.darker(130);
-			border_color = border_color.darker(130);
-		}
-		else if(option->state & (State_Sunken | State_On))
-		{
-			background_color = base_background.darker(115);
-			border_color = border_color.darker(115);
-		}
-		else if(option->state & State_MouseOver)
-		{
-			background_color = base_background.lighter(105);
-			border_color = border_color.lighter(105);
-		}
-		
-		// Draw background with rounded corners
-		painter->setBrush(background_color);
-		painter->setPen(Qt::NoPen);
-		painter->drawRoundedRect(option->rect, 4, 4);
-		
-		// Draw uniform flat border
-		painter->setPen(QPen(border_color, 1));
-		painter->setBrush(Qt::NoBrush);
-		painter->drawRoundedRect(option->rect, 4, 4);
-		
-		painter->restore();
-		return;
-	}
+	// Use default behavior
+	QProxyStyle::drawPrimitive(element, option, painter, widget);
+}
 
-	// Handle QTabBar with flat design styling
-	if(element == PE_FrameTabWidget && option && painter && widget)
+void CustomUiStyle::drawPrimitivePanelButtonCommand(PrimitiveElement element, const QStyleOption *option,
+																																						QPainter *painter, const QWidget *widget) const
+{
+	if(!option || !painter || !widget) return;
+	
+	painter->save();
+	painter->setRenderHint(QPainter::Antialiasing, true);
+	
+	// Use same color scheme as QToolButton for consistency
+	QColor base_background = qApp->palette().color(QPalette::Button).lighter(220);
+	QColor base_border = qApp->palette().color(QPalette::Dark).lighter(160);
+	
+	QColor background_color = base_background;
+	QColor border_color = base_border.lighter(150);
+	
+	// Adjust colors based on button state
+	if(!(option->state & State_Enabled))
 	{
-		painter->save();
-		painter->setRenderHint(QPainter::Antialiasing, true);
-		
-		// Use same color scheme for consistency
-		QColor base_background = qApp->palette().color(QPalette::Button).lighter(220);
-		QColor base_border = qApp->palette().color(QPalette::Dark).lighter(160);
-		
-		QColor background_color = base_background;
-		QColor border_color = base_border.lighter(150);
-		
-		// Adjust colors based on state
-		if(!(option->state & State_Enabled))
-		{
-			background_color = base_background.darker(130);
-			border_color = border_color.darker(130);
-		}
-		else if(option->state & State_MouseOver)
-		{
-			background_color = base_background.lighter(105);
-			border_color = border_color.lighter(105);
-		}
-		
-		// Draw background with rounded corners
-		painter->setBrush(background_color);
-		painter->setPen(Qt::NoPen);
-		painter->drawRoundedRect(option->rect, 4, 4);
-		
-		// Draw uniform flat border
-		painter->setPen(QPen(border_color, 1));
-		painter->setBrush(Qt::NoBrush);
-		painter->drawRoundedRect(option->rect, 4, 4);
-		
-		painter->restore();
-		return;
+		background_color = base_background.darker(130);
+		border_color = border_color.darker(130);
 	}
-
-	// Handle QTabBar base frame with improved flat design integration
-	if(element == PE_FrameTabBarBase && option && painter && widget)
+	else if(option->state & (State_Sunken | State_On))
 	{
-		painter->save();
-		painter->setRenderHint(QPainter::Antialiasing, true);
+		background_color = base_background.darker(115);
+		border_color = border_color.darker(115);
+	}
+	else if(option->state & State_MouseOver)
+	{
+		background_color = base_background.lighter(105);
+		border_color = border_color.lighter(105);
+	}
+	
+	// Draw background with rounded corners
+	painter->setBrush(background_color);
+	painter->setPen(Qt::NoPen);
+	painter->drawRoundedRect(option->rect, 4, 4);
+	
+	// Draw uniform flat border
+	painter->setPen(QPen(border_color, 1));
+	painter->setBrush(Qt::NoBrush);
+	painter->drawRoundedRect(option->rect, 4, 4);
+	
+	painter->restore();
+}
+
+void CustomUiStyle::drawPrimitiveFrameTabWidget(PrimitiveElement element, const QStyleOption *option,
+																																				QPainter *painter, const QWidget *widget) const
+{
+	if(!option || !painter || !widget) return;
+	
+	painter->save();
+	painter->setRenderHint(QPainter::Antialiasing, true);
+	
+	// Use same color scheme for consistency
+	QColor base_background = qApp->palette().color(QPalette::Button).lighter(220);
+	QColor base_border = qApp->palette().color(QPalette::Dark).lighter(160);
+	
+	QColor background_color = base_background;
+	QColor border_color = base_border.lighter(150);
+	
+	// Adjust colors based on state
+	if(!(option->state & State_Enabled))
+	{
+		background_color = base_background.darker(130);
+		border_color = border_color.darker(130);
+	}
+	else if(option->state & State_MouseOver)
+	{
+		background_color = base_background.lighter(105);
+		border_color = border_color.lighter(105);
+	}
+	
+	// Draw background with rounded corners
+	painter->setBrush(background_color);
+	painter->setPen(Qt::NoPen);
+	painter->drawRoundedRect(option->rect, 4, 4);
+	
+	// Draw uniform flat border
+	painter->setPen(QPen(border_color, 1));
+	painter->setBrush(Qt::NoBrush);
+	painter->drawRoundedRect(option->rect, 4, 4);
+	
+	painter->restore();
+}
+
+void CustomUiStyle::drawPrimitiveFrameTabBarBase(PrimitiveElement element, const QStyleOption *option,
+																																						QPainter *painter, const QWidget *widget) const
+{
+	if(!option || !painter || !widget) return;
+	
+	painter->save();
+	painter->setRenderHint(QPainter::Antialiasing, true);
+	
+	// Use same color scheme as QTabWidget for uniformity
+	QColor base_background = qApp->palette().color(QPalette::Button).lighter(220);
+	QColor border_color = qApp->palette().color(QPalette::Dark).lighter(160).lighter(150);
+	
+	// Determine orientation if available
+	const QStyleOptionTabBarBase *tab_base_option = 
+		qstyleoption_cast<const QStyleOptionTabBarBase *>(option);
+	
+	QRect frame_rect = option->rect;
+	
+	// Draw a subtle background that integrates with the tabs
+	painter->setBrush(base_background);
+	painter->setPen(Qt::NoPen);
+	painter->drawRect(frame_rect);
+	
+	// Draw a subtle border line only where needed
+	painter->setPen(QPen(border_color, 1));
+	
+	if(tab_base_option)
+	{
+		QTabBar::Shape shape = tab_base_option->shape;
 		
-		// Use same color scheme as QTabWidget for uniformity
-		QColor base_background = qApp->palette().color(QPalette::Button).lighter(220);
-		QColor border_color = qApp->palette().color(QPalette::Dark).lighter(160).lighter(150);
-		
-		// Determine orientation if available
-		const QStyleOptionTabBarBase *tab_base_option = 
-			qstyleoption_cast<const QStyleOptionTabBarBase *>(option);
-		
-		QRect frame_rect = option->rect;
-		
-		// Draw a subtle background that integrates with the tabs
-		painter->setBrush(base_background);
-		painter->setPen(Qt::NoPen);
-		painter->drawRect(frame_rect);
-		
-		// Draw a subtle border line only where needed
-		painter->setPen(QPen(border_color, 1));
-		
-		if(tab_base_option)
+		if(shape == QTabBar::RoundedNorth || shape == QTabBar::TriangularNorth)
 		{
-			QTabBar::Shape shape = tab_base_option->shape;
-			
-			if(shape == QTabBar::RoundedNorth || shape == QTabBar::TriangularNorth)
-			{
-				// For top tabs, draw line at bottom
-				painter->drawLine(frame_rect.bottomLeft(), frame_rect.bottomRight());
-			}
-			else if(shape == QTabBar::RoundedSouth || shape == QTabBar::TriangularSouth)
-			{
-				// For bottom tabs, draw line at top
-				painter->drawLine(frame_rect.topLeft(), frame_rect.topRight());
-			}
-			else if(shape == QTabBar::RoundedWest || shape == QTabBar::TriangularWest)
-			{
-				// For left tabs, draw line at right
-				painter->drawLine(frame_rect.topRight(), frame_rect.bottomRight());
-			}
-			else if(shape == QTabBar::RoundedEast || shape == QTabBar::TriangularEast)
-			{
-				// For right tabs, draw line at left
-				painter->drawLine(frame_rect.topLeft(), frame_rect.bottomLeft());
-			}
-		}
-		else
-		{
-			// Default: draw bottom line
+			// For top tabs, draw line at bottom
 			painter->drawLine(frame_rect.bottomLeft(), frame_rect.bottomRight());
 		}
+		else if(shape == QTabBar::RoundedSouth || shape == QTabBar::TriangularSouth)
+		{
+			// For bottom tabs, draw line at top
+			painter->drawLine(frame_rect.topLeft(), frame_rect.topRight());
+		}
+		else if(shape == QTabBar::RoundedWest || shape == QTabBar::TriangularWest)
+		{
+			// For left tabs, draw line at right
+			painter->drawLine(frame_rect.topRight(), frame_rect.bottomRight());
+		}
+		else if(shape == QTabBar::RoundedEast || shape == QTabBar::TriangularEast)
+		{
+			// For right tabs, draw line at left
+			painter->drawLine(frame_rect.topLeft(), frame_rect.bottomLeft());
+		}
+	}
+	else
+	{
+		// Default: draw bottom line
+		painter->drawLine(frame_rect.bottomLeft(), frame_rect.bottomRight());
+	}
+	
+	painter->restore();
+}
+
+void CustomUiStyle::drawPrimitiveFrameElements(PrimitiveElement element, const QStyleOption *option,
+																																			QPainter *painter, const QWidget *widget) const
+{
+	if(!option || !painter || !widget) return;
+	
+	bool customize = false, has_round_corners = false;
+	
+	static const QStringList target_classes = {
+		"QLineEdit",
+		"QPlainTextEdit", 
+		"QTreeWidget",
+		"QTreeView",
+		"QTableView",
+		"QTableWidget",
+		"NumberedTextEditor"
+	};
+	
+	for(auto &class_name : target_classes)
+	{
+		// We customize widgets that inherit from the target classes
+		if(widget->inherits(class_name.toStdString().c_str()))
+		{
+			customize = true;
+			has_round_corners = (class_name == "QLineEdit" || 
+																	 class_name == "QPlainTextEdit"); 
+			break;
+		}
+	}
+	
+	// If the widget itself is not a target class, check its parent hierarchy
+	if(!customize)
+	{
+		const QWidget *parent = widget->parentWidget();
+
+		while(parent && !customize)
+		{
+			for(auto &class_name : target_classes)
+			{
+				if(parent->inherits(class_name.toStdString().c_str()))
+				{
+					customize = true;
+					has_round_corners = (class_name == "QLineEdit" || 
+																			 class_name == "QPlainTextEdit"); 
+					break;
+				}
+			}
+			parent = parent->parentWidget();
+		}
+	}
+	
+	// If it is one of the target classes, customize the border
+	if(customize)
+	{
+		painter->save();
+		
+		// Use the border color based on QPalette color but a bit lighter
+		QColor border_color = qApp->palette().color(QPalette::Dark).lighter(130);
+		QPen border_pen(border_color);
+		border_pen.setWidth(1);
+		painter->setPen(border_pen);
+		
+		if(has_round_corners)
+		{
+			painter->setRenderHints(QPainter::Antialiasing, true);     
+			painter->drawRoundedRect(option->rect, 3, 3);    
+		}
+		else	
+			painter->drawRect(option->rect.adjusted(0, 0, -1, -1));      
 		
 		painter->restore();
 		return;
 	}
-
-	// Frame elements that need to be customized
-  if((element == PE_Frame || element == PE_FrameLineEdit || 
-		  element == PE_FrameGroupBox || element == PE_FrameTabWidget || 
-      element == PE_FrameWindow) && 
-     option && painter && widget)
-  {
-    bool customize = false, has_round_corners = false;
-    
-	   static const QStringList target_classes = {
-      "QLineEdit",
-      "QPlainTextEdit", 
-      "QTreeWidget",
-      "QTreeView",
-			"QTableView",
-			"QTableWidget",
-      "NumberedTextEditor"
-    };
-    
-    for(auto &class_name : target_classes)
-    {
-			// We customize widgets that inherit from the target classes
-      if(widget->inherits(class_name.toStdString().c_str()))
-      {
-        customize = true;
-				has_round_corners = (class_name == "QLineEdit" || 
-														 class_name == "QPlainTextEdit"); 
-        break;
-      }
-    }
-    
-		// If the widget itself is not a target class, check its parent hierarchy
-    if(!customize)
-    {
-      const QWidget *parent = widget->parentWidget();
-
-      while(parent && !customize)
-      {
-        for(auto &class_name : target_classes)
-        {
-          if(parent->inherits(class_name.toStdString().c_str()))
-          {
-            customize = true;
-						has_round_corners = (class_name == "QLineEdit" || 
-																 class_name == "QPlainTextEdit"); 
-            break;
-          }
-        }
-        parent = parent->parentWidget();
-      }
-    }
-    
-		// If it is one of the target classes, customize the border
-    if(customize)
-    {
-      painter->save();
-      
-      // Use the border color based on QPalette color but a bit ligther
-      QColor border_color = qApp->palette().color(QPalette::Dark).lighter(130);
-      QPen border_pen(border_color);
-      border_pen.setWidth(1);
-      painter->setPen(border_pen);
-      
-			if(has_round_corners)
-			{
-				painter->setRenderHints(QPainter::Antialiasing, true);     
-				painter->drawRoundedRect(option->rect, 3, 3);    
-			}
-			else	
-				painter->drawRect(option->rect.adjusted(0, 0, -1, -1));      
-      
-			painter->restore();
-      return;
-    }
-  }
-
-	// Use default behavior without opacity changes for primitives
+	
+	// Use default behavior for non-customized elements
 	QProxyStyle::drawPrimitive(element, option, painter, widget);
 }
 
@@ -584,3 +661,4 @@ QPixmap CustomUiStyle::createGrayMaskedPixmap(const QPixmap &original) const
 	
 	return QPixmap::fromImage(image);
 }
+
