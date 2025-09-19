@@ -16,7 +16,6 @@
 # Also, you can get the complete GNU General Public License at <http://www.gnu.org/licenses/>
 */
 
-#include "customuistyle.h"
 #include "pgmodelerapp.h"
 #include "mainwindow.h"
 #include <signal.h>
@@ -95,10 +94,6 @@ int main(int argc, char **argv)
 		GlobalAttributes::init(argv[0], true);
 		PgModelerApp app(argc,argv);
 		int res=0;
-
-		/* Setting the application custom style, this must be done before creating any widget
-		 * Currently it only controls the pixel metrics of small icons in menus */
-		app.setStyle(new CustomUiStyle());
 
 		// Loading the application splash screen
 		QSplashScreen splash;

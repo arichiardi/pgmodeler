@@ -18,6 +18,7 @@
 #include "application.h"
 #include "exception.h"
 #include <QTranslator>
+#include "customuistyle.h"
 
 void logMessage(QtMsgType type, const QMessageLogContext &context, const QString &msg)
 {
@@ -43,9 +44,10 @@ QtMessageHandler Application::message_handler = qInstallMessageHandler(logMessag
 Application::Application(int &argc, char **argv) : QApplication(argc,argv)
 {
 	/* Checking if the user specified another widget style using the -style param
-	 * If no custom style is specified we force the usage of Fusion (the default for Qt and pgModeler) */
+	 * If no custom style is specified we force the usage of Fusion (the default for Qt and pgModeler)
+	 * via CustomUiStyle so additional UI effects can be applied */
 	if(!arguments().contains(GlobalAttributes::UiStyleOption))
-		setStyle(GlobalAttributes::DefaultQtStyle);
+		setStyle(new CustomUiStyle(GlobalAttributes::DefaultQtStyle));
 }
 
 void Application::loadTranslation(const QString &lang_id, const QString &directory)
