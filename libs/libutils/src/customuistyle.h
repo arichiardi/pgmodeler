@@ -40,30 +40,22 @@ all widgets in the application.
 class __libutils CustomUiStyle : public QProxyStyle {
 	private:
 		static QMap<PixelMetric, int> pixel_metrics;
-    static constexpr qreal BlendFactor = 0.7;
+    
+		static constexpr qreal BlendFactor = 0.7;
+		
+		static constexpr int ButtonRadius = 3,
+												 InputRadius = 4,
+												 FrameRadius = 4,
+												 TabRadius = 6;
 
-		// Private methods for drawControl refactoring
-		void drawControlToolButtonLabel(ControlElement element, const QStyleOption *option,
-																		QPainter *painter, const QWidget *widget) const;
-		
-		void drawControlTabBarTab(ControlElement element, const QStyleOption *option,
-															QPainter *painter, const QWidget *widget) const;
+		void drawControlToolButtonLabel(ControlElement element, const QStyleOption *option,	QPainter *painter, const QWidget *widget) const;
+		void drawControlTabBarTab(ControlElement element, const QStyleOption *option,	QPainter *painter, const QWidget *widget) const;
 
-		// Private methods for drawPrimitive refactoring
-		void drawPrimitivePanelButtonTool(PrimitiveElement element, const QStyleOption *option,
-																			QPainter *painter, const QWidget *widget) const;
-		
-		void drawPrimitivePanelButtonCommand(PrimitiveElement element, const QStyleOption *option,
-																				 QPainter *painter, const QWidget *widget) const;
-		
-		void drawPrimitiveFrameTabWidget(PrimitiveElement element, const QStyleOption *option,
-																		 QPainter *painter, const QWidget *widget) const;
-		
-		void drawPrimitiveFrameTabBarBase(PrimitiveElement element, const QStyleOption *option,
-																			QPainter *painter, const QWidget *widget) const;
-		
-		void drawPrimitiveFrameElements(PrimitiveElement element, const QStyleOption *option,
-																		QPainter *painter, const QWidget *widget) const;
+		void drawPrimitivePanelButtonTool(PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const;
+		void drawPrimitivePanelButtonCommand(PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const;
+		void drawPrimitiveFrameTabWidget(PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const;
+		void drawPrimitiveFrameTabBarBase(PrimitiveElement element, const QStyleOption *option,	QPainter *painter, const QWidget *widget) const;
+		void drawPrimitiveFrameElements(PrimitiveElement element, const QStyleOption *option,	QPainter *painter, const QWidget *widget) const;
 
 	public:
 		CustomUiStyle();
