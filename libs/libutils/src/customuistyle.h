@@ -70,7 +70,7 @@ class __libutils CustomUiStyle : public QProxyStyle {
 
 		CustomUiStyle(const QString &key);
 
-		virtual ~CustomUiStyle();
+		virtual ~CustomUiStyle() = default;
 
 		/*! \brief Defines a custom pixel metric attribute value globally.
 		 * Which means, all instances of this class will share the same pixel metrics values */
@@ -80,17 +80,13 @@ class __libutils CustomUiStyle : public QProxyStyle {
 
 		QPixmap createGrayMaskedPixmap(const QPixmap &original) const;
 
-		 void drawItemPixmap(QPainter *painter, const QRect &rect, 
-												 int alignment, const QPixmap &pixmap) const override;
+		 void drawItemPixmap(QPainter *painter, const QRect &rect, int alignment, const QPixmap &pixmap) const override;
 
-    void drawControl(ControlElement element, const QStyleOption *option, 
-										 QPainter *painter, const QWidget *widget) const override;
+    void drawControl(ControlElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const override;
 
-    void drawPrimitive(PrimitiveElement element, const QStyleOption *option,
-			                 QPainter *painter, const QWidget *widget) const override;
+    void drawPrimitive(PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const override;
 											
-    QPixmap generatedIconPixmap(QIcon::Mode iconMode, const QPixmap &pixmap,
-			                          const QStyleOption *option) const override;
+    QPixmap generatedIconPixmap(QIcon::Mode iconMode, const QPixmap &pixmap, const QStyleOption *option) const override;
 };
 
 #endif
