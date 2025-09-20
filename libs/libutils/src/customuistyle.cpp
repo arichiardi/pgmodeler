@@ -260,8 +260,8 @@ void CustomUiStyle::drawPrimitivePanelButtonTool(PrimitiveElement element, const
 		// Adjust colors based on button state
 		if(!(option->state & State_Enabled))
 		{
-			bg_color = bg_color.darker(135);
-			border_color = border_color.darker(135);
+			bg_color = bg_color.darker(140);
+			border_color = border_color.darker(140);
 		}
 		else if(option->state & (State_Sunken | State_On))
 		{
@@ -273,6 +273,10 @@ void CustomUiStyle::drawPrimitivePanelButtonTool(PrimitiveElement element, const
 			bg_color = bg_color.lighter(145);
 			border_color = border_color.lighter(145);
 		}
+
+		// Special focus border
+		if(option->state & State_HasFocus)
+			border_color = qApp->palette().color(QPalette::Highlight);
 
 		// Draw background with rounded corners
 		QPen border_pen(border_color, 1);
@@ -311,9 +315,19 @@ void CustomUiStyle::drawPrimitivePanelButtonCommand(PrimitiveElement element, co
 	QColor bg_color = qApp->palette().color(QPalette::Button).lighter(160),
 	       border_color = qApp->palette().color(QPalette::Dark).lighter(169);
 
-	// Special border color for default buttons when enabled
+	// Special colors for default buttons when enabled
 	if(is_default)
+	{
 		border_color = qApp->palette().color(QPalette::Highlight);
+		// Mix Highlight with Button color for a more subtle default background
+		QColor highlight_color = qApp->palette().color(QPalette::Highlight);
+		QColor button_color = qApp->palette().color(QPalette::Button);
+		bg_color = QColor(
+			(highlight_color.red() + button_color.red() * 2) / 3,
+			(highlight_color.green() + button_color.green() * 2) / 3,
+			(highlight_color.blue() + button_color.blue() * 2) / 3
+		).lighter(115);
+	}
 
 	// Adjust colors based on button state
 	if(!(option->state & State_Enabled))
@@ -332,11 +346,13 @@ void CustomUiStyle::drawPrimitivePanelButtonCommand(PrimitiveElement element, co
 	{
 		bg_color = bg_color.lighter(185);
 
-		if(!is_default) // Only lighten border for non-default buttons
-			border_color = border_color.lighter(185);
-	}
+			if(!is_default) // Only lighten border for non-default buttons
+				border_color = border_color.lighter(185);
+		}
 
-	// Draw background and border with rounded corners
+		// Special focus border (overrides other border colors except for default buttons)
+		if((option->state & State_HasFocus) && !is_default)
+			border_color = qApp->palette().color(QPalette::Highlight);	// Draw background and border with rounded corners
 	painter->setBrush(bg_color);
 	painter->setPen(Qt::NoPen);
 	painter->drawRoundedRect(option->rect, ButtonRadius, ButtonRadius);
@@ -498,7 +514,15 @@ void CustomUiStyle::drawPrimitiveFrameElements(PrimitiveElement element, const Q
 	if(style_type)
 	{
 		painter->save();
-		painter->setPen(QPen(qApp->palette().color(QPalette::Dark).lighter(130), 1));
+		
+		// Default border color
+		QColor border_color = qApp->palette().color(QPalette::Dark).lighter(130);
+		
+		// Special focus border
+		if(option->state & State_HasFocus)
+			border_color = qApp->palette().color(QPalette::Highlight);
+		
+		painter->setPen(QPen(border_color, 1));
 
 		if(style_type == 1)
 		{
