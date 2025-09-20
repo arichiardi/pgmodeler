@@ -20,6 +20,7 @@
 #include <QApplication>
 #include <QPainterPath>
 #include <QToolBar>
+#include <QPushButton>
 
 QMap<QStyle::PixelMetric, int> CustomUiStyle::pixel_metrics;
 
@@ -302,9 +303,17 @@ void CustomUiStyle::drawPrimitivePanelButtonCommand(PrimitiveElement element, co
 	painter->save();
 	painter->setRenderHint(QPainter::Antialiasing, true);
 
+	// Check if this is a default QPushButton
+	const QPushButton *push_button = qobject_cast<const QPushButton*>(widget);
+	bool is_default = push_button && push_button->isDefault() && (option->state & State_Enabled);
+
 	// Use same color scheme as QToolButton for consistency
 	QColor bg_color = qApp->palette().color(QPalette::Button).lighter(160),
 	       border_color = qApp->palette().color(QPalette::Dark).lighter(169);
+
+	// Special border color for default buttons when enabled
+	if(is_default)
+		border_color = qApp->palette().color(QPalette::Highlight);
 
 	// Adjust colors based on button state
 	if(!(option->state & State_Enabled))
@@ -315,12 +324,16 @@ void CustomUiStyle::drawPrimitivePanelButtonCommand(PrimitiveElement element, co
 	else if(option->state & (State_Sunken | State_On))
 	{
 		bg_color = bg_color.darker(125);
-		border_color = border_color.darker(125);
+
+		if(!is_default) // Only darken border for non-default buttons
+			border_color = border_color.darker(125);
 	}
 	else if(option->state & State_MouseOver)
 	{
 		bg_color = bg_color.lighter(185);
-		border_color = border_color.lighter(185);
+
+		if(!is_default) // Only lighten border for non-default buttons
+			border_color = border_color.lighter(185);
 	}
 
 	// Draw background and border with rounded corners
@@ -344,8 +357,8 @@ void CustomUiStyle::drawPrimitiveFrameTabWidget(PrimitiveElement element, const 
 	painter->save();
 	painter->setRenderHint(QPainter::Antialiasing, true);
 
-	// Use QPalette::Dark as base for container widget - 20 points lighter for
-	// background, 60 points lighter for border
+	/* Use QPalette::Dark as base for container widget - 20 points lighter for
+	 * background, 60 points lighter for border */
 	QColor bg_color = qApp->palette().color(QPalette::Dark).lighter(120),
 	       border_color = qApp->palette().color(QPalette::Dark).lighter(160);
 
@@ -358,7 +371,7 @@ void CustomUiStyle::drawPrimitiveFrameTabWidget(PrimitiveElement element, const 
 
 	// Draw rectangle with rounded corners only at the base
 	QRectF rect = option->rect;
-	int radius = FrameRadius *2; // Larger radius for smoothness
+	int radius = FrameRadius * 2; // Larger radius for smoothness
 
 	QPainterPath path;
 	// Straight top
