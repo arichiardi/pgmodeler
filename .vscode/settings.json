@@ -138,7 +138,7 @@
     "[cpp]": {
         "editor.defaultFormatter": "ms-vscode.cpptools",
         "editor.formatOnType": true,
-        "editor.formatOnSave": true,
+        "editor.formatOnSave": false,
         "editor.autoIndent": "full",
         "editor.insertSpaces": false,
         "editor.detectIndentation": false,
@@ -147,7 +147,7 @@
     "[c]": {
         "editor.defaultFormatter": "ms-vscode.cpptools",
         "editor.formatOnType": true,
-        "editor.formatOnSave": true,
+        "editor.formatOnSave": false,
         "editor.autoIndent": "full",
         "editor.insertSpaces": false,
         "editor.detectIndentation": false,

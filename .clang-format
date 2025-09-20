@@ -7,11 +7,11 @@ BasedOnStyle: LLVM
 
 # Indentação e tabs
 IndentWidth: 4
-UseTab: ForIndentation
+UseTab: Always
 TabWidth: 4
 
 # Alinhamento de parâmetros
-AlignAfterOpenBracket: Align
+AlignAfterOpenBracket: DontAlign
 BinPackParameters: true
 AllowAllParametersOfDeclarationOnNextLine: true
 AllowAllArgumentsOnNextLine: true
@@ -20,7 +20,7 @@ AllowAllArgumentsOnNextLine: true
 BreakBeforeBraces: Allman
 
 # Limite de colunas
-ColumnLimit: 120
+ColumnLimit: 0
 
 # Alinhamentos
 AlignConsecutiveAssignments: false
@@ -42,12 +42,12 @@ BreakConstructorInitializers: BeforeColon
 SpaceAfterCStyleCast: false
 SpaceAfterLogicalNot: false
 SpaceBeforeAssignmentOperators: true
-SpaceBeforeParens: ControlStatements
+SpaceBeforeParens: Never
 SpaceInEmptyParentheses: false
 
 # Ponteiros e referências
-PointerAlignment: Left
-ReferenceAlignment: Left
+PointerAlignment: Right
+ReferenceAlignment: Right
 
 # Includes
 SortIncludes: true
@@ -66,7 +66,9 @@ NamespaceIndentation: None
 AccessModifierOffset: -4
 
 # Continuação de linhas
-ContinuationIndentWidth: 4
+ContinuationIndentWidth: 16
+IndentWrappedFunctionNames: false
+AlignOperands: DontAlign
 
 # Parâmetros específicos para C++
 Standard: c++17
