@@ -135,12 +135,12 @@ void CustomUiStyle::drawControlTabBarTab(ControlElement element, const QStyleOpt
 			painter->setRenderHint(QPainter::Antialiasing, true);
 			
 			// Use same color scheme as QTabWidget (PE_FrameTabWidget) for consistency
-			QColor base_background = qApp->palette().color(QPalette::Button).lighter(180);
-			QColor base_border = qApp->palette().color(QPalette::Dark).lighter(120);
+			QColor base_background = qApp->palette().color(QPalette::Button).lighter(160);
+			QColor base_border = qApp->palette().color(QPalette::Dark).lighter(130);
 			QColor highlight_color = qApp->palette().color(QPalette::Highlight);
 			
 			QColor background_color = base_background;
-			QColor border_color = base_border.lighter(110);
+			QColor border_color = base_border.lighter(120);
 			QRect tab_rect = option->rect;
 			
 			// Determine tab position and orientation
@@ -161,19 +161,19 @@ void CustomUiStyle::drawControlTabBarTab(ControlElement element, const QStyleOpt
 			else if(is_selected)
 			{
 				// Selected tab: lighter/brighter than base for clear distinction (ACTIVE)
-				background_color = base_background.lighter(70);
-				border_color = highlight_color.lighter(90);
+				background_color = base_background.lighter(50);
+				border_color = highlight_color.lighter(70);
 			}
 			else if(option->state & State_MouseOver)
 			{
 				// Hover state: slightly lighter than base colors
-				background_color = base_background.lighter(65);
-				border_color = border_color.lighter(65);
+				background_color = base_background.lighter(45);
+				border_color = border_color.lighter(45);
 			}
 			else
 			{
 				// Inactive tabs: slightly darker than base for distinction
-				background_color = base_background.darker(125);
+				background_color = base_background.darker(130);
 				border_color = border_color;
 			}
 			
@@ -234,7 +234,7 @@ void CustomUiStyle::drawControlTabBarTab(ControlElement element, const QStyleOpt
 			QStyleOptionTab text_option = *tab_option;
 			QColor text_color = is_selected ? 
 				qApp->palette().color(QPalette::WindowText) :
-				qApp->palette().color(QPalette::WindowText).lighter(70);
+				qApp->palette().color(QPalette::WindowText).lighter(50);
 			text_option.palette.setColor(QPalette::ButtonText, text_color);
 			QProxyStyle::drawControl(CE_TabBarTabLabel, &text_option, painter, widget);
 			return;
@@ -299,11 +299,11 @@ void CustomUiStyle::drawPrimitivePanelButtonTool(PrimitiveElement element, const
 		painter->setRenderHint(QPainter::Antialiasing, true);
 		
 		// Base colors for normal state - lighter background and contrasting border
-		QColor base_background = qApp->palette().color(QPalette::Button).lighter(180);
-		QColor base_border = qApp->palette().color(QPalette::Dark).lighter(120);
+		QColor base_background = qApp->palette().color(QPalette::Button).lighter(160);
+		QColor base_border = qApp->palette().color(QPalette::Dark).lighter(130);
 		
 		QColor background_color = base_background;
-		QColor border_color = base_border.lighter(90);
+		QColor border_color = base_border.lighter(120);
 		
 		// Check if widget has a custom background color (for color picker buttons)
 		if(widget)
@@ -355,13 +355,13 @@ void CustomUiStyle::drawPrimitivePanelButtonTool(PrimitiveElement element, const
 			if(widget && widget->palette().color(QPalette::Button) != qApp->palette().color(QPalette::Button))
 			{
 				// For custom colors, just make them slightly lighter
-				background_color = background_color.lighter(65);
+				background_color = background_color.lighter(45);
 			}
 			else
 			{
-				background_color = base_background.lighter(65);
+				background_color = base_background.lighter(45);
 			}
-			border_color = border_color.lighter(65);
+			border_color = border_color.lighter(45);
 		}
 		
 		// Draw background with rounded corners (5px)
@@ -395,8 +395,8 @@ void CustomUiStyle::drawPrimitivePanelButtonCommand(PrimitiveElement element, co
 	painter->setRenderHint(QPainter::Antialiasing, true);
 	
 	// Use same color scheme as QToolButton for consistency
-	QColor base_background = qApp->palette().color(QPalette::Button).lighter(180);
-	QColor base_border = qApp->palette().color(QPalette::Dark).lighter(120);
+	QColor base_background = qApp->palette().color(QPalette::Button).lighter(160);
+	QColor base_border = qApp->palette().color(QPalette::Dark).lighter(130);
 	
 	QColor background_color = base_background;
 	QColor border_color = base_border.lighter(130);
@@ -441,8 +441,8 @@ void CustomUiStyle::drawPrimitiveFrameTabWidget(PrimitiveElement element, const 
 	painter->setRenderHint(QPainter::Antialiasing, true);
 	
 	// Use same color scheme for consistency
-	QColor base_background = qApp->palette().color(QPalette::Button).lighter(180);
-	QColor base_border = qApp->palette().color(QPalette::Dark).lighter(120);
+	QColor base_background = qApp->palette().color(QPalette::Button).lighter(160);
+	QColor base_border = qApp->palette().color(QPalette::Dark).lighter(130);
 	
 	QColor background_color = base_background;
 	QColor border_color = base_border.lighter(130);
@@ -589,7 +589,7 @@ void CustomUiStyle::drawPrimitiveFrameElements(PrimitiveElement element, const Q
 		painter->save();
 		
 		// Use the border color based on QPalette color but a bit lighter
-		QColor border_color = qApp->palette().color(QPalette::Dark).lighter(90);
+		QColor border_color = qApp->palette().color(QPalette::Dark).lighter(120);
 		QPen border_pen(border_color);
 		border_pen.setWidth(1);
 		painter->setPen(border_pen);
