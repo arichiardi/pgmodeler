@@ -206,22 +206,17 @@ void CustomUiStyle::drawControlTabBarTab(ControlElement element, const QStyleOpt
 				painter->drawRect(tab_rect);
 			}
 			
-			// Draw border with subtle flat styling (sem linha de destaque para abas ativas)
-			if(!is_selected)
+			// Draw border with subtle flat styling for all tabs
+			painter->setPen(QPen(border_color, 1));
+			painter->setBrush(Qt::NoBrush);
+			if(shape == QTabBar::RoundedNorth || shape == QTabBar::TriangularNorth)
 			{
-				// Non-selected tabs get subtle border
-				painter->setPen(QPen(border_color, 1));
-				painter->setBrush(Qt::NoBrush);
-				if(shape == QTabBar::RoundedNorth || shape == QTabBar::TriangularNorth)
-				{
-					painter->drawRoundedRect(draw_rect, radius, radius);
-				}
-				else
-				{
-					painter->drawRect(tab_rect);
-				}
+				painter->drawRoundedRect(draw_rect, radius, radius);
 			}
-			// Abas ativas não têm borda adicional (apenas o background diferenciado)
+			else
+			{
+				painter->drawRect(tab_rect);
+			}
 			
 			painter->restore();
 			
@@ -229,7 +224,7 @@ void CustomUiStyle::drawControlTabBarTab(ControlElement element, const QStyleOpt
 			QStyleOptionTab text_option = *tab_option;
 			QColor text_color = is_selected ? 
 				qApp->palette().color(QPalette::WindowText) :
-				qApp->palette().color(QPalette::WindowText).lighter(50);
+				qApp->palette().color(QPalette::WindowText).lighter(30);
 			text_option.palette.setColor(QPalette::ButtonText, text_color);
 			QProxyStyle::drawControl(CE_TabBarTabLabel, &text_option, painter, widget);
 			return;
@@ -549,8 +544,8 @@ void CustomUiStyle::drawPrimitiveFrameElements(PrimitiveElement element, const Q
 		{
 			customize = true;
 			has_round_corners = (class_name == "QLineEdit" || 
-																	 class_name == "QPlainTextEdit" ||
-																	 class_name == "QComboBox"); 
+													 class_name == "QPlainTextEdit" ||
+													 class_name == "QComboBox"); 
 			break;
 		}
 	}
@@ -568,8 +563,8 @@ void CustomUiStyle::drawPrimitiveFrameElements(PrimitiveElement element, const Q
 				{
 					customize = true;
 					has_round_corners = (class_name == "QLineEdit" || 
-																			 class_name == "QPlainTextEdit" ||
-																			 class_name == "QComboBox"); 
+															 class_name == "QPlainTextEdit" ||
+															 class_name == "QComboBox"); 
 					break;
 				}
 			}
@@ -591,7 +586,7 @@ void CustomUiStyle::drawPrimitiveFrameElements(PrimitiveElement element, const Q
 		if(has_round_corners)
 		{
 			painter->setRenderHints(QPainter::Antialiasing, true);     
-			painter->drawRoundedRect(option->rect, 4, 4);    
+			painter->drawRoundedRect(option->rect, 6, 6);    
 		}
 		else	
 			painter->drawRect(option->rect);      
