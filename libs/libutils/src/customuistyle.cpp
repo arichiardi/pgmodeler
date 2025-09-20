@@ -589,7 +589,7 @@ void CustomUiStyle::drawPrimitiveFrameElements(PrimitiveElement element, const Q
 		painter->save();
 		
 		// Use the border color based on QPalette color but a bit lighter
-		QColor border_color = qApp->palette().color(QPalette::Dark).lighter(120);
+		QColor border_color = qApp->palette().color(QPalette::Dark).lighter(130);
 		QPen border_pen(border_color);
 		border_pen.setWidth(1);
 		painter->setPen(border_pen);
