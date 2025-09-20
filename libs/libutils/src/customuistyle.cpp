@@ -181,11 +181,20 @@ void CustomUiStyle::drawControlTabBarTab(ControlElement element, const QStyleOpt
 				// Top tabs - desloca para baixo para esconder cantos inferiores arredondados
 				draw_rect.setHeight(tab_rect.height() + radius);
 				
-				// Para abas inativas, diminuir altura em 5px para simular deseleção
-				if(!is_selected)
+				// Aplicar ajustes de posicionamento e altura baseado no estado da aba
+				if(is_selected)
 				{
-					draw_rect.moveTop(tab_rect.top() + 5);
-					tab_rect.moveTop(tab_rect.top() + 5);
+					// Abas ativas: diminuir altura em 1px
+					//draw_rect.setHeight(draw_rect.height() - 3);
+					//tab_rect.setHeight(tab_rect.height() - 3);
+				}
+				else
+				{
+					// Abas inativas: deslocar 3px para baixo e diminuir altura em 3px
+					//draw_rect.moveTop(tab_rect.top() + 3);
+					//tab_rect.moveTop(tab_rect.top() + 3);
+					//draw_rect.setHeight(draw_rect.height() - 3);
+					//tab_rect.setHeight(tab_rect.height() - 3);
 				}
 			}
 			else
@@ -194,27 +203,43 @@ void CustomUiStyle::drawControlTabBarTab(ControlElement element, const QStyleOpt
 				// (implementar depois uma por vez)
 			}
 			
-			// Draw background with rounded corners
-			painter->setBrush(background_color);
-			painter->setPen(Qt::NoPen);
+			// Desenhar aba com cantos superiores arredondados e base reta
 			if(shape == QTabBar::RoundedNorth || shape == QTabBar::TriangularNorth)
 			{
-				painter->drawRoundedRect(draw_rect, radius, radius);
+				QPainterPath tab_path;
+				int r = radius;
+				QRectF rrect = draw_rect;
+				// Começa na base esquerda
+				tab_path.moveTo(rrect.left(), rrect.bottom());
+				// Sobe reto até antes do canto superior esquerdo
+				tab_path.lineTo(rrect.left(), rrect.top() + r);
+				// Arco superior esquerdo
+				tab_path.quadTo(rrect.left(), rrect.top(), rrect.left() + r, rrect.top());
+				// Linha reta até antes do canto superior direito
+				tab_path.lineTo(rrect.right() - r, rrect.top());
+				// Arco superior direito
+				tab_path.quadTo(rrect.right(), rrect.top(), rrect.right(), rrect.top() + r);
+				// Desce reto até a base direita
+				tab_path.lineTo(rrect.right(), rrect.bottom());
+				// Fecha na base
+				tab_path.lineTo(rrect.left(), rrect.bottom());
+
+				painter->setBrush(background_color);
+				painter->setPen(Qt::NoPen);
+				painter->drawPath(tab_path);
+
+				painter->setPen(QPen(border_color, 1));
+				painter->setBrush(Qt::NoBrush);
+				painter->drawPath(tab_path);
 			}
 			else
 			{
+				painter->setBrush(background_color);
+				painter->setPen(Qt::NoPen);
 				painter->drawRect(tab_rect);
-			}
-			
-			// Draw border with subtle flat styling for all tabs
-			painter->setPen(QPen(border_color, 1));
-			painter->setBrush(Qt::NoBrush);
-			if(shape == QTabBar::RoundedNorth || shape == QTabBar::TriangularNorth)
-			{
-				painter->drawRoundedRect(draw_rect, radius, radius);
-			}
-			else
-			{
+
+				painter->setPen(QPen(border_color, 1));
+				painter->setBrush(Qt::NoBrush);
 				painter->drawRect(tab_rect);
 			}
 			
@@ -431,30 +456,43 @@ void CustomUiStyle::drawPrimitiveFrameTabWidget(PrimitiveElement element, const 
 	painter->setRenderHint(QPainter::Antialiasing, true);
 	
 	// Use QPalette::Dark as base for container widget - 20 points lighter for background, 60 points lighter for border
-	QColor base_background = qApp->palette().color(QPalette::Dark).lighter(120);
-	QColor base_border = qApp->palette().color(QPalette::Dark).lighter(160);
-	
-	QColor background_color = base_background;
-	QColor border_color = base_border;
+	QColor background_color = qApp->palette().color(QPalette::Dark).lighter(120);
+	QColor border_color = qApp->palette().color(QPalette::Dark).lighter(160);
 	
 	// Adjust colors based on state - QTabWidget should maintain base colors
 	if(!(option->state & State_Enabled))
 	{
-		background_color = base_background.darker(155);
+		background_color = background_color.darker(155);
 		border_color = border_color.darker(155);
 	}
 	// For QTabWidget, we don't apply hover effects to maintain consistent container appearance
 	
-	// Draw background with rounded corners
+	// Desenhar retângulo com cantos arredondados apenas na base
+	QRectF rect = option->rect;
+	int radius = 8; // Raio maior para suavidade
+
+	QPainterPath path;
+	// Topo reto
+	path.moveTo(rect.left(), rect.top());
+	path.lineTo(rect.right(), rect.top());
+	// Desce reto até antes do canto inferior direito
+	path.lineTo(rect.right(), rect.bottom() - radius);
+	// Arco inferior direito suave
+	path.quadTo(rect.right(), rect.bottom(), rect.right() - radius, rect.bottom());
+	// Linha reta até antes do canto inferior esquerdo
+	path.lineTo(rect.left() + radius, rect.bottom());
+	// Arco inferior esquerdo suave
+	path.quadTo(rect.left(), rect.bottom(), rect.left(), rect.bottom() - radius);
+	// Sobe reto até o topo
+	path.lineTo(rect.left(), rect.top());
+
 	painter->setBrush(background_color);
 	painter->setPen(Qt::NoPen);
-	painter->drawRoundedRect(option->rect, 5, 5);
-	
-	// Draw uniform flat border - use slightly inset rect to avoid overlap artifacts
-	QRectF border_rect = QRectF(option->rect).adjusted(0.5, 0.5, -0.5, -0.5);
+	painter->drawPath(path);
+
 	painter->setPen(QPen(border_color, 1));
 	painter->setBrush(Qt::NoBrush);
-	painter->drawRoundedRect(border_rect, 5, 5);
+	painter->drawPath(path);
 	
 	painter->restore();
 }
