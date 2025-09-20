@@ -8,12 +8,7 @@
 # the Free Software Foundation version 3.
 #
 # This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRAN		QColor background_color = base_background;
-		QColor background_color = base_background;
-	QColor border_color = base_border.lighter(90);olor border_color = base_border.lighter(90);olor background_color = base_background;
-	QColor border_color = base_border.light	// Use same color scheme as QTabWidget for uniformity
-	QColor base_background = qApp->palette().color(QPalette::Button).lighter(160);
-	QColor border_color = qApp->palette().color(QPalette::Dark).lighter(100).lighter(70);90);; without even the implied warranty of
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 #
@@ -134,13 +129,13 @@ void CustomUiStyle::drawControlTabBarTab(ControlElement element, const QStyleOpt
 			painter->save();
 			painter->setRenderHint(QPainter::Antialiasing, true);
 			
-			// Use same color scheme as QTabWidget (PE_FrameTabWidget) for consistency
-			QColor base_background = qApp->palette().color(QPalette::Button).lighter(160);
-			QColor base_border = qApp->palette().color(QPalette::Dark).lighter(130);
+			// Use same color scheme as QTabWidget for consistency
+			QColor base_background = qApp->palette().color(QPalette::Dark).lighter(120);
+			QColor base_border = qApp->palette().color(QPalette::Dark).lighter(160);
 			QColor highlight_color = qApp->palette().color(QPalette::Highlight);
 			
 			QColor background_color = base_background;
-			QColor border_color = base_border.lighter(120);
+			QColor border_color = base_border;
 			QRect tab_rect = option->rect;
 			
 			// Determine tab position and orientation
@@ -160,21 +155,21 @@ void CustomUiStyle::drawControlTabBarTab(ControlElement element, const QStyleOpt
 			}
 			else if(is_selected)
 			{
-				// Selected tab: lighter/brighter than base for clear distinction (ACTIVE)
-				background_color = base_background.lighter(50);
-				border_color = highlight_color.lighter(70);
+				// Selected tab: same colors as QTabWidget (ACTIVE)
+				background_color = base_background;  // QPalette::Dark.lighter(120)
+				border_color = base_border;          // QPalette::Dark.lighter(160)
 			}
 			else if(option->state & State_MouseOver)
 			{
 				// Hover state: slightly lighter than base colors
-				background_color = base_background.lighter(45);
-				border_color = border_color.lighter(45);
+				background_color = base_background.lighter(110);
+				border_color = border_color.lighter(110);
 			}
 			else
 			{
-				// Inactive tabs: slightly darker than base for distinction
-				background_color = base_background.darker(130);
-				border_color = border_color;
+				// Inactive tabs: 20 points darker than base colors
+				background_color = base_background.darker(120);  // From lighter(120) to lighter(100)
+				border_color = base_border.darker(120);          // From lighter(160) to lighter(140)
 			}
 			
 			// Create custom shape based on tab orientation for flat design
@@ -440,24 +435,20 @@ void CustomUiStyle::drawPrimitiveFrameTabWidget(PrimitiveElement element, const 
 	painter->save();
 	painter->setRenderHint(QPainter::Antialiasing, true);
 	
-	// Use same color scheme for consistency
-	QColor base_background = qApp->palette().color(QPalette::Button).lighter(160);
-	QColor base_border = qApp->palette().color(QPalette::Dark).lighter(130);
+	// Use QPalette::Dark as base for container widget - 20 points lighter for background, 60 points lighter for border
+	QColor base_background = qApp->palette().color(QPalette::Dark).lighter(120);
+	QColor base_border = qApp->palette().color(QPalette::Dark).lighter(160);
 	
 	QColor background_color = base_background;
-	QColor border_color = base_border.lighter(130);
+	QColor border_color = base_border;
 	
-	// Adjust colors based on state
+	// Adjust colors based on state - QTabWidget should maintain base colors
 	if(!(option->state & State_Enabled))
 	{
-		background_color = base_background.darker(140);
-		border_color = border_color.darker(140);
+		background_color = base_background.darker(155);
+		border_color = border_color.darker(155);
 	}
-	else if(option->state & State_MouseOver)
-	{
-		background_color = base_background.lighter(85);
-		border_color = border_color.lighter(85);
-	}
+	// For QTabWidget, we don't apply hover effects to maintain consistent container appearance
 	
 	// Draw background with rounded corners
 	painter->setBrush(background_color);
@@ -482,8 +473,8 @@ void CustomUiStyle::drawPrimitiveFrameTabBarBase(PrimitiveElement element, const
 	painter->setRenderHint(QPainter::Antialiasing, true);
 	
 	// Use same color scheme as QTabWidget for uniformity
-	QColor base_background = qApp->palette().color(QPalette::Button).lighter(180);
-	QColor border_color = qApp->palette().color(QPalette::Dark).lighter(120).lighter(110);
+	QColor base_background = qApp->palette().color(QPalette::Dark).lighter(120);
+	QColor border_color = qApp->palette().color(QPalette::Dark).lighter(160);
 	
 	// Determine orientation if available
 	const QStyleOptionTabBarBase *tab_base_option = 
@@ -543,6 +534,7 @@ void CustomUiStyle::drawPrimitiveFrameElements(PrimitiveElement element, const Q
 	static const QStringList target_classes = {
 		"QLineEdit",
 		"QPlainTextEdit", 
+		"QComboBox",
 		"QTreeWidget",
 		"QTreeView",
 		"QTableView",
@@ -557,7 +549,8 @@ void CustomUiStyle::drawPrimitiveFrameElements(PrimitiveElement element, const Q
 		{
 			customize = true;
 			has_round_corners = (class_name == "QLineEdit" || 
-																	 class_name == "QPlainTextEdit"); 
+																	 class_name == "QPlainTextEdit" ||
+																	 class_name == "QComboBox"); 
 			break;
 		}
 	}
@@ -575,7 +568,8 @@ void CustomUiStyle::drawPrimitiveFrameElements(PrimitiveElement element, const Q
 				{
 					customize = true;
 					has_round_corners = (class_name == "QLineEdit" || 
-																			 class_name == "QPlainTextEdit"); 
+																			 class_name == "QPlainTextEdit" ||
+																			 class_name == "QComboBox"); 
 					break;
 				}
 			}
