@@ -15,6 +15,13 @@
     "C_Cpp.hoverEnabled": true,                 
     "C_Cpp.errorSquiggles": "Enabled",     
 
+    "C_Cpp.commentContinuationPatterns": [
+        {
+            "begin": "/*",
+            "continue": " * "
+        }
+    ],
+
     // Forcing intellisense to use clang++ as compiler
     "C_Cpp.default.compilerPath": "/usr/bin/clang++",
     "C_Cpp.default.cStandard": "c17",
@@ -117,10 +124,33 @@
                 ],
                 "settings": {
                     "foreground": "#808080",
-                    //"fontStyle": "italic" 
                 }
             }
         ]
     
+    },
+
+    // Clang-format file settings (see .clang-format in project's root)
+    "C_Cpp.formatting": "clangFormat",
+    "C_Cpp.clang_format_style": "file",
+    "editor.formatOnType": true,
+    "editor.autoIndent": "full",
+    "[cpp]": {
+        "editor.defaultFormatter": "ms-vscode.cpptools",
+        "editor.formatOnType": true,
+        "editor.formatOnSave": true,
+        "editor.autoIndent": "full",
+        "editor.insertSpaces": false,
+        "editor.detectIndentation": false,
+        "editor.tabSize": 2
+    },
+    "[c]": {
+        "editor.defaultFormatter": "ms-vscode.cpptools",
+        "editor.formatOnType": true,
+        "editor.formatOnSave": true,
+        "editor.autoIndent": "full",
+        "editor.insertSpaces": false,
+        "editor.detectIndentation": false,
+        "editor.tabSize": 2
     }
 }
