@@ -58,9 +58,13 @@ class __libutils CustomUiStyle : public QProxyStyle {
 		
 		void drawPrimitiveFrameTabWidget(PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const;
 		void drawPrimitiveFrameTabBarBase(PrimitiveElement element, const QStyleOption *option,	QPainter *painter, const QWidget *widget) const;
+		void drawPrimitiveFrameGroupBox(PrimitiveElement element, const QStyleOption *option,	QPainter *painter, const QWidget *widget) const;
 		void drawPrimitiveFrameElements(PrimitiveElement element, const QStyleOption *option,	QPainter *painter, const QWidget *widget) const;
 
 		void drawControlTabBarTab(ControlElement element, const QStyleOption *option,	QPainter *painter, const QWidget *widget) const;
+
+		//! \brief Checks if the current application palette is dark (dark theme)
+		bool isDarkPalette() const;
 
 	public:
 		CustomUiStyle();
@@ -82,6 +86,8 @@ class __libutils CustomUiStyle : public QProxyStyle {
     void drawControl(ControlElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const override;
 
     void drawPrimitive(PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const override;
+
+    void drawComplexControl(ComplexControl control, const QStyleOptionComplex *option, QPainter *painter, const QWidget *widget) const override;
 											
     QPixmap generatedIconPixmap(QIcon::Mode iconMode, const QPixmap &pixmap, const QStyleOption *option) const override;
 };

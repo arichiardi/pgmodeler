@@ -61,12 +61,6 @@ void CustomUiStyle::drawItemPixmap(QPainter *painter, const QRect& rect, int ali
 
 void CustomUiStyle::drawControl(ControlElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const
 {
-	/* if(element == CE_ToolButtonLabel)
-	{
-		drawControlToolButtonLabel(element, option, painter, widget);
-		return;
-	} */
-
 	if(element == CE_TabBarTab)
 	{
 		drawControlTabBarTab(element, option, painter, widget);
@@ -89,8 +83,8 @@ void CustomUiStyle::drawControlTabBarTab(ControlElement element, const QStyleOpt
 			painter->setRenderHint(QPainter::Antialiasing, true);
 
 			// Use same color scheme as QTabWidget for consistency
-			QColor base_background = qApp->palette().color(QPalette::Dark).lighter(120),
-			       base_border = qApp->palette().color(QPalette::Dark).lighter(160), bg_color, border_color;
+			QColor base_background = qApp->palette().color(QPalette::Dark).lighter(DarkFactor - 10),
+			       base_border = qApp->palette().color(QPalette::Dark).lighter(LightFactor - 10), bg_color, border_color;
 
 			QRect tab_rect = tab_opt->rect;
 			QTabBar::Shape shape = tab_opt->shape;
@@ -99,8 +93,8 @@ void CustomUiStyle::drawControlTabBarTab(ControlElement element, const QStyleOpt
 			// Determine colors based on tab state
 			if(!(tab_opt->state & State_Enabled))
 			{
-				bg_color = base_background.darker(135);
-				border_color = base_border.darker(135);
+				bg_color = base_background.darker(DarkFactor);
+				border_color = base_border.darker(DarkFactor);
 			}
 			else if(is_selected)
 			{
@@ -109,13 +103,13 @@ void CustomUiStyle::drawControlTabBarTab(ControlElement element, const QStyleOpt
 			}
 			else if(tab_opt->state & State_MouseOver) 
 			{
-				bg_color = base_background.lighter(110);
-				border_color = base_border.lighter(110);
+				bg_color = base_background.lighter(DarkFactor - 20);
+				border_color = base_border.lighter(DarkFactor - 20);
 			}
 			else
 			{
-				bg_color = base_background.darker(120);
-				border_color = base_border.darker(120);
+				bg_color = base_background.darker(DarkFactor - 10);
+				border_color = base_border.darker(DarkFactor - 10);
 			}
 
 			QPen border_pen(border_color, PenWidth);
@@ -208,8 +202,14 @@ void CustomUiStyle::drawPrimitive(PrimitiveElement element, const QStyleOption *
 		return;
 	}
 
+	if(element == PE_FrameGroupBox)
+	{
+		drawPrimitiveFrameGroupBox(element, option, painter, widget);
+		return;
+	}
+
 	if(element == PE_Frame || element == PE_FrameLineEdit || 
-			element == PE_FrameGroupBox || element == PE_FrameWindow)
+			element == PE_FrameWindow)
 	{
 		drawPrimitiveFrameElements(element, option, painter, widget);
 		return;
@@ -260,8 +260,8 @@ void CustomUiStyle::drawPrimitivePanelButton(PrimitiveElement element, const QSt
 	{
 		QColor custom_color = widget->palette().color(QPalette::Button);
 
-		// Use qGray() to calculate luminance efficiently
-		int luminance = qGray(custom_color.rgb());
+		// Use QColor::lightness() to calculate luminance efficiently
+		int luminance = custom_color.lightness();
 		
 		/* For light colors (luminance > 128), make border darker
 		 * For dark colors (luminance <= 128), make border lighter */
@@ -366,6 +366,43 @@ void CustomUiStyle::drawPrimitiveFrameTabWidget(PrimitiveElement element, const 
 	painter->restore();
 }
 
+void CustomUiStyle::drawPrimitiveFrameGroupBox(PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const
+{
+	#warning "Review me!"
+	if(!option || !painter || !widget)
+		return;
+
+	painter->save();
+	painter->setRenderHint(QPainter::Antialiasing, true);
+
+	// Use same color scheme as QTabWidget for consistency
+	QColor bg_color = qApp->palette().color(QPalette::Dark).lighter(DarkFactor),
+	       border_color = qApp->palette().color(QPalette::Dark).lighter(LightFactor);
+
+	if(!(option->state & State_Enabled))
+	{
+		bg_color = bg_color.darker(MidFactor);
+		border_color = border_color.darker(MidFactor);
+	}
+
+	// Draw fully rounded rectangle (all corners rounded unlike QTabWidget)
+	QRectF rect = option->rect;
+
+	painter->setBrush(bg_color);
+	painter->setPen(Qt::NoPen);
+	painter->drawRoundedRect(rect, FrameRadius, FrameRadius);
+
+	QPen border_pen(border_color, PenWidth);
+	border_pen.setCosmetic(true);
+
+	painter->setPen(border_pen);
+	painter->setBrush(Qt::NoBrush);
+	painter->drawRoundedRect(QRectF(rect).adjusted(0.5, 0.5, -0.5, -0.5), 
+													 FrameRadius, FrameRadius);
+
+	painter->restore();
+}
+
 void CustomUiStyle::drawPrimitiveFrameTabBarBase(PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const
 {
 	if(!option || !painter || !widget)
@@ -375,8 +412,8 @@ void CustomUiStyle::drawPrimitiveFrameTabBarBase(PrimitiveElement element, const
 	painter->setRenderHint(QPainter::Antialiasing, true);
 
 	// Use same color scheme as QTabWidget for uniformity
-	QColor base_bg_color = qApp->palette().color(QPalette::Dark).lighter(DarkFactor - 10),
-	       border_color = qApp->palette().color(QPalette::Dark).lighter(LightFactor - 10);
+	QColor base_bg_color = qApp->palette().color(QPalette::Mid).lighter(DarkFactor - 10),
+	       border_color = qApp->palette().color(QPalette::Mid).lighter(LightFactor - 10);
 
 	// Determine orientation if available
 	const QStyleOptionTabBarBase *tab_base_opt = 
@@ -542,4 +579,89 @@ QPixmap CustomUiStyle::createGrayMaskedPixmap(const QPixmap& original) const
 	}
 
 	return QPixmap::fromImage(image);
+}
+
+void CustomUiStyle::drawComplexControl(ComplexControl control, const QStyleOptionComplex *option, QPainter *painter, const QWidget *widget) const
+{
+	#warning "Review me!"
+	if(control == CC_GroupBox)
+	{
+		const QStyleOptionGroupBox *group_box_opt = qstyleoption_cast<const QStyleOptionGroupBox*>(option);
+		
+		if(group_box_opt && painter)
+		{
+			painter->save();
+			
+			QRect group_rect = group_box_opt->rect;
+			QRect title_rect;
+			QRect frame_rect = group_rect;
+			
+			// Calculate title area if there's text
+			bool has_title = !group_box_opt->text.isEmpty();
+			
+			if(has_title)
+			{
+				// Create bold font with 80% size to calculate text height
+				QFont title_font = painter->font();
+				title_font.setBold(true);
+				title_font.setPointSizeF(title_font.pointSizeF() * 0.80);
+				
+				QFontMetrics fm(title_font);
+				int text_height = fm.height();
+				int padding = 3; // 3px padding above and below title
+				int total_title_height = text_height + (2 * padding);
+				
+				// Title takes the top portion including padding
+				title_rect = QRect(group_rect.left(), group_rect.top(), 
+				                  group_rect.width(), total_title_height);
+				
+				// Frame starts below the title (including padding)
+				frame_rect = QRect(group_rect.left(), group_rect.top() + total_title_height, 
+				                  group_rect.width(), group_rect.height() - total_title_height);
+			}
+			
+			// Draw the frame below the title
+			if(!frame_rect.isEmpty())
+			{
+				QStyleOptionFrame frame_opt;
+				frame_opt.QStyleOption::operator=(*group_box_opt);
+				frame_opt.features = QStyleOptionFrame::None;
+				frame_opt.rect = frame_rect;  // Use adjusted frame rectangle
+				drawPrimitive(PE_FrameGroupBox, &frame_opt, painter, widget);
+			}
+			
+			// Draw the title above the frame
+			if(has_title && !title_rect.isEmpty())
+			{
+				// Create bold font with 80% size
+				QFont title_font = painter->font();
+				title_font.setBold(true);
+				title_font.setPointSizeF(title_font.pointSizeF() * 0.80);
+				painter->setFont(title_font);
+				
+				// Use default text color
+				painter->setPen(qApp->palette().color(QPalette::WindowText));
+				
+				// Draw the text in the title area with 3px padding (centered vertically)
+				QRect text_draw_rect = title_rect.adjusted(0, 3, 0, -3); // Apply 3px padding top/bottom
+				painter->drawText(text_draw_rect, group_box_opt->textAlignment | Qt::AlignVCenter, 
+				                 group_box_opt->text);
+			}
+			
+			painter->restore();
+			return;
+		}
+	}
+	
+	QProxyStyle::drawComplexControl(control, option, painter, widget);
+}
+
+bool CustomUiStyle::isDarkPalette() const
+{
+	QPalette palette = qApp->palette();
+	
+	/* If text is lighter than background, it's a dark theme
+	 * otherwise, it's a light theme */
+	return palette.color(QPalette::WindowText).lightness() > 
+					palette.color(QPalette::Window).lightness();
 }
