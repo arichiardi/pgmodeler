@@ -36,7 +36,7 @@ std::map<QPalette::ColorRole, QStringList> AppearanceConfigWidget::dark_ui_color
     { QPalette::Midlight, {"#0b0d16", "#0b0d16", "#0b0d16"} },
     { QPalette::Mid, {"#0e111b", "#0e111b", "#0e111b"} },
     { QPalette::Button, {"#1b1f2c", "#1b1f2c", "#131621"} },
-    { QPalette::Dark, {"#262b3a", "#262b3a", "#1b1f2c"} },
+    { QPalette::Dark, {"#272c3c", "#272c3c", "#1b1f2c"} },
     { QPalette::Base, {"#151a26", "#151a26", "#151a26"} },
     { QPalette::Window, {"#151b25", "#151b25", "#151b25"} },
     { QPalette::Shadow, {"#000000", "#000000", "#000000"} },

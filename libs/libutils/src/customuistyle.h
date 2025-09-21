@@ -41,21 +41,26 @@ class __libutils CustomUiStyle : public QProxyStyle {
 	private:
 		static QMap<PixelMetric, int> pixel_metrics;
     
-		static constexpr qreal BlendFactor = 0.7;
+		static constexpr qreal BlendFactor = 0.7,
+													 PenWidth = 2.0;
 		
 		static constexpr int ButtonRadius = 3,
 												 InputRadius = 4,
 												 FrameRadius = 4,
 												 TabRadius = 6;
 
-		void drawControlToolButtonLabel(ControlElement element, const QStyleOption *option,	QPainter *painter, const QWidget *widget) const;
-		void drawControlTabBarTab(ControlElement element, const QStyleOption *option,	QPainter *painter, const QWidget *widget) const;
+		static constexpr int DarkFactor = 130,
+							 					 MidFactor = 150,
+							 					 LightFactor = 170;
 
-		void drawPrimitivePanelButtonTool(PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const;
-		void drawPrimitivePanelButtonCommand(PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const;
+		//! \brief Draws button elements with custom flat design
+		void drawPrimitivePanelButton(PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const;
+		
 		void drawPrimitiveFrameTabWidget(PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const;
 		void drawPrimitiveFrameTabBarBase(PrimitiveElement element, const QStyleOption *option,	QPainter *painter, const QWidget *widget) const;
 		void drawPrimitiveFrameElements(PrimitiveElement element, const QStyleOption *option,	QPainter *painter, const QWidget *widget) const;
+
+		void drawControlTabBarTab(ControlElement element, const QStyleOption *option,	QPainter *painter, const QWidget *widget) const;
 
 	public:
 		CustomUiStyle();

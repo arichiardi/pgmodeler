@@ -61,34 +61,16 @@ void CustomUiStyle::drawItemPixmap(QPainter *painter, const QRect& rect, int ali
 
 void CustomUiStyle::drawControl(ControlElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const
 {
-	if(element == CE_ToolButtonLabel)
+	/* if(element == CE_ToolButtonLabel)
 	{
 		drawControlToolButtonLabel(element, option, painter, widget);
 		return;
-	}
+	} */
 
 	if(element == CE_TabBarTab)
 	{
 		drawControlTabBarTab(element, option, painter, widget);
 		return;
-	}
-
-	QProxyStyle::drawControl(element, option, painter, widget);
-}
-
-void CustomUiStyle::drawControlToolButtonLabel(ControlElement element, const QStyleOption *option, QPainter *painter,
-                                               const QWidget *widget) const
-{
-	// Special handling for disabled QToolButton in QToolBar
-	if(element == CE_ToolButtonLabel && option && !(option->state & State_Enabled))
-	{
-		const QStyleOptionToolButton *tb_option = qstyleoption_cast<const QStyleOptionToolButton*>(option);
-
-		if(tb_option && widget && widget->parent() && qobject_cast<QToolBar*>(widget->parent()))
-		{
-			QProxyStyle::drawControl(element, option, painter, widget);
-			return;
-		}
 	}
 
 	QProxyStyle::drawControl(element, option, painter, widget);
@@ -136,7 +118,7 @@ void CustomUiStyle::drawControlTabBarTab(ControlElement element, const QStyleOpt
 				border_color = base_border.darker(120);
 			}
 
-			QPen border_pen(border_color, 1);
+			QPen border_pen(border_color, PenWidth);
 			border_pen.setCosmetic(true);
 
 			if(shape == QTabBar::RoundedNorth || shape == QTabBar::TriangularNorth)
@@ -207,15 +189,10 @@ void CustomUiStyle::drawControlTabBarTab(ControlElement element, const QStyleOpt
 
 void CustomUiStyle::drawPrimitive(PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const
 {
-	if(element == PE_PanelButtonTool)
+	if(element == PE_PanelButtonTool || 
+		 element == PE_PanelButtonCommand)
 	{
-		drawPrimitivePanelButtonTool(element, option, painter, widget);
-		return;
-	}
-
-	if(element == PE_PanelButtonCommand)
-	{
-		drawPrimitivePanelButtonCommand(element, option, painter, widget);
+		drawPrimitivePanelButton(element, option, painter, widget);
 		return;
 	}
 
@@ -241,145 +218,98 @@ void CustomUiStyle::drawPrimitive(PrimitiveElement element, const QStyleOption *
 	QProxyStyle::drawPrimitive(element, option, painter, widget);
 }
 
-void CustomUiStyle::drawPrimitivePanelButtonTool(PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const
+void CustomUiStyle::drawPrimitivePanelButton(PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const
 {
-	if(element == PE_PanelButtonTool && option && painter && widget)
-	{
-		painter->save();
-		painter->setRenderHint(QPainter::Antialiasing, true);
-
-		// Determine if widget has custom background color
-		bool has_custom_color =
-		    widget && widget->palette().color(QPalette::Button) != qApp->palette().color(QPalette::Button);
-
-		QColor bg_color = has_custom_color ? 
-											widget->palette().color(QPalette::Button) :
-											qApp->palette().color(QPalette::Button).lighter(160);
-		QColor border_color;
-
-		if(has_custom_color)
-		{
-			QColor custom_color = widget->palette().color(QPalette::Button);
-			
-			// Use qGray() to calculate luminance efficiently
-			int luminance = qGray(custom_color.rgb());
-			
-			/* For light colors (luminance > 128), make border darker
-			 * For dark colors (luminance <= 128), make border lighter */
-			if(luminance > 128)
-				// Dark border for light backgrounds
-				border_color = custom_color.darker(130); 
-			else
-				// Light border for dark backgrounds
-				border_color = custom_color.lighter(150); 
-		}
-		else
-			border_color = qApp->palette().color(QPalette::Dark).lighter(150);
-
-		// Adjust colors based on button state
-		if(!(option->state & State_Enabled))
-		{
-			bg_color = bg_color.darker(140);
-			border_color = border_color.darker(140);
-		}
-		else if(option->state & (State_Sunken | State_On))
-		{
-			bg_color = bg_color.darker(120);
-			border_color = border_color.darker(120);
-		}
-		else if(option->state & State_MouseOver)
-		{
-			bg_color = bg_color.lighter(145);
-			border_color = border_color.lighter(145);
-		}
-
-		// Special focus border
-		if(option->state & State_HasFocus)
-			border_color = qApp->palette().color(QPalette::Highlight);
-
-		// Draw background with rounded corners
-		QPen border_pen(border_color, 1);
-		border_pen.setCosmetic(true);
-
-		painter->setBrush(bg_color);
-		painter->setPen(Qt::NoPen);
-		painter->drawRoundedRect(option->rect, ButtonRadius, ButtonRadius);
-
-		// Draw border
-		painter->setPen(QPen(border_color, 1));
-		painter->setBrush(Qt::NoBrush);
-		painter->drawRoundedRect(QRectF(option->rect).adjusted(0.5, 0.5, -0.5, -0.5),
-														 ButtonRadius, ButtonRadius);
-
-		painter->restore();
-		return;
-	}
-
-	QProxyStyle::drawPrimitive(element, option, painter, widget);
-}
-
-void CustomUiStyle::drawPrimitivePanelButtonCommand(PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const
-{
-	if(!option || !painter || !widget)
+	if((element != PE_PanelButtonTool && 
+			element != PE_PanelButtonCommand) || !option || !painter || !widget)
 		return;
 
 	painter->save();
 	painter->setRenderHint(QPainter::Antialiasing, true);
 
+	/* Determine if the button has custom background color.
+	 * If it contains a stylesheet with background-color property,
+		* consider it as custom colored button */
+	bool has_custom_color =
+			widget && widget->styleSheet().contains("background-color");
+
+	QColor bg_color = has_custom_color ? 
+										widget->palette().color(QPalette::Button) :
+										qApp->palette().color(QPalette::Button).lighter(160);
+	QColor border_color;
+
 	// Check if this is a default QPushButton
 	const QPushButton *push_button = qobject_cast<const QPushButton*>(widget);
 	bool is_default = push_button && push_button->isDefault() && (option->state & State_Enabled);
 
-	// Use same color scheme as QToolButton for consistency
-	QColor bg_color = qApp->palette().color(QPalette::Button).lighter(160),
-	       border_color = qApp->palette().color(QPalette::Dark).lighter(169);
-
-	// Special colors for default buttons when enabled
 	if(is_default)
 	{
 		border_color = qApp->palette().color(QPalette::Highlight);
+		
 		// Mix Highlight with Button color for a more subtle default background
 		QColor highlight_color = qApp->palette().color(QPalette::Highlight);
 		QColor button_color = qApp->palette().color(QPalette::Button);
+
 		bg_color = QColor(
 			(highlight_color.red() + button_color.red() * 2) / 3,
 			(highlight_color.green() + button_color.green() * 2) / 3,
 			(highlight_color.blue() + button_color.blue() * 2) / 3
 		).lighter(115);
 	}
+	else if(has_custom_color)
+	{
+		QColor custom_color = widget->palette().color(QPalette::Button);
+
+		// Use qGray() to calculate luminance efficiently
+		int luminance = qGray(custom_color.rgb());
+		
+		/* For light colors (luminance > 128), make border darker
+		 * For dark colors (luminance <= 128), make border lighter */
+		if(luminance > 128)
+			// Dark border for light backgrounds
+			border_color = custom_color.darker(DarkFactor); 
+		else
+			// Light border for dark backgrounds
+			border_color = custom_color.lighter(LightFactor); 
+	}
+	else
+		border_color = qApp->palette().color(QPalette::Dark).lighter(MidFactor);
 
 	// Adjust colors based on button state
 	if(!(option->state & State_Enabled))
 	{
-		bg_color = bg_color.darker(140);
-		border_color = border_color.darker(140);
+		bg_color = bg_color.darker(DarkFactor);
+		border_color = border_color.darker(DarkFactor);
 	}
 	else if(option->state & (State_Sunken | State_On))
 	{
-		bg_color = bg_color.darker(125);
-
-		if(!is_default) // Only darken border for non-default buttons
-			border_color = border_color.darker(125);
+		bg_color = bg_color.darker(DarkFactor - 20);
+		border_color = border_color.darker(DarkFactor - 20);
 	}
 	else if(option->state & State_MouseOver)
 	{
-		bg_color = bg_color.lighter(185);
+		bg_color = bg_color.lighter(LightFactor);
 
-			if(!is_default) // Only lighten border for non-default buttons
-				border_color = border_color.lighter(185);
-		}
+		if(!is_default) // Only lighten border for non-default buttons
+			border_color = border_color.lighter(LightFactor);
+	}
 
-		// Special focus border (overrides other border colors except for default buttons)
-		if((option->state & State_HasFocus) && !is_default)
-			border_color = qApp->palette().color(QPalette::Highlight);	// Draw background and border with rounded corners
+	// Special focus border (overrides other border colors except for default buttons)
+	if(option->state & State_HasFocus)
+		border_color = qApp->palette().color(QPalette::Highlight);
+
+	QPen border_pen(border_color, PenWidth);
+	border_pen.setCosmetic(true);
+
 	painter->setBrush(bg_color);
 	painter->setPen(Qt::NoPen);
 	painter->drawRoundedRect(option->rect, ButtonRadius, ButtonRadius);
 
-	painter->setPen(QPen(border_color, 1));
+	// Draw border
+	painter->setPen(border_pen);
 	painter->setBrush(Qt::NoBrush);
 	painter->drawRoundedRect(QRectF(option->rect).adjusted(0.5, 0.5, -0.5, -0.5),
-													 ButtonRadius, ButtonRadius);
+														ButtonRadius, ButtonRadius);
 
 	painter->restore();
 }
@@ -392,16 +322,13 @@ void CustomUiStyle::drawPrimitiveFrameTabWidget(PrimitiveElement element, const 
 	painter->save();
 	painter->setRenderHint(QPainter::Antialiasing, true);
 
-	/* Use QPalette::Dark as base for container widget - 20 points lighter for
-	 * background, 60 points lighter for border */
-	QColor bg_color = qApp->palette().color(QPalette::Dark).lighter(120),
-	       border_color = qApp->palette().color(QPalette::Dark).lighter(160);
+	QColor bg_color = qApp->palette().color(QPalette::Dark).lighter(DarkFactor - 10),
+	       border_color = qApp->palette().color(QPalette::Dark).lighter(LightFactor - 10);
 
-	// Adjust colors based on state - QTabWidget should maintain base colors
 	if(!(option->state & State_Enabled))
 	{
-		bg_color = bg_color.darker(155);
-		border_color = border_color.darker(155);
+		bg_color = bg_color.darker(MidFactor);
+		border_color = border_color.darker(MidFactor);
 	}
 
 	// Draw rectangle with rounded corners only at the base
@@ -429,7 +356,7 @@ void CustomUiStyle::drawPrimitiveFrameTabWidget(PrimitiveElement element, const 
 	painter->setPen(Qt::NoPen);
 	painter->drawPath(path);
 
-	QPen border_pen(border_color, 1);
+	QPen border_pen(border_color, PenWidth);
 	border_pen.setCosmetic(true);
 
 	painter->setPen(border_pen);
@@ -448,8 +375,8 @@ void CustomUiStyle::drawPrimitiveFrameTabBarBase(PrimitiveElement element, const
 	painter->setRenderHint(QPainter::Antialiasing, true);
 
 	// Use same color scheme as QTabWidget for uniformity
-	QColor base_bg_color = qApp->palette().color(QPalette::Dark).lighter(120),
-	       border_color = qApp->palette().color(QPalette::Dark).lighter(160);
+	QColor base_bg_color = qApp->palette().color(QPalette::Dark).lighter(DarkFactor - 10),
+	       border_color = qApp->palette().color(QPalette::Dark).lighter(LightFactor - 10);
 
 	// Determine orientation if available
 	const QStyleOptionTabBarBase *tab_base_opt = 
@@ -463,7 +390,7 @@ void CustomUiStyle::drawPrimitiveFrameTabBarBase(PrimitiveElement element, const
 	painter->drawRect(frame_rect);
 
 	// Draw a subtle border line only where needed
-	painter->setPen(QPen(border_color, 1));
+	painter->setPen(QPen(border_color, PenWidth));
 
 	if(tab_base_opt)
 	{
@@ -499,6 +426,7 @@ void CustomUiStyle::drawPrimitiveFrameElements(PrimitiveElement element, const Q
 																						"QTableView", "QTableWidget",
 	                                          "NumberedTextEditor" };
 
+	// Lambda to check widget class, returns 1 for rounded widgets, 2 for rectangular, 0 for no match
 	auto check_widget = [&](const QWidget *wgt) -> int
 	{
 		if(!wgt)
@@ -535,13 +463,13 @@ void CustomUiStyle::drawPrimitiveFrameElements(PrimitiveElement element, const Q
 		painter->save();
 		
 		// Default border color
-		QColor border_color = qApp->palette().color(QPalette::Dark).lighter(130);
+		QColor border_color = qApp->palette().color(QPalette::Dark).lighter(LightFactor);
 		
 		// Special focus border
 		if(option->state & State_HasFocus)
 			border_color = qApp->palette().color(QPalette::Highlight);
 		
-		painter->setPen(QPen(border_color, 1));
+		painter->setPen(QPen(border_color, PenWidth));
 
 		if(style_type == 1)
 		{
