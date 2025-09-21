@@ -254,8 +254,27 @@ void CustomUiStyle::drawPrimitivePanelButtonTool(PrimitiveElement element, const
 
 		QColor bg_color = has_custom_color ? 
 											widget->palette().color(QPalette::Button) :
-											qApp->palette().color(QPalette::Button).lighter(160),
-		       border_color = qApp->palette().color(QPalette::Dark).lighter(150);
+											qApp->palette().color(QPalette::Button).lighter(160);
+		QColor border_color;
+
+		if(has_custom_color)
+		{
+			QColor custom_color = widget->palette().color(QPalette::Button);
+			
+			// Use qGray() to calculate luminance efficiently
+			int luminance = qGray(custom_color.rgb());
+			
+			/* For light colors (luminance > 128), make border darker
+			 * For dark colors (luminance <= 128), make border lighter */
+			if(luminance > 128)
+				// Dark border for light backgrounds
+				border_color = custom_color.darker(130); 
+			else
+				// Light border for dark backgrounds
+				border_color = custom_color.lighter(150); 
+		}
+		else
+			border_color = qApp->palette().color(QPalette::Dark).lighter(150);
 
 		// Adjust colors based on button state
 		if(!(option->state & State_Enabled))
