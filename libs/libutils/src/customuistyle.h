@@ -42,10 +42,10 @@ class __libutils CustomUiStyle : public QProxyStyle {
 		static QMap<PixelMetric, int> pixel_metrics;
     
 		static constexpr qreal BlendFactor = 0.7,
-													 PenWidth = 2.0;
+													 PenWidth = 1.0;
 		
 		static constexpr int ButtonRadius = 3,
-												 InputRadius = 4,
+												 InputRadius = 5,
 												 FrameRadius = 4,
 												 TabRadius = 6;
 
@@ -53,15 +53,20 @@ class __libutils CustomUiStyle : public QProxyStyle {
 							 					 MidFactor = 145,
 							 					 MaxFactor = 160;
 
-		//! \brief Draws button elements with custom flat design
-		void drawPrimitivePanelButton(PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const;
+		// Draws primitive elements (PE) of buttons
+		void drawPEButtonPanel(PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const;
 		
-		void drawPrimitiveFrameTabWidget(PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const;
-		void drawPrimitiveFrameTabBarBase(PrimitiveElement element, const QStyleOption *option,	QPainter *painter, const QWidget *widget) const;
-		void drawPrimitiveFrameGroupBox(PrimitiveElement element, const QStyleOption *option,	QPainter *painter, const QWidget *widget) const;
-		void drawPrimitiveFrameElements(PrimitiveElement element, const QStyleOption *option,	QPainter *painter, const QWidget *widget) const;
+		// Draws primitive elements (PE) of tabs, group boxes and other framed elements
+		void drawPETabWidgetFrame(PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const;
+		void drawPETabBarFrame(PrimitiveElement element, const QStyleOption *option,	QPainter *painter, const QWidget *widget) const;
+		void drawPEGroupBoxFrame(PrimitiveElement element, const QStyleOption *option,	QPainter *painter, const QWidget *widget) const;
+		void drawPEOtherElemsFrame(PrimitiveElement element, const QStyleOption *option,	QPainter *painter, const QWidget *widget) const;
 
-		void drawControlTabBarTab(ControlElement element, const QStyleOption *option,	QPainter *painter, const QWidget *widget) const;
+		// Draws control elements (CE) of tab bars
+		void drawCETabBar(ControlElement element, const QStyleOption *option,	QPainter *painter, const QWidget *widget) const;
+		
+		// Draws complex control (CC) of group boxes
+		void drawCCGroupBox(ComplexControl control, const QStyleOptionComplex *option, QPainter *painter, const QWidget *widget) const;
 
 	public:
 		CustomUiStyle();
@@ -85,8 +90,6 @@ class __libutils CustomUiStyle : public QProxyStyle {
     void drawPrimitive(PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const override;
 
     void drawComplexControl(ComplexControl control, const QStyleOptionComplex *option, QPainter *painter, const QWidget *widget) const override;
-
-		void drawComplexControlGroupBox(ComplexControl control, const QStyleOptionComplex *option, QPainter *painter, const QWidget *widget) const;
 
 		QPixmap generatedIconPixmap(QIcon::Mode iconMode, const QPixmap &pixmap, const QStyleOption *option) const override;
 

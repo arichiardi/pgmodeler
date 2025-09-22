@@ -64,14 +64,14 @@ void CustomUiStyle::drawControl(ControlElement element, const QStyleOption *opti
 {
 	if(element == CE_TabBarTab)
 	{
-		drawControlTabBarTab(element, option, painter, widget);
+		drawCETabBar(element, option, painter, widget);
 		return;
 	}
 
 	QProxyStyle::drawControl(element, option, painter, widget);
 }
 
-void CustomUiStyle::drawControlTabBarTab(ControlElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const
+void CustomUiStyle::drawCETabBar(ControlElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const
 {
 	// Handle individual QTabBar tabs with flat design styling
 	if(element == CE_TabBarTab && option && painter && widget)
@@ -84,8 +84,8 @@ void CustomUiStyle::drawControlTabBarTab(ControlElement element, const QStyleOpt
 			painter->setRenderHint(QPainter::Antialiasing, true);
 
 			// Use same color scheme as QTabWidget for consistency
-			QColor base_bg_color = getStateColor(QPalette::Dark, option).lighter(MinFactor - 10),
-			       base_border = getStateColor(QPalette::Dark, option).lighter(MaxFactor - 10), 
+			QColor base_bg_color = getStateColor(QPalette::Dark, option).lighter(MinFactor),
+			       base_border = base_bg_color.lighter(MidFactor), 
 						 bg_color, border_color;
 
 			QRect tab_rect = tab_opt->rect;
@@ -95,8 +95,8 @@ void CustomUiStyle::drawControlTabBarTab(ControlElement element, const QStyleOpt
 			// Determine colors based on tab state
 			if(!(tab_opt->state & State_Enabled))
 			{
-				bg_color = base_bg_color.darker(MinFactor);
-				border_color = base_border.darker(MinFactor);
+				bg_color = base_bg_color.darker(MidFactor);
+				border_color = base_border.darker(MidFactor);
 			}
 			else if(is_selected)
 			{
@@ -105,8 +105,8 @@ void CustomUiStyle::drawControlTabBarTab(ControlElement element, const QStyleOpt
 			}
 			else if(tab_opt->state & State_MouseOver) 
 			{
-				bg_color = base_bg_color.lighter(MinFactor - 20);
-				border_color = base_border.lighter(MinFactor - 20);
+				bg_color = base_bg_color.lighter(MaxFactor);
+				border_color = base_border.lighter(MaxFactor);
 			}
 			else
 			{
@@ -115,7 +115,6 @@ void CustomUiStyle::drawControlTabBarTab(ControlElement element, const QStyleOpt
 			}
 
 			QPen border_pen(border_color, PenWidth);
-			border_pen.setCosmetic(true);
 
 			if(shape == QTabBar::RoundedNorth || shape == QTabBar::TriangularNorth)
 				tab_rect.setHeight(tab_rect.height() + TabRadius);
@@ -188,25 +187,25 @@ void CustomUiStyle::drawPrimitive(PrimitiveElement element, const QStyleOption *
 	if(element == PE_PanelButtonTool || 
 		 element == PE_PanelButtonCommand)
 	{
-		drawPrimitivePanelButton(element, option, painter, widget);
+		drawPEButtonPanel(element, option, painter, widget);
 		return;
 	}
 
 	if(element == PE_FrameTabWidget)
 	{
-		drawPrimitiveFrameTabWidget(element, option, painter, widget);
+		drawPETabWidgetFrame(element, option, painter, widget);
 		return;
 	}
 
 	if(element == PE_FrameTabBarBase)
 	{
-		drawPrimitiveFrameTabBarBase(element, option, painter, widget);
+		drawPETabBarFrame(element, option, painter, widget);
 		return;
 	}
 
 	if(element == PE_FrameGroupBox)
 	{
-		drawPrimitiveFrameGroupBox(element, option, painter, widget);
+		drawPEGroupBoxFrame(element, option, painter, widget);
 		return;
 	}
 
@@ -214,14 +213,14 @@ void CustomUiStyle::drawPrimitive(PrimitiveElement element, const QStyleOption *
 			element == PE_FrameLineEdit || 
 			element == PE_FrameWindow)
 	{
-		drawPrimitiveFrameElements(element, option, painter, widget);
+		drawPEOtherElemsFrame(element, option, painter, widget);
 		return;
 	}
 
 	QProxyStyle::drawPrimitive(element, option, painter, widget);
 }
 
-void CustomUiStyle::drawPrimitivePanelButton(PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const
+void CustomUiStyle::drawPEButtonPanel(PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const
 {
 	if((element != PE_PanelButtonTool && 
 			element != PE_PanelButtonCommand) || !option || !painter || !widget)
@@ -283,10 +282,14 @@ void CustomUiStyle::drawPrimitivePanelButton(PrimitiveElement element, const QSt
 	if(!(option->state & State_Enabled))
 		border_color = bg_color.darker(MinFactor);
 	// Selected button state
-	else if(option->state & (State_Sunken | State_On))
+	else if(option->state & State_Sunken)
 	{
 		bg_color = bg_color.darker(MidFactor);
 		border_color = border_color.darker(MidFactor);
+	}
+	else if(option->state & State_On)
+	{
+		bg_color = bg_color.darker(MinFactor);
 	}
 	// Mouse hover state
 	else if(option->state & State_MouseOver)
@@ -303,7 +306,6 @@ void CustomUiStyle::drawPrimitivePanelButton(PrimitiveElement element, const QSt
 		border_color = getStateColor(pal, QPalette::Highlight, option);
 
 	QPen border_pen(border_color, PenWidth);
-	border_pen.setCosmetic(true);
 
 	painter->setBrush(bg_color);
 	painter->setPen(Qt::NoPen);
@@ -318,7 +320,7 @@ void CustomUiStyle::drawPrimitivePanelButton(PrimitiveElement element, const QSt
 	painter->restore();
 }
 
-void CustomUiStyle::drawPrimitiveFrameTabWidget(PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const
+void CustomUiStyle::drawPETabWidgetFrame(PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const
 {
 	if(!option || !painter || !widget)
 		return;
@@ -340,6 +342,7 @@ void CustomUiStyle::drawPrimitiveFrameTabWidget(PrimitiveElement element, const 
 	int radius = FrameRadius * 2; // Larger radius for smoothness
 
 	QPainterPath path;
+
 	// Straight top
 	path.moveTo(rect.left(), rect.top());
 	path.lineTo(rect.right(), rect.top());
@@ -370,7 +373,7 @@ void CustomUiStyle::drawPrimitiveFrameTabWidget(PrimitiveElement element, const 
 	painter->restore();
 }
 
-void CustomUiStyle::drawPrimitiveFrameGroupBox(PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const
+void CustomUiStyle::drawPEGroupBoxFrame(PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const
 {
 	if(!option || !painter || !widget)
 		return;
@@ -379,8 +382,8 @@ void CustomUiStyle::drawPrimitiveFrameGroupBox(PrimitiveElement element, const Q
 	painter->setRenderHint(QPainter::Antialiasing, true);
 
 	// Use same color scheme as QTabWidget for consistency
-	QColor bg_color = getStateColor(QPalette::Dark, option).lighter(110),
-	       border_color = bg_color.lighter(MaxFactor);
+	QColor bg_color = getStateColor(QPalette::Dark, option),
+	       border_color = bg_color.lighter(MidFactor);
 
 	if(!(option->state & State_Enabled))
 	{
@@ -404,7 +407,7 @@ void CustomUiStyle::drawPrimitiveFrameGroupBox(PrimitiveElement element, const Q
 	painter->restore();
 }
 
-void CustomUiStyle::drawPrimitiveFrameTabBarBase(PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const
+void CustomUiStyle::drawPETabBarFrame(PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const
 {
 	if(!option || !painter || !widget)
 		return;
@@ -428,8 +431,10 @@ void CustomUiStyle::drawPrimitiveFrameTabBarBase(PrimitiveElement element, const
 	painter->drawRect(frame_rect);
 
 	// Draw a subtle border line only where needed
-	painter->setPen(QPen(border_color, PenWidth));
-
+	QPen border_pen(border_color, PenWidth);
+	border_pen.setCosmetic(true);
+	painter->setPen(border_pen);
+	
 	if(tab_base_opt)
 	{
 		QTabBar::Shape shape = tab_base_opt->shape;
@@ -454,15 +459,14 @@ void CustomUiStyle::drawPrimitiveFrameTabBarBase(PrimitiveElement element, const
 	painter->restore();
 }
 
-void CustomUiStyle::drawPrimitiveFrameElements(PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const
+void CustomUiStyle::drawPEOtherElemsFrame(PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const
 {
 	if(!option || !painter || !widget)
 		return;
 
-	static const QStringList rounded_classes = { "QLineEdit", "QPlainTextEdit", "QComboBox"},
+	static const QStringList rounded_classes = { "QLineEdit", "QComboBox"},
 	                         rect_classes = { "QTreeWidget", "QTreeView", 
-																						"QTableView", "QTableWidget",
-	                                          "NumberedTextEditor" };
+																						"QTableView", "QTableWidget" };
 
 	// Lambda to check widget class, returns 1 for rounded widgets, 2 for rectangular, 0 for no match
 	auto check_widget = [&](const QWidget *wgt) -> int
@@ -470,7 +474,7 @@ void CustomUiStyle::drawPrimitiveFrameElements(PrimitiveElement element, const Q
 		if(!wgt)
 			return 0;
 
-		for(const auto& cls : rounded_classes)
+		for(const auto &cls : rounded_classes)
 		{
 			if(wgt->inherits(cls.toStdString().c_str()))
 				return 1; // rounded
@@ -507,7 +511,9 @@ void CustomUiStyle::drawPrimitiveFrameElements(PrimitiveElement element, const Q
 		if(option->state & State_HasFocus)
 			border_color = getStateColor(QPalette::Highlight, option);
 		
-		painter->setPen(QPen(border_color, PenWidth));
+		QPen border_pen(border_color, PenWidth);
+		border_pen.setCosmetic(true);
+		painter->setPen(border_pen);
 
 		if(style_type == 1)
 		{
@@ -515,7 +521,7 @@ void CustomUiStyle::drawPrimitiveFrameElements(PrimitiveElement element, const Q
 			painter->drawRoundedRect(option->rect, InputRadius, InputRadius);
 		}
 		else
-			painter->drawRect(option->rect);
+			painter->drawRect(option->rect.adjusted(0, 0, -1, -1));
 
 		painter->restore();
 		return;
@@ -551,7 +557,7 @@ QPixmap CustomUiStyle::createGrayMaskedPixmap(const QPixmap& original) const
 	for(int y = 0; y < image.height(); ++y)
 	{
 		// Get pointer to the start of the scan line
-		line = reinterpret_cast<QRgb*>(image.scanLine(y));
+		line = reinterpret_cast<QRgb *>(image.scanLine(y));
 
 		for(int x = 0; x < image.width(); ++x)
 		{
@@ -586,14 +592,14 @@ void CustomUiStyle::drawComplexControl(ComplexControl control, const QStyleOptio
 {
 	if(control == CC_GroupBox)
 	{
-		drawComplexControlGroupBox(control, option, painter, widget);
+		drawCCGroupBox(control, option, painter, widget);
 		return;
 	}
 
 	QProxyStyle::drawComplexControl(control, option, painter, widget);
 }
 
-void CustomUiStyle::drawComplexControlGroupBox(ComplexControl control, const QStyleOptionComplex *option, QPainter *painter, const QWidget *widget) const
+void CustomUiStyle::drawCCGroupBox(ComplexControl control, const QStyleOptionComplex *option, QPainter *painter, const QWidget *widget) const
 {
 const QStyleOptionGroupBox *group_box_opt = qstyleoption_cast<const QStyleOptionGroupBox*>(option);
 

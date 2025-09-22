@@ -45,11 +45,11 @@ std::map<QPalette::ColorRole, QStringList> AppearanceConfigWidget::dark_ui_color
     { QPalette::BrightText, {"#f1f1f1", "#f1f1f1", "#f1f1f1"} },
     { QPalette::ButtonText, {"#e1e2e5", "#e1e2e5", "#545e68"} },
     { QPalette::WindowText, {"#e1e2e5", "#e1e2e5", "#545e68"} },
-    { QPalette::Highlight, {"#3f8c92", "#3f8c92", "#316874"} },
+    { QPalette::Highlight, {"#3597a0", "#3f8c92", "#316874"} },
     { QPalette::HighlightedText, {"#e1e2e5", "#e1e2e5", "#171b1e"} },
     { QPalette::Link, {"#1a72ab", "#1a72ab", "#1a72ab"} },
     { QPalette::LinkVisited, {"#717e7f", "#717e7f", "#717e7f"} },
-    { QPalette::AlternateBase, {"#111623", "#111623", "#111623"} },
+    { QPalette::AlternateBase, {"#191f2d", "#191f2d", "#111623"} },
     { QPalette::ToolTipBase, {"#23282d", "#23282d", "#23282d"} },
     { QPalette::ToolTipText, {"#e1e2e5", "#e1e2e5", "#e1e2e5"} },
     { QPalette::PlaceholderText, {"#3a3c3e", "#3a3c3e", "#3a3c3e"} }
