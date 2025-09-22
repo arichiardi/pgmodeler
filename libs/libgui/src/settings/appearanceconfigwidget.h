@@ -157,10 +157,6 @@ class __libgui AppearanceConfigWidget: public BaseConfigWidget, public Ui::Appea
 		//! \brief Returns whether the currently used theme is a dark one
 		static bool isDarkUiTheme();
 
-		/*! \brief Returns the currently UI palette lightness.
-		 * Return values can Attributes::Light or Attributes::Dark */
-		static QString getUiLightness(const QPalette &pal);
-
 		static std::map<QString, attribs_map> getConfigurationParams();
 
 	private slots:

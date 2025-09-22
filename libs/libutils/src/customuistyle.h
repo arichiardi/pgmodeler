@@ -49,9 +49,9 @@ class __libutils CustomUiStyle : public QProxyStyle {
 												 FrameRadius = 4,
 												 TabRadius = 6;
 
-		static constexpr int DarkFactor = 130,
-							 					 MidFactor = 150,
-							 					 LightFactor = 170;
+		static constexpr int MinFactor = 130,
+							 					 MidFactor = 145,
+							 					 MaxFactor = 160;
 
 		//! \brief Draws button elements with custom flat design
 		void drawPrimitivePanelButton(PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const;
@@ -62,9 +62,6 @@ class __libutils CustomUiStyle : public QProxyStyle {
 		void drawPrimitiveFrameElements(PrimitiveElement element, const QStyleOption *option,	QPainter *painter, const QWidget *widget) const;
 
 		void drawControlTabBarTab(ControlElement element, const QStyleOption *option,	QPainter *painter, const QWidget *widget) const;
-
-		//! \brief Checks if the current application palette is dark (dark theme)
-		bool isDarkPalette() const;
 
 	public:
 		CustomUiStyle();
@@ -81,15 +78,30 @@ class __libutils CustomUiStyle : public QProxyStyle {
 
 		QPixmap createGrayMaskedPixmap(const QPixmap &original) const;
 
-		 void drawItemPixmap(QPainter *painter, const QRect &rect, int alignment, const QPixmap &pixmap) const override;
+	 	void drawItemPixmap(QPainter *painter, const QRect &rect, int alignment, const QPixmap &pixmap) const override;
 
     void drawControl(ControlElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const override;
 
     void drawPrimitive(PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const override;
 
     void drawComplexControl(ComplexControl control, const QStyleOptionComplex *option, QPainter *painter, const QWidget *widget) const override;
-											
-    QPixmap generatedIconPixmap(QIcon::Mode iconMode, const QPixmap &pixmap, const QStyleOption *option) const override;
+
+		void drawComplexControlGroupBox(ComplexControl control, const QStyleOptionComplex *option, QPainter *painter, const QWidget *widget) const;
+
+		QPixmap generatedIconPixmap(QIcon::Mode iconMode, const QPixmap &pixmap, const QStyleOption *option) const override;
+
+		//! \brief Checks if the current palette is dark (dark theme)
+		static bool isDarkPalette(const QPalette& pal);
+
+		//! \brief Checks if the current application palette is dark (dark theme)
+		static bool isDarkPalette();
+
+private:
+		//! \brief Helper function to get color from palette considering widget state
+		static QColor getStateColor(const QPalette& pal, QPalette::ColorRole role, const QStyleOption* option);
+
+		//! \brief Helper function to get color from applicationpalette considering widget state
+		static QColor getStateColor(QPalette::ColorRole role, const QStyleOption *option);
 };
 
 #endif

@@ -31,20 +31,21 @@ QPalette AppearanceConfigWidget::system_pal;
 std::map<QString, attribs_map> AppearanceConfigWidget::config_params;
 QString AppearanceConfigWidget::UiThemeId;
 
+// Dark theme palette definition (0 -> Active, 1 -> Inactive, 2 -> Disabled)
 std::map<QPalette::ColorRole, QStringList> AppearanceConfigWidget::dark_ui_colors {
     { QPalette::Light, {"#070912", "#070912", "#070912"} },
     { QPalette::Midlight, {"#0b0d16", "#0b0d16", "#0b0d16"} },
     { QPalette::Mid, {"#0e111b", "#0e111b", "#0e111b"} },
-    { QPalette::Button, {"#1b1f2c", "#1b1f2c", "#131621"} },
-    { QPalette::Dark, {"#272c3c", "#272c3c", "#1b1f2c"} },
-    { QPalette::Base, {"#151a26", "#151a26", "#151a26"} },
+    { QPalette::Button, {"#343d55", "#343d55", "#1f2432"} },
+    { QPalette::Dark, {"#272c3c", "#272c3c", "#212532"} },
+    { QPalette::Base, {"#151a26", "#151a26", "#11151e"} },
     { QPalette::Window, {"#151b25", "#151b25", "#151b25"} },
     { QPalette::Shadow, {"#000000", "#000000", "#000000"} },
     { QPalette::Text, {"#e1e2e5", "#e1e2e5", "#545e68"} },
     { QPalette::BrightText, {"#f1f1f1", "#f1f1f1", "#f1f1f1"} },
     { QPalette::ButtonText, {"#e1e2e5", "#e1e2e5", "#545e68"} },
     { QPalette::WindowText, {"#e1e2e5", "#e1e2e5", "#545e68"} },
-    { QPalette::Highlight, {"#1897a3", "#3f8c92", "#316874"} },
+    { QPalette::Highlight, {"#3f8c92", "#3f8c92", "#316874"} },
     { QPalette::HighlightedText, {"#e1e2e5", "#e1e2e5", "#171b1e"} },
     { QPalette::Link, {"#1a72ab", "#1a72ab", "#1a72ab"} },
     { QPalette::LinkVisited, {"#717e7f", "#717e7f", "#717e7f"} },
@@ -54,6 +55,7 @@ std::map<QPalette::ColorRole, QStringList> AppearanceConfigWidget::dark_ui_color
     { QPalette::PlaceholderText, {"#3a3c3e", "#3a3c3e", "#3a3c3e"} }
 };
 
+// Light theme palette definition (0 -> Active, 1 -> Inactive, 2 -> Disabled)
 std::map<QPalette::ColorRole, QStringList> AppearanceConfigWidget::light_ui_colors {
 	{ QPalette::WindowText, {"#232627", "#232627", "#777878"} },
 	{ QPalette::Button, {"#e2e3e4", "#e2e3e4", "#e2e3e4"} },
@@ -974,21 +976,13 @@ QString AppearanceConfigWidget::__getUiThemeId()
 	/* If the user chose the "System default" theme
 	 * we check if the system is using dark theme (text color lightness greater
 	 * than window color lightness) or light theme */
-	return getUiLightness(system_pal);
+	return CustomUiStyle::isDarkPalette(system_pal) ? 
+				 Attributes::Dark : Attributes::Light;
 }
 
 bool AppearanceConfigWidget::isDarkUiTheme()
 {
 	return UiThemeId == Attributes::Dark;
-}
-
-QString AppearanceConfigWidget::getUiLightness(const QPalette &pal)
-{
-	if(pal.color(QPalette::WindowText).lightness() >
-			pal.color(QPalette::Window).lightness())
-		return Attributes::Dark;
-
-	return Attributes::Light;
 }
 
 void AppearanceConfigWidget::previewUiSettings()
