@@ -21,6 +21,7 @@
 #include <QPainterPath>
 #include <QToolBar>
 #include <QPushButton>
+#include <QStyleOptionSpinBox>
 
 QMap<QStyle::PixelMetric, int> CustomUiStyle::pixel_metrics;
 
@@ -464,7 +465,8 @@ void CustomUiStyle::drawPEOtherElemsFrame(PrimitiveElement element, const QStyle
 	if(!option || !painter || !widget)
 		return;
 
-	static const QStringList rounded_classes = { "QLineEdit", "QComboBox"},
+	static const QStringList rounded_classes = { "QLineEdit", "QComboBox", 
+																							 "QSpinBox", "QDoubleSpinBox"},
 	                         rect_classes = { "QTreeWidget", "QTreeView", 
 																						"QTableView", "QTableWidget" };
 
@@ -596,6 +598,12 @@ void CustomUiStyle::drawComplexControl(ComplexControl control, const QStyleOptio
 		return;
 	}
 
+	if(control == CC_SpinBox)
+	{
+		drawCCSpinBox(control, option, painter, widget);
+		return;
+	}
+
 	QProxyStyle::drawComplexControl(control, option, painter, widget);
 }
 
@@ -699,4 +707,264 @@ QColor CustomUiStyle::getStateColor(const QPalette &pal, QPalette::ColorRole rol
 QColor CustomUiStyle::getStateColor(QPalette::ColorRole role, const QStyleOption *option)
 {
 	return getStateColor(qApp->palette(), role, option);
+}
+
+void CustomUiStyle::drawCCSpinBox(ComplexControl control, const QStyleOptionComplex *option, QPainter *painter, const QWidget *widget) const
+{
+	const QStyleOptionSpinBox *spin_opt = qstyleoption_cast<const QStyleOptionSpinBox*>(option);
+	
+	if(control != CC_SpinBox || !spin_opt || !painter || !widget)
+		return;
+
+	painter->save();
+	painter->setRenderHint(QPainter::Antialiasing, true);
+
+	// Get the sub-control rectangles for edit field, up and down buttons
+	QRect edit_field_rect = subControlRect(CC_SpinBox, spin_opt, SC_SpinBoxEditField, widget);
+	QRect up_button_rect = subControlRect(CC_SpinBox, spin_opt, SC_SpinBoxUp, widget);
+	QRect down_button_rect = subControlRect(CC_SpinBox, spin_opt, SC_SpinBoxDown, widget);
+
+	// Draw edit field if visible
+	if(spin_opt->subControls & SC_SpinBoxEditField && !edit_field_rect.isEmpty())
+	{
+		QStyleOption edit_option = *option;
+		edit_option.rect = edit_field_rect;
+		drawSpinBoxEditField(&edit_option, painter, widget);
+	}
+
+	// Draw up button if visible
+	if(spin_opt->subControls & SC_SpinBoxUp && !up_button_rect.isEmpty())
+	{
+		QStyleOption up_option = *option;
+		
+		// Determine button state based on active sub-control and original state
+		if(spin_opt->activeSubControls & SC_SpinBoxUp)
+		{
+			if(option->state & State_Sunken)
+				up_option.state |= State_Sunken;
+			else if(option->state & State_MouseOver)
+				up_option.state |= State_MouseOver;
+		}
+		else
+		{
+			// Remove mouse over and sunken states if this button is not active
+			up_option.state &= ~(State_MouseOver | State_Sunken);
+		}
+
+		up_option.rect = up_button_rect;
+		drawSpinBoxButton(&up_option, painter, widget, true); // true = up button
+	}
+
+	// Draw down button if visible
+	if(spin_opt->subControls & SC_SpinBoxDown && !down_button_rect.isEmpty())
+	{
+		QStyleOption down_option = *option;
+		
+		// Determine button state based on active sub-control and original state
+		if(spin_opt->activeSubControls & SC_SpinBoxDown)
+		{
+			if(option->state & State_Sunken)
+				down_option.state |= State_Sunken;
+			else if(option->state & State_MouseOver)
+				down_option.state |= State_MouseOver;
+		}
+		else
+		{
+			// Remove mouse over and sunken states if this button is not active
+			down_option.state &= ~(State_MouseOver | State_Sunken);
+		}
+
+		down_option.rect = down_button_rect;
+		drawSpinBoxButton(&down_option, painter, widget, false); // false = down button
+	}
+
+	painter->restore();
+}
+
+void CustomUiStyle::drawSpinBoxEditField(const QStyleOption *option, QPainter *painter, const QWidget *widget) const
+{
+	if(!option || !painter || !widget)
+		return;
+
+	painter->save();
+	painter->setRenderHint(QPainter::Antialiasing, true);
+
+	// Use the exact same color logic as QLineEdit (from drawPEOtherElemsFrame)
+	QPalette pal = qApp->palette();
+	QColor bg_color = getStateColor(pal, QPalette::Base, option);
+	QColor border_color = getStateColor(QPalette::Button, option).lighter(MidFactor);
+
+	// Apply state-based modifications
+	if(!(option->state & State_Enabled))
+	{
+		bg_color = bg_color.darker(MinFactor);
+		border_color = border_color.darker(MidFactor);
+	}
+	else if(option->state & State_HasFocus)
+	{
+		// Special focus border - same as QLineEdit
+		border_color = getStateColor(QPalette::Highlight, option);
+	}
+
+	// Create custom path for edit field with specific rounded corners
+	QPainterPath edit_path;
+	QRectF rect = option->rect;
+	int radius = InputRadius;
+
+	// Edit field: only left side corners rounded (top-left and bottom-left)
+	edit_path.moveTo(rect.right(), rect.bottom());
+	edit_path.lineTo(rect.left() + radius, rect.bottom());
+	edit_path.quadTo(rect.left(), rect.bottom(), rect.left(), rect.bottom() - radius);
+	edit_path.lineTo(rect.left(), rect.top() + radius);
+	edit_path.quadTo(rect.left(), rect.top(), rect.left() + radius, rect.top());
+	edit_path.lineTo(rect.right(), rect.top());
+	edit_path.lineTo(rect.right(), rect.bottom());
+
+	// Draw background first (filled rounded rectangle)
+	painter->setBrush(bg_color);
+	painter->setPen(Qt::NoPen);
+	painter->drawPath(edit_path);
+
+	// Draw border on top (outlined rounded rectangle)
+	QPen border_pen(border_color, PenWidth);
+	border_pen.setCosmetic(true);
+	painter->setPen(border_pen);
+	painter->setBrush(Qt::NoBrush);
+	painter->drawPath(edit_path);
+
+	painter->restore();
+}
+
+void CustomUiStyle::drawSpinBoxButton(const QStyleOption *option, QPainter *painter, const QWidget *widget, bool is_up_button) const
+{
+	if(!option || !painter || !widget)
+		return;
+
+	painter->save();
+	painter->setRenderHint(QPainter::Antialiasing, true);
+
+	// Use the same color logic as button panels
+	QPalette pal = qApp->palette();
+	QColor bg_color = getStateColor(pal, QPalette::Button, option),
+				 border_color = bg_color.lighter(MaxFactor);
+
+	// Apply state-based color modifications (same as drawPEButtonPanel)
+	if(!(option->state & State_Enabled))
+	{
+		bg_color = bg_color.darker(MidFactor);
+		border_color = bg_color.darker(MinFactor);
+	}
+	else if(option->state & State_Sunken)
+	{
+		bg_color = bg_color.darker(MidFactor);
+		border_color = border_color.darker(MidFactor);
+	}
+	else if(option->state & State_MouseOver)
+	{
+		bg_color = bg_color.lighter(MaxFactor);
+		border_color = border_color.lighter(MaxFactor);
+	}
+
+	// Special focus border
+	if(option->state & State_HasFocus)
+		border_color = getStateColor(pal, QPalette::Highlight, option);
+
+	QPen border_pen(border_color, PenWidth);
+
+	// Create custom path for button with specific rounded corners
+	QPainterPath button_path;
+	QRectF rect = option->rect; // Adjust for pen width
+	int radius = FrameRadius;
+
+	if(is_up_button)
+	{
+		// Up button: only top-right corner rounded
+		rect.setHeight(rect.height() + 1); // Fix 1px gap at bottom
+		button_path.moveTo(rect.left(), rect.bottom());
+		button_path.lineTo(rect.left(), rect.top());
+		button_path.lineTo(rect.right() - radius, rect.top());
+		button_path.quadTo(rect.right(), rect.top(), rect.right(), rect.top() + radius);
+		button_path.lineTo(rect.right(), rect.bottom());
+		button_path.lineTo(rect.left(), rect.bottom());
+	}
+	else
+	{
+		rect.setHeight(rect.height() - 1); // Fix 1px gap at bottom
+		rect.translate(0, 1); // Move down 1px to align with up button
+		
+		// Down button: only bottom-right corner rounded
+		button_path.moveTo(rect.left(), rect.top());
+		button_path.lineTo(rect.right(), rect.top());
+		button_path.lineTo(rect.right(), rect.bottom() - radius);
+		button_path.quadTo(rect.right(), rect.bottom(), rect.right() - radius, rect.bottom());
+		button_path.lineTo(rect.left(), rect.bottom());
+		button_path.lineTo(rect.left(), rect.top());
+	}
+
+	// Draw background
+	painter->setBrush(bg_color);
+	painter->setPen(Qt::NoPen);
+	painter->drawPath(button_path);
+
+	// Draw border normally (all edges)
+	painter->setPen(border_pen);
+	painter->setBrush(Qt::NoBrush);
+	painter->drawPath(button_path);
+
+	// Draw arrow symbol
+	drawSpinBoxArrow(option, painter, is_up_button);
+
+	painter->restore();
+}
+
+void CustomUiStyle::drawSpinBoxArrow(const QStyleOption *option, QPainter *painter, bool is_up_button) const
+{
+	if(!option || !painter)
+		return;
+
+	painter->save();
+	painter->setRenderHint(QPainter::Antialiasing, true);
+
+	// Use text color that adapts to the button state and theme
+	QColor arrow_color = getStateColor(QPalette::ButtonText, option);
+	
+	// Adjust arrow color based on button state for better visibility
+	if(!(option->state & State_Enabled))
+		arrow_color = arrow_color.lighter(150); // Lighter for disabled state
+	else if(option->state & State_Sunken)
+		arrow_color = arrow_color.darker(110); // Slightly darker when pressed
+
+	// Calculate arrow geometry - fixed size calculation to ensure consistency
+	QRect button_rect = option->rect;
+	QPointF center = button_rect.center();
+	
+	// Fixed arrow dimensions (same for both buttons) - discount 3px from each side
+	qreal arrow_width = button_rect.width() * 0.6;  // Remove 6px total (3px each side)
+	qreal arrow_height = button_rect.height() * 0.6;	   // Remove 6px total (3px each side)
+	qreal half_width = arrow_width * 0.5;
+	qreal half_height = arrow_height * 0.5;
+
+	QPolygonF arrow;
+	
+	if(is_up_button)
+	{
+		// Up arrow (triangle pointing up) - same dimensions as down arrow
+		arrow << QPointF(center.x(), center.y() - half_height)          // Top point
+					<< QPointF(center.x() - half_width, center.y() + half_height)    // Bottom left
+					<< QPointF(center.x() + half_width, center.y() + half_height);   // Bottom right
+	}
+	else
+	{
+		// Down arrow (triangle pointing down) - same dimensions as up arrow
+		arrow << QPointF(center.x(), center.y() + half_height)          // Bottom point
+					<< QPointF(center.x() - half_width, center.y() - half_height)    // Top left
+					<< QPointF(center.x() + half_width, center.y() - half_height);   // Top right
+	}
+
+	// Draw the arrow
+	painter->setBrush(arrow_color);
+	painter->setPen(Qt::NoPen);
+	painter->drawPolygon(arrow);
+
+	painter->restore();
 }

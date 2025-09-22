@@ -65,8 +65,14 @@ class __libutils CustomUiStyle : public QProxyStyle {
 		// Draws control elements (CE) of tab bars
 		void drawCETabBar(ControlElement element, const QStyleOption *option,	QPainter *painter, const QWidget *widget) const;
 		
-		// Draws complex control (CC) of group boxes
+		// Draws complex control (CC) of group boxes and spin boxes
 		void drawCCGroupBox(ComplexControl control, const QStyleOptionComplex *option, QPainter *painter, const QWidget *widget) const;
+		void drawCCSpinBox(ComplexControl control, const QStyleOptionComplex *option, QPainter *painter, const QWidget *widget) const;
+
+		// Draws SpinBox sub-components with specialized styling
+		void drawSpinBoxEditField(const QStyleOption *option, QPainter *painter, const QWidget *widget) const;
+		void drawSpinBoxButton(const QStyleOption *option, QPainter *painter, const QWidget *widget, bool is_up_button) const;
+		void drawSpinBoxArrow(const QStyleOption *option, QPainter *painter, bool is_up_button) const;
 
 	public:
 		CustomUiStyle();
