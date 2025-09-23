@@ -47,7 +47,8 @@ class __libutils CustomUiStyle : public QProxyStyle {
 		static constexpr int ButtonRadius = 4,
 												 InputRadius = 6,
 												 FrameRadius = 4,
-												 TabRadius = 6;
+												 TabRadius = 2,
+												 TabBarRadius = 5;
 
 		static constexpr int MinFactor = 120,
 							 					 MidFactor = 135,

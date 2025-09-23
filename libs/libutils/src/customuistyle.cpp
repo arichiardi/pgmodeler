@@ -87,74 +87,88 @@ void CustomUiStyle::drawCETabBar(ControlElement element, const QStyleOption *opt
 			// Use same color scheme as QTabWidget for consistency
 			QColor base_bg_color = getStateColor(QPalette::Dark, option).lighter(MinFactor),
 			       base_border = base_bg_color.lighter(MidFactor), 
-						 bg_color, border_color;
+						 bg_color = base_bg_color, border_color = base_border;
 
 			QRect tab_rect = tab_opt->rect;
 			QTabBar::Shape shape = tab_opt->shape;
-			bool is_selected = (tab_opt->state & State_Selected);
+			bool is_selected = (tab_opt->state & State_Selected),
+						is_enabled = (tab_opt->state & State_Enabled),
+						is_hovered = (tab_opt->state & State_MouseOver);
 
-			// Determine colors based on tab state
-			if(!(tab_opt->state & State_Enabled))
+			if(!is_hovered && (!is_selected || !is_enabled))
 			{
-				bg_color = base_bg_color.darker(MidFactor);
-				border_color = base_border.darker(MidFactor);
+				bg_color = base_bg_color.darker(!is_selected ? MidFactor : MaxFactor);
+				border_color = base_border.darker(!is_selected ? MidFactor : MaxFactor);
 			}
-			else if(is_selected)
-			{
-				bg_color = base_bg_color;
-				border_color = base_border;
-			}
-			else if(tab_opt->state & State_MouseOver) 
+			else if(is_hovered && !is_selected) 
 			{
 				bg_color = base_bg_color.lighter(MaxFactor);
 				border_color = base_border.lighter(MaxFactor);
-			}
-			else
-			{
-				bg_color = base_bg_color.darker(MinFactor - 10);
-				border_color = base_border.darker(MinFactor - 10);
 			}
 
 			QPen border_pen(border_color, PenWidth);
 
 			if(shape == QTabBar::RoundedNorth || shape == QTabBar::TriangularNorth)
-				tab_rect.setHeight(tab_rect.height() + TabRadius);
+			{
+				/* If the tab is not selected we shrink it by moving the top 
+				 * coordinate in 2px and the height in 4px. This will avoid
+				 * overlapping borders between the tab and the tab bar base */
+				if(!is_selected)
+				{
+					tab_rect.moveTop(tab_rect.top() + 2);
+					tab_rect.setHeight(tab_rect.height() - 4);				
+				}
+				else
+					/* For selected tabs, we reduce the height in 2px just to make their base
+					 * to be aligned with the tab widget body at top */
+					tab_rect.setHeight(tab_rect.height() - 2);				
+				
+				tab_rect.setWidth(tab_rect.width() - 1);				
+				// Move down 1px to avoid clipping the tab top border
+				tab_rect.translate(1, 1);
+			}
 
 			// Draw tab with rounded top corners and straight base
 			if(shape == QTabBar::RoundedNorth || shape == QTabBar::TriangularNorth)
 			{
-				QPainterPath tab_path;
+				QPainterPath bg_path, border_path;
 
 				// Start at left base
-				tab_path.moveTo(tab_rect.left(), tab_rect.bottom());
-				// Go straight up to before top-left corner
-				tab_path.lineTo(tab_rect.left(), tab_rect.top() + TabRadius);
-				// Arco superior esquerdo
-				tab_path.quadTo(tab_rect.left(), tab_rect.top(), 
-												tab_rect.left() + TabRadius, tab_rect.top());
-				// Straight line to before top-right corner
-				tab_path.lineTo(tab_rect.right() - TabRadius, tab_rect.top());
-				// Arco superior direito
-				tab_path.quadTo(tab_rect.right(), tab_rect.top(), 
-												tab_rect.right(), tab_rect.top() + TabRadius);
-				// Go straight down to right base
-				tab_path.lineTo(tab_rect.right(), tab_rect.bottom());
-				// Close at base
-				tab_path.lineTo(tab_rect.left(), tab_rect.bottom());
+				border_path.moveTo(tab_rect.left(), tab_rect.bottom());
+
+				border_path.lineTo(tab_rect.left(), tab_rect.top() + TabBarRadius);
+
+				border_path.quadTo(tab_rect.left(), tab_rect.top(), 
+													 tab_rect.left() + TabBarRadius, tab_rect.top());
+
+				border_path.lineTo(tab_rect.right() - TabBarRadius, tab_rect.top());
+
+				border_path.quadTo(tab_rect.right(), tab_rect.top(), 
+												tab_rect.right(), tab_rect.top() + TabBarRadius);
+
+				border_path.lineTo(tab_rect.right(), tab_rect.bottom());
+
+				
+				bg_path = border_path;
+				bg_path.lineTo(tab_rect.left(), tab_rect.bottom());
 
 				// Draw background
 				painter->setBrush(bg_color);
 				painter->setPen(Qt::NoPen);
-				painter->drawPath(tab_path);
+				painter->drawPath(bg_path);
 
 				// Draw border
-				painter->setPen(border_pen);
 				painter->setBrush(Qt::NoBrush);
-				painter->drawPath(tab_path);
+				painter->setPen(is_selected ? bg_color : border_color);
+				painter->drawLine(tab_rect.bottomLeft(), tab_rect.bottomRight());
+				
+				painter->setPen(border_color);
+				painter->drawPath(border_path);
 			}
 			else
 			{
 				// For the other tab shapes, draw simple rectangle
+				qDebug() << "CustomUiStyle::drawCETabBar(): " << shape << " not implemented, drawing rectangle instead.";
 				painter->setBrush(bg_color);
 				painter->setPen(Qt::NoPen);
 				painter->drawRect(tab_rect);
@@ -254,16 +268,23 @@ void CustomUiStyle::drawPEButtonPanel(PrimitiveElement element, const QStyleOpti
 		 is_checked = (option->state & State_On),
 		 is_default = push_btn && push_btn->isDefault() && is_enabled;
 
-	if(is_default)
+	if(is_default && is_enabled)
 	{
 		// Mix Highlight with Button color for a more subtle default background
 		QColor hl_color = getStateColor(pal, QPalette::Highlight, option);		
 		
-		bg_color = QColor(
+		hl_color = QColor(
 			(hl_color.red() + bg_color.red() * 2) / 3,
 			(hl_color.green() + bg_color.green() * 2) / 3,
 			(hl_color.blue() + bg_color.blue() * 2) / 3
-		).lighter(MinFactor);
+		);
+
+		if(is_pressed)
+			bg_color = hl_color.darker(MinFactor);
+		else if(!is_pressed && is_hovered)
+			bg_color = hl_color.lighter(MaxFactor);
+		else if(!is_pressed && !is_hovered)
+			bg_color = hl_color;
 	}
 	else if(!is_enabled)
 		bg_color = bg_color.darker(MinFactor);
@@ -325,7 +346,7 @@ void CustomUiStyle::drawPETabWidgetFrame(PrimitiveElement element, const QStyleO
 
 	// Draw rectangle with rounded corners only at the base
 	QRectF rect = option->rect;
-	int radius = FrameRadius * 2; // Larger radius for smoothness
+	int radius = TabRadius * 2; // Larger radius for smoothness
 
 	QPainterPath path;
 
@@ -478,12 +499,12 @@ void CustomUiStyle::drawPEGenericElemFrame(PrimitiveElement element, const QStyl
 		border_color = border_color.darker(MaxFactor);
 	else if(is_default || is_checked)
 		border_color = getStateColor(pal, QPalette::Highlight, option);
+	else if(is_pressed)
+		border_color = border_color.darker(MinFactor);
 	else if(is_focused)
 		border_color = getStateColor(pal, QPalette::Highlight, option);
 	else if(is_hover)
 		border_color = border_color.lighter(MaxFactor);
-	else if(is_pressed)
-		border_color = border_color.darker(MinFactor);
 	else if(has_custom_color)
 	{
 		// Use QColor::lightness() to calculate lightness efficiently
