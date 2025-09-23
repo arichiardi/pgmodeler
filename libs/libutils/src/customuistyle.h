@@ -44,8 +44,9 @@ class __libutils CustomUiStyle : public QProxyStyle {
 		static constexpr qreal BlendFactor = 0.7,
 													 PenWidth = 1;
 		
-		static constexpr int ButtonRadius = 4,
-												 InputRadius = 6,
+		static constexpr int NoRadius = 0,
+												 ButtonRadius = 4,
+												 InputRadius = 5,
 												 FrameRadius = 4,
 												 TabRadius = 2,
 												 TabBarRadius = 5;
@@ -90,6 +91,10 @@ class __libutils CustomUiStyle : public QProxyStyle {
 		void drawSpinBoxEditField(const QStyleOption *option, QPainter *painter, const QWidget *widget) const;
 		void drawSpinBoxButton(const QStyleOption *option, QPainter *painter, const QWidget *widget, bool is_up_button) const;
 		void drawSpinBoxArrow(const QStyleOption *option, QPainter *painter, bool is_up_button) const;
+
+		// Draws primitive elements (PE) of checkboxes and radio buttons
+		void drawPECheckBoxRadioBtn(PrimitiveElement element, const QStyleOption *option,
+																 QPainter *painter, const QWidget *widget) const;
 
 	public:
 		CustomUiStyle();

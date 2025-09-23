@@ -86,8 +86,8 @@ void CustomUiStyle::drawCETabBar(ControlElement element, const QStyleOption *opt
 
 			// Use same color scheme as QTabWidget for consistency
 			QColor base_bg_color = getStateColor(QPalette::Dark, option).lighter(MinFactor),
-			       base_border = base_bg_color.lighter(MidFactor), 
-						 bg_color = base_bg_color, border_color = base_border;
+			       base_border_color = base_bg_color.lighter(MidFactor), 
+						 bg_color = base_bg_color, border_color = base_border_color;
 
 			QRect tab_rect = tab_opt->rect;
 			QTabBar::Shape shape = tab_opt->shape;
@@ -98,12 +98,12 @@ void CustomUiStyle::drawCETabBar(ControlElement element, const QStyleOption *opt
 			if(!is_hovered && (!is_selected || !is_enabled))
 			{
 				bg_color = base_bg_color.darker(!is_selected ? MidFactor : MaxFactor);
-				border_color = base_border.darker(!is_selected ? MidFactor : MaxFactor);
+				border_color = base_border_color.darker(!is_selected ? MidFactor : MaxFactor);
 			}
 			else if(is_hovered && !is_selected) 
 			{
 				bg_color = base_bg_color.lighter(MaxFactor);
-				border_color = base_border.lighter(MaxFactor);
+				border_color = base_border_color.lighter(MaxFactor);
 			}
 
 			QPen border_pen(border_color, PenWidth);
@@ -159,7 +159,7 @@ void CustomUiStyle::drawCETabBar(ControlElement element, const QStyleOption *opt
 
 				// Draw border
 				painter->setBrush(Qt::NoBrush);
-				painter->setPen(is_selected ? bg_color : border_color);
+				painter->setPen(is_selected ? bg_color : base_border_color);
 				painter->drawLine(tab_rect.bottomLeft(), tab_rect.bottomRight());
 				
 				painter->setPen(border_color);
@@ -232,12 +232,18 @@ void CustomUiStyle::drawPrimitive(PrimitiveElement element, const QStyleOption *
 		return;
 	}
 
-	/* if(element == PE_Frame || 
-		 element == PE_FrameWindow)
+	if(element == PE_IndicatorCheckBox ||
+		 element == PE_IndicatorRadioButton)
 	{
-		drawPEGenericElemFrame(element, option, painter, widget);
+		drawPECheckBoxRadioBtn(element, option, painter, widget);
 		return;
-	} */
+	}
+
+	if(element == PE_Frame)
+	{
+		drawPEGenericElemFrame(element, option, painter, widget, NoRadius);
+		return;
+	}
 
 	qDebug() << "drawPrimitive(): " << element;
 	QProxyStyle::drawPrimitive(element, option, painter, widget);
@@ -521,14 +527,6 @@ void CustomUiStyle::drawPEGenericElemFrame(PrimitiveElement element, const QStyl
 			border_color = bg_color.lighter(MaxFactor); 
 	}
 
-qDebug() << "is_enabled: " << is_enabled << 
-						"is_checked: " << is_checked << 
-						"is_hover: " << is_hover << 
-						"is_focused: " << is_focused << 
-						"is_pressed: " << is_pressed << 
-						"is_default: " << is_default << 
-						"border_color: " << border_color;
-
 	painter->save();	
 	painter->setRenderHint(QPainter::Antialiasing, true);
 
@@ -538,7 +536,7 @@ qDebug() << "is_enabled: " << is_enabled <<
 	if(border_radius > 0)
 		painter->drawRoundedRect(rect.adjusted(0.5, 0.5, -0.5, -0.5), border_radius, border_radius);
 	else
-		painter->drawRect(rect.adjusted(0, 0, -1, -1));
+		painter->drawRect(rect.adjusted(1, 1, -1, -1));
 
 	painter->restore();
 }
@@ -976,6 +974,54 @@ void CustomUiStyle::drawSpinBoxArrow(const QStyleOption *option, QPainter *paint
 	painter->setBrush(arrow_color);
 	painter->setPen(Qt::NoPen);
 	painter->drawPolygon(arrow);
+
+	painter->restore();
+}
+
+void CustomUiStyle::drawPECheckBoxRadioBtn(PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const
+{
+	if((element != PE_IndicatorCheckBox &&
+		  element != PE_IndicatorRadioButton) || !option || !painter)
+		return;
+
+	painter->save();
+	painter->setRenderHint(QPainter::Antialiasing, true);
+
+	QRectF obj_rect = option->rect;
+	
+	QColor border_color = getStateColor(QPalette::Dark, option).lighter(MidFactor);
+	QColor bg_color = getStateColor(QPalette::Base, option);
+	QColor ind_color = getStateColor(QPalette::WindowText, option);
+
+	bool is_checked = (option->state & State_On),
+		 	 is_pressed = (option->state & State_Sunken);
+
+	if(is_pressed)
+	{
+		bg_color = bg_color.lighter(MidFactor);
+		border_color = border_color.lighter(MidFactor);
+	}
+
+	// Draw checkbox background
+	painter->setBrush(bg_color);
+	painter->setPen(QPen(border_color, PenWidth));
+
+	if(element == PE_IndicatorCheckBox)
+		painter->drawRoundedRect(obj_rect.adjusted(0.5, 0.5, -0.5, -0.5), 2, 2);
+	else // PE_IndicatorRadioButton
+		painter->drawEllipse(obj_rect.adjusted(0.5, 0.5, -0.5, -0.5));
+
+	if(is_checked)
+	{
+		// Draw the indicator rectangle
+		painter->setBrush(ind_color);
+		painter->setPen(Qt::NoPen);
+
+		if(element == PE_IndicatorCheckBox)
+			painter->drawRoundedRect(obj_rect.adjusted(3, 3, -3, -3), 1, 1);
+		else
+			painter->drawEllipse(obj_rect.adjusted(3, 3, -3, -3));
+	}
 
 	painter->restore();
 }
