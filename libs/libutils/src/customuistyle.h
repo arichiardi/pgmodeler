@@ -42,16 +42,16 @@ class __libutils CustomUiStyle : public QProxyStyle {
 		static QMap<PixelMetric, int> pixel_metrics;
     
 		static constexpr qreal BlendFactor = 0.7,
-													 PenWidth = 1.0;
+													 PenWidth = 1;
 		
-		static constexpr int ButtonRadius = 3,
-												 InputRadius = 5,
+		static constexpr int ButtonRadius = 4,
+												 InputRadius = 6,
 												 FrameRadius = 4,
 												 TabRadius = 6;
 
-		static constexpr int MinFactor = 130,
-							 					 MidFactor = 145,
-							 					 MaxFactor = 160;
+		static constexpr int MinFactor = 120,
+							 					 MidFactor = 135,
+							 					 MaxFactor = 150;
 
 		// Draws primitive elements (PE) of buttons
 		void drawPEButtonPanel(PrimitiveElement element, const QStyleOption *option,
@@ -75,11 +75,15 @@ class __libutils CustomUiStyle : public QProxyStyle {
 																 QPainter *painter, const QWidget *widget, int border_radius) const;
 
 		// Draws control elements (CE) of tab bars
-		void drawCETabBar(ControlElement element, const QStyleOption *option,	QPainter *painter, const QWidget *widget) const;
+		void drawCETabBar(ControlElement element, const QStyleOption *option,	
+											QPainter *painter, const QWidget *widget) const;
 		
 		// Draws complex control (CC) of group boxes and spin boxes
-		void drawCCGroupBox(ComplexControl control, const QStyleOptionComplex *option, QPainter *painter, const QWidget *widget) const;
-		void drawCCSpinBox(ComplexControl control, const QStyleOptionComplex *option, QPainter *painter, const QWidget *widget) const;
+		void drawCCGroupBox(ComplexControl control, const QStyleOptionComplex *option,
+												QPainter *painter, const QWidget *widget) const;
+
+		void drawCCSpinBox(ComplexControl control, const QStyleOptionComplex *option,
+											 QPainter *painter, const QWidget *widget) const;
 
 		// Draws SpinBox sub-components with specialized styling
 		void drawSpinBoxEditField(const QStyleOption *option, QPainter *painter, const QWidget *widget) const;

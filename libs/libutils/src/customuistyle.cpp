@@ -247,14 +247,15 @@ void CustomUiStyle::drawPEButtonPanel(PrimitiveElement element, const QStyleOpti
 
 	// Check if this is a default QPushButton
 	const QPushButton *push_btn = qobject_cast<const QPushButton*>(widget);
-	bool is_default = push_btn && 
-										push_btn->isDefault() && 
-										(option->state & State_Enabled);
+	bool is_enabled = (option->state & State_Enabled),
+		 is_focused = (option->state & State_HasFocus),
+		 is_hovered = (option->state & State_MouseOver),
+		 is_pressed = (option->state & State_Sunken),
+		 is_checked = (option->state & State_On),
+		 is_default = push_btn && push_btn->isDefault() && is_enabled;
 
 	if(is_default)
 	{
-		border_color = getStateColor(pal, QPalette::Highlight, option);
-		
 		// Mix Highlight with Button color for a more subtle default background
 		QColor hl_color = getStateColor(pal, QPalette::Highlight, option);		
 		
@@ -264,54 +265,19 @@ void CustomUiStyle::drawPEButtonPanel(PrimitiveElement element, const QStyleOpti
 			(hl_color.blue() + bg_color.blue() * 2) / 3
 		).lighter(MinFactor);
 	}
-	else if(has_custom_color)
-	{
-		// Use QColor::lightness() to calculate lightness efficiently
-		int lightness = bg_color.lightness();
-		
-		/* For light colors (luminance > 128), make border darker
-		 * For dark colors (luminance <= 128), make border lighter */
-		if(lightness > 128)
-			// Dark border for light backgrounds
-			border_color = bg_color.darker(MinFactor); 
-		else
-			// Light border for dark backgrounds
-			border_color = bg_color.lighter(MaxFactor); 
-	}
-	else
-	{
-		bg_color = getStateColor(pal, QPalette::Button, option);
-		border_color = bg_color.lighter(MaxFactor);
-	}
-
-	// Disable button	state
-	if(!(option->state & State_Enabled))
-		border_color = bg_color.darker(MinFactor);
-	// Selected button state
-	else if(option->state & State_Sunken)
-	{
-		bg_color = bg_color.darker(MidFactor);
-		border_color = border_color.darker(MidFactor);
-	}
-	else if(option->state & State_On)
-	{
+	else if(!is_enabled)
 		bg_color = bg_color.darker(MinFactor);
-	}
+	// Pressed on state
+	else if(is_pressed)
+		bg_color = bg_color.darker(!is_checked ? MaxFactor : MinFactor);		
+	// Toggled on state
+	else if(is_checked)
+		bg_color = bg_color.darker(MinFactor);
 	// Mouse hover state
-	else if(option->state & State_MouseOver)
-	{
+	else if(is_hovered)
 		bg_color = bg_color.lighter(MaxFactor);
-
-		if(!is_default) // Only lighten border for non-default buttons
-			border_color = border_color.lighter(MaxFactor);
-	}
-
-	// Special focus border (overrides other border colors except for default buttons)
-	if((option->state & State_HasFocus) ||
-		 (option->state & State_On))
-		border_color = getStateColor(pal, QPalette::Highlight, option);
-
-	QPen border_pen(border_color, PenWidth);
+	else
+		bg_color = getStateColor(pal, QPalette::Button, option);
 
 	painter->save();
 	painter->setRenderHint(QPainter::Antialiasing, true);
@@ -319,12 +285,6 @@ void CustomUiStyle::drawPEButtonPanel(PrimitiveElement element, const QStyleOpti
 	painter->setBrush(bg_color);
 	painter->setPen(Qt::NoPen);
 	painter->drawRoundedRect(option->rect, ButtonRadius, ButtonRadius);
-
-	// Draw border
-	painter->setPen(border_pen);
-	painter->setBrush(Qt::NoBrush);
-	painter->drawRoundedRect(QRectF(option->rect).adjusted(0.5, 0.5, -0.5, -0.5),
-														ButtonRadius, ButtonRadius);
 
 	painter->restore();
 }
@@ -494,20 +454,68 @@ void CustomUiStyle::drawPEGenericElemFrame(PrimitiveElement element, const QStyl
 	if(!option || !painter || !widget)
 		return;
 
-	QColor border_color = getStateColor(QPalette::Dark, option).lighter(MaxFactor);
-		
-	// Special focus border
-	if(option->state & State_HasFocus)
-		border_color = getStateColor(QPalette::Highlight, option);
+	bool has_custom_color =
+			widget && widget->styleSheet().contains("background-color");
 
-	painter->save();
+	const QPushButton *push_btn = 
+			qobject_cast<const QPushButton*>(widget);
+
+	QPalette pal = has_custom_color ? 
+								 widget->palette() : qApp->palette();
+	
+	QColor border_color = getStateColor(pal, QPalette::Dark, option).lighter(MaxFactor);
+	
+	bool is_enabled = option->state & State_Enabled,
+			 is_checked = option->state & State_On,
+			 is_hover = option->state & State_MouseOver,
+			 is_focused = option->state & State_HasFocus,
+			 is_pressed = option->state & State_Sunken,
+			 is_default = push_btn && 
+										push_btn->isDefault() && 
+										is_enabled;
+
+	if(!is_enabled)
+		border_color = border_color.darker(MaxFactor);
+	else if(is_default || is_checked)
+		border_color = getStateColor(pal, QPalette::Highlight, option);
+	else if(is_focused)
+		border_color = getStateColor(pal, QPalette::Highlight, option);
+	else if(is_hover)
+		border_color = border_color.lighter(MaxFactor);
+	else if(is_pressed)
+		border_color = border_color.darker(MinFactor);
+	else if(has_custom_color)
+	{
+		// Use QColor::lightness() to calculate lightness efficiently
+		QColor bg_color = getStateColor(pal, QPalette::Base, option);
+		int lightness = bg_color.lightness();
+
+		/* For light colors (luminance > 128), make border darker
+		 * For dark colors (luminance <= 128), make border lighter */
+		if(lightness > 128)
+			// Dark border for light backgrounds
+			border_color = bg_color.darker(MinFactor); 
+		else
+			// Light border for dark backgrounds
+			border_color = bg_color.lighter(MaxFactor); 
+	}
+
+qDebug() << "is_enabled: " << is_enabled << 
+						"is_checked: " << is_checked << 
+						"is_hover: " << is_hover << 
+						"is_focused: " << is_focused << 
+						"is_pressed: " << is_pressed << 
+						"is_default: " << is_default << 
+						"border_color: " << border_color;
+
+	painter->save();	
 	painter->setRenderHint(QPainter::Antialiasing, true);
 
 	QRectF rect = option->rect;
-	painter->setPen(QPen(border_color, PenWidth));
+	painter->setPen(QPen(border_color, PenWidth * 1.5));
 
 	if(border_radius > 0)
-		painter->drawRoundedRect(rect/*.adjusted(0.5, 0.5, -0.5, -0.5)*/, border_radius, border_radius);
+		painter->drawRoundedRect(rect.adjusted(0.5, 0.5, -0.5, -0.5), border_radius, border_radius);
 	else
 		painter->drawRect(rect.adjusted(0, 0, -1, -1));
 
