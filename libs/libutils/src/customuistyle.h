@@ -54,13 +54,25 @@ class __libutils CustomUiStyle : public QProxyStyle {
 							 					 MaxFactor = 160;
 
 		// Draws primitive elements (PE) of buttons
-		void drawPEButtonPanel(PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const;
+		void drawPEButtonPanel(PrimitiveElement element, const QStyleOption *option,
+													 QPainter *painter, const QWidget *widget) const;
 		
+		// Draws primitive elements (PE) of line edits
+		void drawPELineEditPanel(PrimitiveElement element, const QStyleOption *option,
+														 QPainter *painter, const QWidget *widget) const;
+
 		// Draws primitive elements (PE) of tabs, group boxes and other framed elements
-		void drawPETabWidgetFrame(PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const;
-		void drawPETabBarFrame(PrimitiveElement element, const QStyleOption *option,	QPainter *painter, const QWidget *widget) const;
-		void drawPEGroupBoxFrame(PrimitiveElement element, const QStyleOption *option,	QPainter *painter, const QWidget *widget) const;
-		void drawPEOtherElemsFrame(PrimitiveElement element, const QStyleOption *option,	QPainter *painter, const QWidget *widget) const;
+		void drawPETabWidgetFrame(PrimitiveElement element, const QStyleOption *option,
+															QPainter *painter, const QWidget *widget) const;
+
+		void drawPETabBarFrame(PrimitiveElement element, const QStyleOption *option,
+													 QPainter *painter, const QWidget *widget) const;
+		
+		void drawPEGroupBoxFrame(PrimitiveElement element, const QStyleOption *option,	
+														 QPainter *painter, const QWidget *widget) const;
+		
+		 void drawPEGenericElemFrame(PrimitiveElement element, const QStyleOption *option,	
+																 QPainter *painter, const QWidget *widget, int border_radius) const;
 
 		// Draws control elements (CE) of tab bars
 		void drawCETabBar(ControlElement element, const QStyleOption *option,	QPainter *painter, const QWidget *widget) const;

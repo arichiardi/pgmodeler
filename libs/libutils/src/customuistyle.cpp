@@ -189,6 +189,14 @@ void CustomUiStyle::drawPrimitive(PrimitiveElement element, const QStyleOption *
 		 element == PE_PanelButtonCommand)
 	{
 		drawPEButtonPanel(element, option, painter, widget);
+		drawPEGenericElemFrame(PE_FrameButtonTool, option, painter, widget, ButtonRadius);
+		return;
+	}
+
+	if(element == PE_PanelLineEdit)
+	{
+		drawPELineEditPanel(element, option, painter, widget);
+		drawPEGenericElemFrame(PE_FrameLineEdit, option, painter, widget, InputRadius);
 		return;
 	}
 
@@ -210,14 +218,14 @@ void CustomUiStyle::drawPrimitive(PrimitiveElement element, const QStyleOption *
 		return;
 	}
 
-	if(element == PE_Frame || 
-			element == PE_FrameLineEdit || 
-			element == PE_FrameWindow)
+	/* if(element == PE_Frame || 
+		 element == PE_FrameWindow)
 	{
-		drawPEOtherElemsFrame(element, option, painter, widget);
+		drawPEGenericElemFrame(element, option, painter, widget);
 		return;
-	}
+	} */
 
+	qDebug() << "drawPrimitive(): " << element;
 	QProxyStyle::drawPrimitive(element, option, painter, widget);
 }
 
@@ -226,9 +234,6 @@ void CustomUiStyle::drawPEButtonPanel(PrimitiveElement element, const QStyleOpti
 	if((element != PE_PanelButtonTool && 
 			element != PE_PanelButtonCommand) || !option || !painter || !widget)
 		return;
-
-	painter->save();
-	painter->setRenderHint(QPainter::Antialiasing, true);
 
 	/* Determine if the button has custom background color.
 	 * If it contains a stylesheet with background-color property,
@@ -308,6 +313,9 @@ void CustomUiStyle::drawPEButtonPanel(PrimitiveElement element, const QStyleOpti
 
 	QPen border_pen(border_color, PenWidth);
 
+	painter->save();
+	painter->setRenderHint(QPainter::Antialiasing, true);
+
 	painter->setBrush(bg_color);
 	painter->setPen(Qt::NoPen);
 	painter->drawRoundedRect(option->rect, ButtonRadius, ButtonRadius);
@@ -321,13 +329,30 @@ void CustomUiStyle::drawPEButtonPanel(PrimitiveElement element, const QStyleOpti
 	painter->restore();
 }
 
-void CustomUiStyle::drawPETabWidgetFrame(PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const
+void CustomUiStyle::drawPELineEditPanel(PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const
 {
-	if(!option || !painter || !widget)
+	if(element != PE_PanelLineEdit || !option || !painter || !widget)
 		return;
+
+	QColor bg_color = getStateColor(QPalette::Base, option);
+
+	if(!(option->state & State_Enabled))
+		bg_color = bg_color.darker(MidFactor);
 
 	painter->save();
 	painter->setRenderHint(QPainter::Antialiasing, true);
+
+	painter->setBrush(bg_color);
+	painter->setPen(Qt::NoPen);
+	painter->drawRoundedRect(option->rect, InputRadius, InputRadius);
+
+	painter->restore();
+}
+
+void CustomUiStyle::drawPETabWidgetFrame(PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const
+{
+	if(element != PE_FrameTabWidget || !option || !painter || !widget)
+		return;
 
 	QColor bg_color = getStateColor(QPalette::Dark, option).lighter(MinFactor),
 	       border_color = bg_color.lighter(MidFactor);
@@ -360,6 +385,9 @@ void CustomUiStyle::drawPETabWidgetFrame(PrimitiveElement element, const QStyleO
 	// Go straight up to the top
 	path.lineTo(rect.left(), rect.top());
 
+	painter->save();
+	painter->setRenderHint(QPainter::Antialiasing, true);
+
 	painter->setBrush(bg_color);
 	painter->setPen(Qt::NoPen);
 	painter->drawPath(path);
@@ -379,9 +407,6 @@ void CustomUiStyle::drawPEGroupBoxFrame(PrimitiveElement element, const QStyleOp
 	if(!option || !painter || !widget)
 		return;
 
-	painter->save();
-	painter->setRenderHint(QPainter::Antialiasing, true);
-
 	// Use same color scheme as QTabWidget for consistency
 	QColor bg_color = getStateColor(QPalette::Dark, option),
 	       border_color = bg_color.lighter(MidFactor);
@@ -391,6 +416,9 @@ void CustomUiStyle::drawPEGroupBoxFrame(PrimitiveElement element, const QStyleOp
 		bg_color = bg_color.darker(MidFactor);
 		border_color = border_color.darker(MidFactor);
 	}
+
+	painter->save();
+	painter->setRenderHint(QPainter::Antialiasing, true);
 
 	QRectF rect = option->rect;
 	painter->setBrush(bg_color);
@@ -410,11 +438,8 @@ void CustomUiStyle::drawPEGroupBoxFrame(PrimitiveElement element, const QStyleOp
 
 void CustomUiStyle::drawPETabBarFrame(PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const
 {
-	if(!option || !painter || !widget)
+	if(element != PE_FrameTabBarBase || !option || !painter || !widget)
 		return;
-
-	painter->save();
-	painter->setRenderHint(QPainter::Antialiasing, true);
 
 	// Use same color scheme as QTabWidget for uniformity
 	QColor base_bg_color = getStateColor(QPalette::Mid, option).lighter(MinFactor - 10),
@@ -425,6 +450,9 @@ void CustomUiStyle::drawPETabBarFrame(PrimitiveElement element, const QStyleOpti
 			qstyleoption_cast<const QStyleOptionTabBarBase*>(option);
 
 	QRect frame_rect = option->rect;
+
+	painter->save();
+	painter->setRenderHint(QPainter::Antialiasing, true);
 
 	// Draw a subtle background that integrates with the tabs
 	painter->setBrush(base_bg_color);
@@ -460,77 +488,30 @@ void CustomUiStyle::drawPETabBarFrame(PrimitiveElement element, const QStyleOpti
 	painter->restore();
 }
 
-void CustomUiStyle::drawPEOtherElemsFrame(PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const
+void CustomUiStyle::drawPEGenericElemFrame(PrimitiveElement element, const QStyleOption *option, 
+																					 QPainter *painter, const QWidget *widget, int border_radius) const
 {
 	if(!option || !painter || !widget)
 		return;
 
-	static const QStringList rounded_classes = { "QLineEdit", "QComboBox", 
-																							 "QSpinBox", "QDoubleSpinBox"},
-	                         rect_classes = { "QTreeWidget", "QTreeView", 
-																						"QTableView", "QTableWidget" };
-
-	// Lambda to check widget class, returns 1 for rounded widgets, 2 for rectangular, 0 for no match
-	auto check_widget = [&](const QWidget *wgt) -> int
-	{
-		if(!wgt)
-			return 0;
-
-		for(const auto &cls : rounded_classes)
-		{
-			if(wgt->inherits(cls.toStdString().c_str()))
-				return 1; // rounded
-		}
-
-		for(const auto& cls : rect_classes)
-		{
-			if(wgt->inherits(cls.toStdString().c_str()))
-				return 2; // rectangular
-		}
-
-		return 0; // no match
-	};
-
-	// Check widget and its parent hierarchy
-	int style_type = check_widget(widget);
-	const QWidget *parent = widget->parentWidget();
-
-	while(!style_type && parent)
-	{
-		style_type = check_widget(parent);
-		parent = parent->parentWidget();
-	}
-
-	// If it matches a target class, customize the border
-	if(style_type)
-	{
-		painter->save();
+	QColor border_color = getStateColor(QPalette::Dark, option).lighter(MaxFactor);
 		
-		// Default border color
-		QColor border_color = getStateColor(QPalette::Button, option).lighter(MidFactor);
-		
-		// Special focus border
-		if(option->state & State_HasFocus)
-			border_color = getStateColor(QPalette::Highlight, option);
-		
-		QPen border_pen(border_color, PenWidth);
-		border_pen.setCosmetic(true);
-		painter->setPen(border_pen);
+	// Special focus border
+	if(option->state & State_HasFocus)
+		border_color = getStateColor(QPalette::Highlight, option);
 
-		if(style_type == 1)
-		{
-			painter->setRenderHints(QPainter::Antialiasing, true);
-			painter->drawRoundedRect(option->rect, InputRadius, InputRadius);
-		}
-		else
-			painter->drawRect(option->rect.adjusted(0, 0, -1, -1));
+	painter->save();
+	painter->setRenderHint(QPainter::Antialiasing, true);
 
-		painter->restore();
-		return;
-	}
+	QRectF rect = option->rect;
+	painter->setPen(QPen(border_color, PenWidth));
 
-	// Use default behavior for non-customized elements
-	QProxyStyle::drawPrimitive(element, option, painter, widget);
+	if(border_radius > 0)
+		painter->drawRoundedRect(rect/*.adjusted(0.5, 0.5, -0.5, -0.5)*/, border_radius, border_radius);
+	else
+		painter->drawRect(rect.adjusted(0, 0, -1, -1));
+
+	painter->restore();
 }
 
 QPixmap CustomUiStyle::generatedIconPixmap(QIcon::Mode icon_mode, const QPixmap& pixmap, const QStyleOption *option) const
@@ -609,13 +590,14 @@ void CustomUiStyle::drawComplexControl(ComplexControl control, const QStyleOptio
 
 void CustomUiStyle::drawCCGroupBox(ComplexControl control, const QStyleOptionComplex *option, QPainter *painter, const QWidget *widget) const
 {
-const QStyleOptionGroupBox *group_box_opt = qstyleoption_cast<const QStyleOptionGroupBox*>(option);
+	const QStyleOptionGroupBox *group_box_opt = 
+			qstyleoption_cast<const QStyleOptionGroupBox*>(option);
 
 	if(control != CC_GroupBox || !option || !painter || !widget)
 		return;
 
 	painter->save();
-	
+
 	QRect group_rect = group_box_opt->rect,
 				title_rect, frame_rect = group_rect;
 	
@@ -789,7 +771,7 @@ void CustomUiStyle::drawSpinBoxEditField(const QStyleOption *option, QPainter *p
 	painter->save();
 	painter->setRenderHint(QPainter::Antialiasing, true);
 
-	// Use the exact same color logic as QLineEdit (from drawPEOtherElemsFrame)
+	// Use the exact same color logic as QLineEdit (from drawPEGenericElemFrame)
 	QPalette pal = qApp->palette();
 	QColor bg_color = getStateColor(pal, QPalette::Base, option);
 	QColor border_color = getStateColor(QPalette::Button, option).lighter(MidFactor);
