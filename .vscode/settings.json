@@ -155,5 +155,9 @@
         "editor.insertSpaces": false,
         "editor.detectIndentation": false,
         "editor.tabSize": 2
-    }
+    },
+
+    "clangd.arguments": [
+         "--compile-commands-dir=${workspaceFolder}/cmake-build"
+    ]   
 }
