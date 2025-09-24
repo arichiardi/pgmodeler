@@ -23,6 +23,8 @@
 #include <QPushButton>
 #include <QStyleOptionSpinBox>
 #include <QAbstractSpinBox>
+#include <qpainterpath.h>
+#include <qstyleoption.h>
 #include "enumtype.h"
 
 QMap<QStyle::PixelMetric, int> CustomUiStyle::pixel_metrics;
@@ -83,9 +85,6 @@ void CustomUiStyle::drawCETabBar(ControlElement element, const QStyleOption *opt
 
 		if(tab_opt)
 		{
-			painter->save();
-			painter->setRenderHint(QPainter::Antialiasing, true);
-
 			// Use same color scheme as QTabWidget for consistency
 			QColor base_bg_color = getStateColor(QPalette::Dark, option).lighter(MinFactor),
 			       base_border_color = base_bg_color.lighter(MidFactor), 
@@ -129,6 +128,9 @@ void CustomUiStyle::drawCETabBar(ControlElement element, const QStyleOption *opt
 				// Move down 1px to avoid clipping the tab top border
 				tab_rect.translate(1, 1);
 			}
+
+			painter->save();
+			painter->setRenderHint(QPainter::Antialiasing, true);
 
 			// Draw tab with rounded top corners and straight base
 			if(shape == QTabBar::RoundedNorth || shape == QTabBar::TriangularNorth)
@@ -338,7 +340,9 @@ void CustomUiStyle::drawPELineEditPanel(PrimitiveElement element, const QStyleOp
 	// For spinbox children, only round left corners
 	CornerFlag corner_flags = is_spinbox_child ? 
 		(CustomUiStyle::TopLeft | CustomUiStyle::BottomLeft) : CustomUiStyle::AllCorners;
+	
 	QPainterPath shape = createControlShape(option->rect, InputRadius, corner_flags);
+
 	painter->drawPath(shape);
 	painter->restore();
 }
@@ -388,7 +392,6 @@ void CustomUiStyle::drawPEGroupBoxFrame(PrimitiveElement element, const QStyleOp
 	if(!option || !painter || !widget)
 		return;
 
-	// Use same color scheme as QTabWidget for consistency
 	QColor bg_color = getStateColor(QPalette::Dark, option),
 	       border_color = bg_color.lighter(MidFactor);
 
@@ -401,18 +404,17 @@ void CustomUiStyle::drawPEGroupBoxFrame(PrimitiveElement element, const QStyleOp
 	painter->save();
 	painter->setRenderHint(QPainter::Antialiasing, true);
 
-	QRectF rect = option->rect;
 	painter->setBrush(bg_color);
 	painter->setPen(Qt::NoPen);
-	painter->drawRoundedRect(rect, FrameRadius, FrameRadius);
+	painter->drawPath(createControlShape(option->rect, FrameRadius, AllCorners));
 
 	QPen border_pen(border_color, PenWidth);
 	border_pen.setCosmetic(true);
 
 	painter->setPen(border_pen);
 	painter->setBrush(Qt::NoBrush);
-	painter->drawRoundedRect(rect.adjusted(0.5, 0.5, -0.5, -0.5), 
-													 FrameRadius, FrameRadius);
+	painter->drawPath(createControlShape(option->rect, FrameRadius, AllCorners,
+	                         0.5, 0.5, -0.5, -0.5));
 
 	painter->restore();
 }
@@ -422,11 +424,9 @@ void CustomUiStyle::drawPETabBarFrame(PrimitiveElement element, const QStyleOpti
 	if(element != PE_FrameTabBarBase || !option || !painter || !widget)
 		return;
 
-	// Use same color scheme as QTabWidget for uniformity
 	QColor base_bg_color = getStateColor(QPalette::Mid, option).lighter(MinFactor - 10),
 	       border_color = getStateColor(QPalette::Mid, option).lighter(MaxFactor - 10);
 
-	// Determine orientation if available
 	const QStyleOptionTabBarBase *tab_base_opt = 
 			qstyleoption_cast<const QStyleOptionTabBarBase*>(option);
 
@@ -435,35 +435,10 @@ void CustomUiStyle::drawPETabBarFrame(PrimitiveElement element, const QStyleOpti
 	painter->save();
 	painter->setRenderHint(QPainter::Antialiasing, true);
 
-	// Draw a subtle background that integrates with the tabs
+	// Draw background
 	painter->setBrush(base_bg_color);
 	painter->setPen(Qt::NoPen);
 	painter->drawRect(frame_rect);
-
-	// Draw a subtle border line only where needed
-	QPen border_pen(border_color, PenWidth);
-	painter->setPen(border_pen);
-	
-	if(tab_base_opt)
-	{
-		QTabBar::Shape shape = tab_base_opt->shape;
-
-		// For top tabs, draw line at bottom
-		if(shape == QTabBar::RoundedNorth || shape == QTabBar::TriangularNorth)
-			painter->drawLine(frame_rect.bottomLeft(), frame_rect.bottomRight());
-		// For bottom tabs, draw line at top
-		else if(shape == QTabBar::RoundedSouth || shape == QTabBar::TriangularSouth)
-			painter->drawLine(frame_rect.topLeft(), frame_rect.topRight());
-		// For left tabs, draw line at right
-		else if(shape == QTabBar::RoundedWest || shape == QTabBar::TriangularWest)
-			painter->drawLine(frame_rect.topRight(), frame_rect.bottomRight());
-		// For right tabs, draw line at left
-		else if(shape == QTabBar::RoundedEast || shape == QTabBar::TriangularEast)
-			painter->drawLine(frame_rect.topLeft(), frame_rect.bottomLeft());
-	}
-	// Default: draw bottom line
-	else
-		painter->drawLine(frame_rect.bottomLeft(), frame_rect.bottomRight());
 
 	painter->restore();
 }
@@ -730,64 +705,24 @@ void CustomUiStyle::drawCCSpinBox(ComplexControl control, const QStyleOptionComp
 	painter->save();
 	painter->setRenderHint(QPainter::Antialiasing, true);
 
-	// Get the sub-control rectangles for edit field, up and down buttons
-	QRect edit_field_rect = subControlRect(CC_SpinBox, spin_opt, SC_SpinBoxEditField, widget);
-	QRect up_button_rect = subControlRect(CC_SpinBox, spin_opt, SC_SpinBoxUp, widget);
-	QRect down_button_rect = subControlRect(CC_SpinBox, spin_opt, SC_SpinBoxDown, widget);
-
+	QRect edit_field_rect = subControlRect(CC_SpinBox, spin_opt, SC_SpinBoxEditField, widget);	
+	QStyleOption aux_option = *option;
+	bool is_enabled = (option->state & State_Enabled),
+			 is_focused = (option->state & State_HasFocus),
+			 is_pressed = (option->state & State_Sunken),
+			 is_hovered = (option->state & State_MouseOver);
+	
 	// Draw edit field if visible
 	if(spin_opt->subControls & SC_SpinBoxEditField && !edit_field_rect.isEmpty())
 	{
-		QStyleOption edit_option = *option;
-		edit_option.rect = edit_field_rect.adjusted(-2, -2, 2, 2);
-		drawSpinBoxEditField(&edit_option, painter, widget);
+		aux_option = *option;
+		aux_option.rect = edit_field_rect.adjusted(-2, -2, 2, 2);
+		drawSpinBoxEditField(&aux_option, painter, widget);
 	}
 
-	// Draw up button if visible
-	if(spin_opt->subControls & SC_SpinBoxUp && !up_button_rect.isEmpty())
-	{
-		QStyleOption up_option = *option;
-		
-		// Determine button state based on active sub-control and original state
-		if(spin_opt->activeSubControls & SC_SpinBoxUp)
-		{
-			if(option->state & State_Sunken)
-				up_option.state |= State_Sunken;
-			else if(option->state & State_MouseOver)
-				up_option.state |= State_MouseOver;
-		}
-		else
-		{
-			// Remove mouse over and sunken states if this button is not active
-			up_option.state &= ~(State_MouseOver | State_Sunken);
-		}
-
-		up_option.rect = up_button_rect.adjusted(0, -2, 0, 0);
-		drawSpinBoxButton(&up_option, painter, widget, true); // true = up button
-	}
-
-	// Draw down button if visible
-	if(spin_opt->subControls & SC_SpinBoxDown && !down_button_rect.isEmpty())
-	{
-		QStyleOption down_option = *option;
-		
-		// Determine button state based on active sub-control and original state
-		if(spin_opt->activeSubControls & SC_SpinBoxDown)
-		{
-			if(option->state & State_Sunken)
-				down_option.state |= State_Sunken;
-			else if(option->state & State_MouseOver)
-				down_option.state |= State_MouseOver;
-		}
-		else
-		{
-			// Remove mouse over and sunken states if this button is not active
-			down_option.state &= ~(State_MouseOver | State_Sunken);
-		}
-
-		down_option.rect = down_button_rect.adjusted(0, 0, 0, 2);
-		drawSpinBoxButton(&down_option, painter, widget, false); // false = down button
-	}
+	// Draw up buttons if visible
+	drawSpinBoxButton(spin_opt, painter, widget, SC_SpinBoxUp);
+	drawSpinBoxButton(spin_opt, painter, widget, SC_SpinBoxDown);
 
 	painter->restore();
 }
@@ -833,61 +768,88 @@ void CustomUiStyle::drawSpinBoxEditField(const QStyleOption *option, QPainter *p
 	painter->restore();
 }
 
-void CustomUiStyle::drawSpinBoxButton(const QStyleOption *option, QPainter *painter, const QWidget *widget, bool is_up_button) const
+void CustomUiStyle::drawSpinBoxButton(const QStyleOptionSpinBox *option, QPainter *painter, const QWidget *widget, QStyle::SubControl btn_sc_id) const
 {
-	if(!option || !painter || !widget)
+	if(!option || !painter || !widget || 
+		 (btn_sc_id != SC_SpinBoxUp && btn_sc_id != SC_SpinBoxDown))
 		return;
 
-	painter->save();
-	painter->setRenderHint(QPainter::Antialiasing, true);
+	/* Create a copy of the option to modify some
+	 * properties for button drawing */
+	QStyleOptionSpinBox btn_opt = *option;
+
+	// Get button rectangle according to sub-control id
+	if(btn_sc_id == SC_SpinBoxUp)
+		btn_opt.rect = subControlRect(CC_SpinBox, option, SC_SpinBoxUp, widget);
+	else
+		btn_opt.rect = subControlRect(CC_SpinBox, option, SC_SpinBoxDown, widget);
+
+	if(option->activeSubControls & btn_sc_id)
+	{
+		if(option->state & State_Sunken)
+			btn_opt.state |= State_Sunken;
+		else if(option->state & State_MouseOver)
+			btn_opt.state |= State_MouseOver;
+	}
+	else
+	{
+		// Remove mouse over and sunken states if this button is not active
+		btn_opt.state &= ~(State_MouseOver | State_Sunken);
+	}
 
 	// Use the same color logic as button panels
 	QPalette pal = qApp->palette();
 	QColor bg_color = getStateColor(pal, QPalette::Button, option),
 		   	 border_color = bg_color.lighter(MaxFactor);
-	bool is_enabled = (option->state & State_Enabled),
-			 is_focused = (option->state & State_HasFocus),
-			 is_hovered = (option->state & State_MouseOver),
-			 is_pressed = (option->state & State_Sunken);
+
+	bool is_enabled = (btn_opt.state & State_Enabled),
+			 is_focused = (btn_opt.state & State_HasFocus),
+			 is_hovered = (btn_opt.state & State_MouseOver),
+			 is_pressed = (btn_opt.state & State_Sunken);
 
 	// Apply state-based color modifications (same as drawPEButtonPanel)
 	if(!is_enabled)
 	{
 		bg_color = bg_color.darker(MidFactor);
-		border_color = bg_color.darker(MinFactor);
+		border_color = bg_color.darker(MidFactor);
 	}
+	else if(is_focused)
+		border_color = getStateColor(pal, QPalette::Highlight, option);
 	else if(is_pressed)
 	{
-		bg_color = bg_color.darker(MidFactor);
-		border_color = border_color.darker(MidFactor);
+		bg_color = bg_color.darker(MaxFactor);
+		border_color = border_color.darker(MaxFactor);
 	}
 	else if(is_hovered)
 	{
 		bg_color = bg_color.lighter(MaxFactor);
 		border_color = border_color.lighter(MaxFactor);
 	}
-	else if(is_focused)
-		border_color = getStateColor(pal, QPalette::Highlight, option);
 
 	QPen border_pen(border_color, PenWidth);
 
-	// Create custom path for button with specific rounded corners
 	QPainterPath button_path;
-	QRect rect = option->rect;
+	QRect rect = btn_opt.rect;
 	int radius = ButtonRadius - 2;
 
-	if(is_up_button)
+	if(btn_sc_id == SC_SpinBoxUp)
 	{
 		// Up button: only top-right corner rounded
-		rect.setHeight(rect.height() + 1); // Fix 1px gap at bottom
+		rect.setHeight(rect.height() + 1);
+		rect = rect.adjusted(0, -2, 0, 0);
 		button_path = createControlShape(rect, radius, CustomUiStyle::TopRight);
 	}
 	else
 	{
-		rect.setHeight(rect.height() - 1); // Fix 1px gap at bottom
-		rect.translate(0, 1); // Move down 1px to align with up button
+		// Down button: only bottom-right corner rounded
+		rect.setHeight(rect.height() - 1);
+		rect.translate(0, 1);
+		rect = rect.adjusted(0, 0, 0, 2);
 		button_path = createControlShape(rect, radius, CustomUiStyle::BottomRight);
 	}
+
+	painter->save();
+	painter->setRenderHint(QPainter::Antialiasing, true);
 
 	// Draw background
 	painter->setBrush(bg_color);
@@ -900,14 +862,14 @@ void CustomUiStyle::drawSpinBoxButton(const QStyleOption *option, QPainter *pain
 	painter->drawPath(button_path);
 
 	// Draw arrow symbol
-	drawSpinBoxArrow(option, painter, is_up_button);
-
+	drawSpinBoxArrow(&btn_opt, painter, btn_sc_id);
 	painter->restore();
 }
 
-void CustomUiStyle::drawSpinBoxArrow(const QStyleOption *option, QPainter *painter, bool is_up_button) const
+void CustomUiStyle::drawSpinBoxArrow(const QStyleOptionSpinBox *option, QPainter *painter, QStyle::SubControl btn_sc_id) const
 {
-	if(!option || !painter)
+	if(!option || !painter || 
+		 (btn_sc_id != SC_SpinBoxUp && btn_sc_id != SC_SpinBoxDown))
 		return;
 
 	painter->save();
@@ -934,7 +896,7 @@ void CustomUiStyle::drawSpinBoxArrow(const QStyleOption *option, QPainter *paint
 
 	QPolygonF arrow;
 	
-	if(is_up_button)
+	if(btn_sc_id == SC_SpinBoxUp)
 	{
 		// Up arrow (triangle pointing up) - same dimensions as down arrow
 		arrow << QPointF(center.x(), center.y() - half_height)          // Top point
