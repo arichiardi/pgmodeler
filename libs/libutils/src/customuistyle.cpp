@@ -23,6 +23,7 @@
 #include <QPushButton>
 #include <QStyleOptionSpinBox>
 #include <QAbstractSpinBox>
+#include "enumtype.h"
 
 QMap<QStyle::PixelMetric, int> CustomUiStyle::pixel_metrics;
 
@@ -134,23 +135,9 @@ void CustomUiStyle::drawCETabBar(ControlElement element, const QStyleOption *opt
 			{
 				QPainterPath bg_path, border_path;
 
-				// Start at left base
-				border_path.moveTo(tab_rect.left(), tab_rect.bottom());
+				bg_path = border_path = createControlShape(tab_rect, TabBarRadius, 
+										TopLeft | TopRight, 0, 0, 0, 0, BottomEdge);
 
-				border_path.lineTo(tab_rect.left(), tab_rect.top() + TabBarRadius);
-
-				border_path.quadTo(tab_rect.left(), tab_rect.top(), 
-													 tab_rect.left() + TabBarRadius, tab_rect.top());
-
-				border_path.lineTo(tab_rect.right() - TabBarRadius, tab_rect.top());
-
-				border_path.quadTo(tab_rect.right(), tab_rect.top(), 
-												tab_rect.right(), tab_rect.top() + TabBarRadius);
-
-				border_path.lineTo(tab_rect.right(), tab_rect.bottom());
-
-				
-				bg_path = border_path;
 				bg_path.lineTo(tab_rect.left(), tab_rect.bottom());
 
 				// Draw background
@@ -348,10 +335,10 @@ void CustomUiStyle::drawPELineEditPanel(PrimitiveElement element, const QStyleOp
 	// Check if this LineEdit is part of a SpinBox
 	bool is_spinbox_child = widget && qobject_cast<const QAbstractSpinBox*>(widget->parentWidget());
 	
-	QPainterPath shape = createRoundedRectPath(option->rect, 
-			                                      InputRadius, is_spinbox_child ? 0 : InputRadius, 
-	                                      InputRadius, is_spinbox_child ? 0 : InputRadius);
-
+	// For spinbox children, only round left corners
+	CornerFlag corner_flags = is_spinbox_child ? 
+		(CustomUiStyle::TopLeft | CustomUiStyle::BottomLeft) : CustomUiStyle::AllCorners;
+	QPainterPath shape = createControlShape(option->rect, InputRadius, corner_flags);
 	painter->drawPath(shape);
 	painter->restore();
 }
@@ -374,23 +361,10 @@ void CustomUiStyle::drawPETabWidgetFrame(PrimitiveElement element, const QStyleO
 	QRectF rect = option->rect;
 	int radius = TabRadius * 2; // Larger radius for smoothness
 
-	QPainterPath path;
-
-	// Straight top
-	path.moveTo(rect.left(), rect.top());
-	path.lineTo(rect.right(), rect.top());
-	// Go straight down to before bottom-right corner
-	path.lineTo(rect.right(), rect.bottom() - radius);
-	// Arco inferior direito suave
-	path.quadTo(rect.right(), rect.bottom(), 
-							rect.right() - radius, rect.bottom());
-	// Straight line to before bottom-left corner
-	path.lineTo(rect.left() + radius, rect.bottom());
-	// Arco inferior esquerdo suave
-	path.quadTo(rect.left(), rect.bottom(), 
-							rect.left(), rect.bottom() - radius);
-	// Go straight up to the top
-	path.lineTo(rect.left(), rect.top());
+	// Only round bottom corners for tabs (open at top)
+	QPainterPath path = createControlShape(option->rect, radius, 
+		(CustomUiStyle::BottomLeft | CustomUiStyle::BottomRight),
+		0.5, 0.5, -0.5, -0.5, TopEdge);
 
 	painter->save();
 	painter->setRenderHint(QPainter::Antialiasing, true);
@@ -468,7 +442,6 @@ void CustomUiStyle::drawPETabBarFrame(PrimitiveElement element, const QStyleOpti
 
 	// Draw a subtle border line only where needed
 	QPen border_pen(border_color, PenWidth);
-	border_pen.setCosmetic(true);
 	painter->setPen(border_pen);
 	
 	if(tab_base_opt)
@@ -553,11 +526,20 @@ void CustomUiStyle::drawPEGenericElemFrame(PrimitiveElement element, const QStyl
 	QRectF rect = option->rect;
 	painter->setPen(QPen(border_color, PenWidth * 1.5));
 
+	QPainterPath shape;
+	
 	if(border_radius > 0)
-		painter->drawRoundedRect(rect.adjusted(0.5, 0.5, -0.5, -0.5), border_radius, border_radius);
+	{
+		shape = createControlShape(option->rect, border_radius, CustomUiStyle::AllCorners,
+		                        0.5, 0.5, -0.5, -0.5);
+	}
 	else
-		painter->drawRect(rect.adjusted(1, 1, -1, -1));
-
+	{
+		shape = createControlShape(option->rect, 0, CustomUiStyle::NoCorners,
+		                        1, 1, -1, -1);
+	}	
+	
+	painter->drawPath(shape);
 	painter->restore();
 }
 
@@ -840,18 +822,8 @@ void CustomUiStyle::drawSpinBoxEditField(const QStyleOption *option, QPainter *p
 	}
 
 	// Create custom path for edit field with specific rounded corners
-	QPainterPath edit_path;
-	QRectF rect = option->rect;
-	int radius = InputRadius - 2;
-
-	// Edit field: only left side corners rounded (top-left and bottom-left)
-	edit_path.moveTo(rect.right(), rect.bottom());
-	edit_path.lineTo(rect.left() + radius, rect.bottom());
-	edit_path.quadTo(rect.left(), rect.bottom(), rect.left(), rect.bottom() - radius);
-	edit_path.lineTo(rect.left(), rect.top() + radius);
-	edit_path.quadTo(rect.left(), rect.top(), rect.left() + radius, rect.top());
-	edit_path.lineTo(rect.right(), rect.top());
-	edit_path.lineTo(rect.right(), rect.bottom());
+	QPainterPath edit_path = createControlShape(option->rect, InputRadius - 2, 
+																				CustomUiStyle::TopLeft | CustomUiStyle::BottomLeft);
 
 	// Draw only background (no border for edit field)
 	painter->setBrush(bg_color);
@@ -901,32 +873,20 @@ void CustomUiStyle::drawSpinBoxButton(const QStyleOption *option, QPainter *pain
 
 	// Create custom path for button with specific rounded corners
 	QPainterPath button_path;
-	QRectF rect = option->rect; // Adjust for pen width
+	QRect rect = option->rect;
 	int radius = ButtonRadius - 2;
 
 	if(is_up_button)
 	{
 		// Up button: only top-right corner rounded
 		rect.setHeight(rect.height() + 1); // Fix 1px gap at bottom
-		button_path.moveTo(rect.left(), rect.bottom());
-		button_path.lineTo(rect.left(), rect.top());
-		button_path.lineTo(rect.right() - radius, rect.top());
-		button_path.quadTo(rect.right(), rect.top(), rect.right(), rect.top() + radius);
-		button_path.lineTo(rect.right(), rect.bottom());
-		button_path.lineTo(rect.left(), rect.bottom());
+		button_path = createControlShape(rect, radius, CustomUiStyle::TopRight);
 	}
 	else
 	{
 		rect.setHeight(rect.height() - 1); // Fix 1px gap at bottom
 		rect.translate(0, 1); // Move down 1px to align with up button
-		
-		// Down button: only bottom-right corner rounded
-		button_path.moveTo(rect.left(), rect.top());
-		button_path.lineTo(rect.right(), rect.top());
-		button_path.lineTo(rect.right(), rect.bottom() - radius);
-		button_path.quadTo(rect.right(), rect.bottom(), rect.right() - radius, rect.bottom());
-		button_path.lineTo(rect.left(), rect.bottom());
-		button_path.lineTo(rect.left(), rect.top());
+		button_path = createControlShape(rect, radius, CustomUiStyle::BottomRight);
 	}
 
 	// Draw background
@@ -1045,75 +1005,132 @@ void CustomUiStyle::drawPECheckBoxRadioBtn(PrimitiveElement element, const QStyl
 	painter->restore();
 }
 
-QPainterPath CustomUiStyle::createRoundedRectPath(const QRect &rect, 
-																									 int top_left_radius, int top_right_radius, 
-																									 int bottom_left_radius, int bottom_right_radius,
-																									 qreal dx, qreal dy, qreal dw, qreal dh) const
+void CustomUiStyle::addEdgeWithCorner(QPainterPath &path, const QRectF &rect, RectEdge side, int radius) const
+{
+	qreal x = rect.x();
+	qreal y = rect.y();
+	qreal w = rect.width();
+	qreal h = rect.height();
+
+	if(side == TopEdge)
+	{
+		// Top edge from current position to top-right corner
+		if(radius > 0)
+		{
+			path.lineTo(x + w - radius, y);
+			path.quadTo(x + w, y, x + w, y + radius);
+		}
+		else
+		{
+			path.lineTo(x + w, y);
+		}
+	}
+	else if(side == RightEdge)
+	{
+		// Right edge from current position to bottom-right corner
+		if(radius > 0)
+		{
+			path.lineTo(x + w, y + h - radius);
+			path.quadTo(x + w, y + h, x + w - radius, y + h);
+		}
+		else
+		{
+			path.lineTo(x + w, y + h);
+		}
+	}
+	else if(side == BottomEdge)
+	{
+		// Bottom edge from current position to bottom-left corner
+		if(radius > 0)
+		{
+			path.lineTo(x + radius, y + h);
+			path.quadTo(x, y + h, x, y + h - radius);
+		}
+		else
+		{
+			path.lineTo(x, y + h);
+		}
+	}
+	else if(side == LeftEdge)
+	{
+		// Left edge from current position to top-left corner
+		if(radius > 0)
+		{
+			path.lineTo(x, y + radius);
+			path.quadTo(x, y, x + radius, y);
+		}
+		else
+		{
+			path.lineTo(x, y);
+		}
+	}
+}
+
+QPainterPath CustomUiStyle::createControlShape(const QRect &rect,  int radius, CustomUiStyle::CornerFlag corners,
+																							 qreal dx, qreal dy, qreal dw, qreal dh, RectEdge open_edge) const
 {
 	QPainterPath path;
 	
 	// Apply adjustments to the rectangle
-	QRectF adjusted_rect = QRectF(rect).adjusted(dx, dy, dw, dh);
+	QRectF adj_rect = QRectF(rect).adjusted(dx, dy, dw, dh);
 	
-	// If all radii are 0, create a simple rectangle
-	if(top_left_radius <= 0 && top_right_radius <= 0 && 
-		 bottom_left_radius <= 0 && bottom_right_radius <= 0)
+	qreal x = adj_rect.x(),	y = adj_rect.y(),
+				w = adj_rect.width(), h = adj_rect.height();
+	
+	// Extract individual corner radii using bitwise operations
+	int tl_radius = (corners & TopLeft) ? radius : 0,
+			tr_radius = (corners & TopRight) ? radius : 0,
+			bl_radius = (corners & BottomLeft) ? radius : 0,
+			br_radius = (corners & BottomRight) ? radius : 0;
+
+	// If all radii are 0 and closed, create a simple rectangle
+	if(open_edge == None && radius <= 0)
 	{
-		path.addRect(adjusted_rect);
+		path.addRect(adj_rect);
 		return path;
 	}
 	
-	// Start from top-left corner
-	qreal x = adjusted_rect.x();
-	qreal y = adjusted_rect.y();
-	qreal w = adjusted_rect.width();
-	qreal h = adjusted_rect.height();
-	
-	// Start the path from top-left corner (after potential radius)
-	path.moveTo(x + top_left_radius, y);
-	
-	// Top edge and top-right corner
-	if(top_right_radius > 0)
+	if(open_edge == None)
 	{
-		path.lineTo(x + w - top_right_radius, y);
-		path.quadTo(x + w, y, x + w, y + top_right_radius);
+		// Closed rectangle - start from top-left, go clockwise	
+		path.moveTo(x + tl_radius, y);
+		addEdgeWithCorner(path, adj_rect, TopEdge, tr_radius);
+		addEdgeWithCorner(path, adj_rect, RightEdge, br_radius);
+		addEdgeWithCorner(path, adj_rect, BottomEdge, bl_radius);
+		addEdgeWithCorner(path, adj_rect, LeftEdge, tl_radius);
 	}
-	else
+	// Open rectangle at top edge
+	else if(open_edge == TopEdge)
 	{
-		path.lineTo(x + w, y);
+		// Open at top - start from top-right, go clockwise, end at top-left
+		path.moveTo(x + w, y + tr_radius);
+		addEdgeWithCorner(path, adj_rect, RightEdge, br_radius);
+		addEdgeWithCorner(path, adj_rect, BottomEdge, bl_radius);
+		addEdgeWithCorner(path, adj_rect, LeftEdge, tl_radius);
 	}
-	
-	// Right edge and bottom-right corner
-	if(bottom_right_radius > 0)
+	else if(open_edge == RightEdge)
 	{
-		path.lineTo(x + w, y + h - bottom_right_radius);
-		path.quadTo(x + w, y + h, x + w - bottom_right_radius, y + h);
+		// Open at right - start from bottom-right, go clockwise, end at top-right
+		path.moveTo(x + w - br_radius, y + h);
+		addEdgeWithCorner(path, adj_rect, BottomEdge, bl_radius);
+		addEdgeWithCorner(path, adj_rect, LeftEdge, tl_radius);
+		addEdgeWithCorner(path, adj_rect, TopEdge, tr_radius);
 	}
-	else
+	else if(open_edge == BottomEdge)
 	{
-		path.lineTo(x + w, y + h);
+		// Open at bottom - start from bottom-left, go clockwise, end at bottom-right
+		path.moveTo(x, y + h - bl_radius);
+		addEdgeWithCorner(path, adj_rect, LeftEdge, tl_radius);
+		addEdgeWithCorner(path, adj_rect, TopEdge, tr_radius);
+		addEdgeWithCorner(path, adj_rect, RightEdge, br_radius);
 	}
-	
-	// Bottom edge and bottom-left corner
-	if(bottom_left_radius > 0)
+	else if(open_edge == LeftEdge)
 	{
-		path.lineTo(x + bottom_left_radius, y + h);
-		path.quadTo(x, y + h, x, y + h - bottom_left_radius);
-	}
-	else
-	{
-		path.lineTo(x, y + h);
-	}
-	
-	// Left edge and back to top-left corner
-	if(top_left_radius > 0)
-	{
-		path.lineTo(x, y + top_left_radius);
-		path.quadTo(x, y, x + top_left_radius, y);
-	}
-	else
-	{
-		path.lineTo(x, y);
+		// Open at left - start from top-left, go clockwise, end at bottom-left
+		path.moveTo(x + tl_radius, y);
+		addEdgeWithCorner(path, adj_rect, TopEdge, tr_radius);
+		addEdgeWithCorner(path, adj_rect, RightEdge, br_radius);
+		addEdgeWithCorner(path, adj_rect, BottomEdge, bl_radius);
 	}
 	
 	return path;

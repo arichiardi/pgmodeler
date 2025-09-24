@@ -39,6 +39,25 @@ all widgets in the application.
 
 class __libutils CustomUiStyle : public QProxyStyle {
 	private:
+		// Enum to control which side of the path should be open (only one side at a time)
+		enum RectEdge {
+			None = 0,    // Closed path (default)
+			LeftEdge,        // Open on the left edge
+			TopEdge,         // Open on the top edge
+			RightEdge,       // Open on the right edge
+			BottomEdge       // Open on the bottom edge
+		};
+
+				// Enum to control which corners should have rounded edges using bitwise operations
+		enum CornerFlag: unsigned {
+			NoCorners = 0,
+			TopLeft = 1,
+			TopRight = 2,
+			BottomLeft = 4,
+			BottomRight = 8,
+			AllCorners = TopLeft | TopRight | BottomLeft | BottomRight
+		};
+
 		static QMap<PixelMetric, int> pixel_metrics;
     
 		static constexpr qreal BlendFactor = 0.7,
@@ -54,6 +73,11 @@ class __libutils CustomUiStyle : public QProxyStyle {
 		static constexpr int MinFactor = 120,
 							 					 MidFactor = 135,
 							 					 MaxFactor = 150;
+
+		// Generic method to create QPainterPath with configurable corner radius and open sides
+		QPainterPath createControlShape(const QRect &rect, int radius, CornerFlag corners = AllCorners,
+																		qreal dx = 0, qreal dy = 0, qreal dw = 0, qreal dh = 0,
+																		RectEdge open_edge = None) const;
 
 		// Draws primitive elements (PE) of buttons
 		void drawPEButtonPanel(PrimitiveElement element, const QStyleOption *option,
@@ -96,11 +120,14 @@ class __libutils CustomUiStyle : public QProxyStyle {
 		void drawPECheckBoxRadioBtn(PrimitiveElement element, const QStyleOption *option,
 																 QPainter *painter, const QWidget *widget) const;
 
-		// Generic method to create QPainterPath with configurable corner radius
-		QPainterPath createRoundedRectPath(const QRect &rect, 
-																			 int top_left_radius, int top_right_radius, 
-																			 int bottom_left_radius, int bottom_right_radius,
-																			 qreal dx = 0, qreal dy = 0, qreal dw = 0, qreal dh = 0) const;
+		// Helper method to add edge with optional rounded corner to QPainterPath
+		void addEdgeWithCorner(QPainterPath &path, const QRectF &rect, RectEdge side, int radius) const;
+
+		//! \brief Helper function to get color from palette considering widget state
+		static QColor getStateColor(const QPalette& pal, QPalette::ColorRole role, const QStyleOption* option);
+
+		//! \brief Helper function to get color from applicationpalette considering widget state
+		static QColor getStateColor(QPalette::ColorRole role, const QStyleOption *option);
 
 	public:
 		CustomUiStyle();
@@ -132,13 +159,6 @@ class __libutils CustomUiStyle : public QProxyStyle {
 
 		//! \brief Checks if the current application palette is dark (dark theme)
 		static bool isDarkPalette();
-
-private:
-		//! \brief Helper function to get color from palette considering widget state
-		static QColor getStateColor(const QPalette& pal, QPalette::ColorRole role, const QStyleOption* option);
-
-		//! \brief Helper function to get color from applicationpalette considering widget state
-		static QColor getStateColor(QPalette::ColorRole role, const QStyleOption *option);
 };
 
 #endif
