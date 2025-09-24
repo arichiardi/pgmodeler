@@ -96,6 +96,12 @@ class __libutils CustomUiStyle : public QProxyStyle {
 		void drawPECheckBoxRadioBtn(PrimitiveElement element, const QStyleOption *option,
 																 QPainter *painter, const QWidget *widget) const;
 
+		// Generic method to create QPainterPath with configurable corner radius
+		QPainterPath createRoundedRectPath(const QRect &rect, 
+																			 int top_left_radius, int top_right_radius, 
+																			 int bottom_left_radius, int bottom_right_radius,
+																			 qreal dx = 0, qreal dy = 0, qreal dw = 0, qreal dh = 0) const;
+
 	public:
 		CustomUiStyle();
 

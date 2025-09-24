@@ -348,29 +348,11 @@ void CustomUiStyle::drawPELineEditPanel(PrimitiveElement element, const QStyleOp
 	// Check if this LineEdit is part of a SpinBox
 	bool is_spinbox_child = widget && qobject_cast<const QAbstractSpinBox*>(widget->parentWidget());
 	
-	if(is_spinbox_child)
-	{
-		// For SpinBox: only left side corners rounded (top-left and bottom-left)
-		QPainterPath edit_path;
-		QRectF rect = option->rect;
-		int radius = InputRadius;
+	QPainterPath shape = createRoundedRectPath(option->rect, 
+			                                      InputRadius, is_spinbox_child ? 0 : InputRadius, 
+	                                      InputRadius, is_spinbox_child ? 0 : InputRadius);
 
-		edit_path.moveTo(rect.right(), rect.bottom());
-		edit_path.lineTo(rect.left() + radius, rect.bottom());
-		edit_path.quadTo(rect.left(), rect.bottom(), rect.left(), rect.bottom() - radius);
-		edit_path.lineTo(rect.left(), rect.top() + radius);
-		edit_path.quadTo(rect.left(), rect.top(), rect.left() + radius, rect.top());
-		edit_path.lineTo(rect.right(), rect.top());
-		edit_path.lineTo(rect.right(), rect.bottom());
-
-		painter->drawPath(edit_path);
-	}
-	else
-	{
-		// Normal LineEdit: all corners rounded
-		painter->drawRoundedRect(option->rect, InputRadius, InputRadius);
-	}
-
+	painter->drawPath(shape);
 	painter->restore();
 }
 
@@ -1061,4 +1043,78 @@ void CustomUiStyle::drawPECheckBoxRadioBtn(PrimitiveElement element, const QStyl
 	}
 
 	painter->restore();
+}
+
+QPainterPath CustomUiStyle::createRoundedRectPath(const QRect &rect, 
+																									 int top_left_radius, int top_right_radius, 
+																									 int bottom_left_radius, int bottom_right_radius,
+																									 qreal dx, qreal dy, qreal dw, qreal dh) const
+{
+	QPainterPath path;
+	
+	// Apply adjustments to the rectangle
+	QRectF adjusted_rect = QRectF(rect).adjusted(dx, dy, dw, dh);
+	
+	// If all radii are 0, create a simple rectangle
+	if(top_left_radius <= 0 && top_right_radius <= 0 && 
+		 bottom_left_radius <= 0 && bottom_right_radius <= 0)
+	{
+		path.addRect(adjusted_rect);
+		return path;
+	}
+	
+	// Start from top-left corner
+	qreal x = adjusted_rect.x();
+	qreal y = adjusted_rect.y();
+	qreal w = adjusted_rect.width();
+	qreal h = adjusted_rect.height();
+	
+	// Start the path from top-left corner (after potential radius)
+	path.moveTo(x + top_left_radius, y);
+	
+	// Top edge and top-right corner
+	if(top_right_radius > 0)
+	{
+		path.lineTo(x + w - top_right_radius, y);
+		path.quadTo(x + w, y, x + w, y + top_right_radius);
+	}
+	else
+	{
+		path.lineTo(x + w, y);
+	}
+	
+	// Right edge and bottom-right corner
+	if(bottom_right_radius > 0)
+	{
+		path.lineTo(x + w, y + h - bottom_right_radius);
+		path.quadTo(x + w, y + h, x + w - bottom_right_radius, y + h);
+	}
+	else
+	{
+		path.lineTo(x + w, y + h);
+	}
+	
+	// Bottom edge and bottom-left corner
+	if(bottom_left_radius > 0)
+	{
+		path.lineTo(x + bottom_left_radius, y + h);
+		path.quadTo(x, y + h, x, y + h - bottom_left_radius);
+	}
+	else
+	{
+		path.lineTo(x, y + h);
+	}
+	
+	// Left edge and back to top-left corner
+	if(top_left_radius > 0)
+	{
+		path.lineTo(x, y + top_left_radius);
+		path.quadTo(x, y, x + top_left_radius, y);
+	}
+	else
+	{
+		path.lineTo(x, y);
+	}
+	
+	return path;
 }
