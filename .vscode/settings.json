@@ -1,19 +1,20 @@
 {
+   "cmake.parallelJobs": 20,
    "cmake.buildDirectory": "${workspaceFolder}/cmake-build",
    "cmake.generator": "Unix Makefiles",
    "cmake.configureSettings": {
         "PLUS_VERSION": "ON",
         "PGM_PREFIX": "${workspaceFolder}/build",
-        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON" // Generate the compile_commands.json file for better IDE integration
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
     },
 
     // Intelisense configurations
     "C_Cpp.default.compileCommands": "${workspaceFolder}/cmake-build/compile_commands.json",
-    "C_Cpp.intelliSenseEngine": "Default",    
-    "C_Cpp.autocomplete": "Default",           
+    "C_Cpp.intelliSenseEngine": "default",    
+    "C_Cpp.autocomplete": "default",           
     "C_Cpp.autocompleteAddParentheses": true, 
     "C_Cpp.hoverEnabled": true,                 
-    "C_Cpp.errorSquiggles": "Enabled",     
+    "C_Cpp.errorSquiggles": "enabled",     
 
     "C_Cpp.commentContinuationPatterns": [
         {
@@ -22,7 +23,6 @@
         }
     ],
 
-    // Forcing intellisense to use clang++ as compiler
     "C_Cpp.default.compilerPath": "/usr/bin/clang++",
     "C_Cpp.default.cStandard": "c17",
     "C_Cpp.default.cppStandard": "c++17",
@@ -109,9 +109,12 @@
         "**/CMakeFiles/**": true,
         "**/*.o": true,         
         "**/*.a": true,         
-        "**/*.so": true,
+        "**/*.so*": true,
         ".github": true,
-        ".qtc_clangd": true
+        ".qtc_clangd": true,
+        "**/build/**": true,
+        "**/cmake-build/**": true,
+        ".qt": true
     },
 
     "editor.tokenColorCustomizations": {

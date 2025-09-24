@@ -22,6 +22,7 @@
 #include <QToolBar>
 #include <QPushButton>
 #include <QStyleOptionSpinBox>
+#include <QAbstractSpinBox>
 
 QMap<QStyle::PixelMetric, int> CustomUiStyle::pixel_metrics;
 
@@ -210,7 +211,11 @@ void CustomUiStyle::drawPrimitive(PrimitiveElement element, const QStyleOption *
 	if(element == PE_PanelLineEdit)
 	{
 		drawPELineEditPanel(element, option, painter, widget);
-		drawPEGenericElemFrame(PE_FrameLineEdit, option, painter, widget, InputRadius);
+		
+		// Don't draw frame border if this LineEdit is part of a SpinBox
+		if(!widget || !qobject_cast<const QAbstractSpinBox*>(widget->parentWidget()))
+			drawPEGenericElemFrame(PE_FrameLineEdit, option, painter, widget, InputRadius);
+
 		return;
 	}
 
@@ -241,7 +246,11 @@ void CustomUiStyle::drawPrimitive(PrimitiveElement element, const QStyleOption *
 
 	if(element == PE_Frame)
 	{
-		drawPEGenericElemFrame(element, option, painter, widget, NoRadius);
+		// Don't draw frame if this is part of a SpinBox edit field
+		if(!widget || !qobject_cast<const QAbstractSpinBox*>(widget))
+		{
+			drawPEGenericElemFrame(element, option, painter, widget, NoRadius);
+		}
 		return;
 	}
 
@@ -318,7 +327,7 @@ void CustomUiStyle::drawPEButtonPanel(PrimitiveElement element, const QStyleOpti
 
 void CustomUiStyle::drawPELineEditPanel(PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const
 {
-	if(element != PE_PanelLineEdit || !option || !painter || !widget)
+	if(element != PE_PanelLineEdit ||  !option || !painter || !widget)
 		return;
 
 	QColor bg_color = getStateColor(QPalette::Base, option);
@@ -798,27 +807,20 @@ void CustomUiStyle::drawSpinBoxEditField(const QStyleOption *option, QPainter *p
 	painter->save();
 	painter->setRenderHint(QPainter::Antialiasing, true);
 
-	// Use the exact same color logic as QLineEdit (from drawPEGenericElemFrame)
+	// Get background color - no border needed for edit field
 	QPalette pal = qApp->palette();
-	QColor bg_color = getStateColor(pal, QPalette::Base, option);
-	QColor border_color = getStateColor(QPalette::Button, option).lighter(MidFactor);
-
-	// Apply state-based modifications
+	QColor bg_color = getStateColor(pal, QPalette::Base, option),
+		  	 border_color = getStateColor(pal, QPalette::Dark, option).lighter(MaxFactor);
+	
 	if(!(option->state & State_Enabled))
 	{
 		bg_color = bg_color.darker(MinFactor);
-		border_color = border_color.darker(MidFactor);
-	}
-	else if(option->state & State_HasFocus)
-	{
-		// Special focus border - same as QLineEdit
-		border_color = getStateColor(QPalette::Highlight, option);
 	}
 
 	// Create custom path for edit field with specific rounded corners
 	QPainterPath edit_path;
 	QRectF rect = option->rect;
-	int radius = InputRadius;
+	int radius = InputRadius - 2;
 
 	// Edit field: only left side corners rounded (top-left and bottom-left)
 	edit_path.moveTo(rect.right(), rect.bottom());
@@ -829,16 +831,9 @@ void CustomUiStyle::drawSpinBoxEditField(const QStyleOption *option, QPainter *p
 	edit_path.lineTo(rect.right(), rect.top());
 	edit_path.lineTo(rect.right(), rect.bottom());
 
-	// Draw background first (filled rounded rectangle)
+	// Draw only background (no border for edit field)
 	painter->setBrush(bg_color);
-	painter->setPen(Qt::NoPen);
-	painter->drawPath(edit_path);
-
-	// Draw border on top (outlined rounded rectangle)
-	QPen border_pen(border_color, PenWidth);
-	border_pen.setCosmetic(true);
-	painter->setPen(border_pen);
-	painter->setBrush(Qt::NoBrush);
+	painter->setPen(border_color);
 	painter->drawPath(edit_path);
 
 	painter->restore();
@@ -883,7 +878,7 @@ void CustomUiStyle::drawSpinBoxButton(const QStyleOption *option, QPainter *pain
 	// Create custom path for button with specific rounded corners
 	QPainterPath button_path;
 	QRectF rect = option->rect; // Adjust for pen width
-	int radius = FrameRadius;
+	int radius = ButtonRadius - 2;
 
 	if(is_up_button)
 	{
