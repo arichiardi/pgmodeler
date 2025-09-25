@@ -33,11 +33,11 @@ QString AppearanceConfigWidget::UiThemeId;
 
 // Dark theme palette definition (0 -> Active, 1 -> Inactive, 2 -> Disabled)
 std::map<QPalette::ColorRole, QStringList> AppearanceConfigWidget::dark_ui_colors {
-    { QPalette::Light, {"#070912", "#070912", "#070912"} },
-    { QPalette::Midlight, {"#0b0d16", "#0b0d16", "#0b0d16"} },
-    { QPalette::Mid, {"#0e111b", "#0e111b", "#0e111b"} },
-    { QPalette::Button, {"#343d55", "#343d55", "#1f2432"} },
-    { QPalette::Dark, {"#272c3c", "#272c3c", "#212532"} },
+    { QPalette::Light, {"#56658c", "#56658c", "#3e4864"} },
+    { QPalette::Midlight, {"#495778", "#495778", "#313b50"} },
+    { QPalette::Mid, {"#3d4864", "#3d4864", "#252c3c"} },
+    { QPalette::Button, {"#343d55", "#343d55", "#1c212d"} },
+    { QPalette::Dark, {"#2a3041", "#2a3041", "#1d212d"} },
     { QPalette::Base, {"#151a26", "#151a26", "#151a26"} },
     { QPalette::Window, {"#151b25", "#151b25", "#151b25"} },
     { QPalette::Shadow, {"#000000", "#000000", "#000000"} },

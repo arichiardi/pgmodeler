@@ -36,6 +36,7 @@ all widgets in the application.
 #include <QPixmap>
 #include <QImage>
 #include <QIcon>
+#include <QPushButton>
 
 class __libutils CustomUiStyle : public QProxyStyle {
 	private:
@@ -57,6 +58,32 @@ class __libutils CustomUiStyle : public QProxyStyle {
 			BottomRight = 8,
 			AllCorners = TopLeft | TopRight | BottomLeft | BottomRight
 		};
+
+		struct WidgetState {
+			const bool is_enabled,
+							is_hovered,
+							is_checked,
+							is_selected,
+							is_pressed,
+							is_focused,
+							is_default,
+							has_custom_color;
+
+			WidgetState(const QStyleOption *option, const QWidget *widget) :
+					is_enabled(option->state & State_Enabled),
+					is_hovered(option->state & State_MouseOver),
+					is_checked(option->state & State_On),
+					is_selected(option->state & State_Selected),
+					is_pressed(option->state & State_Sunken),
+					is_focused(option->state & State_HasFocus),
+					is_default(is_enabled && widget &&
+											qobject_cast<const QPushButton *>(widget) &&
+											qobject_cast<const QPushButton *>(widget)->isDefault()),
+
+					has_custom_color(widget &&
+													widget->styleSheet().contains("background-color"))
+					{};
+		};									 
 
 		static QMap<PixelMetric, int> pixel_metrics;
     
@@ -128,12 +155,6 @@ class __libutils CustomUiStyle : public QProxyStyle {
 
 		//! \brief Helper function to get color from application palette considering widget state
 		static QColor getStateColor(QPalette::ColorRole role, const QStyleOption *option);
-
-		static std::tuple<QColor, QColor, QColor>
-					 getStateColors(const QPalette &palette, const QStyleOption *option, const QWidget *widget);
-
-		static std::tuple<QColor, QColor, QColor>
-					 getStateColors(const QStyleOption *option, const QWidget *widget);
 
 	public:
 		CustomUiStyle();
