@@ -23,6 +23,8 @@
 #include <QPushButton>
 #include <QStyleOptionSpinBox>
 #include <QAbstractSpinBox>
+#include <qcontainerfwd.h>
+#include <qdebug.h>
 #include <qpainterpath.h>
 #include <qstyleoption.h>
 #include "enumtype.h"
@@ -86,13 +88,16 @@ void CustomUiStyle::drawCETabBar(ControlElement element, const QStyleOption *opt
 		if(tab_opt)
 		{
 			// Use same color scheme as QTabWidget for consistency
-			QColor base_bg_color = getStateColor(QPalette::Dark, option).lighter(MinFactor),
+			/* QColor base_bg_color = getStateColor(QPalette::Dark, option).lighter(MinFactor),
 			       base_border_color = base_bg_color.lighter(MidFactor), 
-						 bg_color = base_bg_color, border_color = base_border_color;
+						 bg_color = base_bg_color, border_color = base_border_color; */
+
+			auto [ bg_color, border_color, text_color ] = getStateColors(option, widget);
 
 			QRect tab_rect = tab_opt->rect;
 			QTabBar::Shape shape = tab_opt->shape;
-			bool is_selected = (tab_opt->state & State_Selected),
+			
+			/* bool is_selected = (tab_opt->state & State_Selected),
 						is_enabled = (tab_opt->state & State_Enabled),
 						is_hovered = (tab_opt->state & State_MouseOver);
 
@@ -105,7 +110,7 @@ void CustomUiStyle::drawCETabBar(ControlElement element, const QStyleOption *opt
 			{
 				bg_color = base_bg_color.lighter(MaxFactor);
 				border_color = base_border_color.lighter(MaxFactor);
-			}
+			} */
 
 			QPen border_pen(border_color, PenWidth);
 
@@ -114,7 +119,8 @@ void CustomUiStyle::drawCETabBar(ControlElement element, const QStyleOption *opt
 				/* If the tab is not selected we shrink it by moving the top 
 				 * coordinate in 2px and the height in 4px. This will avoid
 				 * overlapping borders between the tab and the tab bar base */
-				if(!is_selected)
+				//if(!is_selected)
+				if(!(tab_opt->state & State_Selected))
 				{
 					tab_rect.moveTop(tab_rect.top() + 2);
 					tab_rect.setHeight(tab_rect.height() - 4);				
@@ -148,9 +154,9 @@ void CustomUiStyle::drawCETabBar(ControlElement element, const QStyleOption *opt
 				painter->drawPath(bg_path);
 
 				// Draw border
-				painter->setBrush(Qt::NoBrush);
-				painter->setPen(is_selected ? bg_color : base_border_color);
-				painter->drawLine(tab_rect.bottomLeft(), tab_rect.bottomRight());
+				//painter->setBrush(Qt::NoBrush);
+				//painter->setPen(is_selected ? bg_color : base_border_color);
+				//painter->drawLine(tab_rect.bottomLeft(), tab_rect.bottomRight());
 				
 				painter->setPen(border_color);
 				painter->drawPath(border_path);
@@ -171,14 +177,16 @@ void CustomUiStyle::drawCETabBar(ControlElement element, const QStyleOption *opt
 			painter->restore();
 
 			// Draw the tab text with proper contrast
-			QStyleOptionTab text_option = *tab_opt;
+			QStyleOptionTab text_opt = *tab_opt;
 
-			text_option.palette.setColor(QPalette::ButtonText,
+			/* text_option.palette.setColor(QPalette::ButtonText,
 			                             is_selected ? 
 																	 getStateColor(QPalette::WindowText, option) :
-																 	 getStateColor(QPalette::WindowText, option).lighter(30));
+																 	 getStateColor(QPalette::WindowText, option).lighter(30)); */
 
-			QProxyStyle::drawControl(CE_TabBarTabLabel, &text_option, painter, widget);
+			text_opt.palette.setColor(QPalette::ButtonText, text_color);
+			QProxyStyle::drawControl(CE_TabBarTabLabel, &text_opt, painter, widget);
+
 			return;
 		}
 	}
@@ -216,11 +224,11 @@ void CustomUiStyle::drawPrimitive(PrimitiveElement element, const QStyleOption *
 		return;
 	}
 
-	if(element == PE_FrameTabBarBase)
+	/* if(element == PE_FrameTabBarBase)
 	{
 		drawPETabBarFrame(element, option, painter, widget);
 		return;
-	}
+	} */
 
 	if(element == PE_FrameGroupBox)
 	{
@@ -262,11 +270,13 @@ void CustomUiStyle::drawPEButtonPanel(PrimitiveElement element, const QStyleOpti
 			widget && widget->styleSheet().contains("background-color");
 
 	QPalette pal = has_custom_color ? widget->palette() : qApp->palette();
-	QColor bg_color = getStateColor(pal, QPalette::Button, option),
-				 border_color;
+	/* QColor bg_color = getStateColor(pal, QPalette::Button, option),
+				 border_color; */
+
+	auto [ bg_color, _1, _2 ] = getStateColors(pal, option, widget);
 
 	// Check if this is a default QPushButton
-	const QPushButton *push_btn = qobject_cast<const QPushButton*>(widget);
+	/* const QPushButton *push_btn = qobject_cast<const QPushButton*>(widget);
 	bool is_enabled = (option->state & State_Enabled),
 		 is_focused = (option->state & State_HasFocus),
 		 is_hovered = (option->state & State_MouseOver),
@@ -304,15 +314,13 @@ void CustomUiStyle::drawPEButtonPanel(PrimitiveElement element, const QStyleOpti
 	else if(is_hovered)
 		bg_color = bg_color.lighter(MaxFactor);
 	else
-		bg_color = getStateColor(pal, QPalette::Button, option);
+		bg_color = getStateColor(pal, QPalette::Button, option); */
 
 	painter->save();
 	painter->setRenderHint(QPainter::Antialiasing, true);
-
 	painter->setBrush(bg_color);
 	painter->setPen(Qt::NoPen);
 	painter->drawRoundedRect(option->rect, ButtonRadius, ButtonRadius);
-
 	painter->restore();
 }
 
@@ -321,21 +329,17 @@ void CustomUiStyle::drawPELineEditPanel(PrimitiveElement element, const QStyleOp
 	if(element != PE_PanelLineEdit ||  !option || !painter || !widget)
 		return;
 
-	QColor bg_color = getStateColor(QPalette::Base, option);
-	bool is_enabled = (option->state & State_Enabled),
+	auto [ bg_color, _1, _2 ] = getStateColors(option, widget);
+
+	/* bool is_enabled = (option->state & State_Enabled),
 			 is_hovered = (option->state & State_MouseOver);
 
 	if(!is_enabled)
-		bg_color = bg_color.darker(MidFactor);
-
-	painter->save();
-	painter->setRenderHint(QPainter::Antialiasing, true);
-
-	painter->setBrush(bg_color);
-	painter->setPen(Qt::NoPen);
+		bg_color = bg_color.darker(MidFactor); */
 
 	// Check if this LineEdit is part of a SpinBox
-	bool is_spinbox_child = widget && qobject_cast<const QAbstractSpinBox*>(widget->parentWidget());
+	bool is_spinbox_child = 
+		widget && qobject_cast<const QAbstractSpinBox*>(widget->parentWidget());
 	
 	// For spinbox children, only round left corners
 	CornerFlag corner_flags = is_spinbox_child ? 
@@ -343,6 +347,10 @@ void CustomUiStyle::drawPELineEditPanel(PrimitiveElement element, const QStyleOp
 	
 	QPainterPath shape = createControlShape(option->rect, InputRadius, corner_flags);
 
+	painter->save();
+	painter->setRenderHint(QPainter::Antialiasing, true);
+	painter->setBrush(bg_color);
+	painter->setPen(Qt::NoPen);
 	painter->drawPath(shape);
 	painter->restore();
 }
@@ -352,14 +360,7 @@ void CustomUiStyle::drawPETabWidgetFrame(PrimitiveElement element, const QStyleO
 	if(element != PE_FrameTabWidget || !option || !painter || !widget)
 		return;
 
-	QColor bg_color = getStateColor(QPalette::Dark, option).lighter(MinFactor),
-	       border_color = bg_color.lighter(MidFactor);
-
-	if(!(option->state & State_Enabled))
-	{
-		bg_color = bg_color.darker(MidFactor);
-		border_color = border_color.darker(MidFactor);
-	}
+	auto [ bg_color, border_color, _1 ] = getStateColors(option, widget);
 
 	// Draw rectangle with rounded corners only at the base
 	QRectF rect = option->rect;
@@ -368,7 +369,7 @@ void CustomUiStyle::drawPETabWidgetFrame(PrimitiveElement element, const QStyleO
 	// Only round bottom corners for tabs (open at top)
 	QPainterPath path = createControlShape(option->rect, radius, 
 		(CustomUiStyle::BottomLeft | CustomUiStyle::BottomRight),
-		0.5, 0.5, -0.5, -0.5, TopEdge);
+		0.5, 0.5, -0.5, -0.5, None);
 
 	painter->save();
 	painter->setRenderHint(QPainter::Antialiasing, true);
@@ -377,10 +378,7 @@ void CustomUiStyle::drawPETabWidgetFrame(PrimitiveElement element, const QStyleO
 	painter->setPen(Qt::NoPen);
 	painter->drawPath(path);
 
-	QPen border_pen(border_color, PenWidth);
-	border_pen.setCosmetic(true);
-
-	painter->setPen(border_pen);
+	painter->setPen(QPen(border_color, PenWidth));
 	painter->setBrush(Qt::NoBrush);
 	painter->drawPath(path);
 
@@ -421,6 +419,7 @@ void CustomUiStyle::drawPEGroupBoxFrame(PrimitiveElement element, const QStyleOp
 
 void CustomUiStyle::drawPETabBarFrame(PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const
 {
+	#warning "This method is currently not used."
 	if(element != PE_FrameTabBarBase || !option || !painter || !widget)
 		return;
 
@@ -438,7 +437,7 @@ void CustomUiStyle::drawPETabBarFrame(PrimitiveElement element, const QStyleOpti
 	// Draw background
 	painter->setBrush(base_bg_color);
 	painter->setPen(Qt::NoPen);
-	painter->drawRect(frame_rect);
+	painter->drawRect(option->rect);
 
 	painter->restore();
 }
@@ -449,71 +448,20 @@ void CustomUiStyle::drawPEGenericElemFrame(PrimitiveElement element, const QStyl
 	if(!option || !painter || !widget)
 		return;
 
-	bool has_custom_color =
-			widget && widget->styleSheet().contains("background-color");
-
-	const QPushButton *push_btn = 
-			qobject_cast<const QPushButton*>(widget);
-
-	QPalette pal = has_custom_color ? 
-								 widget->palette() : qApp->palette();
-	
-	QColor border_color = getStateColor(pal, QPalette::Dark, option).lighter(MaxFactor);
-	
-	bool is_enabled = option->state & State_Enabled,
-			 is_checked = option->state & State_On,
-			 is_hover = option->state & State_MouseOver,
-			 is_focused = option->state & State_HasFocus,
-			 is_pressed = option->state & State_Sunken,
-			 is_default = push_btn && 
-										push_btn->isDefault() && 
-										is_enabled;
-
-	if(!is_enabled)
-		border_color = border_color.darker(MaxFactor);
-	else if(is_default || is_checked)
-		border_color = getStateColor(pal, QPalette::Highlight, option);
-	else if(is_focused)
-		border_color = getStateColor(pal, QPalette::Highlight, option);
-	else if(is_hover)
-		border_color = border_color.lighter(MaxFactor);
-	else if(is_pressed)
-		border_color = border_color.darker(MinFactor); 
-	else if(has_custom_color)
-	{
-		// Use QColor::lightness() to calculate lightness efficiently
-		QColor bg_color = getStateColor(pal, QPalette::Base, option);
-		int lightness = bg_color.lightness();
-
-		/* For light colors (luminance > 128), make border darker
-		 * For dark colors (luminance <= 128), make border lighter */
-		if(lightness > 128)
-			// Dark border for light backgrounds
-			border_color = bg_color.darker(MinFactor); 
-		else
-			// Light border for dark backgrounds
-			border_color = bg_color.lighter(MaxFactor); 
-	}
-
-	painter->save();	
-	painter->setRenderHint(QPainter::Antialiasing, true);
-
-	QRectF rect = option->rect;
-	painter->setPen(QPen(border_color, PenWidth * 1.5));
+	auto [ _1, border_color, _2 ] = getStateColors(option, widget);
 
 	QPainterPath shape;
 	
 	if(border_radius > 0)
-	{
-		shape = createControlShape(option->rect, border_radius, CustomUiStyle::AllCorners,
-		                        0.5, 0.5, -0.5, -0.5);
-	}
+		shape = createControlShape(option->rect, border_radius, 
+															 CustomUiStyle::AllCorners, 0.5, 0.5, -0.5, -0.5);
 	else
-	{
-		shape = createControlShape(option->rect, 0, CustomUiStyle::NoCorners,
-		                        1, 1, -1, -1);
-	}	
-	
+		shape = createControlShape(option->rect, 0, 
+															CustomUiStyle::NoCorners, 1, 1, -1, -1);
+	painter->save();	
+	painter->setRenderHint(QPainter::Antialiasing, true);
+	painter->setPen(QPen(border_color, PenWidth * 1.5));
+	painter->setBrush(Qt::NoBrush);
 	painter->drawPath(shape);
 	painter->restore();
 }
@@ -693,6 +641,158 @@ QColor CustomUiStyle::getStateColor(const QPalette &pal, QPalette::ColorRole rol
 QColor CustomUiStyle::getStateColor(QPalette::ColorRole role, const QStyleOption *option)
 {
 	return getStateColor(qApp->palette(), role, option);
+}
+
+std::tuple<QColor, QColor, QColor> CustomUiStyle::getStateColors(const QPalette &palette, const QStyleOption *option, const QWidget *widget)
+{
+	bool is_button = false, is_tab = false,
+			 is_enabled = (option->state & State_Enabled),
+			 is_focused = (option->state & State_HasFocus),
+			 is_pressed = (option->state & State_Sunken),
+			 is_hovered = (option->state & State_MouseOver),
+			 is_checked = (option->state & State_On),
+			 is_selected = (option->state & State_Selected),
+			 is_default = widget && is_enabled &&
+			 							qobject_cast<const QPushButton *>(widget) && 
+										qobject_cast<const QPushButton *>(widget)->isDefault(),
+
+	has_custom_color = is_button && 
+										 widget->styleSheet().contains("background-color");
+
+	QStringList btn_classes { "QPushButton", "QToolButton" },
+						 	input_classes { "QLineEdit", "QTextEdit", "QPlainTextEdit", "QTextBrowser" },
+						 	check_classes { "QCheckBox", "QRadioButton" },
+							combo_classes { "QComboBox" },
+							tab_classes { "QTabBar", "QTabWidget" },
+							frame_classes { "QFrame", "QGroupBox" };
+
+	QPalette pal = has_custom_color ? widget->palette() : palette;
+	QColor bg_color, border_color, text_color;
+	QPalette::ColorRole bg_role = QPalette::Window, 
+											border_role = QPalette::Window, 
+											text_role = QPalette::WindowText;
+
+	if(btn_classes.contains(widget->metaObject()->className()))
+	{
+		is_button = true;
+		bg_role = QPalette::Button;
+		border_role = QPalette::Button;
+		text_role = QPalette::ButtonText;
+	}
+	else if(input_classes.contains(widget->metaObject()->className()))
+	{
+		bg_role = QPalette::Base;
+		border_role = QPalette::Dark;
+		text_role = QPalette::Text;
+	}
+	else if(combo_classes.contains(widget->metaObject()->className()))
+	{
+		bg_role = QPalette::Button;
+		border_role = QPalette::Button;
+		text_role = QPalette::Text;
+	}
+	else if(tab_classes.contains(widget->metaObject()->className()))
+	{
+		is_tab = true;
+		bg_role = QPalette::Dark;
+		border_role = QPalette::Dark;
+		text_role = QPalette::WindowText;
+	}
+	/* else if(check_classes.contains(widget->metaObject()->className()))
+	{
+		bg_role = QPalette::Window;
+		border_role = QPalette::Dark;
+		text_role = QPalette::WindowText;
+	}
+	else if(frame_classes.contains(widget->metaObject()->className()))
+	{
+		bg_role = QPalette::Dark;
+		border_role = QPalette::Light;
+		text_role = QPalette::WindowText;
+	}
+	else
+	{
+		bg_role = QPalette::Window;
+		border_role = QPalette::Dark;
+		text_role = QPalette::WindowText;		
+	} */
+	
+	bg_color = getStateColor(pal, bg_role, option);
+	border_color = getStateColor(pal, border_role, option).lighter(MaxFactor);
+	text_color = getStateColor(pal, text_role, option);
+
+	if(!is_enabled)
+	{
+		bg_color = bg_color.darker(MidFactor);
+		border_color = border_color.darker(MidFactor);
+		text_color = text_color.darker(MidFactor);
+	}
+	else if(is_default && is_button)
+	{
+		qDebug() << "getStateColors(): is_default";
+		bg_color = getStateColor(pal, QPalette::Highlight, option);		
+		border_color = bg_color.lighter(MaxFactor);
+
+		if(is_pressed)
+			bg_color = bg_color.darker(MinFactor);
+		else if(!is_pressed && is_hovered)
+			bg_color = bg_color.lighter(MidFactor);
+	}
+	else if(is_focused && 
+					(!is_tab || !is_button || (is_button && !is_pressed)))
+	{
+		qDebug() << "getStateColors(): is_focused";
+		border_color = getStateColor(pal, QPalette::Highlight, option);
+	}
+	else if(is_hovered && !is_tab)
+	{
+		qDebug() << "getStateColors(): is_hovered";
+		bg_color = bg_color.lighter(MaxFactor);
+		border_color = border_color.lighter(MaxFactor);
+	}
+	else if(is_pressed && !is_tab)
+	{
+		qDebug() << "getStateColors(): is_pressed";
+		bg_color = bg_color.darker(!is_checked ? MaxFactor : MinFactor);		
+		border_color = border_color.darker(!is_checked ? MaxFactor : MinFactor);
+	}
+	else if(is_checked && !is_tab)
+	{
+		qDebug() << "getStateColors(): is_checked";
+		bg_color = bg_color.darker(MinFactor);
+		border_color = border_color.darker(MinFactor);
+	}
+	else if(!is_selected && is_tab)
+	{
+		qDebug() << "getStateColors(): is_tab && !is_selected";
+		bg_color = bg_color.darker(MidFactor);
+		border_color = border_color.darker(MidFactor);
+		//text_color = text_color.lighter(MidFactor);
+	}
+	else if(has_custom_color)
+	{
+		qDebug() << "getStateColors(): has_custom_color";
+		bg_color = getStateColor(widget->palette(), bg_role, option);
+
+		// Use QColor::lightness() to calculate lightness efficiently
+		int lightness = bg_color.lightness();
+
+		// For light colors (luminance > 128), make border darker
+		// For dark colors (luminance <= 128), make border lighter
+		if(lightness > 128)
+			// Dark border for light backgrounds
+			border_color = bg_color.darker(MinFactor); 
+		else
+			// Light border for dark backgrounds
+			border_color = bg_color.lighter(MaxFactor); 
+	}
+
+	return std::make_tuple(bg_color, border_color, text_color);
+}
+
+std::tuple<QColor, QColor, QColor> CustomUiStyle::getStateColors(const QStyleOption *option, const QWidget *widget)
+{	
+	return getStateColors(qApp->palette(), option, widget);
 }
 
 void CustomUiStyle::drawCCSpinBox(ComplexControl control, const QStyleOptionComplex *option, QPainter *painter, const QWidget *widget) const

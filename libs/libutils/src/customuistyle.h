@@ -126,8 +126,14 @@ class __libutils CustomUiStyle : public QProxyStyle {
 		//! \brief Helper function to get color from palette considering widget state
 		static QColor getStateColor(const QPalette& pal, QPalette::ColorRole role, const QStyleOption* option);
 
-		//! \brief Helper function to get color from applicationpalette considering widget state
+		//! \brief Helper function to get color from application palette considering widget state
 		static QColor getStateColor(QPalette::ColorRole role, const QStyleOption *option);
+
+		static std::tuple<QColor, QColor, QColor>
+					 getStateColors(const QPalette &palette, const QStyleOption *option, const QWidget *widget);
+
+		static std::tuple<QColor, QColor, QColor>
+					 getStateColors(const QStyleOption *option, const QWidget *widget);
 
 	public:
 		CustomUiStyle();
