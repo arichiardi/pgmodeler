@@ -88,7 +88,7 @@ class __libutils CustomUiStyle : public QProxyStyle {
 		static QMap<PixelMetric, int> pixel_metrics;
     
 		static constexpr qreal BlendFactor = 0.7,
-													 PenWidth = 1;
+													 PenWidth = 1.25;
 		
 		static constexpr int NoRadius = 0,
 												 ButtonRadius = 4,
