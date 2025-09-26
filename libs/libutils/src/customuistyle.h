@@ -138,10 +138,16 @@ class __libutils CustomUiStyle : public QProxyStyle {
 		void drawCCSpinBox(ComplexControl control, const QStyleOptionComplex *option,
 											 QPainter *painter, const QWidget *widget) const;
 
+		void drawCCComboBox(ComplexControl control, const QStyleOptionComplex *option,
+												QPainter *painter, const QWidget *widget) const;
+
 		// Draws SpinBox sub-components with specialized styling
 		void drawSpinBoxEditField(const QStyleOption *option, QPainter *painter, const QWidget *widget) const;
 		void drawSpinBoxButton(const QStyleOptionSpinBox *option, QPainter *painter, const QWidget *widget, QStyle::SubControl btn_sc_id) const;
 		void drawSpinBoxArrow(const QStyleOptionSpinBox *option, QPainter *painter, QStyle::SubControl btn_sc_id) const;
+
+		// Draws ComboBox down arrow with same precision as SpinBox arrows
+		void drawComboBoxArrow(const QStyleOption *option, QPainter *painter) const;
 
 		// Draws primitive elements (PE) of checkboxes and radio buttons
 		void drawPECheckBoxRadioBtn(PrimitiveElement element, const QStyleOption *option,
