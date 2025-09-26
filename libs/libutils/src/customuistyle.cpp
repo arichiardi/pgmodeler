@@ -586,6 +586,7 @@ void CustomUiStyle::drawCCGroupBox(ComplexControl control, const QStyleOptionCom
 	{
 		// Create bold font with 80% size
 		QFont title_font = painter->font();
+
 		title_font.setBold(true);
 		title_font.setPointSizeF(title_font.pointSizeF() * 0.80);
 		painter->setFont(title_font);
@@ -594,8 +595,8 @@ void CustomUiStyle::drawCCGroupBox(ComplexControl control, const QStyleOptionCom
 		painter->setPen(getStateColor(QPalette::WindowText, group_box_opt));
 		
 		// Draw the text in the title area with 3px padding (centered vertically)
-		QRect text_draw_rect = title_rect.adjusted(0, 3, 0, -3); // Apply 3px padding top/bottom
-		painter->drawText(text_draw_rect, 
+		title_rect.adjust(0, 3, 0, -3); // Apply 3px padding top/bottom
+		painter->drawText(title_rect, 
 											group_box_opt->textAlignment | Qt::AlignVCenter, 
 											group_box_opt->text);
 	}
@@ -762,20 +763,20 @@ void CustomUiStyle::drawSpinBoxButton(const QStyleOptionSpinBox *option, QPainte
 		border_color = border_color.lighter(MaxFactor);
 	}
 
-	QPainterPath button_path;
+	QPainterPath btn_path;
 	int radius = ButtonRadius - 2;
 
 	if(btn_sc_id == SC_SpinBoxUp)
 	{
 		// Up button: only top-right corner rounded, extend slightly upward
-		rect = rect.adjusted(0, -2, 0, 1);
-		button_path = createControlShape(rect, radius, CustomUiStyle::TopRight);
+		rect.adjust(0, -2, 0, 1);
+		btn_path = createControlShape(rect, radius, CustomUiStyle::TopRight);
 	}
 	else
 	{
 		// Down button: only bottom-right corner rounded, extend slightly downward
-		rect = rect.adjusted(0, 0, 0, 2);
-		button_path = createControlShape(rect, radius, CustomUiStyle::BottomRight);
+		rect.adjust(0, 0, 0, 2);
+		btn_path = createControlShape(rect, radius, CustomUiStyle::BottomRight);
 	}
 
 	painter->save();
@@ -784,12 +785,12 @@ void CustomUiStyle::drawSpinBoxButton(const QStyleOptionSpinBox *option, QPainte
 	// Draw background
 	painter->setBrush(bg_color);
 	painter->setPen(Qt::NoPen);
-	painter->drawPath(button_path);
+	painter->drawPath(btn_path);
 
 	// Draw border normally (all edges)
 	painter->setPen(QPen(border_color, PenWidth));
 	painter->setBrush(Qt::NoBrush);
-	painter->drawPath(button_path);
+	painter->drawPath(btn_path);
 
 	// Draw arrow symbol
 	btn_opt.rect = rect;
@@ -806,14 +807,14 @@ void CustomUiStyle::drawControlArrow(const QStyleOption *option, QPainter *paint
 		return;
 
 	// Use text color that adapts to the button state and theme
-	QColor arrow_color = getStateColor(QPalette::ButtonText, option);
+	QColor arr_color = getStateColor(QPalette::ButtonText, option);
 	WidgetState wgt_st(option, nullptr);
 	
 	// Adjust arrow color based on button state for better visibility
 	if(!wgt_st.is_enabled)
-		arrow_color = arrow_color.lighter(MidFactor); // Lighter for disabled state
+		arr_color = arr_color.lighter(MidFactor); // Lighter for disabled state
 	else if(wgt_st.is_pressed)
-		arrow_color = arrow_color.darker(MinFactor); // Slightly darker when pressed
+		arr_color = arr_color.darker(MinFactor); // Slightly darker when pressed
 
 	// Calculate arrow geometry - fixed size calculation to ensure consistency
 	QRect btn_rect = option->rect;
@@ -850,7 +851,7 @@ void CustomUiStyle::drawControlArrow(const QStyleOption *option, QPainter *paint
 	painter->setRenderHint(QPainter::Antialiasing, true);
 
 	// Draw the arrow
-	painter->setBrush(arrow_color);
+	painter->setBrush(arr_color);
 	painter->setPen(Qt::NoPen);
 	painter->drawPolygon(arrow);
 
