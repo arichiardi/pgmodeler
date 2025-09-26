@@ -42,11 +42,11 @@ class __libutils CustomUiStyle : public QProxyStyle {
 	private:
 		// Enum to control which side of the path should be open (only one side at a time)
 		enum RectEdge {
-			None = 0,    // Closed path (default)
-			LeftEdge,        // Open on the left edge
-			TopEdge,         // Open on the top edge
-			RightEdge,       // Open on the right edge
-			BottomEdge       // Open on the bottom edge
+			None = 0,   // Closed path (default)
+			LeftEdge,   // Open on the left edge
+			TopEdge,    // Open on the top edge
+			RightEdge,  // Open on the right edge
+			BottomEdge  // Open on the bottom edge
 		};
 
 				// Enum to control which corners should have rounded edges using bitwise operations
@@ -86,10 +86,12 @@ class __libutils CustomUiStyle : public QProxyStyle {
 		};									 
 
 		static QMap<PixelMetric, int> pixel_metrics;
-    
+
 		static constexpr qreal BlendFactor = 0.7,
-													 PenWidth = 1.25;
-		
+							   					 PenWidth = 1.2,
+							   					 ArrowWidth = 10, // Complex control up arrow width
+							   					 ArrowHeight = 6; // Complex control up arrow height
+
 		static constexpr int NoRadius = 0,
 												 ButtonRadius = 4,
 												 InputRadius = 5,
@@ -144,10 +146,8 @@ class __libutils CustomUiStyle : public QProxyStyle {
 		// Draws SpinBox sub-components with specialized styling
 		void drawSpinBoxEditField(const QStyleOption *option, QPainter *painter, const QWidget *widget) const;
 		void drawSpinBoxButton(const QStyleOptionSpinBox *option, QPainter *painter, const QWidget *widget, QStyle::SubControl btn_sc_id) const;
-		void drawSpinBoxArrow(const QStyleOptionSpinBox *option, QPainter *painter, QStyle::SubControl btn_sc_id) const;
 
-		// Draws ComboBox down arrow with same precision as SpinBox arrows
-		void drawComboBoxArrow(const QStyleOption *option, QPainter *painter) const;
+		void drawControlArrow(const QStyleOption *option, QPainter *painter, QStyle::SubControl btn_sc_id) const;
 
 		// Draws primitive elements (PE) of checkboxes and radio buttons
 		void drawPECheckBoxRadioBtn(PrimitiveElement element, const QStyleOption *option,

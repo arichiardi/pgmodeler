@@ -789,14 +789,16 @@ void CustomUiStyle::drawSpinBoxButton(const QStyleOptionSpinBox *option, QPainte
 
 	// Draw arrow symbol
 	btn_opt.rect = rect;
-	drawSpinBoxArrow(&btn_opt, painter, btn_sc_id);
+	drawControlArrow(&btn_opt, painter, btn_sc_id);
 	painter->restore();
 }
 
-void CustomUiStyle::drawSpinBoxArrow(const QStyleOptionSpinBox *option, QPainter *painter, QStyle::SubControl btn_sc_id) const
+void CustomUiStyle::drawControlArrow(const QStyleOption *option, QPainter *painter, QStyle::SubControl btn_sc_id) const
 {
 	if(!option || !painter || 
-		 (btn_sc_id != SC_SpinBoxUp && btn_sc_id != SC_SpinBoxDown))
+		(btn_sc_id != SC_SpinBoxUp &&
+		 btn_sc_id != SC_SpinBoxDown &&
+		 btn_sc_id != SC_ComboBoxArrow))
 		return;
 
 	// Use text color that adapts to the button state and theme
@@ -816,13 +818,9 @@ void CustomUiStyle::drawSpinBoxArrow(const QStyleOptionSpinBox *option, QPainter
 	QPointF center = QPointF(btn_rect.x() + btn_rect.width() / 2.0,
 	                         btn_rect.y() + btn_rect.height() / 2.0);
 	
-	// Use larger factor and minimum dimensions for better visibility
-	qreal arrow_w = 10; // qRound(btn_rect.width() * 0.7);
-	qreal arrow_h = 5;	// qRound(btn_rect.height() * 0.6);
-
 	// Round to pixel boundaries for crisp rendering
-	qreal half_w = qRound(arrow_w * 0.5);
-	qreal half_h = qRound(arrow_h * 0.5);
+	qreal half_w = qRound(ArrowWidth * 0.5);
+	qreal half_h = qRound(ArrowHeight * 0.5);
 
 	QPolygonF arrow;
 	
@@ -857,11 +855,10 @@ void CustomUiStyle::drawSpinBoxArrow(const QStyleOptionSpinBox *option, QPainter
 
 void CustomUiStyle::drawCCComboBox(ComplexControl control, const QStyleOptionComplex *option, QPainter *painter, const QWidget *widget) const
 {
-	if(control != CC_ComboBox || !option || !painter || !widget)
-		return;
-
-	const QStyleOptionComboBox *combo_opt = qstyleoption_cast<const QStyleOptionComboBox*>(option);
-	if(!combo_opt)
+	const QStyleOptionComboBox *combo_opt =
+					qstyleoption_cast<const QStyleOptionComboBox *>(option);
+	
+	if(control != CC_ComboBox || !combo_opt || !painter || !widget)
 		return;
 
 	// Draw the main combo box using default implementation, but customize the arrow
@@ -871,58 +868,15 @@ void CustomUiStyle::drawCCComboBox(ComplexControl control, const QStyleOptionCom
 	if(combo_opt->subControls & SC_ComboBoxArrow)
 	{
 		QRect arrow_rect = subControlRect(CC_ComboBox, combo_opt, SC_ComboBoxArrow, widget);
+
 		if(!arrow_rect.isEmpty())
 		{
 			QStyleOption arrow_option = *option;
 			arrow_option.rect = arrow_rect;
-			drawComboBoxArrow(&arrow_option, painter);
+
+			drawControlArrow(&arrow_option, painter, SC_ComboBoxArrow);
 		}
 	}
-}
-
-void CustomUiStyle::drawComboBoxArrow(const QStyleOption *option, QPainter *painter) const
-{
-	if(!option || !painter)
-		return;
-
-	// Use same precise arrow calculation as SpinBox
-	QColor arrow_color = getStateColor(QPalette::ButtonText, option);
-	WidgetState wgt_st(option, nullptr);
-	
-	// Adjust arrow color based on button state for better visibility
-	if(!wgt_st.is_enabled)
-		arrow_color = arrow_color.lighter(MidFactor);
-	else if(wgt_st.is_pressed)
-		arrow_color = arrow_color.darker(MinFactor);
-
-	// Calculate precise center to avoid rounding issues (same as SpinBox)
-	QRect button_rect = option->rect;
-	QPointF center = QPointF(button_rect.x() + button_rect.width() / 2.0,
-	                         button_rect.y() + button_rect.height() / 2.0);
-	
-	// Use similar dimensions to SpinBox for consistency
-	qreal arrow_w = 10; // qRound(button_rect.width() * 0.4);
-	qreal arrow_h = 6; // qRound(button_rect.height() * 0.3);
-
-	// Round to pixel boundaries for crisp rendering
-	qreal half_w = qRound(arrow_w * 0.5);
-	qreal half_h = qRound(arrow_h * 0.5);
-
-	// ComboBox only needs down arrow
-	QPolygonF arrow;
-	arrow << QPointF(center.x(), center.y() + half_h)          // Bottom point
-	      << QPointF(center.x() - half_w, center.y() - half_h)    // Top left
-	      << QPointF(center.x() + half_w, center.y() - half_h);   // Top right
-
-	painter->save();
-	painter->setRenderHint(QPainter::Antialiasing, true);
-
-	// Draw the arrow
-	painter->setBrush(arrow_color);
-	painter->setPen(Qt::NoPen);
-	painter->drawPolygon(arrow);
-
-	painter->restore();
 }
 
 void CustomUiStyle::drawPECheckBoxRadioBtn(PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const
