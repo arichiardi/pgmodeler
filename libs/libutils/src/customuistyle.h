@@ -104,15 +104,49 @@ class __libutils CustomUiStyle : public QProxyStyle {
 							 					 MidFactor = 135,
 							 					 MaxFactor = 150;
 
+		// Helper method to add edge with optional rounded corner to QPainterPath
+		void addEdgeWithCorner(QPainterPath &path, const QRectF &rect, RectEdge side, int radius) const;
+
 		// Generic method to create QPainterPath with configurable corner radius and open sides
 		QPainterPath createControlShape(const QRect &rect, int radius, CornerFlag corners = AllCorners,
 																		qreal dx = 0, qreal dy = 0, qreal dw = 0, qreal dh = 0,
 																		RectEdge open_edge = None) const;
 
+		// Draws complex control (CC) of combo boxes
+		void drawCCComboBox(ComplexControl control, const QStyleOptionComplex *option,
+												QPainter *painter, const QWidget *widget) const;
+
+		// Draws complex control (CC) of group boxes
+		void drawCCGroupBox(ComplexControl control, const QStyleOptionComplex *option,
+												QPainter *painter, const QWidget *widget) const;
+
+		// Draws complex control (CC) of spin boxes
+		void drawCCSpinBox(ComplexControl control, const QStyleOptionComplex *option,
+											 QPainter *painter, const QWidget *widget) const;
+
+		// Draws control elements (CE) of tab bars
+		void drawCETabBar(ControlElement element, const QStyleOption *option,	
+											QPainter *painter, const QWidget *widget) const;
+
+		void drawControlArrow(const QStyleOption *option, QPainter *painter, QStyle::SubControl btn_sc_id) const;
+
+		// Draws editable ComboBox with custom background and border
+		void drawEditableComboBox(const QStyleOptionComboBox *option, QPainter *painter, const QWidget *widget) const;
+
 		// Draws primitive elements (PE) of buttons
 		void drawPEButtonPanel(PrimitiveElement element, const QStyleOption *option,
 													 QPainter *painter, const QWidget *widget) const;
-		
+
+		// Draws primitive elements (PE) of checkboxes and radio buttons
+		void drawPECheckBoxRadioBtn(PrimitiveElement element, const QStyleOption *option,
+																 QPainter *painter, const QWidget *widget) const;
+
+		void drawPEGenericElemFrame(PrimitiveElement element, const QStyleOption *option,	
+																 QPainter *painter, const QWidget *widget, int border_radius) const;
+
+		void drawPEGroupBoxFrame(PrimitiveElement element, const QStyleOption *option,	
+														 QPainter *painter, const QWidget *widget) const;
+
 		// Draws primitive elements (PE) of line edits
 		void drawPELineEditPanel(PrimitiveElement element, const QStyleOption *option,
 														 QPainter *painter, const QWidget *widget) const;
@@ -121,44 +155,10 @@ class __libutils CustomUiStyle : public QProxyStyle {
 		void drawPETabWidgetFrame(PrimitiveElement element, const QStyleOption *option,
 															QPainter *painter, const QWidget *widget) const;
 
-		void drawPETabBarFrame(PrimitiveElement element, const QStyleOption *option,
-													 QPainter *painter, const QWidget *widget) const;
-		
-		void drawPEGroupBoxFrame(PrimitiveElement element, const QStyleOption *option,	
-														 QPainter *painter, const QWidget *widget) const;
-		
-		 void drawPEGenericElemFrame(PrimitiveElement element, const QStyleOption *option,	
-																 QPainter *painter, const QWidget *widget, int border_radius) const;
-
-		// Draws control elements (CE) of tab bars
-		void drawCETabBar(ControlElement element, const QStyleOption *option,	
-											QPainter *painter, const QWidget *widget) const;
-		
-		// Draws complex control (CC) of group boxes and spin boxes
-		void drawCCGroupBox(ComplexControl control, const QStyleOptionComplex *option,
-												QPainter *painter, const QWidget *widget) const;
-
-		void drawCCSpinBox(ComplexControl control, const QStyleOptionComplex *option,
-											 QPainter *painter, const QWidget *widget) const;
-
-		void drawCCComboBox(ComplexControl control, const QStyleOptionComplex *option,
-												QPainter *painter, const QWidget *widget) const;
-
-		// Draws editable ComboBox with custom background and border
-		void drawEditableComboBox(const QStyleOptionComboBox *option, QPainter *painter, const QWidget *widget) const;
-
-		void drawControlArrow(const QStyleOption *option, QPainter *painter, QStyle::SubControl btn_sc_id) const;
+		void drawSpinBoxButton(const QStyleOptionSpinBox *option, QPainter *painter, const QWidget *widget, QStyle::SubControl btn_sc_id) const;
 
 		// Draws SpinBox sub-components with specialized styling
 		void drawSpinBoxEditField(const QStyleOption *option, QPainter *painter, const QWidget *widget) const;
-		void drawSpinBoxButton(const QStyleOptionSpinBox *option, QPainter *painter, const QWidget *widget, QStyle::SubControl btn_sc_id) const;
-
-		// Draws primitive elements (PE) of checkboxes and radio buttons
-		void drawPECheckBoxRadioBtn(PrimitiveElement element, const QStyleOption *option,
-																 QPainter *painter, const QWidget *widget) const;
-
-		// Helper method to add edge with optional rounded corner to QPainterPath
-		void addEdgeWithCorner(QPainterPath &path, const QRectF &rect, RectEdge side, int radius) const;
 
 		//! \brief Helper function to get color from palette considering widget state
 		static QColor getStateColor(const QPalette& pal, QPalette::ColorRole role, const QStyleOption* option);
@@ -173,29 +173,29 @@ class __libutils CustomUiStyle : public QProxyStyle {
 
 		virtual ~CustomUiStyle() = default;
 
-		/*! \brief Defines a custom pixel metric attribute value globally.
-		 * Which means, all instances of this class will share the same pixel metrics values */
-		static void setPixelMetricValue(PixelMetric metric, int value);
+		QPixmap createGrayMaskedPixmap(const QPixmap &original) const;
+
+		void drawComplexControl(ComplexControl control, const QStyleOptionComplex *option, QPainter *painter, const QWidget *widget) const override;
+
+		void drawControl(ControlElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const override;
+
+		void drawItemPixmap(QPainter *painter, const QRect &rect, int alignment, const QPixmap &pixmap) const override;
+
+		void drawPrimitive(PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const override;
+
+		QPixmap generatedIconPixmap(QIcon::Mode iconMode, const QPixmap &pixmap, const QStyleOption *option) const override;
 
 		int pixelMetric(PixelMetric metric, const QStyleOption * option = 0, const QWidget * widget = 0) const override;
 
-		QPixmap createGrayMaskedPixmap(const QPixmap &original) const;
-
-	 	void drawItemPixmap(QPainter *painter, const QRect &rect, int alignment, const QPixmap &pixmap) const override;
-
-    void drawControl(ControlElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const override;
-
-    void drawPrimitive(PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const override;
-
-    void drawComplexControl(ComplexControl control, const QStyleOptionComplex *option, QPainter *painter, const QWidget *widget) const override;
-
-		QPixmap generatedIconPixmap(QIcon::Mode iconMode, const QPixmap &pixmap, const QStyleOption *option) const override;
+		//! \brief Checks if the current application palette is dark (dark theme)
+		static bool isDarkPalette();
 
 		//! \brief Checks if the current palette is dark (dark theme)
 		static bool isDarkPalette(const QPalette& pal);
 
-		//! \brief Checks if the current application palette is dark (dark theme)
-		static bool isDarkPalette();
+		/*! \brief Defines a custom pixel metric attribute value globally.
+		 * Which means, all instances of this class will share the same pixel metrics values */
+		static void setPixelMetricValue(PixelMetric metric, int value);
 };
 
 #endif

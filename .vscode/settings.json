@@ -99,7 +99,8 @@
         "cinttypes": "cpp",
         "typeinfo": "cpp",
         "variant": "cpp",
-        "filesystem": "cpp"
+        "filesystem": "cpp",
+        "qtoolbar": "cpp"
     },
 
     // Hiding build artifacts and moc generated files from the explorer
