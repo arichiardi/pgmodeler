@@ -952,7 +952,9 @@ void CustomUiStyle::drawPECheckBoxRadioBtn(PrimitiveElement element, const QStyl
 	QColor bg_color = getStateColor(QPalette::Base, option);
 	QColor ind_color = getStateColor(QPalette::Highlight, option).lighter(MidFactor);
 
-	if(wgt_st.is_pressed)
+	if(!wgt_st.is_enabled)
+		ind_color = getStateColor(QPalette::Mid, option);
+	else if(wgt_st.is_pressed)
 	{
 		ind_color = getStateColor(QPalette::Midlight, option);
 		bg_color = bg_color.lighter(MidFactor);
@@ -963,21 +965,25 @@ void CustomUiStyle::drawPECheckBoxRadioBtn(PrimitiveElement element, const QStyl
 	painter->setBrush(bg_color);
 	painter->setPen(QPen(border_color, PenWidth));
 
+	obj_rect.adjust(0.5, 0.5, -0.5, -0.5);	
+	obj_rect.translate(0, 1); // Ensure using float coordinates
+
 	if(element == PE_IndicatorCheckBox)
-		painter->drawRoundedRect(obj_rect.adjusted(0.5, 0.5, -0.5, -0.5), 2, 2);
+		painter->drawRoundedRect(obj_rect, 2, 2);
 	else // PE_IndicatorRadioButton
-		painter->drawEllipse(obj_rect.adjusted(0.5, 0.5, -0.5, -0.5));
+		painter->drawEllipse(obj_rect);
 
 	if(wgt_st.is_checked)
 	{
 		// Draw the indicator rectangle
 		painter->setBrush(ind_color);
 		painter->setPen(Qt::NoPen);
+		obj_rect.adjust(2, 2, -2, -2);	
 
 		if(element == PE_IndicatorCheckBox)
-			painter->drawRoundedRect(obj_rect.adjusted(3, 3, -3, -3), 1, 1);
+			painter->drawRoundedRect(obj_rect, 1, 1);
 		else
-			painter->drawEllipse(obj_rect.adjusted(3, 3, -3, -3));
+			painter->drawEllipse(obj_rect);
 	}
 
 	painter->restore();
