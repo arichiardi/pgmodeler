@@ -61,7 +61,7 @@ class __libutils CustomUiStyle : public QProxyStyle {
 		};
 
 		// Enum to specify arrow direction for drawing control arrows
-		enum ArrowDirection {
+		enum ArrowType {
 			ArrowUp,
 			ArrowDown,
 			ArrowLeft,
@@ -86,11 +86,11 @@ class __libutils CustomUiStyle : public QProxyStyle {
 					is_pressed(option->state & State_Sunken),
 					is_focused(option->state & State_HasFocus),
 					is_default(is_enabled && widget &&
-											qobject_cast<const QPushButton *>(widget) &&
-											qobject_cast<const QPushButton *>(widget)->isDefault()),
+										 qobject_cast<const QPushButton *>(widget) &&
+										 qobject_cast<const QPushButton *>(widget)->isDefault()),
 
 					has_custom_color(widget &&
-													widget->styleSheet().contains("background-color"))
+													 widget->styleSheet().contains("background-color"))
 					{};
 		};									 
 
@@ -138,7 +138,11 @@ class __libutils CustomUiStyle : public QProxyStyle {
 		void drawCETabBar(ControlElement element, const QStyleOption *option,	
 											QPainter *painter, const QWidget *widget) const;
 
-		void drawControlArrow(const QStyleOption *option, QPainter *painter, const QWidget *widget, ArrowDirection direction) const;
+		void drawControlArrow(const QStyleOption *option, QPainter *painter, const QWidget *widget, ArrowType direction) const;
+
+		// Draws a scrollbar button (AddLine or SubLine) intelligently handling both types
+		void drawScrollBarButton(const QStyleOptionSlider *option, QPainter *painter, const QWidget *widget, 
+														 QStyle::SubControl button_type, const QColor &bg_color, const QColor &border_color) const;
 
 		// Draws editable ComboBox with custom background and border
 		void drawEditableComboBox(const QStyleOptionComboBox *option, QPainter *painter, const QWidget *widget) const;
@@ -166,7 +170,7 @@ class __libutils CustomUiStyle : public QProxyStyle {
 															QPainter *painter, const QWidget *widget) const;
 
 		// Draws complex control (CC) scroll bars
-		void drawCCScrollBar(const QStyleOptionSlider *option, QPainter *painter, const QWidget *widget) const;
+		void drawCCScrollBar(const QStyleOption *option, QPainter *painter, const QWidget *widget) const;
 
 		// Draws control elements (CE) of scroll bars
 		void drawCEScrollBar(ControlElement element, const QStyleOption *option,

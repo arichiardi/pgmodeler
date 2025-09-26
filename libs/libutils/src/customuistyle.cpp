@@ -488,12 +488,8 @@ void CustomUiStyle::drawComplexControl(ComplexControl control, const QStyleOptio
 
 	if(control == CC_ScrollBar)
 	{
-		const QStyleOptionSlider *slider_opt = qstyleoption_cast<const QStyleOptionSlider*>(option);
-		if(slider_opt)
-		{
-			drawCCScrollBar(slider_opt, painter, widget);
-			return;
-		}
+		drawCCScrollBar(option, painter, widget);
+		return;
 	}
 
 	QProxyStyle::drawComplexControl(control, option, painter, widget);
@@ -506,22 +502,6 @@ void CustomUiStyle::drawControl(ControlElement element, const QStyleOption *opti
 		drawCETabBar(element, option, painter, widget);
 		return;
 	}
-
-	// NOTE: Scroll bar elements are now handled entirely by drawCCScrollBar (CC_ScrollBar)
-	// to avoid conflicts and ensure proper state management
-	/*
-	if(element == CE_ScrollBarAddLine ||
-		 element == CE_ScrollBarSubLine ||
-		 element == CE_ScrollBarAddPage ||
-		 element == CE_ScrollBarSubPage ||
-		 element == CE_ScrollBarSlider ||
-		 element == CE_ScrollBarFirst ||
-		 element == CE_ScrollBarLast)
-	{
-		drawCEScrollBar(element, option, painter, widget);
-		return;
-	}
-	*/
 
 	QProxyStyle::drawControl(element, option, painter, widget);
 }
@@ -635,7 +615,7 @@ QPolygonF CustomUiStyle::rotatePolygon(const QPolygonF &polygon, qreal degrees)
 	return transform.map(polygon);
 }
 
-void CustomUiStyle::drawControlArrow(const QStyleOption *option, QPainter *painter, const QWidget *widget, ArrowDirection direction) const
+void CustomUiStyle::drawControlArrow(const QStyleOption *option, QPainter *painter, const QWidget *widget, ArrowType direction) const
 {
 	if(!option || !painter)
 		return;
@@ -702,6 +682,85 @@ void CustomUiStyle::drawControlArrow(const QStyleOption *option, QPainter *paint
 	painter->drawPolygon(arrow);
 
 	painter->restore();
+}
+
+void CustomUiStyle::drawScrollBarButton(const QStyleOptionSlider *option, QPainter *painter, const QWidget *widget, 
+																				 QStyle::SubControl button_type, const QColor &bg_color, const QColor &border_color) const
+{
+	// Get the appropriate rectangle for this button type
+	QRectF btn_rect = subControlRect(CC_ScrollBar, option, button_type, widget);
+
+	if(!option || !painter || !widget || btn_rect.isEmpty() ||
+		 (button_type != SC_ScrollBarAddLine && button_type != SC_ScrollBarSubLine))
+		return;
+
+	WidgetState wgt_st(option, widget);
+	
+	// Start with base colors and apply state-based modifications
+	QColor btn_bg = bg_color,
+			   btn_border = border_color;
+	
+	// Apply state-based colors if this specific button is active
+	if(option->activeSubControls & button_type)
+	{
+		if(wgt_st.is_pressed)
+		{
+			btn_bg = getStateColor(QPalette::Dark, option);
+			btn_border = getStateColor(QPalette::Mid, option);
+		}
+		else if(wgt_st.is_hovered)
+		{
+			btn_bg = btn_bg.lighter(MaxFactor);
+			btn_border = btn_border.lighter(MaxFactor);
+		}
+	}
+
+	// Draw button background
+	painter->setBrush(btn_bg);
+	painter->setPen(Qt::NoPen);
+	painter->drawRoundedRect(btn_rect, ScrollBarRadius, ScrollBarRadius);
+
+	// Draw button border
+	painter->setPen(QPen(btn_border, PenWidth));
+	painter->setBrush(Qt::NoBrush);
+
+	btn_rect.adjust(0.5, 0.5, -0.5, -0.5);
+	painter->drawRoundedRect(btn_rect, ScrollBarRadius, ScrollBarRadius);
+
+	// Create option for arrow drawing with proper state
+	QStyleOption arrow_opt = *option;
+
+	arrow_opt.rect = btn_rect.toRect();
+	
+	// Set proper arrow state based on button activity
+	if(option->activeSubControls & button_type)
+	{
+		if(wgt_st.is_pressed)
+			arrow_opt.state |= State_Sunken;
+		else if(wgt_st.is_hovered)
+			arrow_opt.state |= State_MouseOver;
+	}
+	else
+		arrow_opt.state &= ~(State_MouseOver | State_Sunken);
+
+	// Determine arrow direction intelligently based on button type and scrollbar orientation
+	const QScrollBar *scrollbar =
+					qobject_cast<const QScrollBar*>(widget);
+
+	bool is_horizontal = scrollbar &&
+											 scrollbar->orientation() == Qt::Horizontal;
+
+	ArrowType arrow_dir;
+	
+	if(button_type == SC_ScrollBarAddLine)
+		// AddLine is bottom/right button
+		arrow_dir = is_horizontal ? ArrowRight : ArrowDown;
+	else // SC_ScrollBarSubLine
+		// SubLine is top/left button
+		arrow_dir = is_horizontal ? ArrowLeft : ArrowUp;
+	
+	// Draw the arrow
+	drawControlArrow(&arrow_opt, painter, widget, arrow_dir);
 }
 
 void CustomUiStyle::drawEditableComboBox(const QStyleOptionComboBox *option, QPainter *painter, const QWidget *widget) const
@@ -799,9 +858,9 @@ void CustomUiStyle::drawPECheckBoxRadioBtn(PrimitiveElement element, const QStyl
 	QRectF obj_rect = option->rect;
 	WidgetState wgt_st(option, widget);
 	
-	QColor border_color = getStateColor(QPalette::Dark, option).lighter(MidFactor);
-	QColor bg_color = getStateColor(QPalette::Base, option);
-	QColor ind_color = getStateColor(QPalette::Highlight, option).lighter(MidFactor);
+	QColor border_color = getStateColor(QPalette::Dark, option).lighter(MidFactor),
+				 bg_color = getStateColor(QPalette::Base, option),
+				 ind_color = getStateColor(QPalette::Highlight, option).lighter(MidFactor);
 
 	if(!wgt_st.is_enabled)
 		ind_color = getStateColor(QPalette::Mid, option);
@@ -977,16 +1036,19 @@ void CustomUiStyle::drawPETabWidgetFrame(PrimitiveElement element, const QStyleO
 	painter->restore();
 }
 
-void CustomUiStyle::drawCCScrollBar(const QStyleOptionSlider *option, QPainter *painter, const QWidget *widget) const
+void CustomUiStyle::drawCCScrollBar(const QStyleOption *option, QPainter *painter, const QWidget *widget) const
 {
-	if(!option || !painter || !widget)
+	const QStyleOptionSlider *sbar_opt =
+					qstyleoption_cast<const QStyleOptionSlider *>(option);
+
+	if(!sbar_opt || !painter || !widget)
 		return;
 
 	WidgetState wgt_st(option, widget);
 	
 	// Use more subtle colors for scroll bar to reduce prominence
-	QColor bg_color = getStateColor(QPalette::Button, option).darker(MinFactor),
-				 border_color = getStateColor(QPalette::Midlight, option).darker(MinFactor);
+	QColor bg_color = getStateColor(QPalette::Button, sbar_opt).darker(MinFactor),
+				 border_color = getStateColor(QPalette::Midlight, sbar_opt).darker(MinFactor);
 
 	// Apply state-based color modifications with reduced luminosity
 	if(!wgt_st.is_enabled)
@@ -996,8 +1058,8 @@ void CustomUiStyle::drawCCScrollBar(const QStyleOptionSlider *option, QPainter *
 	}
 	else if(wgt_st.is_pressed)
 	{
-		bg_color = getStateColor(QPalette::Dark, option);
-		border_color = getStateColor(QPalette::Mid, option);
+		bg_color = getStateColor(QPalette::Dark, sbar_opt);
+		border_color = getStateColor(QPalette::Mid, sbar_opt);
 	}
 	else if(wgt_st.is_hovered)
 	{
@@ -1010,7 +1072,7 @@ void CustomUiStyle::drawCCScrollBar(const QStyleOptionSlider *option, QPainter *
 	painter->setRenderHint(QPainter::Antialiasing, true);
 
 	// Draw the scroll bar background/groove
-	QRectF sub_ctrl_rect = subControlRect(CC_ScrollBar, option, SC_ScrollBarGroove, widget);
+	QRectF sub_ctrl_rect = subControlRect(CC_ScrollBar, sbar_opt, SC_ScrollBarGroove, widget);
 
 	if(!sub_ctrl_rect.isEmpty())
 	{
@@ -1027,20 +1089,20 @@ void CustomUiStyle::drawCCScrollBar(const QStyleOptionSlider *option, QPainter *
 	}
 
 	// Draw the scroll bar handle/slider
-	sub_ctrl_rect = subControlRect(CC_ScrollBar, option, SC_ScrollBarSlider, widget);
+	sub_ctrl_rect = subControlRect(CC_ScrollBar, sbar_opt, SC_ScrollBarSlider, widget);
 
 	if(!sub_ctrl_rect.isEmpty())
 	{
 		// Apply special highlighting for pressed/hovered handle
 		QColor slider_bg = bg_color,
 					 slider_border = border_color;
-		
-		if(option->activeSubControls & SC_ScrollBarSlider)
+
+		if(sbar_opt->activeSubControls & SC_ScrollBarSlider)
 		{
 			if(wgt_st.is_pressed)
 			{
-				slider_bg = getStateColor(QPalette::Dark, option);
-				slider_border = getStateColor(QPalette::Mid, option);
+				slider_bg = getStateColor(QPalette::Dark, sbar_opt);
+				slider_border = getStateColor(QPalette::Mid, sbar_opt);
 			}
 			else if(wgt_st.is_hovered)
 			{
@@ -1061,114 +1123,9 @@ void CustomUiStyle::drawCCScrollBar(const QStyleOptionSlider *option, QPainter *
 		painter->drawRoundedRect(sub_ctrl_rect, ScrollBarRadius, ScrollBarRadius);
 	}
 
-	// Draw scroll bar buttons (AddLine and SubLine)
-	QRect addline_rect = subControlRect(CC_ScrollBar, option, SC_ScrollBarAddLine, widget),
-				subline_rect = subControlRect(CC_ScrollBar, option, SC_ScrollBarSubLine, widget);
-
-	// Draw AddLine button (down/right arrow)
-	if(!addline_rect.isEmpty())
-	{
-		QColor btn_bg = bg_color,
-					 btn_border = border_color;
-		
-		// Apply state-based colors if this button is active
-		if(option->activeSubControls & SC_ScrollBarAddLine)
-		{
-			if(wgt_st.is_pressed)
-			{
-				btn_bg = getStateColor(QPalette::Dark, option);
-				btn_border = getStateColor(QPalette::Mid, option);
-			}
-			else if(wgt_st.is_hovered)
-			{
-				btn_bg = btn_bg.lighter(MaxFactor);
-				btn_border = btn_border.lighter(MaxFactor);
-			}
-		}
-
-		// Draw button background
-		painter->setBrush(btn_bg);
-		painter->setPen(Qt::NoPen);
-		painter->drawRoundedRect(addline_rect, ScrollBarRadius, ScrollBarRadius);
-
-		// Draw button border
-		painter->setPen(QPen(btn_border, PenWidth));
-		painter->setBrush(Qt::NoBrush);
-		painter->drawRoundedRect(QRectF(addline_rect).adjusted(0.5, 0.5, -0.5, -0.5), 
-																			 ScrollBarRadius, ScrollBarRadius);		// Create option for arrow drawing with proper state
-		QStyleOption arrow_opt = *option;
-		arrow_opt.rect = addline_rect;
-
-		if(option->activeSubControls & SC_ScrollBarAddLine)
-		{
-			if(wgt_st.is_pressed)
-				arrow_opt.state |= State_Sunken;
-			else if(wgt_st.is_hovered)
-				arrow_opt.state |= State_MouseOver;
-		}
-		else
-		{
-			arrow_opt.state &= ~(State_MouseOver | State_Sunken);
-		}
-
-		// Draw arrow - AddLine is bottom/right button
-		const QScrollBar *scrollbar = qobject_cast<const QScrollBar*>(widget);
-		bool is_horizontal = scrollbar && scrollbar->orientation() == Qt::Horizontal;
-		ArrowDirection arrow_dir = is_horizontal ? ArrowRight : ArrowDown;
-		drawControlArrow(&arrow_opt, painter, widget, arrow_dir);
-	}
-
-	// Draw SubLine button (up/left arrow)
-	if(!subline_rect.isEmpty())
-	{
-		QColor btn_bg = bg_color,
-				btn_border = border_color;
-
-		// Apply state-based colors if this button is active
-		if(option->activeSubControls & SC_ScrollBarSubLine)
-		{
-			if(wgt_st.is_pressed)
-			{
-				btn_bg = getStateColor(QPalette::Dark, option);
-				btn_border = getStateColor(QPalette::Mid, option);
-			}
-			else if(wgt_st.is_hovered)
-			{
-				btn_bg = btn_bg.lighter(MaxFactor);
-				btn_border = btn_border.lighter(MaxFactor);
-			}
-		}
-
-		// Draw button background
-		painter->setBrush(btn_bg);
-		painter->setPen(Qt::NoPen);
-		painter->drawRoundedRect(subline_rect, ScrollBarRadius, ScrollBarRadius);
-
-		// Draw button border
-		painter->setPen(QPen(btn_border, PenWidth));
-		painter->setBrush(Qt::NoBrush);
-		painter->drawRoundedRect(QRectF(subline_rect).adjusted(0.5, 0.5, -0.5, -0.5), 
-																			 ScrollBarRadius, ScrollBarRadius);		// Create option for arrow drawing with proper state
-		QStyleOption arrow_opt = *option;
-		arrow_opt.rect = subline_rect;
-		if(option->activeSubControls & SC_ScrollBarSubLine)
-		{
-			if(wgt_st.is_pressed)
-				arrow_opt.state |= State_Sunken;
-			else if(wgt_st.is_hovered)
-				arrow_opt.state |= State_MouseOver;
-		}
-		else
-		{
-			arrow_opt.state &= ~(State_MouseOver | State_Sunken);
-		}
-
-		// Draw arrow - SubLine is top/left button
-		const QScrollBar *scrollbar = qobject_cast<const QScrollBar*>(widget);
-		bool is_horizontal = scrollbar && scrollbar->orientation() == Qt::Horizontal;
-		ArrowDirection arrow_dir = is_horizontal ? ArrowLeft : ArrowUp;
-		drawControlArrow(&arrow_opt, painter, widget, arrow_dir);
-	}
+	// Draw scroll bar buttons using the unified method
+	drawScrollBarButton(sbar_opt, painter, widget, SC_ScrollBarAddLine, bg_color, border_color);
+	drawScrollBarButton(sbar_opt, painter, widget, SC_ScrollBarSubLine, bg_color, border_color);
 
 	painter->restore();
 }
@@ -1246,7 +1203,7 @@ void CustomUiStyle::drawCEScrollBar(ControlElement element, const QStyleOption *
 			painter->drawRoundedRect(QRectF(option->rect).adjusted(0.5, 0.5, -0.5, -0.5), 
 																								 ScrollBarRadius, ScrollBarRadius);			// Use drawControlArrow to draw the arrow with proper state
 			// Convert SubControl to ArrowDirection
-			ArrowDirection arrow_dir;
+			ArrowType arrow_dir;
 			if(sub_control == SC_ScrollBarAddLine)
 			{
 				// AddLine: bottom/right button
@@ -1395,7 +1352,7 @@ void CustomUiStyle::drawSpinBoxButton(const QStyleOptionSpinBox *option, QPainte
 
 	// Draw arrow symbol
 	btn_opt.rect = rect;
-	ArrowDirection arrow_dir = (btn_sc_id == SC_SpinBoxUp) ? ArrowUp : ArrowDown;
+	ArrowType arrow_dir = (btn_sc_id == SC_SpinBoxUp) ? ArrowUp : ArrowDown;
 	drawControlArrow(&btn_opt, painter, widget, arrow_dir);
 	painter->restore();
 }
