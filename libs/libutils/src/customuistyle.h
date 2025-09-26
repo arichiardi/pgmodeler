@@ -60,6 +60,14 @@ class __libutils CustomUiStyle : public QProxyStyle {
 			AllCorners = TopLeft | TopRight | BottomLeft | BottomRight
 		};
 
+		// Enum to specify arrow direction for drawing control arrows
+		enum ArrowDirection {
+			ArrowUp,
+			ArrowDown,
+			ArrowLeft,
+			ArrowRight
+		};
+
 		struct WidgetState {
 			const bool is_enabled,
 							is_hovered,
@@ -94,13 +102,15 @@ class __libutils CustomUiStyle : public QProxyStyle {
 							   					 ArrowHeight = 6; // Complex control up arrow height
 
 		static constexpr int NoRadius = 0,
-												 ButtonRadius = 4,
-												 InputRadius = 5,
-												 FrameRadius = 4,
-												 TabRadius = 2,
-												 TabBarRadius = 5;
+							 ButtonRadius = 4,
+							 InputRadius = 5,
+							 FrameRadius = 4,
+							 TabRadius = 2,
+							 TabBarRadius = 5,
+							 ScrollBarRadius = 2;
 
-		static constexpr int MinFactor = 120,
+		static constexpr int XMinFactor = 105,
+												 MinFactor = 120,
 							 					 MidFactor = 135,
 							 					 MaxFactor = 150;
 
@@ -128,7 +138,7 @@ class __libutils CustomUiStyle : public QProxyStyle {
 		void drawCETabBar(ControlElement element, const QStyleOption *option,	
 											QPainter *painter, const QWidget *widget) const;
 
-		void drawControlArrow(const QStyleOption *option, QPainter *painter, const QWidget *widget, QStyle::SubControl btn_sc_id) const;
+		void drawControlArrow(const QStyleOption *option, QPainter *painter, const QWidget *widget, ArrowDirection direction) const;
 
 		// Draws editable ComboBox with custom background and border
 		void drawEditableComboBox(const QStyleOptionComboBox *option, QPainter *painter, const QWidget *widget) const;
