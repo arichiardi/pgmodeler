@@ -128,7 +128,7 @@ class __libutils CustomUiStyle : public QProxyStyle {
 		void drawCETabBar(ControlElement element, const QStyleOption *option,	
 											QPainter *painter, const QWidget *widget) const;
 
-		void drawControlArrow(const QStyleOption *option, QPainter *painter, QStyle::SubControl btn_sc_id) const;
+		void drawControlArrow(const QStyleOption *option, QPainter *painter, const QWidget *widget, QStyle::SubControl btn_sc_id) const;
 
 		// Draws editable ComboBox with custom background and border
 		void drawEditableComboBox(const QStyleOptionComboBox *option, QPainter *painter, const QWidget *widget) const;
@@ -155,10 +155,20 @@ class __libutils CustomUiStyle : public QProxyStyle {
 		void drawPETabWidgetFrame(PrimitiveElement element, const QStyleOption *option,
 															QPainter *painter, const QWidget *widget) const;
 
+		// Draws complex control (CC) scroll bars
+		void drawCCScrollBar(const QStyleOptionSlider *option, QPainter *painter, const QWidget *widget) const;
+
+		// Draws control elements (CE) of scroll bars
+		void drawCEScrollBar(ControlElement element, const QStyleOption *option,
+												 QPainter *painter, const QWidget *widget) const;
+
 		void drawSpinBoxButton(const QStyleOptionSpinBox *option, QPainter *painter, const QWidget *widget, QStyle::SubControl btn_sc_id) const;
 
 		// Draws SpinBox sub-components with specialized styling
 		void drawSpinBoxEditField(const QStyleOption *option, QPainter *painter, const QWidget *widget) const;
+
+		//! \brief Helper function to rotate a QPolygonF around its center
+		static QPolygonF rotatePolygon(const QPolygonF &polygon, qreal degrees);
 
 		//! \brief Helper function to get color from palette considering widget state
 		static QColor getStateColor(const QPalette& pal, QPalette::ColorRole role, const QStyleOption* option);
