@@ -709,71 +709,61 @@ void CustomUiStyle::drawSpinBoxButton(const QStyleOptionSpinBox *option, QPainte
 	/* Create a copy of the option to modify some
 	 * properties for button drawing */
 	QStyleOptionSpinBox btn_opt = *option;
+	WidgetState wgt_st(option, widget);
+	QRect rect;
 
 	// Get button rectangle according to sub-control id
 	if(btn_sc_id == SC_SpinBoxUp)
-		btn_opt.rect = subControlRect(CC_SpinBox, option, SC_SpinBoxUp, widget);
+		rect = subControlRect(CC_SpinBox, option, SC_SpinBoxUp, widget);
 	else
-		btn_opt.rect = subControlRect(CC_SpinBox, option, SC_SpinBoxDown, widget);
+		rect = subControlRect(CC_SpinBox, option, SC_SpinBoxDown, widget);
 
 	if(option->activeSubControls & btn_sc_id)
 	{
-		if(option->state & State_Sunken)
+		if(wgt_st.is_pressed)
 			btn_opt.state |= State_Sunken;
-		else if(option->state & State_MouseOver)
+		else if(wgt_st.is_hovered)
 			btn_opt.state |= State_MouseOver;
 	}
 	else
-	{
 		// Remove mouse over and sunken states if this button is not active
 		btn_opt.state &= ~(State_MouseOver | State_Sunken);
-	}
 
 	// Use the same color logic as button panels
-	QPalette pal = qApp->palette();
-	QColor bg_color = getStateColor(pal, QPalette::Button, option),
-		   	 border_color = bg_color.lighter(MaxFactor);
-
-	bool is_enabled = (btn_opt.state & State_Enabled),
-			 is_focused = (btn_opt.state & State_HasFocus),
-			 is_hovered = (btn_opt.state & State_MouseOver),
-			 is_pressed = (btn_opt.state & State_Sunken);
+	QColor bg_color = getStateColor(QPalette::Button, option),
+		   	 border_color = getStateColor(QPalette::Midlight, option);
 
 	// Apply state-based color modifications (same as drawPEButtonPanel)
-	if(!is_enabled)
+	if(!wgt_st.is_enabled)
 	{
 		bg_color = bg_color.darker(MidFactor);
 		border_color = bg_color.darker(MidFactor);
 	}
-	else if(is_focused)
-		border_color = getStateColor(pal, QPalette::Highlight, option);
-	else if(is_pressed)
+	else if(wgt_st.is_focused)
+		border_color = getStateColor(QPalette::Highlight, option);
+	else if(wgt_st.is_pressed)
 	{
-		bg_color = bg_color.darker(MaxFactor);
-		border_color = border_color.darker(MaxFactor);
+		bg_color = getStateColor(QPalette::Dark, option);
+		border_color = getStateColor(QPalette::Mid, option);
 	}
-	else if(is_hovered)
+	else if(wgt_st.is_hovered)
 	{
 		bg_color = bg_color.lighter(MaxFactor);
 		border_color = border_color.lighter(MaxFactor);
 	}
 
 	QPainterPath button_path;
-	QRect rect = btn_opt.rect;
 	int radius = ButtonRadius - 2;
 
 	if(btn_sc_id == SC_SpinBoxUp)
 	{
-		// Up button: only top-right corner rounded
-		rect.setHeight(rect.height() + 1);
-		rect = rect.adjusted(0, -2, 0, 0);
+		// Up button: only top-right corner rounded, extend slightly upward
+		rect = rect.adjusted(0, -2, 0, 1);
 		button_path = createControlShape(rect, radius, CustomUiStyle::TopRight);
 	}
 	else
 	{
-		// Down button: only bottom-right corner rounded
-		rect.setHeight(rect.height() - 1);
-		rect.translate(0, 1);
+		// Down button: only bottom-right corner rounded, extend slightly downward
 		rect = rect.adjusted(0, 0, 0, 2);
 		button_path = createControlShape(rect, radius, CustomUiStyle::BottomRight);
 	}
@@ -792,6 +782,7 @@ void CustomUiStyle::drawSpinBoxButton(const QStyleOptionSpinBox *option, QPainte
 	painter->drawPath(button_path);
 
 	// Draw arrow symbol
+	btn_opt.rect = rect;
 	drawSpinBoxArrow(&btn_opt, painter, btn_sc_id);
 	painter->restore();
 }
@@ -802,44 +793,53 @@ void CustomUiStyle::drawSpinBoxArrow(const QStyleOptionSpinBox *option, QPainter
 		 (btn_sc_id != SC_SpinBoxUp && btn_sc_id != SC_SpinBoxDown))
 		return;
 
-	painter->save();
-	painter->setRenderHint(QPainter::Antialiasing, true);
-
 	// Use text color that adapts to the button state and theme
 	QColor arrow_color = getStateColor(QPalette::ButtonText, option);
+	WidgetState wgt_st(option, nullptr);
 	
 	// Adjust arrow color based on button state for better visibility
-	if(!(option->state & State_Enabled))
-		arrow_color = arrow_color.lighter(150); // Lighter for disabled state
-	else if(option->state & State_Sunken)
-		arrow_color = arrow_color.darker(110); // Slightly darker when pressed
+	if(!wgt_st.is_enabled)
+		arrow_color = arrow_color.lighter(MidFactor); // Lighter for disabled state
+	else if(wgt_st.is_pressed)
+		arrow_color = arrow_color.darker(MinFactor); // Slightly darker when pressed
 
 	// Calculate arrow geometry - fixed size calculation to ensure consistency
-	QRect button_rect = option->rect;
-	QPointF center = button_rect.center();
+	QRect btn_rect = option->rect;
 	
-	// Fixed arrow dimensions (same for both buttons) - discount 3px from each side
-	qreal arrow_width = button_rect.width() * 0.6;  // Remove 6px total (3px each side)
-	qreal arrow_height = button_rect.height() * 0.6;	   // Remove 6px total (3px each side)
-	qreal half_width = arrow_width * 0.5;
-	qreal half_height = arrow_height * 0.5;
+	// Calculate precise center to avoid rounding issues
+	QPointF center = QPointF(btn_rect.x() + btn_rect.width() / 2.0,
+	                         btn_rect.y() + btn_rect.height() / 2.0);
+	
+	// Use larger factor and minimum dimensions for better visibility
+	qreal arrow_w = qRound(btn_rect.width() * 0.7);
+	qreal arrow_h = qRound(btn_rect.height() * 0.6);
+	
+	// Round to pixel boundaries for crisp rendering
+	qreal half_w = qRound(arrow_w * 0.5);
+	qreal half_h = qRound(arrow_h * 0.5);
 
 	QPolygonF arrow;
 	
 	if(btn_sc_id == SC_SpinBoxUp)
 	{
+		// Move up 1px for better vertical centering
+		center.ry() -= 1; 
+
 		// Up arrow (triangle pointing up) - same dimensions as down arrow
-		arrow << QPointF(center.x(), center.y() - half_height)          // Top point
-					<< QPointF(center.x() - half_width, center.y() + half_height)    // Bottom left
-					<< QPointF(center.x() + half_width, center.y() + half_height);   // Bottom right
+		arrow << QPointF(center.x(), center.y() - half_h)          // Top point
+					<< QPointF(center.x() - half_w, center.y() + half_h)    // Bottom left
+					<< QPointF(center.x() + half_w, center.y() + half_h);   // Bottom right
 	}
 	else
 	{
 		// Down arrow (triangle pointing down) - same dimensions as up arrow
-		arrow << QPointF(center.x(), center.y() + half_height)          // Bottom point
-					<< QPointF(center.x() - half_width, center.y() - half_height)    // Top left
-					<< QPointF(center.x() + half_width, center.y() - half_height);   // Top right
+		arrow << QPointF(center.x(), center.y() + half_h)          // Bottom point
+					<< QPointF(center.x() - half_w, center.y() - half_h)    // Top left
+					<< QPointF(center.x() + half_w, center.y() - half_h);   // Top right
 	}
+
+	painter->save();
+	painter->setRenderHint(QPainter::Antialiasing, true);
 
 	// Draw the arrow
 	painter->setBrush(arrow_color);
