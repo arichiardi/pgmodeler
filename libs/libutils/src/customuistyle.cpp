@@ -23,6 +23,7 @@
 #include <QPushButton>
 #include <QStyleOptionSpinBox>
 #include <QAbstractSpinBox>
+#include <QComboBox>
 #include <qcontainerfwd.h>
 #include <qdebug.h>
 #include <qpainterpath.h>
@@ -201,9 +202,12 @@ void CustomUiStyle::drawPrimitive(PrimitiveElement element, const QStyleOption *
 
 	if(element == PE_PanelLineEdit)
 	{
-		/* Don't draw panel and frame if this LineEdit is part of a SpinBox.
-		 * The method drawSpinBoxEditField handle all drawing for SpinBox controls */
-		if(!widget || !qobject_cast<const QAbstractSpinBox*>(widget->parentWidget()))
+		/* Don't draw panel and frame if this LineEdit is part of a SpinBox or ComboBox.
+		 * The method drawSpinBoxEditField handle all drawing for SpinBox controls
+		 * and drawCCComboBox handles all drawing for ComboBox controls */
+		if(!widget || 
+			 (!qobject_cast<const QAbstractSpinBox*>(widget->parentWidget()) &&
+			  !qobject_cast<const QComboBox*>(widget->parentWidget())))
 		{
 			drawPELineEditPanel(element, option, painter, widget);
 			drawPEGenericElemFrame(PE_FrameLineEdit, option, painter, widget, InputRadius);
@@ -861,8 +865,16 @@ void CustomUiStyle::drawCCComboBox(ComplexControl control, const QStyleOptionCom
 	if(control != CC_ComboBox || !combo_opt || !painter || !widget)
 		return;
 
-	// Draw the main combo box using default implementation, but customize the arrow
-	QProxyStyle::drawComplexControl(control, option, painter, widget);
+	// Check if this is an editable combo box
+	const QComboBox *combo_widget = qobject_cast<const QComboBox*>(widget);
+	bool is_editable = combo_widget && combo_widget->isEditable();
+
+	if(is_editable)
+		// For editable combo boxes, draw custom background and border
+		drawEditableComboBox(combo_opt, painter, widget);
+	else
+		// For non-editable combo boxes, use default implementation
+		QProxyStyle::drawComplexControl(control, option, painter, widget);
 
 	// Draw custom arrow if the drop down button is visible
 	if(combo_opt->subControls & SC_ComboBoxArrow)
@@ -877,6 +889,51 @@ void CustomUiStyle::drawCCComboBox(ComplexControl control, const QStyleOptionCom
 			drawControlArrow(&arrow_option, painter, SC_ComboBoxArrow);
 		}
 	}
+}
+
+void CustomUiStyle::drawEditableComboBox(const QStyleOptionComboBox *option, QPainter *painter, const QWidget *widget) const
+{
+	if(!option || !painter || !widget)
+		return;
+
+	// Get colors for background and border
+	QColor bg_color = getStateColor(QPalette::Base, option);
+	QColor border_color = getStateColor(QPalette::Dark, option).lighter(MaxFactor);
+
+	WidgetState wgt_st(option, widget);
+
+	if(!wgt_st.is_enabled)
+	{
+		bg_color = bg_color.darker(MinFactor);
+		border_color = border_color.darker(MinFactor);
+	}
+	else if(wgt_st.is_focused)
+		border_color = getStateColor(QPalette::Highlight, option);
+	else if(wgt_st.is_hovered)
+	{
+		bg_color = bg_color.lighter(MaxFactor);
+		border_color = border_color.lighter(MaxFactor);
+	}
+
+	// Create shape with all corners rounded
+	QPainterPath combo_shape = createControlShape(option->rect, InputRadius, AllCorners);
+
+	painter->save();
+	painter->setRenderHint(QPainter::Antialiasing, true);
+
+	// Draw background
+	painter->setBrush(bg_color);
+	painter->setPen(Qt::NoPen);
+	painter->drawPath(combo_shape);
+
+	// Draw border
+	QPainterPath border_shape = createControlShape(option->rect, InputRadius, AllCorners,
+	                                               0.5, 0.5, -0.5, -0.5);
+	painter->setPen(QPen(border_color, PenWidth));
+	painter->setBrush(Qt::NoBrush);
+	painter->drawPath(border_shape);
+
+	painter->restore();
 }
 
 void CustomUiStyle::drawPECheckBoxRadioBtn(PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const

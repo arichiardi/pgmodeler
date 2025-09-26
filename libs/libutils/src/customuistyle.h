@@ -31,6 +31,7 @@ all widgets in the application.
 #include <QProxyStyle>
 #include <QMap>
 #include <QStyleOption>
+#include <QStyleOptionComboBox>
 #include <QPainter>
 #include <QWidget>
 #include <QPixmap>
@@ -143,11 +144,14 @@ class __libutils CustomUiStyle : public QProxyStyle {
 		void drawCCComboBox(ComplexControl control, const QStyleOptionComplex *option,
 												QPainter *painter, const QWidget *widget) const;
 
+		// Draws editable ComboBox with custom background and border
+		void drawEditableComboBox(const QStyleOptionComboBox *option, QPainter *painter, const QWidget *widget) const;
+
+		void drawControlArrow(const QStyleOption *option, QPainter *painter, QStyle::SubControl btn_sc_id) const;
+
 		// Draws SpinBox sub-components with specialized styling
 		void drawSpinBoxEditField(const QStyleOption *option, QPainter *painter, const QWidget *widget) const;
 		void drawSpinBoxButton(const QStyleOptionSpinBox *option, QPainter *painter, const QWidget *widget, QStyle::SubControl btn_sc_id) const;
-
-		void drawControlArrow(const QStyleOption *option, QPainter *painter, QStyle::SubControl btn_sc_id) const;
 
 		// Draws primitive elements (PE) of checkboxes and radio buttons
 		void drawPECheckBoxRadioBtn(PrimitiveElement element, const QStyleOption *option,
