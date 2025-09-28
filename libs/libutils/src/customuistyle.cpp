@@ -20,6 +20,7 @@
 #include <QApplication>
 #include <QPainterPath>
 #include <QToolBar>
+#include <QToolButton>
 #include <QPushButton>
 #include <QStyleOptionSpinBox>
 #include <QAbstractSpinBox>
@@ -29,6 +30,7 @@
 #include <qpainterpath.h>
 #include <qscrollbar.h>
 #include <qstyleoption.h>
+#include <qtoolbutton.h>
 #include "enumtype.h"
 
 QMap<QStyle::PixelMetric, int> CustomUiStyle::pixel_metrics;
@@ -248,7 +250,7 @@ void CustomUiStyle::drawCCComboBox(ComplexControl control, const QStyleOptionCom
 			arrow_option.rect = arrow_rect;
 
 			// ComboBox arrow always points down
-			drawControlArrow(&arrow_option, painter, widget, ArrowDown);
+			drawControlArrow(&arrow_option, painter, widget, DownArrow);
 		}
 	}
 }
@@ -569,8 +571,6 @@ void CustomUiStyle::drawPrimitive(PrimitiveElement element, const QStyleOption *
 		return;
 	}
 
-
-
 	if(element == PE_Frame)
 	{
 		// Don't draw frame if this is part of a SpinBox edit field
@@ -580,7 +580,15 @@ void CustomUiStyle::drawPrimitive(PrimitiveElement element, const QStyleOption *
 		return;
 	}
 
-	qDebug() << "drawPrimitive(): " << element;
+	// Handle QToolButton and QPushButton menu arrow positioning
+	if(element == PE_IndicatorArrowDown && widget &&
+			(qobject_cast<const QToolButton*>(widget) || 
+			 qobject_cast<const QPushButton*>(widget)))
+	{
+		drawToolButtonMenuArrow(option, painter, widget);
+		return;
+	}
+
 	QProxyStyle::drawPrimitive(element, option, painter, widget);
 }
 
@@ -615,6 +623,59 @@ QPolygonF CustomUiStyle::rotatePolygon(const QPolygonF &polygon, qreal degrees)
 	return transform.map(polygon);
 }
 
+void CustomUiStyle::drawToolButtonMenuArrow(const QStyleOption *option, QPainter *painter, const QWidget *widget) const
+{
+	const QToolButton *tool_btn = qobject_cast<const QToolButton*>(widget);
+	const QPushButton *push_btn = qobject_cast<const QPushButton*>(widget);
+
+	if(!option || !painter || !tool_btn && !push_btn)
+		return;
+	
+	// Check if the button has a menu associated otherwise no arrow is drawn
+	if((tool_btn && 
+			tool_btn->popupMode() != QToolButton::InstantPopup && 
+	   	tool_btn->popupMode() != QToolButton::DelayedPopup) ||			
+	   (push_btn && !push_btn->menu()))
+		return;
+		
+	painter->save();
+	painter->setRenderHint(QPainter::Antialiasing, true);
+
+	QRect btn_rect = widget->rect();
+	int v_spc = 4, h_spc = 3;
+	
+	// Determine arrow direction and position based on button type and style
+	ArrowType arr_type;
+	QRect arr_rect;
+	
+	// For QToolButton, check toolButtonStyle; for QPushButton, always use down arrow at bottom-right
+	if(tool_btn && tool_btn->toolButtonStyle() == Qt::ToolButtonTextUnderIcon)
+	{
+		// TextUnderIcon QToolButton: arrow pointing right, positioned at right-center
+		arr_type = RightArrow;
+		arr_rect = QRect(btn_rect.right() - h_spc - ArrowWidth,
+		                  btn_rect.center().y() - ArrowHeight/2,
+		                  ArrowWidth, ArrowHeight);
+	}
+	else
+	{
+		// Other QToolButton layouts or any QPushButton: arrow pointing down, positioned at right-center
+		arr_type = DownArrow;
+		arr_rect = QRect(btn_rect.right() - h_spc - ArrowWidth,
+		                  btn_rect.bottom() - v_spc - ArrowHeight,
+		                  ArrowWidth, ArrowHeight);
+	}
+	
+	// Create modified option with new rect
+	QStyleOption arrow_opt = *option;
+	arrow_opt.rect = arr_rect;
+	
+	// Use our custom arrow drawing
+	drawControlArrow(&arrow_opt, painter, widget, arr_type);
+	
+	painter->restore();
+}
+
 void CustomUiStyle::drawControlArrow(const QStyleOption *option, QPainter *painter, const QWidget *widget, ArrowType direction) const
 {
 	if(!option || !painter)
@@ -638,8 +699,8 @@ void CustomUiStyle::drawControlArrow(const QStyleOption *option, QPainter *paint
 	                         btn_rect.y() + btn_rect.height() / 2.0);
 	
 	// Round to pixel boundaries for crisp rendering
-	qreal half_w = qRound(ArrowWidth * 0.5);
-	qreal half_h = qRound(ArrowHeight * 0.5);
+	qreal half_w = qRound(ArrowWidth * 0.5),
+				half_h = qRound(ArrowHeight * 0.5);
 
 	// Create base arrow pointing UP (triangle pointing up)
 	QPolygonF base_arrow;
@@ -652,22 +713,22 @@ void CustomUiStyle::drawControlArrow(const QStyleOption *option, QPainter *paint
 	
 	switch(direction)
 	{
-		case ArrowUp:
+		case UpArrow:
 			// Arrow pointing up: Use base arrow
 			arrow = base_arrow;
 			break;
 			
-		case ArrowDown:
+		case DownArrow:
 			// Arrow pointing down: Rotate base arrow 180°
 			arrow = rotatePolygon(base_arrow, 180);
 			break;
 			
-		case ArrowLeft:
+		case LeftArrow:
 			// Arrow pointing left: Rotate base arrow 270° clockwise
 			arrow = rotatePolygon(base_arrow, 270);
 			break;
 			
-		case ArrowRight:
+		case RightArrow:
 			// Arrow pointing right: Rotate base arrow 90° clockwise
 			arrow = rotatePolygon(base_arrow, 90);
 			break;
@@ -754,10 +815,10 @@ void CustomUiStyle::drawScrollBarButton(const QStyleOptionSlider *option, QPaint
 	
 	if(button_type == SC_ScrollBarAddLine)
 		// AddLine is bottom/right button
-		arrow_dir = is_horizontal ? ArrowRight : ArrowDown;
+		arrow_dir = is_horizontal ? RightArrow : DownArrow;
 	else // SC_ScrollBarSubLine
 		// SubLine is top/left button
-		arrow_dir = is_horizontal ? ArrowLeft : ArrowUp;
+		arrow_dir = is_horizontal ? LeftArrow : UpArrow;
 	
 	// Draw the arrow
 	drawControlArrow(&arrow_opt, painter, widget, arrow_dir);
@@ -1209,14 +1270,14 @@ void CustomUiStyle::drawCEScrollBar(ControlElement element, const QStyleOption *
 				// AddLine: bottom/right button
 				const QScrollBar *scrollbar = qobject_cast<const QScrollBar*>(widget);
 				bool is_horizontal = scrollbar && scrollbar->orientation() == Qt::Horizontal;
-				arrow_dir = is_horizontal ? ArrowRight : ArrowDown;
+				arrow_dir = is_horizontal ? RightArrow : DownArrow;
 			}
 			else // SC_ScrollBarSubLine
 			{
 				// SubLine: top/left button  
 				const QScrollBar *scrollbar = qobject_cast<const QScrollBar*>(widget);
 				bool is_horizontal = scrollbar && scrollbar->orientation() == Qt::Horizontal;
-				arrow_dir = is_horizontal ? ArrowLeft : ArrowUp;
+				arrow_dir = is_horizontal ? LeftArrow : UpArrow;
 			}
 			
 			drawControlArrow(&btn_opt, painter, widget, arrow_dir);
@@ -1350,9 +1411,14 @@ void CustomUiStyle::drawSpinBoxButton(const QStyleOptionSpinBox *option, QPainte
 	painter->setBrush(Qt::NoBrush);
 	painter->drawPath(btn_path);
 
-	// Draw arrow symbol
+	/* Draw arrow symbol.
+	 * For the up button, move the arrow slightly upwards to make
+	 * it symmetrically aligned with the down button */
+	if(btn_sc_id == SC_SpinBoxUp)
+		rect.translate(0, -1);
+
 	btn_opt.rect = rect;
-	ArrowType arrow_dir = (btn_sc_id == SC_SpinBoxUp) ? ArrowUp : ArrowDown;
+	ArrowType arrow_dir = (btn_sc_id == SC_SpinBoxUp) ? UpArrow : DownArrow;
 	drawControlArrow(&btn_opt, painter, widget, arrow_dir);
 	painter->restore();
 }

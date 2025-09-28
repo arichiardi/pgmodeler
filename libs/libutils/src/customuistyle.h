@@ -62,10 +62,10 @@ class __libutils CustomUiStyle : public QProxyStyle {
 
 		// Enum to specify arrow direction for drawing control arrows
 		enum ArrowType {
-			ArrowUp,
-			ArrowDown,
-			ArrowLeft,
-			ArrowRight
+			UpArrow,
+			DownArrow,
+			LeftArrow,
+			RightArrow
 		};
 
 		struct WidgetState {
@@ -97,9 +97,10 @@ class __libutils CustomUiStyle : public QProxyStyle {
 		static QMap<PixelMetric, int> pixel_metrics;
 
 		static constexpr qreal BlendFactor = 0.7,
-							   					 PenWidth = 1.2,
-							   					 ArrowWidth = 10, // Complex control up arrow width
-							   					 ArrowHeight = 6; // Complex control up arrow height
+							   					 PenWidth = 1.2;
+
+		static constexpr int ArrowWidth = 9, // Complex control up arrow width
+							 					 ArrowHeight = 5; // Complex control up arrow height
 
 		static constexpr int NoRadius = 0,
 							 ButtonRadius = 4,
@@ -139,6 +140,9 @@ class __libutils CustomUiStyle : public QProxyStyle {
 											QPainter *painter, const QWidget *widget) const;
 
 		void drawControlArrow(const QStyleOption *option, QPainter *painter, const QWidget *widget, ArrowType direction) const;
+
+		// Draws menu arrow for QToolButton and QPushButton with menus (returns true if handled)
+		void drawToolButtonMenuArrow(const QStyleOption *option, QPainter *painter, const QWidget *widget) const;
 
 		// Draws a scrollbar button (AddLine or SubLine) intelligently handling both types
 		void drawScrollBarButton(const QStyleOptionSlider *option, QPainter *painter, const QWidget *widget, 
