@@ -604,6 +604,13 @@ void CustomUiStyle::drawPrimitive(PrimitiveElement element, const QStyleOption *
 		return;
 	}
 
+	// Handle header sort arrow indicators
+	if(element == PE_IndicatorHeaderArrow)
+	{
+		drawPEHeaderArrow(option, painter, widget);
+		return;
+	}
+
 	// Handle QToolButton and QPushButton menu arrow positioning
 	if(element == PE_IndicatorArrowDown && widget &&
 			(qobject_cast<const QToolButton*>(widget) || 
@@ -1251,7 +1258,8 @@ void CustomUiStyle::drawCEHeaderSection(ControlElement element, const QStyleOpti
 		  section_idx = 0;  // Default to 0 (first) if we can't determine
 
 	// Try to get section information from QHeaderView
-	const QHeaderView *header_view = qobject_cast<const QHeaderView *>(widget);
+	const QHeaderView *header_view =
+					qobject_cast<const QHeaderView *>(widget);
 	
 	if(header_view)
 	{
@@ -1282,30 +1290,6 @@ void CustomUiStyle::drawCEHeaderSection(ControlElement element, const QStyleOpti
 						end(header_opt->rect.left(), header_opt->rect.bottom() - 1);
 
 		painter->drawLine(start, end);
-	}
-	
-	// Draw custom sort indicator arrow if sorting is enabled
-	if(header_opt->sortIndicator != QStyleOptionHeader::None)
-	{
-		// Calculate arrow position - right side of header with some margin
-		int arrow_margin = 5;
-		QRect arrow_rect(header_opt->rect.right() - arrow_margin - ArrowWidth,
-		                 header_opt->rect.center().y() - ArrowHeight/2,
-		                 ArrowWidth, ArrowHeight);
-		
-		// Create option for arrow drawing
-		QStyleOption arrow_opt = *header_opt;
-		ArrowType arrow_type;
-
-		arrow_opt.rect = arrow_rect;
-
-		if(header_opt->sortIndicator == QStyleOptionHeader::SortUp)
-			arrow_type = UpArrow;
-		else
-			arrow_type = DownArrow;
-		
-		// Draw the sort arrow using our standard method
-		drawControlArrow(&arrow_opt, painter, widget, arrow_type);
 	}
 	
 	painter->restore();
@@ -1797,4 +1781,34 @@ void CustomUiStyle::drawPEProgressChunk(const QStyleOption *option, QPainter *pa
 	painter->setBrush(Qt::NoBrush);
 	painter->drawPath(shape);
 	painter->restore();
+}
+
+void CustomUiStyle::drawPEHeaderArrow(const QStyleOption *option, QPainter *painter, const QWidget *widget) const
+{
+	const QStyleOptionHeader *header_opt =
+					qstyleoption_cast<const QStyleOptionHeader *>(option);
+
+	if(!header_opt || !painter || !widget ||
+			header_opt->sortIndicator == QStyleOptionHeader::None)
+		return;
+
+	// Calculate arrow position - right side of header with some margin
+	int arrow_margin = 5;
+	QRect arrow_rect(header_opt->rect.right() - arrow_margin - ArrowWidth,
+	                 header_opt->rect.center().y() - ArrowHeight/2,
+	                 ArrowWidth, ArrowHeight);
+	
+	// Create option for arrow drawing
+	QStyleOption arrow_opt = *header_opt;
+	ArrowType arrow_type;
+
+	arrow_opt.rect = arrow_rect;
+
+	if(header_opt->sortIndicator == QStyleOptionHeader::SortUp)
+		arrow_type = UpArrow;
+	else
+		arrow_type = DownArrow;
+	
+	// Draw the sort arrow using our standard method
+	drawControlArrow(&arrow_opt, painter, widget, arrow_type);
 }
