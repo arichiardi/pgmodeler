@@ -281,6 +281,13 @@ bool is_protected;
 void specificOperation();
 ```
 
+### Multiline Comments
+```cpp
+/* This is a multiline comment
+ * explaining complex logic or decisions
+ * in the code. */ 
+```
+
 ## Build System (CMake)
 
 ### Library Configuration
@@ -304,6 +311,18 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 ### ❌ DON'T Do
 ```cpp
+// Don't use assignement in conditionals
+if((value = getValue()) > 0) // BAD
+{
+
+}
+
+value = getValue();
+if(value > 0) // GOOD
+{
+    // use value
+}
+
 // Don't use single line ifs 
 if(condition) statement; // BAD
 

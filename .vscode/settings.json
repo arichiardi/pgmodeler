@@ -111,7 +111,6 @@
         "**/*.o": true,         
         "**/*.a": true,         
         "**/*.so*": true,
-        ".github": true,
         ".qtc_clangd": true,
         "**/build/**": true,
         "**/cmake-build/**": true,

@@ -174,6 +174,9 @@ class __libutils CustomUiStyle : public QProxyStyle {
 		void drawCEProgressBar(ControlElement element, const QStyleOption *option,
 													 QPainter *painter, const QWidget *widget) const;
 
+		// Draws primitive elements (PE) of progress chunk indicator
+		void drawPEProgressChunk(const QStyleOption *option, QPainter *painter, const QWidget *widget) const;
+
 		// Draws control elements (CE) of header sections (table/tree headers)
 		void drawCEHeaderSection(ControlElement element, const QStyleOption *option,
 														 QPainter *painter, const QWidget *widget) const;

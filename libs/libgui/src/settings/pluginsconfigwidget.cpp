@@ -40,7 +40,8 @@ PluginsConfigWidget::PluginsConfigWidget(QWidget *parent) : BaseConfigWidget(par
 	plugins_tab->setHeaderLabel(tr("Plugin"),0);
 	plugins_tab->setHeaderIcon(QPixmap(GuiUtilsNs::getIconPath("plugins")),0);
 	plugins_tab->setHeaderLabel(tr("Version"),1);
-	plugins_tab->setHeaderLabel(tr("Library"),2);
+	plugins_tab->setHeaderLabel(tr("Library"), 2);
+	plugins_tab->setSortingEnabled(true);
 
 	connect(plugins_tab, &CustomTableWidget::s_rowEdited, this, &PluginsConfigWidget::showPluginInfo);
 

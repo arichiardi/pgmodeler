@@ -600,50 +600,7 @@ void CustomUiStyle::drawPrimitive(PrimitiveElement element, const QStyleOption *
 	// Handle progress bar primitive elements
 	if(element == PE_IndicatorProgressChunk)
 	{
-		// This handles the progress fill part
-		const QStyleOptionProgressBar *pb_opt = qstyleoption_cast<const QStyleOptionProgressBar *>(option);
-		if(pb_opt && pb_opt->progress > pb_opt->minimum)
-		{
-			// Calculate progress percentage and content rectangle
-			int range = pb_opt->maximum - pb_opt->minimum;
-			qreal progress_ratio = range > 0 ? qreal(pb_opt->progress - pb_opt->minimum) / range : 0.0;
-			
-			QRect content_rect = option->rect;
-			
-			// Get orientation from the widget
-			const QProgressBar *progress_bar = qobject_cast<const QProgressBar*>(widget);
-			bool is_horizontal = !progress_bar || progress_bar->orientation() == Qt::Horizontal;
-			
-			if(is_horizontal)
-			{
-				// For horizontal progress bars, adjust width
-				content_rect.setWidth(int(content_rect.width() * progress_ratio));
-			}
-			else
-			{
-				// For vertical progress bars, adjust height from bottom
-				int new_height = int(content_rect.height() * progress_ratio);
-				content_rect.setY(content_rect.bottom() - new_height);
-				content_rect.setHeight(new_height);
-			}
-			
-			QColor fill_color = getStateColor(QPalette::Highlight, option);
-			QColor border_color = getStateColor(QPalette::Highlight, option).lighter(MidFactor);
-			
-			QPainterPath shape = createControlShape(content_rect, InputRadius, AllCorners);
-
-			painter->save();
-			painter->setRenderHint(QPainter::Antialiasing, true);
-			painter->setBrush(fill_color);
-			painter->setPen(Qt::NoPen);
-			painter->drawPath(shape);
-
-			// Draw border
-			painter->setPen(QPen(border_color, PenWidth));
-			painter->setBrush(Qt::NoBrush);
-			painter->drawPath(shape);
-			painter->restore();
-		}
+		drawPEProgressChunk(option, painter, widget);
 		return;
 	}
 
@@ -1158,7 +1115,8 @@ void CustomUiStyle::drawCEProgressBar(ControlElement element, const QStyleOption
 		// Draw the background groove
 		bg_color = getStateColor(QPalette::Base, pb_opt);
 		border_color = getStateColor(QPalette::Mid, pb_opt);
-		shape = createControlShape(pb_opt->rect, InputRadius, AllCorners);
+		shape = createControlShape(pb_opt->rect, InputRadius, AllCorners,
+															 0.5, 0.5, -0.5, -0.5);
 
 		painter->save();
 		painter->setRenderHint(QPainter::Antialiasing, true);
@@ -1196,8 +1154,9 @@ void CustomUiStyle::drawCEProgressBar(ControlElement element, const QStyleOption
 		}
 
 		fill_color = getStateColor(QPalette::Highlight, option);
-		border_color = getStateColor(QPalette::Highlight, option).lighter(MidFactor);		
-		shape = createControlShape(content_rect, InputRadius, AllCorners);
+		border_color = getStateColor(QPalette::Highlight, option).lighter(MidFactor);
+		shape = createControlShape(content_rect, InputRadius, AllCorners,
+															 0.5, 0.5, -0.5, -0.5);
 
 		painter->save();
 		painter->setRenderHint(QPainter::Antialiasing, true);
@@ -1259,67 +1218,94 @@ void CustomUiStyle::drawCEProgressBar(ControlElement element, const QStyleOption
 
 void CustomUiStyle::drawCEHeaderSection(ControlElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const
 {
-	if(element != CE_HeaderSection || !option || !painter || !widget)
-		return;
-
 	const QStyleOptionHeader *header_opt = qstyleoption_cast<const QStyleOptionHeader *>(option);
-	if(!header_opt)
+	
+	if(element != CE_HeaderSection || !header_opt || !painter || !widget)
 		return;
 
 	// Determine background and border colors based on state
 	QColor bg_color, border_color;
-	WidgetState wgt_st(option, widget);
+	WidgetState wgt_st(header_opt, widget);
 
 	if(wgt_st.is_pressed)
 	{
 		// Pressed state (for sorting interaction)
-		bg_color = getStateColor(QPalette::Button, option).darker(MinFactor);
+		bg_color = getStateColor(QPalette::Button, header_opt).darker(MinFactor);
 		border_color = bg_color.lighter(MidFactor);
 	}
 	else if(wgt_st.is_hovered)
 	{
 		// Hover state
-		bg_color = getStateColor(QPalette::Button, option).lighter(MidFactor);
+		bg_color = getStateColor(QPalette::Button, header_opt).lighter(MidFactor);
 		border_color = bg_color.lighter(MidFactor);
 	}
 	else
 	{
 		// Normal state
-		bg_color = getStateColor(QPalette::Button, option);
+		bg_color = getStateColor(QPalette::Button, header_opt);
 		border_color = bg_color.lighter(MinFactor);
 	}
 
 	// Try to determine column information from the header widget
-	int section_count = 1;  // Default to 1 if we can't determine
-	int section_index = 0;  // Default to 0 (first) if we can't determine
-	
+	int section_cnt = 1,  // Default to 1 if we can't determine
+		  section_idx = 0;  // Default to 0 (first) if we can't determine
+
 	// Try to get section information from QHeaderView
-	if(const QHeaderView *header_view = qobject_cast<const QHeaderView*>(widget))
+	const QHeaderView *header_view = qobject_cast<const QHeaderView *>(widget);
+	
+	if(header_view)
 	{
-		section_count = header_view->count();
-		// For section index, we need to find which section this rect corresponds to
-		// We'll approximate by finding the section at the center of our rect
-		QPoint center = option->rect.center();
-		section_index = header_view->logicalIndexAt(center);
-		if(section_index < 0) section_index = 0; // Fallback to first section
+		/* For section index, we need to find which section this rect corresponds to
+		 * We'll approximate by finding the section at the center of our rect */		
+		section_cnt = header_view->count();
+		section_idx = header_view->logicalIndexAt(header_opt->rect.center());
+
+		if(section_idx < 0)
+			section_idx = 0; // Fallback to first section
 	}
 
-	// Simple rendering: all headers have all 4 borders
 	painter->save();
 	painter->setBrush(bg_color);
 	painter->setPen(QPen(border_color, PenWidth));
-	QPainterPath shape = createControlShape(option->rect, 0, NoCorners);
+
+	QPainterPath shape = createControlShape(header_opt->rect, 0, NoCorners);
 	painter->drawPath(shape);
 
 	// For columns from the second onwards, draw a background-colored line 
 	// on the left border to "erase" it and avoid double lines between columns
-	if(section_index > 0)
+	if(section_idx > 0)
 	{
 		painter->setPen(QPen(bg_color, PenWidth));
+
 		// Draw line from 1px below top to 1px above bottom
-		QPoint start(option->rect.left(), option->rect.top() + 1);
-		QPoint end(option->rect.left(), option->rect.bottom() - 1);
+		QPoint start(header_opt->rect.left(), header_opt->rect.top() + 1),
+						end(header_opt->rect.left(), header_opt->rect.bottom() - 1);
+
 		painter->drawLine(start, end);
+	}
+	
+	// Draw custom sort indicator arrow if sorting is enabled
+	if(header_opt->sortIndicator != QStyleOptionHeader::None)
+	{
+		// Calculate arrow position - right side of header with some margin
+		int arrow_margin = 5;
+		QRect arrow_rect(header_opt->rect.right() - arrow_margin - ArrowWidth,
+		                 header_opt->rect.center().y() - ArrowHeight/2,
+		                 ArrowWidth, ArrowHeight);
+		
+		// Create option for arrow drawing
+		QStyleOption arrow_opt = *header_opt;
+		ArrowType arrow_type;
+
+		arrow_opt.rect = arrow_rect;
+
+		if(header_opt->sortIndicator == QStyleOptionHeader::SortUp)
+			arrow_type = UpArrow;
+		else
+			arrow_type = DownArrow;
+		
+		// Draw the sort arrow using our standard method
+		drawControlArrow(&arrow_opt, painter, widget, arrow_type);
 	}
 	
 	painter->restore();
@@ -1761,4 +1747,54 @@ bool CustomUiStyle::isDarkPalette(const QPalette &pal)
 bool CustomUiStyle::isDarkPalette()
 {
 	return isDarkPalette(qApp->palette());
+}
+
+void CustomUiStyle::drawPEProgressChunk(const QStyleOption *option, QPainter *painter, const QWidget *widget) const
+{
+	// This handles the progress fill part
+	const QStyleOptionProgressBar *pb_opt =
+					qstyleoption_cast<const QStyleOptionProgressBar *>(option);
+
+	if(!pb_opt || !painter || !widget || pb_opt->progress <= pb_opt->minimum)
+		return;
+
+	// Calculate progress percentage and content rectangle
+	int range = pb_opt->maximum - pb_opt->minimum;
+	qreal prog_ratio = range > 0 ? qreal(pb_opt->progress - pb_opt->minimum) / range : 0.0;
+	QRect content_rect = pb_opt->rect;
+	
+	// Get orientation from the widget
+	const QProgressBar *prog_bar = qobject_cast<const QProgressBar*>(widget);
+	bool is_horizontal = !prog_bar || prog_bar->orientation() == Qt::Horizontal;
+	
+	if(is_horizontal)
+	{
+		// For horizontal progress bars, adjust width
+		content_rect.setWidth(int(content_rect.width() * prog_ratio));
+	}
+	else
+	{
+		// For vertical progress bars, adjust height from bottom
+		int new_height = int(content_rect.height() * prog_ratio);
+		content_rect.setY(content_rect.bottom() - new_height);
+		content_rect.setHeight(new_height);
+	}
+	
+	QColor fill_color = getStateColor(QPalette::Highlight, option),
+				 border_color = getStateColor(QPalette::Highlight, option).lighter(MidFactor);
+
+	QPainterPath shape = createControlShape(content_rect, InputRadius, AllCorners,
+																					0.5, 0.5, -0.5, -0.5);
+
+	painter->save();
+	painter->setRenderHint(QPainter::Antialiasing, true);
+	painter->setBrush(fill_color);
+	painter->setPen(Qt::NoPen);
+	painter->drawPath(shape);
+
+	// Draw border
+	painter->setPen(QPen(border_color, PenWidth));
+	painter->setBrush(Qt::NoBrush);
+	painter->drawPath(shape);
+	painter->restore();
 }
