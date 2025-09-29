@@ -691,11 +691,14 @@ void CustomUiStyle::drawButtonMenuArrow(const QStyleOption *option, QPainter *pa
 	if(!option || !painter || !tool_btn && !push_btn)
 		return;
 	
-	// Check if the button has a menu associated otherwise no arrow is drawn
+	/* Check if the button has a menu associated otherwise no arrow is drawn
+	 * QToolButton that are icon only but have a popup menu will not have
+	 * the arrow drawn as well */
 	if((tool_btn && 
-			tool_btn->popupMode() != QToolButton::InstantPopup && 
-	   	tool_btn->popupMode() != QToolButton::DelayedPopup) ||			
-	   (push_btn && !push_btn->menu()))
+      (tool_btn->toolButtonStyle() == Qt::ToolButtonIconOnly ||
+			 (tool_btn->popupMode() != QToolButton::InstantPopup && 
+	   	  tool_btn->popupMode() != QToolButton::DelayedPopup)) ||			
+	   (push_btn && !push_btn->menu())))
 		return;
 		
 	painter->save();
@@ -708,8 +711,8 @@ void CustomUiStyle::drawButtonMenuArrow(const QStyleOption *option, QPainter *pa
 	ArrowType arr_type;
 	QRect arr_rect;
 	bool btn_txt_under_icon = (tool_btn && 
-	                            tool_btn->toolButtonStyle() == Qt::ToolButtonTextUnderIcon);
-	
+															tool_btn->toolButtonStyle() == Qt::ToolButtonTextUnderIcon);
+
 	// For QToolButton, check toolButtonStyle; for QPushButton, always use down arrow at bottom-right
 	if(btn_txt_under_icon)
 	{
@@ -1242,7 +1245,7 @@ void CustomUiStyle::drawCEProgressBar(ControlElement element, const QStyleOption
 		painter->drawPath(shape);
 
 		painter->restore();
-		
+
 		return;
 	}
 }
