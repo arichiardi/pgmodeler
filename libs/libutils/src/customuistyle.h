@@ -139,10 +139,11 @@ class __libutils CustomUiStyle : public QProxyStyle {
 		void drawCETabBar(ControlElement element, const QStyleOption *option,	
 											QPainter *painter, const QWidget *widget) const;
 
-		void drawControlArrow(const QStyleOption *option, QPainter *painter, const QWidget *widget, ArrowType direction) const;
+		void drawControlArrow(const QStyleOption *option, QPainter *painter, const QWidget *widget, 
+													ArrowType arr_type, bool small_sz = false) const;
 
 		// Draws menu arrow for QToolButton and QPushButton with menus (returns true if handled)
-		void drawToolButtonMenuArrow(const QStyleOption *option, QPainter *painter, const QWidget *widget) const;
+		void drawButtonMenuArrow(const QStyleOption *option, QPainter *painter, const QWidget *widget) const;
 
 		// Draws a scrollbar button (AddLine or SubLine) intelligently handling both types
 		void drawScrollBarButton(const QStyleOptionSlider *option, QPainter *painter, const QWidget *widget, 

@@ -585,7 +585,7 @@ void CustomUiStyle::drawPrimitive(PrimitiveElement element, const QStyleOption *
 			(qobject_cast<const QToolButton*>(widget) || 
 			 qobject_cast<const QPushButton*>(widget)))
 	{
-		drawToolButtonMenuArrow(option, painter, widget);
+		drawButtonMenuArrow(option, painter, widget);
 		return;
 	}
 
@@ -623,7 +623,7 @@ QPolygonF CustomUiStyle::rotatePolygon(const QPolygonF &polygon, qreal degrees)
 	return transform.map(polygon);
 }
 
-void CustomUiStyle::drawToolButtonMenuArrow(const QStyleOption *option, QPainter *painter, const QWidget *widget) const
+void CustomUiStyle::drawButtonMenuArrow(const QStyleOption *option, QPainter *painter, const QWidget *widget) const
 {
 	const QToolButton *tool_btn = qobject_cast<const QToolButton*>(widget);
 	const QPushButton *push_btn = qobject_cast<const QPushButton*>(widget);
@@ -644,12 +644,14 @@ void CustomUiStyle::drawToolButtonMenuArrow(const QStyleOption *option, QPainter
 	QRect btn_rect = widget->rect();
 	int v_spc = 4, h_spc = 3;
 	
-	// Determine arrow direction and position based on button type and style
+	// Determine arrow arr_type and position based on button type and style
 	ArrowType arr_type;
 	QRect arr_rect;
+	bool btn_txt_under_icon = (tool_btn && 
+	                            tool_btn->toolButtonStyle() == Qt::ToolButtonTextUnderIcon);
 	
 	// For QToolButton, check toolButtonStyle; for QPushButton, always use down arrow at bottom-right
-	if(tool_btn && tool_btn->toolButtonStyle() == Qt::ToolButtonTextUnderIcon)
+	if(btn_txt_under_icon)
 	{
 		// TextUnderIcon QToolButton: arrow pointing right, positioned at right-center
 		arr_type = RightArrow;
@@ -671,12 +673,13 @@ void CustomUiStyle::drawToolButtonMenuArrow(const QStyleOption *option, QPainter
 	arrow_opt.rect = arr_rect;
 	
 	// Use our custom arrow drawing
-	drawControlArrow(&arrow_opt, painter, widget, arr_type);
+	drawControlArrow(&arrow_opt, painter, widget, arr_type, !btn_txt_under_icon);
 	
 	painter->restore();
 }
 
-void CustomUiStyle::drawControlArrow(const QStyleOption *option, QPainter *painter, const QWidget *widget, ArrowType direction) const
+void CustomUiStyle::drawControlArrow(const QStyleOption *option, QPainter *painter, const QWidget *widget, 
+																	 	 ArrowType arr_type, bool small_sz) const
 {
 	if(!option || !painter)
 		return;
@@ -699,39 +702,39 @@ void CustomUiStyle::drawControlArrow(const QStyleOption *option, QPainter *paint
 	                         btn_rect.y() + btn_rect.height() / 2.0);
 	
 	// Round to pixel boundaries for crisp rendering
-	qreal half_w = qRound(ArrowWidth * 0.5),
-				half_h = qRound(ArrowHeight * 0.5);
+	qreal half_w = qRound(ArrowWidth * 0.5) * (small_sz ? 0.70 : 1.0),
+				half_h = qRound(ArrowHeight * 0.5) * (small_sz ? 0.70 : 1.0);
 
 	// Create base arrow pointing UP (triangle pointing up)
 	QPolygonF base_arrow;
-	base_arrow << QPointF(center.x(), center.y() - half_h)          // Top point
-	           << QPointF(center.x() - half_w, center.y() + half_h)  // Bottom left
-	           << QPointF(center.x() + half_w, center.y() + half_h);  // Bottom right
+	base_arrow << QPointF(center.x(), center.y() - half_h) // Top point
+	           << QPointF(center.x() - half_w, center.y() + half_h) // Bottom left
+	           << QPointF(center.x() + half_w, center.y() + half_h); // Bottom right
 
-	// Apply rotations based on arrow direction
+	// Apply rotations based on arrow arr_type
 	QPolygonF arrow;
 	
-	switch(direction)
+	switch(arr_type)
 	{
 		case UpArrow:
 			// Arrow pointing up: Use base arrow
 			arrow = base_arrow;
-			break;
+		break;
 			
 		case DownArrow:
 			// Arrow pointing down: Rotate base arrow 180°
 			arrow = rotatePolygon(base_arrow, 180);
-			break;
+		break;
 			
 		case LeftArrow:
 			// Arrow pointing left: Rotate base arrow 270° clockwise
 			arrow = rotatePolygon(base_arrow, 270);
-			break;
+		break;
 			
 		case RightArrow:
 			// Arrow pointing right: Rotate base arrow 90° clockwise
 			arrow = rotatePolygon(base_arrow, 90);
-			break;
+		break;
 	}
 
 	painter->save();
@@ -804,7 +807,7 @@ void CustomUiStyle::drawScrollBarButton(const QStyleOptionSlider *option, QPaint
 	else
 		arrow_opt.state &= ~(State_MouseOver | State_Sunken);
 
-	// Determine arrow direction intelligently based on button type and scrollbar orientation
+	// Determine arrow arr_type intelligently based on button type and scrollbar orientation
 	const QScrollBar *scrollbar =
 					qobject_cast<const QScrollBar*>(widget);
 
