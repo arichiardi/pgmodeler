@@ -19,6 +19,7 @@
 #include "customuistyle.h"
 #include <QApplication>
 #include <QPainterPath>
+#include <QProgressBar>
 #include <QToolBar>
 #include <QToolButton>
 #include <QPushButton>
@@ -499,6 +500,15 @@ void CustomUiStyle::drawComplexControl(ComplexControl control, const QStyleOptio
 
 void CustomUiStyle::drawControl(ControlElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const
 {
+	if(element == CE_ProgressBar || 
+		 element == CE_ProgressBarContents ||
+		 element == CE_ProgressBarGroove ||
+		 element == CE_ProgressBarLabel)
+	{
+		drawCEProgressBar(element, option, painter, widget);
+		return;
+	}
+
 	if(element == CE_TabBarTab)
 	{
 		drawCETabBar(element, option, painter, widget);
@@ -577,6 +587,56 @@ void CustomUiStyle::drawPrimitive(PrimitiveElement element, const QStyleOption *
 		if(!widget || !qobject_cast<const QAbstractSpinBox*>(widget))
 			drawPEGenericElemFrame(element, option, painter, widget, NoRadius);
 
+		return;
+	}
+
+	// Handle progress bar primitive elements
+	if(element == PE_IndicatorProgressChunk)
+	{
+		// This handles the progress fill part
+		const QStyleOptionProgressBar *pb_opt = qstyleoption_cast<const QStyleOptionProgressBar *>(option);
+		if(pb_opt && pb_opt->progress > pb_opt->minimum)
+		{
+			// Calculate progress percentage and content rectangle
+			int range = pb_opt->maximum - pb_opt->minimum;
+			qreal progress_ratio = range > 0 ? qreal(pb_opt->progress - pb_opt->minimum) / range : 0.0;
+			
+			QRect content_rect = option->rect;
+			
+			// Get orientation from the widget
+			const QProgressBar *progress_bar = qobject_cast<const QProgressBar*>(widget);
+			bool is_horizontal = !progress_bar || progress_bar->orientation() == Qt::Horizontal;
+			
+			if(is_horizontal)
+			{
+				// For horizontal progress bars, adjust width
+				content_rect.setWidth(int(content_rect.width() * progress_ratio));
+			}
+			else
+			{
+				// For vertical progress bars, adjust height from bottom
+				int new_height = int(content_rect.height() * progress_ratio);
+				content_rect.setY(content_rect.bottom() - new_height);
+				content_rect.setHeight(new_height);
+			}
+			
+			QColor fill_color = getStateColor(QPalette::Highlight, option);
+			QColor border_color = getStateColor(QPalette::Highlight, option).lighter(MidFactor);
+			
+			QPainterPath shape = createControlShape(content_rect, InputRadius, AllCorners);
+
+			painter->save();
+			painter->setRenderHint(QPainter::Antialiasing, true);
+			painter->setBrush(fill_color);
+			painter->setPen(Qt::NoPen);
+			painter->drawPath(shape);
+
+			// Draw border
+			painter->setPen(QPen(border_color, PenWidth));
+			painter->setBrush(Qt::NoBrush);
+			painter->drawPath(shape);
+			painter->restore();
+		}
 		return;
 	}
 
@@ -1068,6 +1128,123 @@ void CustomUiStyle::drawPELineEditPanel(PrimitiveElement element, const QStyleOp
 	painter->setPen(Qt::NoPen);
 	painter->drawPath(shape);
 	painter->restore();
+}
+
+void CustomUiStyle::drawCEProgressBar(ControlElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const
+{
+	const QStyleOptionProgressBar *pb_opt = qstyleoption_cast<const QStyleOptionProgressBar *>(option);
+
+	if(!pb_opt || !painter || !widget)
+		return;
+
+	QPainterPath shape;
+	QColor bg_color, border_color, fill_color;
+	bool has_progress = (pb_opt->progress > pb_opt->minimum),
+			 is_horizontal = qobject_cast<const QProgressBar*>(widget)->orientation() == Qt::Horizontal;
+
+	// Handle different progress bar elements
+	if(element == CE_ProgressBarGroove)
+	{
+		// Draw the background groove
+		bg_color = getStateColor(QPalette::Base, pb_opt);
+		border_color = getStateColor(QPalette::Mid, pb_opt);
+		shape = createControlShape(pb_opt->rect, InputRadius, AllCorners);
+
+		painter->save();
+		painter->setRenderHint(QPainter::Antialiasing, true);
+		painter->setBrush(bg_color);
+		painter->setPen(Qt::NoPen);
+		painter->drawPath(shape);
+
+		// Draw border
+		painter->setPen(QPen(border_color, PenWidth));
+		painter->setBrush(Qt::NoBrush);
+		painter->drawPath(shape);
+		painter->restore();
+		
+		return;
+	}
+	
+	if(element == CE_ProgressBarContents && has_progress)
+	{
+		// Calculate progress percentage and content rectangle
+		int range = pb_opt->maximum - pb_opt->minimum;
+		qreal prog_ratio = range > 0 ? 
+											static_cast<qreal>(pb_opt->progress - pb_opt->minimum) / range : 0.0;			
+		QRect content_rect = option->rect;
+		
+		if(is_horizontal)
+			// For horizontal progress bars, adjust width
+			content_rect.setWidth(int(content_rect.width() * prog_ratio));
+		else
+		{
+			// For vertical progress bars, adjust height from bottom
+			int new_height = static_cast<int>(content_rect.height() * prog_ratio);
+
+			content_rect.setY(content_rect.bottom() - new_height);
+			content_rect.setHeight(new_height);
+		}
+
+		fill_color = getStateColor(QPalette::Highlight, option);
+		border_color = getStateColor(QPalette::Highlight, option).lighter(MidFactor);		
+		shape = createControlShape(content_rect, InputRadius, AllCorners);
+
+		painter->save();
+		painter->setRenderHint(QPainter::Antialiasing, true);
+		painter->setBrush(fill_color);
+		painter->setPen(Qt::NoPen);
+		painter->drawPath(shape);
+
+		// Draw border
+		painter->setPen(QPen(border_color, PenWidth));
+		painter->setBrush(Qt::NoBrush);
+		painter->drawPath(shape);
+		painter->restore();
+
+		return;
+	}
+	
+	if(element == CE_ProgressBarLabel)
+	{
+		// Let Qt handle the label
+		QProxyStyle::drawControl(element, option, painter, widget);
+		return;
+	}
+
+	// For CE_ProgressBar, draw both groove and contents
+	if(element == CE_ProgressBar)
+	{	
+		if(has_progress)
+		{
+			// Use Highlight colors when there is progress
+			bg_color = getStateColor(QPalette::Highlight, option);
+			border_color = getStateColor(QPalette::Highlight, option).lighter(MidFactor);
+		}
+		else
+		{
+			// Use input styling when no progress (same as line edit)
+			bg_color = getStateColor(QPalette::Base, option);
+			border_color = getStateColor(QPalette::Mid, option);
+		}
+
+		shape = createControlShape(option->rect, InputRadius, AllCorners);
+
+		painter->save();
+		painter->setRenderHint(QPainter::Antialiasing, true);
+		painter->setBrush(bg_color);
+
+		painter->setPen(Qt::NoPen);
+		painter->drawPath(shape);
+
+		// Draw border
+		painter->setPen(QPen(border_color, PenWidth));
+		painter->setBrush(Qt::NoBrush);
+		painter->drawPath(shape);
+
+		painter->restore();
+		
+		return;
+	}
 }
 
 void CustomUiStyle::drawPETabWidgetFrame(PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const
