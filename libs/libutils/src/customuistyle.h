@@ -174,6 +174,10 @@ class __libutils CustomUiStyle : public QProxyStyle {
 		void drawCEProgressBar(ControlElement element, const QStyleOption *option,
 													 QPainter *painter, const QWidget *widget) const;
 
+		// Draws control elements (CE) of header sections (table/tree headers)
+		void drawCEHeaderSection(ControlElement element, const QStyleOption *option,
+														 QPainter *painter, const QWidget *widget) const;
+
 		// Draws primitive elements (PE) of tabs, group boxes and other framed elements
 		void drawPETabWidgetFrame(PrimitiveElement element, const QStyleOption *option,
 															QPainter *painter, const QWidget *widget) const;

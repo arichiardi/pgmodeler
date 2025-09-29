@@ -20,6 +20,7 @@
 #include <QApplication>
 #include <QPainterPath>
 #include <QProgressBar>
+#include <QHeaderView>
 #include <QToolBar>
 #include <QToolButton>
 #include <QPushButton>
@@ -500,6 +501,12 @@ void CustomUiStyle::drawComplexControl(ComplexControl control, const QStyleOptio
 
 void CustomUiStyle::drawControl(ControlElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const
 {
+	if(element == CE_HeaderSection)
+	{
+		drawCEHeaderSection(element, option, painter, widget);
+		return;
+	}
+
 	if(element == CE_ProgressBar || 
 		 element == CE_ProgressBarContents ||
 		 element == CE_ProgressBarGroove ||
@@ -1248,6 +1255,74 @@ void CustomUiStyle::drawCEProgressBar(ControlElement element, const QStyleOption
 
 		return;
 	}
+}
+
+void CustomUiStyle::drawCEHeaderSection(ControlElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const
+{
+	if(element != CE_HeaderSection || !option || !painter || !widget)
+		return;
+
+	const QStyleOptionHeader *header_opt = qstyleoption_cast<const QStyleOptionHeader *>(option);
+	if(!header_opt)
+		return;
+
+	// Determine background and border colors based on state
+	QColor bg_color, border_color;
+	WidgetState wgt_st(option, widget);
+
+	if(wgt_st.is_pressed)
+	{
+		// Pressed state (for sorting interaction)
+		bg_color = getStateColor(QPalette::Button, option).darker(MinFactor);
+		border_color = bg_color.lighter(MidFactor);
+	}
+	else if(wgt_st.is_hovered)
+	{
+		// Hover state
+		bg_color = getStateColor(QPalette::Button, option).lighter(MidFactor);
+		border_color = bg_color.lighter(MidFactor);
+	}
+	else
+	{
+		// Normal state
+		bg_color = getStateColor(QPalette::Button, option);
+		border_color = bg_color.lighter(MinFactor);
+	}
+
+	// Try to determine column information from the header widget
+	int section_count = 1;  // Default to 1 if we can't determine
+	int section_index = 0;  // Default to 0 (first) if we can't determine
+	
+	// Try to get section information from QHeaderView
+	if(const QHeaderView *header_view = qobject_cast<const QHeaderView*>(widget))
+	{
+		section_count = header_view->count();
+		// For section index, we need to find which section this rect corresponds to
+		// We'll approximate by finding the section at the center of our rect
+		QPoint center = option->rect.center();
+		section_index = header_view->logicalIndexAt(center);
+		if(section_index < 0) section_index = 0; // Fallback to first section
+	}
+
+	// Simple rendering: all headers have all 4 borders
+	painter->save();
+	painter->setBrush(bg_color);
+	painter->setPen(QPen(border_color, PenWidth));
+	QPainterPath shape = createControlShape(option->rect, 0, NoCorners);
+	painter->drawPath(shape);
+
+	// For columns from the second onwards, draw a background-colored line 
+	// on the left border to "erase" it and avoid double lines between columns
+	if(section_index > 0)
+	{
+		painter->setPen(QPen(bg_color, PenWidth));
+		// Draw line from 1px below top to 1px above bottom
+		QPoint start(option->rect.left(), option->rect.top() + 1);
+		QPoint end(option->rect.left(), option->rect.bottom() - 1);
+		painter->drawLine(start, end);
+	}
+	
+	painter->restore();
 }
 
 void CustomUiStyle::drawPETabWidgetFrame(PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const
