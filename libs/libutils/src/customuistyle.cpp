@@ -399,45 +399,27 @@ void CustomUiStyle::drawCETabBar(ControlElement element, const QStyleOption *opt
 			OpenEdge open_edge = NotOpen;
 			int dh = 0, dw = 0, dx = 0, dy = 0;
 			
-			if(shape == QTabBar::RoundedNorth)
+			if(shape == QTabBar::RoundedNorth || shape == QTabBar::RoundedSouth)
 			{
 				// North tabs: round top corners, open bottom edge
-				corner_flags = TopLeft | TopRight;
-				open_edge = OpenBottom;
+				corner_flags = (shape == QTabBar::RoundedNorth ? (TopLeft | TopRight) : (BottomLeft | BottomRight));
+				open_edge = (shape == QTabBar::RoundedNorth ? OpenBottom : OpenTop);
 
 				dh = wgt_st.is_selected ? 3 : 6;
 				dy = wgt_st.is_selected ? 1 : 2;
-				tab_rect.moveTop(tab_rect.top() + dy);
+
+				// For North tabs, we need to move the tab down
+				if(shape == QTabBar::RoundedNorth)
+					tab_rect.moveTop(tab_rect.top() + dy);
+
 				tab_rect.setHeight(tab_rect.height() - dh);
 			  tab_rect.translate(0, dy);
 			}
-			else if(shape == QTabBar::RoundedSouth)
-			{
-				// South tabs: round bottom corners, open top edge
-				corner_flags = BottomLeft | BottomRight;
-				open_edge = OpenTop;
-
-				dh = wgt_st.is_selected ? 2 : 4;
-				dy = wgt_st.is_selected ? 1 : 2;
-				tab_rect.setHeight(tab_rect.height() - dh);
-				tab_rect.translate(0, dy);
-			}
-			else if(shape == QTabBar::RoundedWest)
+			else if(shape == QTabBar::RoundedWest || shape == QTabBar::RoundedEast)
 			{
 				// West tabs: round left corners, open right edge
-				corner_flags = TopLeft | BottomLeft;
-				open_edge = OpenRight;
-
-				dw = wgt_st.is_selected ? 2 : 4;
-				dx = wgt_st.is_selected ? 1 : 2;
-				tab_rect.setWidth(tab_rect.width() - dw);
-				tab_rect.translate(dx, 0);
-			}
-			else if(shape == QTabBar::RoundedEast)
-			{
-				// East tabs: round right corners, open left edge
-				corner_flags = TopRight | BottomRight;
-				open_edge = OpenLeft;
+				corner_flags = (shape == QTabBar::RoundedWest ? (TopLeft | BottomLeft) : (TopRight | BottomRight));
+				open_edge = (shape == QTabBar::RoundedWest ? OpenRight : OpenLeft);
 
 				dw = wgt_st.is_selected ? 2 : 4;
 				dx = wgt_st.is_selected ? 1 : 2;
@@ -456,21 +438,36 @@ void CustomUiStyle::drawCETabBar(ControlElement element, const QStyleOption *opt
 				border_path = createControlShape(tab_rect, TabBarRadius,
 								corner_flags, 0.5, 0.5, -0.5, -0.5, open_edge);
 
-				/* We create a slightly larger background path to avoid artifacts at the border
-				 * at the junction of the tab bar and tab widget body. */
-				if(open_edge == OpenBottom)
-					bg_path = createControlShape(tab_rect, TabBarRadius,
-									corner_flags, 1, 0, -1, wgt_st.is_selected ? 2 : 0, open_edge);
-				else if(open_edge == OpenTop)
-					bg_path = createControlShape(tab_rect, TabBarRadius,
-									corner_flags, 1, wgt_st.is_selected ? -2 : 0, -1, 0, open_edge);
-				else if(open_edge == OpenRight)
-					bg_path = createControlShape(tab_rect, TabBarRadius,
-									corner_flags, 1, 0, wgt_st.is_selected ? 2 : 0, 0, open_edge);
-				else if(open_edge == OpenLeft)
-					bg_path = createControlShape(tab_rect, TabBarRadius,
-									corner_flags, wgt_st.is_selected ? -2 : 0, 0, -1, 0, open_edge);
+				qreal ajx = 0, ajy = 0, ajw = 0, ajh = 0;
 
+				/* We create a slightly larger background path to avoid artifacts at the border
+				 * at the junction of the tab bar and tab widget body. For each open side we have
+				 * specific adjustments factors at x, y, width and height */
+				if(open_edge == OpenBottom)
+				{
+					ajx = 1;  ajy = 0;
+					ajw = -1; ajh = wgt_st.is_selected ? 2 : 0;
+				}
+				else if(open_edge == OpenTop)
+				{
+					ajx = 1; ajy = wgt_st.is_selected ? -2 : 0; 
+					ajw = 0; ajh = -1; 
+				}
+				else if(open_edge == OpenRight)
+				{
+					ajx = 1;  ajy = 1;
+					ajw = wgt_st.is_selected ? 2 : 0;	ajh = -1;
+				}
+				else if(open_edge == OpenLeft)
+				{			
+					ajx = wgt_st.is_selected ? -2 : 0; ajy = 1;
+					ajw = -1; ajh = -1;
+				}
+
+				bg_path = createControlShape(tab_rect, TabBarRadius,
+									corner_flags, ajx, ajy, ajw, ajh, open_edge);
+
+				
 				// Draw background
 				painter->setBrush(bg_color);
 				painter->setPen(Qt::NoPen);
