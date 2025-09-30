@@ -42,15 +42,15 @@ all widgets in the application.
 class __libutils CustomUiStyle : public QProxyStyle {
 	private:
 		// Enum to control which side of the path should be open (only one side at a time)
-		enum RectEdge {
-			None = 0,   // Closed path (default)
-			LeftEdge,   // Open on the left edge
-			TopEdge,    // Open on the top edge
-			RightEdge,  // Open on the right edge
-			BottomEdge  // Open on the bottom edge
+		enum OpenEdge {
+			NotOpen = 0,   // Closed path (default)
+			OpenLeft,   // Open on the left edge
+			OpenTop,    // Open on the top edge
+			OpenRight,  // Open on the right edge
+			OpenBottom  // Open on the bottom edge
 		};
 
-				// Enum to control which corners should have rounded edges using bitwise operations
+		// Enum to control which corners should have rounded edges using bitwise operations
 		enum CornerFlag: unsigned {
 			NoCorners = 0,
 			TopLeft = 1,
@@ -106,7 +106,7 @@ class __libutils CustomUiStyle : public QProxyStyle {
 							 ButtonRadius = 4,
 							 InputRadius = 5,
 							 FrameRadius = 4,
-							 TabRadius = 2,
+							 TabWgtRadius = 2,
 							 TabBarRadius = 5,
 							 ScrollBarRadius = 2;
 
@@ -116,12 +116,12 @@ class __libutils CustomUiStyle : public QProxyStyle {
 							 					 MaxFactor = 150;
 
 		// Helper method to add edge with optional rounded corner to QPainterPath
-		void addEdgeWithCorner(QPainterPath &path, const QRectF &rect, RectEdge side, int radius) const;
+		void addEdgeWithCorner(QPainterPath &path, const QRectF &rect, OpenEdge side, int radius) const;
 
 		// Generic method to create QPainterPath with configurable corner radius and open sides
 		QPainterPath createControlShape(const QRect &rect, int radius, CornerFlag corners = AllCorners,
 																		qreal dx = 0, qreal dy = 0, qreal dw = 0, qreal dh = 0,
-																		RectEdge open_edge = None) const;
+																		OpenEdge open_edge = NotOpen) const;
 
 		// Draws complex control (CC) of combo boxes
 		void drawCCComboBox(ComplexControl control, const QStyleOptionComplex *option,

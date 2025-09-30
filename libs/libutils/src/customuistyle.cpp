@@ -27,12 +27,12 @@
 #include <QStyleOptionSpinBox>
 #include <QAbstractSpinBox>
 #include <QComboBox>
-#include <qcontainerfwd.h>
-#include <qdebug.h>
-#include <qpainterpath.h>
-#include <qscrollbar.h>
-#include <qstyleoption.h>
-#include <qtoolbutton.h>
+#include <QTabWidget>
+#include <QDebug>
+#include <QPainterPath>
+#include <QScrollBar>
+#include <QStyleOption>
+#include <QToolButton>
 #include "enumtype.h"
 
 QMap<QStyle::PixelMetric, int> CustomUiStyle::pixel_metrics;
@@ -41,14 +41,14 @@ CustomUiStyle::CustomUiStyle() : QProxyStyle() {}
 
 CustomUiStyle::CustomUiStyle(const QString& key) : QProxyStyle(key) {}
 
-void CustomUiStyle::addEdgeWithCorner(QPainterPath &path, const QRectF &rect, RectEdge side, int radius) const
+void CustomUiStyle::addEdgeWithCorner(QPainterPath &path, const QRectF &rect, OpenEdge side, int radius) const
 {
 	qreal x = rect.x();
 	qreal y = rect.y();
 	qreal w = rect.width();
 	qreal h = rect.height();
 
-	if(side == TopEdge)
+	if(side == OpenTop)
 	{
 		// Top edge from current position to top-right corner
 		if(radius > 0)
@@ -61,7 +61,7 @@ void CustomUiStyle::addEdgeWithCorner(QPainterPath &path, const QRectF &rect, Re
 			path.lineTo(x + w, y);
 		}
 	}
-	else if(side == RightEdge)
+	else if(side == OpenRight)
 	{
 		// Right edge from current position to bottom-right corner
 		if(radius > 0)
@@ -74,7 +74,7 @@ void CustomUiStyle::addEdgeWithCorner(QPainterPath &path, const QRectF &rect, Re
 			path.lineTo(x + w, y + h);
 		}
 	}
-	else if(side == BottomEdge)
+	else if(side == OpenBottom)
 	{
 		// Bottom edge from current position to bottom-left corner
 		if(radius > 0)
@@ -87,7 +87,7 @@ void CustomUiStyle::addEdgeWithCorner(QPainterPath &path, const QRectF &rect, Re
 			path.lineTo(x, y + h);
 		}
 	}
-	else if(side == LeftEdge)
+	else if(side == OpenLeft)
 	{
 		// Left edge from current position to top-left corner
 		if(radius > 0)
@@ -103,7 +103,7 @@ void CustomUiStyle::addEdgeWithCorner(QPainterPath &path, const QRectF &rect, Re
 }
 
 QPainterPath CustomUiStyle::createControlShape(const QRect &rect,  int radius, CustomUiStyle::CornerFlag corners,
-																							 qreal dx, qreal dy, qreal dw, qreal dh, RectEdge open_edge) const
+																							 qreal dx, qreal dy, qreal dw, qreal dh, OpenEdge open_edge) const
 {
 	QPainterPath path;
 	
@@ -119,54 +119,66 @@ QPainterPath CustomUiStyle::createControlShape(const QRect &rect,  int radius, C
 			bl_radius = (corners & BottomLeft) ? radius : 0,
 			br_radius = (corners & BottomRight) ? radius : 0;
 
+	// Debug: Log corner configuration for TabWidget frames
+	if(radius > 10) // Only for TabWidget frames which use larger radius
+	{
+		qDebug() << "TabWidget corners debug:";
+		qDebug() << "  corners flags:" << corners;
+		qDebug() << "  TopLeft:" << (corners & TopLeft ? "ROUND" : "STRAIGHT");
+		qDebug() << "  TopRight:" << (corners & TopRight ? "ROUND" : "STRAIGHT");
+		qDebug() << "  BottomLeft:" << (corners & BottomLeft ? "ROUND" : "STRAIGHT");
+		qDebug() << "  BottomRight:" << (corners & BottomRight ? "ROUND" : "STRAIGHT");
+		qDebug() << "  Radii: TL=" << tl_radius << "TR=" << tr_radius << "BL=" << bl_radius << "BR=" << br_radius;
+	}
+
 	// If all radii are 0 and closed, create a simple rectangle
-	if(open_edge == None && radius <= 0)
+	if(open_edge == NotOpen && radius <= 0)
 	{
 		path.addRect(adj_rect);
 		return path;
 	}
 	
-	if(open_edge == None)
+	if(open_edge == NotOpen)
 	{
 		// Closed rectangle - start from top-left, go clockwise	
 		path.moveTo(x + tl_radius, y);
-		addEdgeWithCorner(path, adj_rect, TopEdge, tr_radius);
-		addEdgeWithCorner(path, adj_rect, RightEdge, br_radius);
-		addEdgeWithCorner(path, adj_rect, BottomEdge, bl_radius);
-		addEdgeWithCorner(path, adj_rect, LeftEdge, tl_radius);
+		addEdgeWithCorner(path, adj_rect, OpenTop, tr_radius);
+		addEdgeWithCorner(path, adj_rect, OpenRight, br_radius);
+		addEdgeWithCorner(path, adj_rect, OpenBottom, bl_radius);
+		addEdgeWithCorner(path, adj_rect, OpenLeft, tl_radius);
 	}
 	// Open rectangle at top edge
-	else if(open_edge == TopEdge)
+	else if(open_edge == OpenTop)
 	{
 		// Open at top - start from top-right, go clockwise, end at top-left
 		path.moveTo(x + w, y + tr_radius);
-		addEdgeWithCorner(path, adj_rect, RightEdge, br_radius);
-		addEdgeWithCorner(path, adj_rect, BottomEdge, bl_radius);
-		addEdgeWithCorner(path, adj_rect, LeftEdge, tl_radius);
+		addEdgeWithCorner(path, adj_rect, OpenRight, br_radius);
+		addEdgeWithCorner(path, adj_rect, OpenBottom, bl_radius);
+		addEdgeWithCorner(path, adj_rect, OpenLeft, tl_radius);
 	}
-	else if(open_edge == RightEdge)
+	else if(open_edge == OpenRight)
 	{
 		// Open at right - start from bottom-right, go clockwise, end at top-right
 		path.moveTo(x + w - br_radius, y + h);
-		addEdgeWithCorner(path, adj_rect, BottomEdge, bl_radius);
-		addEdgeWithCorner(path, adj_rect, LeftEdge, tl_radius);
-		addEdgeWithCorner(path, adj_rect, TopEdge, tr_radius);
+		addEdgeWithCorner(path, adj_rect, OpenBottom, bl_radius);
+		addEdgeWithCorner(path, adj_rect, OpenLeft, tl_radius);
+		addEdgeWithCorner(path, adj_rect, OpenTop, tr_radius);
 	}
-	else if(open_edge == BottomEdge)
+	else if(open_edge == OpenBottom)
 	{
 		// Open at bottom - start from bottom-left, go clockwise, end at bottom-right
 		path.moveTo(x, y + h - bl_radius);
-		addEdgeWithCorner(path, adj_rect, LeftEdge, tl_radius);
-		addEdgeWithCorner(path, adj_rect, TopEdge, tr_radius);
-		addEdgeWithCorner(path, adj_rect, RightEdge, br_radius);
+		addEdgeWithCorner(path, adj_rect, OpenLeft, tl_radius);
+		addEdgeWithCorner(path, adj_rect, OpenTop, tr_radius);
+		addEdgeWithCorner(path, adj_rect, OpenRight, br_radius);
 	}
-	else if(open_edge == LeftEdge)
+	else if(open_edge == OpenLeft)
 	{
 		// Open at left - start from top-left, go clockwise, end at bottom-left
 		path.moveTo(x + tl_radius, y);
-		addEdgeWithCorner(path, adj_rect, TopEdge, tr_radius);
-		addEdgeWithCorner(path, adj_rect, RightEdge, br_radius);
-		addEdgeWithCorner(path, adj_rect, BottomEdge, bl_radius);
+		addEdgeWithCorner(path, adj_rect, OpenTop, tr_radius);
+		addEdgeWithCorner(path, adj_rect, OpenRight, br_radius);
+		addEdgeWithCorner(path, adj_rect, OpenBottom, bl_radius);
 	}
 	
 	return path;
@@ -382,39 +394,82 @@ void CustomUiStyle::drawCETabBar(ControlElement element, const QStyleOption *opt
 				border_color = border_color.darker(MidFactor);
 			}
 
-			if(shape == QTabBar::RoundedNorth || shape == QTabBar::TriangularNorth)
+			// Determine corner flags and edge opening based on tab shape
+			CornerFlag corner_flags = NoCorners;
+			OpenEdge open_edge = NotOpen;
+			int dh = 0, dw = 0, dx = 0, dy = 0;
+			
+			if(shape == QTabBar::RoundedNorth)
 			{
-				/* If the tab is not selected we shrink it by moving the top 
-				 * coordinate in 2px and the height in 4px. This will avoid
-				 * overlapping borders between the tab and the tab bar base */
-				if(!(tab_opt->state & State_Selected))
-				{
-					tab_rect.moveTop(tab_rect.top() + 2);
-					tab_rect.setHeight(tab_rect.height() - 5);				
-				}
-				else
-					/* For selected tabs, we reduce the height in 2px just to make their base
-					 * to be aligned with the tab widget body at top */
-					tab_rect.setHeight(tab_rect.height() - 3);
-				
-				tab_rect.setWidth(tab_rect.width() - 1);		
+				// North tabs: round top corners, open bottom edge
+				corner_flags = TopLeft | TopRight;
+				open_edge = OpenBottom;
 
-				// Move down 1px to avoid clipping the tab top border
-				tab_rect.translate(1, 1);
+				dh = wgt_st.is_selected ? 3 : 6;
+				dy = wgt_st.is_selected ? 1 : 2;
+				tab_rect.moveTop(tab_rect.top() + dy);
+				tab_rect.setHeight(tab_rect.height() - dh);
+			  tab_rect.translate(0, dy);
+			}
+			else if(shape == QTabBar::RoundedSouth)
+			{
+				// South tabs: round bottom corners, open top edge
+				corner_flags = BottomLeft | BottomRight;
+				open_edge = OpenTop;
+
+				dh = wgt_st.is_selected ? 2 : 4;
+				dy = wgt_st.is_selected ? 1 : 2;
+				tab_rect.setHeight(tab_rect.height() - dh);
+				tab_rect.translate(0, dy);
+			}
+			else if(shape == QTabBar::RoundedWest)
+			{
+				// West tabs: round left corners, open right edge
+				corner_flags = TopLeft | BottomLeft;
+				open_edge = OpenRight;
+
+				dw = wgt_st.is_selected ? 2 : 4;
+				dx = wgt_st.is_selected ? 1 : 2;
+				tab_rect.setWidth(tab_rect.width() - dw);
+				tab_rect.translate(dx, 0);
+			}
+			else if(shape == QTabBar::RoundedEast)
+			{
+				// East tabs: round right corners, open left edge
+				corner_flags = TopRight | BottomRight;
+				open_edge = OpenLeft;
+
+				dw = wgt_st.is_selected ? 2 : 4;
+				dx = wgt_st.is_selected ? 1 : 2;
+				tab_rect.setWidth(tab_rect.width() - dw);
+				tab_rect.translate(dx, 0);
 			}
 
 			painter->save();
 			painter->setRenderHint(QPainter::Antialiasing, true);
 
-			// Draw tab with rounded top corners and straight base
-			if(shape == QTabBar::RoundedNorth || shape == QTabBar::TriangularNorth)
+			// Draw tab with appropriate corners rounded and edge opened
+			if(corner_flags != NoCorners)
 			{
 				QPainterPath bg_path, border_path;
 
-				bg_path = border_path = createControlShape(tab_rect, TabBarRadius, 
-										TopLeft | TopRight, 0, 0, 0, 0, BottomEdge);
+				border_path = createControlShape(tab_rect, TabBarRadius,
+								corner_flags, 0.5, 0.5, -0.5, -0.5, open_edge);
 
-				bg_path.lineTo(tab_rect.left(), tab_rect.bottom());
+				/* We create a slightly larger background path to avoid artifacts at the border
+				 * at the junction of the tab bar and tab widget body. */
+				if(open_edge == OpenBottom)
+					bg_path = createControlShape(tab_rect, TabBarRadius,
+									corner_flags, 1, 0, -1, wgt_st.is_selected ? 2 : 0, open_edge);
+				else if(open_edge == OpenTop)
+					bg_path = createControlShape(tab_rect, TabBarRadius,
+									corner_flags, 1, wgt_st.is_selected ? -2 : 0, -1, 0, open_edge);
+				else if(open_edge == OpenRight)
+					bg_path = createControlShape(tab_rect, TabBarRadius,
+									corner_flags, 1, 0, wgt_st.is_selected ? 2 : 0, 0, open_edge);
+				else if(open_edge == OpenLeft)
+					bg_path = createControlShape(tab_rect, TabBarRadius,
+									corner_flags, wgt_st.is_selected ? -2 : 0, 0, -1, 0, open_edge);
 
 				// Draw background
 				painter->setBrush(bg_color);
@@ -422,32 +477,13 @@ void CustomUiStyle::drawCETabBar(ControlElement element, const QStyleOption *opt
 				painter->drawPath(bg_path);
 
 				// Draw border
-				painter->setPen(QPen(border_color, PenWidth));
+				painter->setPen(QPen(border_color, PenWidth, Qt::SolidLine, Qt::FlatCap));
 				painter->drawPath(border_path);
-
-				/* Workaround to avoid a line	between the tab border and the tab bar base
-				 * due to anti-aliasing. Below we draw a small fill rectangle at the base
-				 * of the tab so the artifact produced by antiliasing can be removed and the
-				 * selected tab is visually merged with the tab widget */
-				if(wgt_st.is_selected)
-				{
-					painter->setPen(Qt::NoPen);
-					painter->setBrush(bg_color);
-
-					QRectF rect(tab_rect.bottomLeft(),
-									tab_rect.bottomRight());
-
-					rect.translate(0.5,0);
-					rect.setWidth(rect.width() - 0.5);
-					rect.setHeight(rect.height() + 2.5);
-
-					painter->drawRect(rect);
-				}
 			}
 			else
 			{
-				// For the other tab shapes, draw simple rectangle
-				qDebug() << "CustomUiStyle::drawCETabBar(): " << shape << " not implemented, drawing rectangle instead.";
+				// Fallback for unsupported shapes
+				qDebug() << "CustomUiStyle::drawCETabBar():" << shape << "not fully implemented, drawing rectangle instead.";
 				painter->setBrush(bg_color);
 				painter->setPen(Qt::NoPen);
 				painter->drawRect(tab_rect);
@@ -1303,13 +1339,42 @@ void CustomUiStyle::drawPETabWidgetFrame(PrimitiveElement element, const QStyleO
 	QColor bg_color = getStateColor(QPalette::Dark, option).lighter(MinFactor),
 			   border_color = getStateColor(QPalette::Mid, option).lighter(MinFactor);
 
-	QRectF rect = option->rect;
-	int radius = TabRadius * 2; // Larger radius for smoothness
+	int radius = TabWgtRadius * 2; // Larger radius for smoothness
+	
+	const QTabWidget *tab_widget =
+					qobject_cast<const QTabWidget*>(widget);
 
-	// Only round bottom corners for tabs (open at top)
-	QPainterPath path = createControlShape(option->rect, radius, 
-		(CustomUiStyle::BottomLeft | CustomUiStyle::BottomRight),
-		0.5, 0.5, -0.5, -0.5, None);
+	QTabWidget::TabPosition tab_position = tab_widget->tabPosition();
+	
+	/* Determine which corners to round based on tab position
+	 * Rule: Keep only ONE corner straight (where tabs connect), round all others */
+	CornerFlag corners_to_round = AllCorners;
+	
+	switch(tab_position)
+	{
+		case QTabWidget::North:
+			// Keep top-left corner straight, round others
+			corners_to_round = TopRight | BottomLeft | BottomRight;
+		break;
+			
+		case QTabWidget::South:
+			// Keep bottom-left corner straight, round others  
+			corners_to_round = TopLeft | TopRight | BottomRight;
+		break;
+			
+		case QTabWidget::West:
+			// Keep top-left corner straight, round others
+			corners_to_round = TopRight | BottomLeft | BottomRight;
+		break;
+			
+		case QTabWidget::East:
+			// Keep top-right corner straight, round others
+			corners_to_round = TopLeft | BottomLeft | BottomRight;
+		break;
+	}
+
+	QPainterPath path = createControlShape(option->rect, radius, corners_to_round,
+	                                       0.5, 0.5, -0.5, -0.5, NotOpen);
 
 	painter->save();
 	painter->setRenderHint(QPainter::Antialiasing, true);
