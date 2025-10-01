@@ -1383,6 +1383,11 @@ void CustomUiStyle::drawCESplitter(ControlElement element, const QStyleOption *o
 			hnd_rect.moveTo(sp_rect.center().x() - half_sz, sp_rect.top());
 		}
 	}
+	else if(wgt_st.is_hovered)
+	{
+		bg_color = bg_color.lighter(MinFactor);
+		border_color = border_color.lighter(MinFactor);
+	}
 	else if(wgt_st.is_pressed)
 	{
 		bg_color = bg_color.darker(MinFactor);
@@ -1390,7 +1395,7 @@ void CustomUiStyle::drawCESplitter(ControlElement element, const QStyleOption *o
 	}
 
 	painter->save();
-	painter->setRenderHint(QPainter::Antialiasing, true);
+	painter->setRenderHint(QPainter::Antialiasing, false);
 	
 	painter->setBrush(bg_color);
 	painter->setPen(QPen(border_color, 1));

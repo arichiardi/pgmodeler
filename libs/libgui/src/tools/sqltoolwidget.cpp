@@ -174,9 +174,9 @@ void SQLToolWidget::setCornerButtonPos()
 		}
 
 		if(left_btn && left_btn->isVisible())
-			px = corner_wgt->geometry().left() + 2;
+			px = corner_wgt->geometry().left() + 3;
 		else
-			px = tab_bar->tabRect(idx).right() + 2;
+			px = tab_bar->tabRect(idx).right() + 3;
 
 		py = tab_bar->height() - sql_exec_corner_tb->height() - 4;
 
