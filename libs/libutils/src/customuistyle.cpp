@@ -28,11 +28,15 @@
 #include <QAbstractSpinBox>
 #include <QComboBox>
 #include <QTabWidget>
+#include <QSplitter>
 #include <QDebug>
 #include <QPainterPath>
 #include <QScrollBar>
 #include <QStyleOption>
 #include <QToolButton>
+#include <qnamespace.h>
+#include <qpen.h>
+#include <qpoint.h>
 #include "enumtype.h"
 
 QMap<QStyle::PixelMetric, int> CustomUiStyle::pixel_metrics;
@@ -552,6 +556,12 @@ void CustomUiStyle::drawControl(ControlElement element, const QStyleOption *opti
 	if(element == CE_TabBarTab)
 	{
 		drawCETabBar(element, option, painter, widget);
+		return;
+	}
+
+	if(element == CE_Splitter)
+	{
+		drawCESplitter(element, option, painter, widget);
 		return;
 	}
 
@@ -1325,6 +1335,67 @@ void CustomUiStyle::drawCEHeaderSection(ControlElement element, const QStyleOpti
 		painter->drawLine(start, end);
 	}
 	
+	painter->restore();
+}
+
+void CustomUiStyle::drawCESplitter(ControlElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const
+{
+	const QSplitter *splitter = qobject_cast<const QSplitter*>(widget);
+	
+	if(element != CE_Splitter || !option || !painter || !splitter)
+		return;
+
+	WidgetState wgt_st(option, splitter);
+	Qt::Orientation orientation = splitter->orientation();
+	QRect sp_rect = option->rect,
+			  hnd_rect;
+	QColor bg_color = getStateColor(QPalette::Highlight, option),
+	    	 border_color = getStateColor(QPalette::Highlight, option).lighter(MinFactor);
+	
+	// Make the splitter handle slightly thinner for better aesthetics
+	if(orientation == Qt::Horizontal)
+	{
+		sp_rect.setWidth(sp_rect.width() - 2);
+		sp_rect.translate(1, 0); 
+	}
+	else
+	{
+		sp_rect.setHeight(sp_rect.height() - 2);
+		sp_rect.translate(0, 1);
+	}
+
+	hnd_rect = sp_rect;
+
+	/* Configuring the handle rectangle based when in normal state
+	 * In that case the handle should be centered within the splitter */
+	if(!wgt_st.is_hovered)
+	{
+		int half_sz = SplitterSize / 2;
+
+		if(orientation == Qt::Horizontal)
+		{
+			hnd_rect.setHeight(SplitterSize);
+			hnd_rect.moveTo(sp_rect.left(), sp_rect.center().y() - half_sz);
+		}
+		else
+		{
+			hnd_rect.setWidth(SplitterSize);
+			hnd_rect.moveTo(sp_rect.center().x() - half_sz, sp_rect.top());
+		}
+	}
+	else if(wgt_st.is_pressed)
+	{
+		bg_color = bg_color.darker(MinFactor);
+		border_color = border_color.darker(MinFactor);
+	}
+
+	painter->save();
+	painter->setRenderHint(QPainter::Antialiasing, true);
+	
+	painter->setBrush(bg_color);
+	painter->setPen(QPen(border_color, 1));
+	painter->drawRect(hnd_rect);
+
 	painter->restore();
 }
 

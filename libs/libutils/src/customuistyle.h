@@ -100,7 +100,8 @@ class __libutils CustomUiStyle : public QProxyStyle {
 							   					 PenWidth = 1.2;
 
 		static constexpr int ArrowWidth = 9, // Complex control up arrow width
-							 					 ArrowHeight = 5; // Complex control up arrow height
+							 					 ArrowHeight = 5,  // Complex control up arrow height
+												 SplitterSize = 20;
 
 		static constexpr int NoRadius = 0,
 							 ButtonRadius = 4,
@@ -183,6 +184,10 @@ class __libutils CustomUiStyle : public QProxyStyle {
 		// Draws control elements (CE) of header sections (table/tree headers)
 		void drawCEHeaderSection(ControlElement element, const QStyleOption *option,
 														 QPainter *painter, const QWidget *widget) const;
+
+		// Draws control elements (CE) of splitters with custom styling
+		void drawCESplitter(ControlElement element, const QStyleOption *option,
+												QPainter *painter, const QWidget *widget) const;
 
 		// Draws primitive elements (PE) of tabs, group boxes and other framed elements
 		void drawPETabWidgetFrame(PrimitiveElement element, const QStyleOption *option,
