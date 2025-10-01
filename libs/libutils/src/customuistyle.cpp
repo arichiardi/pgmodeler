@@ -47,10 +47,8 @@ CustomUiStyle::CustomUiStyle(const QString& key) : QProxyStyle(key) {}
 
 void CustomUiStyle::addEdgeWithCorner(QPainterPath &path, const QRectF &rect, OpenEdge side, int radius) const
 {
-	qreal x = rect.x();
-	qreal y = rect.y();
-	qreal w = rect.width();
-	qreal h = rect.height();
+	qreal x = rect.x(), y = rect.y(),
+				w = rect.width(), h = rect.height();
 
 	if(side == OpenTop)
 	{
@@ -122,18 +120,6 @@ QPainterPath CustomUiStyle::createControlShape(const QRect &rect,  int radius, C
 			tr_radius = (corners & TopRight) ? radius : 0,
 			bl_radius = (corners & BottomLeft) ? radius : 0,
 			br_radius = (corners & BottomRight) ? radius : 0;
-
-	// Debug: Log corner configuration for TabWidget frames
-	if(radius > 10) // Only for TabWidget frames which use larger radius
-	{
-		qDebug() << "TabWidget corners debug:";
-		qDebug() << "  corners flags:" << corners;
-		qDebug() << "  TopLeft:" << (corners & TopLeft ? "ROUND" : "STRAIGHT");
-		qDebug() << "  TopRight:" << (corners & TopRight ? "ROUND" : "STRAIGHT");
-		qDebug() << "  BottomLeft:" << (corners & BottomLeft ? "ROUND" : "STRAIGHT");
-		qDebug() << "  BottomRight:" << (corners & BottomRight ? "ROUND" : "STRAIGHT");
-		qDebug() << "  Radii: TL=" << tl_radius << "TR=" << tr_radius << "BL=" << bl_radius << "BR=" << br_radius;
-	}
 
 	// If all radii are 0 and closed, create a simple rectangle
 	if(open_edge == NotOpen && radius <= 0)
@@ -377,134 +363,128 @@ void CustomUiStyle::drawCCSpinBox(ComplexControl control, const QStyleOptionComp
 
 void CustomUiStyle::drawCETabBar(ControlElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const
 {
-	// Handle individual QTabBar tabs with flat design styling
-	if(element == CE_TabBarTab && option && painter && widget)
-	{
-		const QStyleOptionTab *tab_opt = qstyleoption_cast<const QStyleOptionTab*>(option);
-
-		if(tab_opt)
-		{
-			QColor bg_color = getStateColor(QPalette::Dark, option).lighter(MinFactor),
-			   		 border_color = getStateColor(QPalette::Mid, option).lighter(MinFactor),
-			   		 text_color = getStateColor(QPalette::ButtonText, option);
+	const QStyleOptionTab *tab_opt = qstyleoption_cast<const QStyleOptionTab*>(option);
 	
-			WidgetState wgt_st(option, widget);
-			QRect tab_rect = tab_opt->rect;
-			QTabBar::Shape shape = tab_opt->shape;
+	// Handle individual QTabBar tabs with flat design styling
+	if(element != CE_TabBarTab || !tab_opt || !painter || !widget)
+		return;
 
-			if(!wgt_st.is_selected)
-			{
-				bg_color = bg_color.darker(MidFactor);
-				border_color = border_color.darker(MidFactor);
-			}
+	QColor bg_color = getStateColor(QPalette::Dark, tab_opt).lighter(MinFactor),
+					border_color = getStateColor(QPalette::Mid, tab_opt).lighter(MinFactor),
+					text_color = getStateColor(QPalette::ButtonText, tab_opt);
 
-			// Determine corner flags and edge opening based on tab shape
-			CornerFlag corner_flags = NoCorners;
-			OpenEdge open_edge = NotOpen;
-			int dh = 0, dw = 0, dx = 0, dy = 0;
-			
-			if(shape == QTabBar::RoundedNorth || shape == QTabBar::RoundedSouth)
-			{
-				// North tabs: round top corners, open bottom edge
-				corner_flags = (shape == QTabBar::RoundedNorth ? (TopLeft | TopRight) : (BottomLeft | BottomRight));
-				open_edge = (shape == QTabBar::RoundedNorth ? OpenBottom : OpenTop);
+	WidgetState wgt_st(tab_opt, widget);
+	QRect tab_rect = tab_opt->rect;
+	QTabBar::Shape shape = tab_opt->shape;
 
-				dh = wgt_st.is_selected ? 3 : 6;
-				dy = wgt_st.is_selected ? 1 : 2;
-
-				// For North tabs, we need to move the tab down
-				if(shape == QTabBar::RoundedNorth)
-					tab_rect.moveTop(tab_rect.top() + dy);
-
-				tab_rect.setHeight(tab_rect.height() - dh);
-			  tab_rect.translate(0, dy);
-			}
-			else if(shape == QTabBar::RoundedWest || shape == QTabBar::RoundedEast)
-			{
-				// West tabs: round left corners, open right edge
-				corner_flags = (shape == QTabBar::RoundedWest ? (TopLeft | BottomLeft) : (TopRight | BottomRight));
-				open_edge = (shape == QTabBar::RoundedWest ? OpenRight : OpenLeft);
-
-				dw = wgt_st.is_selected ? 2 : 4;
-				dx = wgt_st.is_selected ? 1 : 2;
-				tab_rect.setWidth(tab_rect.width() - dw);
-				tab_rect.translate(dx, 0);
-			}
-
-			painter->save();
-			painter->setRenderHint(QPainter::Antialiasing, true);
-
-			// Draw tab with appropriate corners rounded and edge opened
-			if(corner_flags != NoCorners)
-			{
-				QPainterPath bg_path, border_path;
-
-				border_path = createControlShape(tab_rect, TabBarRadius,
-								corner_flags, 0.5, 0.5, -0.5, -0.5, open_edge);
-
-				qreal ajx = 0, ajy = 0, ajw = 0, ajh = 0;
-
-				/* We create a slightly larger background path to avoid artifacts at the border
-				 * at the junction of the tab bar and tab widget body. For each open side we have
-				 * specific adjustments factors at x, y, width and height */
-				if(open_edge == OpenBottom)
-				{
-					ajx = 1;  ajy = 0;
-					ajw = -1; ajh = wgt_st.is_selected ? 2 : 0;
-				}
-				else if(open_edge == OpenTop)
-				{
-					ajx = 1; ajy = wgt_st.is_selected ? -2 : 0; 
-					ajw = 0; ajh = -1; 
-				}
-				else if(open_edge == OpenRight)
-				{
-					ajx = 1;  ajy = 1;
-					ajw = wgt_st.is_selected ? 2 : 0;	ajh = -1;
-				}
-				else if(open_edge == OpenLeft)
-				{			
-					ajx = wgt_st.is_selected ? -2 : 0; ajy = 1;
-					ajw = -1; ajh = -1;
-				}
-
-				bg_path = createControlShape(tab_rect, TabBarRadius,
-									corner_flags, ajx, ajy, ajw, ajh, open_edge);
-
-				
-				// Draw background
-				painter->setBrush(bg_color);
-				painter->setPen(Qt::NoPen);
-				painter->drawPath(bg_path);
-
-				// Draw border
-				painter->setPen(QPen(border_color, PenWidth, Qt::SolidLine, Qt::FlatCap));
-				painter->drawPath(border_path);
-			}
-			else
-			{
-				// Fallback for unsupported shapes
-				qDebug() << "CustomUiStyle::drawCETabBar():" << shape << "not fully implemented, drawing rectangle instead.";
-				painter->setBrush(bg_color);
-				painter->setPen(Qt::NoPen);
-				painter->drawRect(tab_rect);
-
-				painter->setPen(QPen(border_color, PenWidth));
-				painter->setBrush(Qt::NoBrush);
-				painter->drawRect(tab_rect);
-			}
-
-			painter->restore();
-
-			// Draw the tab text with proper contrast
-			QProxyStyle::drawControl(CE_TabBarTabLabel, tab_opt, painter, widget);
-
-			return;
-		}
+	if(!wgt_st.is_selected)
+	{
+		bg_color = bg_color.darker(MidFactor);
+		border_color = border_color.darker(MidFactor);
 	}
 
-	// For all other elements, use default behavior
-	QProxyStyle::drawControl(element, option, painter, widget);
+	// Determine corner flags and edge opening based on tab shape
+	CornerFlag corner_flags = NoCorners;
+	OpenEdge open_edge = NotOpen;
+	int dh = 0, dw = 0, dx = 0, dy = 0;
+	
+	if(shape == QTabBar::RoundedNorth || shape == QTabBar::RoundedSouth)
+	{
+		// North tabs: round top corners, open bottom edge
+		corner_flags = (shape == QTabBar::RoundedNorth ? (TopLeft | TopRight) : (BottomLeft | BottomRight));
+		open_edge = (shape == QTabBar::RoundedNorth ? OpenBottom : OpenTop);
+
+		dh = wgt_st.is_selected ? 3 : 6;
+		dy = wgt_st.is_selected ? 1 : 2;
+
+		// For North tabs, we need to move the tab down
+		if(shape == QTabBar::RoundedNorth)
+			tab_rect.moveTop(tab_rect.top() + dy);
+
+		tab_rect.setHeight(tab_rect.height() - dh);
+		tab_rect.translate(0, dy);
+	}
+	else if(shape == QTabBar::RoundedWest || shape == QTabBar::RoundedEast)
+	{
+		// West tabs: round left corners, open right edge
+		corner_flags = (shape == QTabBar::RoundedWest ? (TopLeft | BottomLeft) : (TopRight | BottomRight));
+		open_edge = (shape == QTabBar::RoundedWest ? OpenRight : OpenLeft);
+
+		dw = wgt_st.is_selected ? 2 : 4;
+		dx = wgt_st.is_selected ? 1 : 2;
+		tab_rect.setWidth(tab_rect.width() - dw);
+		tab_rect.translate(dx, 0);
+	}
+
+	painter->save();
+	painter->setRenderHint(QPainter::Antialiasing, true);
+
+	// Draw tab with appropriate corners rounded and edge opened
+	if(corner_flags != NoCorners)
+	{
+		QPainterPath bg_path, border_path;
+
+		border_path = createControlShape(tab_rect, TabBarRadius,
+						corner_flags, 0.5, 0.5, -0.5, -0.5, open_edge);
+
+		qreal ajx = 0, ajy = 0, ajw = 0, ajh = 0;
+
+		/* We create a slightly larger background path to avoid artifacts at the border
+		 * at the junction of the tab bar and tab widget body. For each open side we have
+			* specific adjustments factors at x, y, width and height */
+		if(open_edge == OpenBottom)
+		{
+			ajx = 1;  ajy = 0;
+			ajw = -1; ajh = wgt_st.is_selected ? 2 : 0;
+		}
+		else if(open_edge == OpenTop)
+		{
+			ajx = 1; ajy = wgt_st.is_selected ? -2 : 0; 
+			ajw = 0; ajh = -1; 
+		}
+		else if(open_edge == OpenRight)
+		{
+			ajx = 1;  ajy = 1;
+			ajw = wgt_st.is_selected ? 2 : 0;	ajh = -1;
+		}
+		else if(open_edge == OpenLeft)
+		{			
+			ajx = wgt_st.is_selected ? -2 : 0; ajy = 1;
+			ajw = -1; ajh = -1;
+		}
+
+		bg_path = createControlShape(tab_rect, TabBarRadius,
+							corner_flags, ajx, ajy, ajw, ajh, open_edge);
+
+		
+		// Draw background
+		painter->setBrush(bg_color);
+		painter->setPen(Qt::NoPen);
+		painter->drawPath(bg_path);
+
+		// Draw border
+		painter->setPen(QPen(border_color, PenWidth, Qt::SolidLine, Qt::FlatCap));
+		painter->drawPath(border_path);
+	}
+	else
+	{
+		// Fallback for unsupported shapes
+		qDebug() << "CustomUiStyle::drawCETabBar():" << shape << "not fully implemented, drawing rectangle instead.";
+		painter->setBrush(bg_color);
+		painter->setPen(Qt::NoPen);
+		painter->drawRect(tab_rect);
+
+		painter->setPen(QPen(border_color, PenWidth));
+		painter->setBrush(Qt::NoBrush);
+		painter->drawRect(tab_rect);
+	}
+
+	painter->restore();
+
+	// Draw the tab text with proper contrast
+	QProxyStyle::drawControl(CE_TabBarTabLabel, tab_opt, painter, widget);
+
+	return;
 }
 
 void CustomUiStyle::drawComplexControl(ComplexControl control, const QStyleOptionComplex *option, QPainter *painter, const QWidget *widget) const
@@ -1563,136 +1543,133 @@ void CustomUiStyle::drawCEScrollBar(ControlElement element, const QStyleOption *
 		return;
 
 	// Handle scroll bar control elements
-	switch(element)
+	if(element == CE_ScrollBarAddLine || element == CE_ScrollBarSubLine)
 	{
-		case CE_ScrollBarAddLine:
-		case CE_ScrollBarSubLine:
-		{
-			// Cast to complex option to access activeSubControls
-			const QStyleOptionComplex *complex_option = qstyleoption_cast<const QStyleOptionComplex*>(option);
-			
-			// Create a copy of the option to modify state for proper hover/pressed detection
-			QStyleOption btn_opt = *option;
-			
-			// Determine the correct SubControl for this element
-			QStyle::SubControl sub_control = (element == CE_ScrollBarAddLine) ? SC_ScrollBarAddLine : SC_ScrollBarSubLine;
-			
-			// Check if this specific button is active (hovered or pressed)
-			bool is_active = complex_option && (complex_option->activeSubControls & sub_control);
-			
-			if(is_active)
-			{
-				// Apply the correct state based on the main option state
-				if(option->state & State_Sunken)
-					btn_opt.state |= State_Sunken;
-				else if(option->state & State_MouseOver)
-					btn_opt.state |= State_MouseOver;
-			}
-			else
-			{
-				// Remove hover/pressed states if this button is not active
-				btn_opt.state &= ~(State_MouseOver | State_Sunken);
-			}
-
-			// Get colors based on the modified button state
-			WidgetState wgt_st(&btn_opt, widget);
-			QColor bg_color = getStateColor(QPalette::Button, &btn_opt);
-			QColor border_color = getStateColor(QPalette::Midlight, &btn_opt);
-
-			// Apply state-based color modifications
-			if(!wgt_st.is_enabled)
-			{
-				bg_color = bg_color.darker(MidFactor);
-				border_color = border_color.darker(MidFactor);
-			}
-			else if(wgt_st.is_pressed)
-			{
-				bg_color = getStateColor(QPalette::Dark, &btn_opt);
-				border_color = getStateColor(QPalette::Mid, &btn_opt);
-			}
-			else if(wgt_st.is_hovered)
-			{
-				bg_color = bg_color.lighter(MaxFactor);
-				border_color = border_color.lighter(MaxFactor);
-			}
-
-			painter->save();
-			painter->setRenderHint(QPainter::Antialiasing, true);
-
-			// Draw button background
-			painter->setBrush(bg_color);
-			painter->setPen(Qt::NoPen);
-			painter->drawRoundedRect(option->rect, ScrollBarRadius, ScrollBarRadius);
-
-			// Draw button border
-			painter->setPen(QPen(border_color, PenWidth));
-			painter->setBrush(Qt::NoBrush);
-			painter->drawRoundedRect(QRectF(option->rect).adjusted(0.5, 0.5, -0.5, -0.5), 
-																								 ScrollBarRadius, ScrollBarRadius);			// Use drawControlArrow to draw the arrow with proper state
-			// Convert SubControl to ArrowDirection
-			ArrowType arrow_dir;
-			if(sub_control == SC_ScrollBarAddLine)
-			{
-				// AddLine: bottom/right button
-				const QScrollBar *scrollbar = qobject_cast<const QScrollBar*>(widget);
-				bool is_horizontal = scrollbar && scrollbar->orientation() == Qt::Horizontal;
-				arrow_dir = is_horizontal ? RightArrow : DownArrow;
-			}
-			else // SC_ScrollBarSubLine
-			{
-				// SubLine: top/left button  
-				const QScrollBar *scrollbar = qobject_cast<const QScrollBar*>(widget);
-				bool is_horizontal = scrollbar && scrollbar->orientation() == Qt::Horizontal;
-				arrow_dir = is_horizontal ? LeftArrow : UpArrow;
-			}
-			
-			drawControlArrow(&btn_opt, painter, widget, arrow_dir);
-			
-			painter->restore();
-			break;
-		}
+		// Cast to complex option to access activeSubControls
+		const QStyleOptionComplex *complex_option = qstyleoption_cast<const QStyleOptionComplex*>(option);
 		
-		case CE_ScrollBarSlider:
+		// Create a copy of the option to modify state for proper hover/pressed detection
+		QStyleOption btn_opt = *option;
+		
+		// Determine the correct SubControl for this element
+		QStyle::SubControl sub_control = (element == CE_ScrollBarAddLine) ? SC_ScrollBarAddLine : SC_ScrollBarSubLine;
+		
+		// Check if this specific button is active (hovered or pressed)
+		bool is_active = complex_option && (complex_option->activeSubControls & sub_control);
+		
+		if(is_active)
 		{
-			// This is handled by drawCCScrollBar, but we can provide fallback
-			WidgetState wgt_st(option, widget);
-			QColor bg_color = getStateColor(QPalette::Button, option);
-			QColor border_color = getStateColor(QPalette::Midlight, option);
+			// Apply the correct state based on the main option state
+			if(option->state & State_Sunken)
+				btn_opt.state |= State_Sunken;
+			else if(option->state & State_MouseOver)
+				btn_opt.state |= State_MouseOver;
+		}
+		else
+		{
+			// Remove hover/pressed states if this button is not active
+			btn_opt.state &= ~(State_MouseOver | State_Sunken);
+		}
 
-			if(!wgt_st.is_enabled)
-			{
-				bg_color = bg_color.darker(MidFactor);
-				border_color = border_color.darker(MidFactor);
-			}
-			else if(wgt_st.is_pressed)
-			{
-				bg_color = getStateColor(QPalette::Dark, option);
-				border_color = getStateColor(QPalette::Mid, option);
-			}
-			else if(wgt_st.is_hovered)
-			{
-				bg_color = bg_color.lighter(MaxFactor);
-				border_color = border_color.lighter(MaxFactor);
-			}
+		// Get colors based on the modified button state
+		WidgetState wgt_st(&btn_opt, widget);
+		QColor bg_color = getStateColor(QPalette::Button, &btn_opt);
+		QColor border_color = getStateColor(QPalette::Midlight, &btn_opt);
 
-			painter->save();
-			painter->setRenderHint(QPainter::Antialiasing, true);
+		// Apply state-based color modifications
+		if(!wgt_st.is_enabled)
+		{
+			bg_color = bg_color.darker(MidFactor);
+			border_color = border_color.darker(MidFactor);
+		}
+		else if(wgt_st.is_pressed)
+		{
+			bg_color = getStateColor(QPalette::Dark, &btn_opt);
+			border_color = getStateColor(QPalette::Mid, &btn_opt);
+		}
+		else if(wgt_st.is_hovered)
+		{
+			bg_color = bg_color.lighter(MaxFactor);
+			border_color = border_color.lighter(MaxFactor);
+		}
 
-			painter->setBrush(bg_color);
-			painter->setPen(Qt::NoPen);
-			painter->drawRoundedRect(option->rect, ScrollBarRadius, ScrollBarRadius);
+		painter->save();
+		painter->setRenderHint(QPainter::Antialiasing, true);
 
-			painter->setPen(QPen(border_color, PenWidth));
-			painter->setBrush(Qt::NoBrush);
+		// Draw button background
+		painter->setBrush(bg_color);
+		painter->setPen(Qt::NoPen);
+		painter->drawRoundedRect(option->rect, ScrollBarRadius, ScrollBarRadius);
+
+		// Draw button border
+		painter->setPen(QPen(border_color, PenWidth));
+		painter->setBrush(Qt::NoBrush);
 		painter->drawRoundedRect(QRectF(option->rect).adjusted(0.5, 0.5, -0.5, -0.5), 
-																			 ScrollBarRadius, ScrollBarRadius);			painter->restore();
-			break;
+																							 ScrollBarRadius, ScrollBarRadius);
+
+		// Use drawControlArrow to draw the arrow with proper state
+		// Convert SubControl to ArrowDirection
+		ArrowType arrow_dir;
+		if(sub_control == SC_ScrollBarAddLine)
+		{
+			// AddLine: bottom/right button
+			const QScrollBar *scrollbar = qobject_cast<const QScrollBar*>(widget);
+			bool is_horizontal = scrollbar && scrollbar->orientation() == Qt::Horizontal;
+			arrow_dir = is_horizontal ? RightArrow : DownArrow;
+		}
+		else // SC_ScrollBarSubLine
+		{
+			// SubLine: top/left button  
+			const QScrollBar *scrollbar = qobject_cast<const QScrollBar*>(widget);
+			bool is_horizontal = scrollbar && scrollbar->orientation() == Qt::Horizontal;
+			arrow_dir = is_horizontal ? LeftArrow : UpArrow;
 		}
 		
-		default:
-			// For other scroll bar elements, use default rendering
-			QProxyStyle::drawControl(element, option, painter, widget);
-			break;
+		drawControlArrow(&btn_opt, painter, widget, arrow_dir);
+		
+		painter->restore();
+	}
+	else if(element == CE_ScrollBarSlider)
+	{
+		// This is handled by drawCCScrollBar, but we can provide fallback
+		WidgetState wgt_st(option, widget);
+		QColor bg_color = getStateColor(QPalette::Button, option);
+		QColor border_color = getStateColor(QPalette::Midlight, option);
+
+		if(!wgt_st.is_enabled)
+		{
+			bg_color = bg_color.darker(MidFactor);
+			border_color = border_color.darker(MidFactor);
+		}
+		else if(wgt_st.is_pressed)
+		{
+			bg_color = getStateColor(QPalette::Dark, option);
+			border_color = getStateColor(QPalette::Mid, option);
+		}
+		else if(wgt_st.is_hovered)
+		{
+			bg_color = bg_color.lighter(MaxFactor);
+			border_color = border_color.lighter(MaxFactor);
+		}
+
+		painter->save();
+		painter->setRenderHint(QPainter::Antialiasing, true);
+
+		painter->setBrush(bg_color);
+		painter->setPen(Qt::NoPen);
+		painter->drawRoundedRect(option->rect, ScrollBarRadius, ScrollBarRadius);
+
+		painter->setPen(QPen(border_color, PenWidth));
+		painter->setBrush(Qt::NoBrush);
+		painter->drawRoundedRect(QRectF(option->rect).adjusted(0.5, 0.5, -0.5, -0.5), 
+																		 ScrollBarRadius, ScrollBarRadius);
+
+		painter->restore();
+	}
+	else
+	{
+		// For other scroll bar elements, use default rendering
+		QProxyStyle::drawControl(element, option, painter, widget);
 	}
 }
 
