@@ -45,6 +45,11 @@ class __libgui AppearanceConfigWidget: public BaseConfigWidget, public Ui::Appea
 		//! \brief Holds the currently loaded config params
 		static std::map<QString, attribs_map> config_params;
 
+		//! \brief Holds the QPalette instances for each available theme
+		static std::map<QString, QPalette> theme_palettes;
+
+		static std::map<QString, QStringList> theme_tab_item_colors;
+
 		/*! \brief Holds the QPalette settings that defines dark theme.
 		 * This map key is a color role which value is a string list that
 		 * contains 3 elements: active color, inactive color and disabled color. */
@@ -66,6 +71,13 @@ class __libgui AppearanceConfigWidget: public BaseConfigWidget, public Ui::Appea
 
 		//! \brief Holds the current user interface theme id (light/dark)
 		static QString UiThemeId;
+
+		/*! \brief This attributes map stores the name of valid UI themes found
+		 * in themes/ folder. To be considered valid a theme must have at least
+		 * five files in its folder: appearance.conf, palette.conf, 
+		 * (sql|xml|pattern)-highlight.conf. Optionally the file extra-ui-style.conf
+		 * will be checked and used if present too. */
+		static attribs_map themes;
 
 		//! \brief Auxiliary class that stores the formating data of each element
 		class AppearanceConfigItem {
@@ -116,7 +128,7 @@ class __libgui AppearanceConfigWidget: public BaseConfigWidget, public Ui::Appea
 		bool show_grid, show_delimiters;
 
 		#warning "TODO: this method must return a list of available themes in the themes/ folder"
-		attribs_map getAvailableThemes();
+		void loadThemesPaletteConf();
 
 		#warning "TODO: this method must be called before loading/applying the main appearance configuration"
 		void loadPaletteConfig();

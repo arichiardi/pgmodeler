@@ -362,6 +362,7 @@ class __libutils Exception {
 		static unsigned constexpr MaximumStackSize = 50;
 
 		Exception();
+		Exception(Exception &e, const QString &method, const QString &file, int line);
 		Exception(const QString &msg, const QString &method, const QString &file, int line, Exception *exception=nullptr, const QString &extra_info="");
 		Exception(const QString &msg, const QString &method, const QString &file, int line, std::vector<Exception> &exceptions, const QString &extra_info="");
 		Exception(const QString &msg, ErrorCode error_code, const QString &method, const QString &file, int line, Exception *exception=nullptr, const QString &extra_info="");

@@ -17,6 +17,7 @@
 */
 
 #include "appearanceconfigwidget.h"
+#include "globalattributes.h"
 #include "widgets/modelwidget.h"
 #include "widgets/customtablewidget.h"
 #include "customuistyle.h"
@@ -27,8 +28,10 @@
 #include "graphicalview.h"
 #include <QButtonGroup>
 
-QPalette AppearanceConfigWidget::system_pal;
+std::map<QString, QPalette> AppearanceConfigWidget::theme_palettes;
 std::map<QString, attribs_map> AppearanceConfigWidget::config_params;
+std::map<QString, QStringList> AppearanceConfigWidget::theme_tab_item_colors;
+QPalette AppearanceConfigWidget::system_pal;
 QString AppearanceConfigWidget::UiThemeId;
 
 // Dark theme palette definition (0 -> Active, 1 -> Inactive, 2 -> Disabled)
@@ -383,6 +386,88 @@ std::map<QString, attribs_map> AppearanceConfigWidget::getConfigurationParams()
 	return config_params;
 }
 
+void AppearanceConfigWidget::loadThemesPaletteConf()
+{
+	QDir themes_root_dir(GlobalAttributes::getTmplConfigurationFilePath(GlobalAttributes::ThemesDir));
+	QString theme_dir, pal_file, curr_file;
+	QStringList ignored_themes;
+	std::vector<Exception> errors;
+	QFileInfo fi;
+	attribs_map found_themes;
+	QStringList theme_files{ GlobalAttributes::AppearanceConf, GlobalAttributes::PatternHighlightConf,
+													 GlobalAttributes::SQLHighlightConf, GlobalAttributes::XMLHighlightConf,
+													 GlobalAttributes::PaletteConf };
+
+	for(auto &theme_name : themes_root_dir.entryList({ "*" }, QDir::Dirs | QDir::NoDotAndDotDot))
+	{
+		theme_dir = themes_root_dir.absolutePath() + GlobalAttributes::DirSeparator + theme_name;
+
+		for(auto &file : theme_files)
+		{
+			fi.setFile(theme_dir + GlobalAttributes::DirSeparator + file + GlobalAttributes::ConfigurationExt);
+
+			if(!fi.exists() || !fi.isReadable())
+			{
+				ignored_themes.append(theme_name);
+				break;
+			}
+
+			if(file == GlobalAttributes::PaletteConf)
+			{
+				static const std::map<QString, QPalette::ColorRole> role_ids {
+					{ Attributes::Light, QPalette::Light }, 								{ Attributes::Midlight, QPalette::Midlight },
+					{ Attributes::Mid, QPalette::Mid }, 										{ Attributes::Button, QPalette::Button },
+					{ Attributes::Dark, QPalette::Dark }, 									{ Attributes::Base, QPalette::Base },
+					{ Attributes::Window, QPalette::Window },								{ Attributes::Shadow, QPalette::Shadow },
+					{ Attributes::Text, QPalette::Text }, 									{ Attributes::BrightText, QPalette::BrightText },
+					{ Attributes::ButtonText, QPalette::ButtonText }, 			{ Attributes::WindowText, QPalette::WindowText },
+					{ Attributes::Highlight, QPalette::Highlight }, 				{ Attributes::HighlightedText, QPalette::HighlightedText },
+					{ Attributes::Link, QPalette::Link }, 									{ Attributes::LinkVisited, QPalette::LinkVisited },
+					{ Attributes::AlternateBase, QPalette::AlternateBase }, { Attributes::ToolTipBase, QPalette::ToolTipBase },
+					{ Attributes::ToolTipText, QPalette::ToolTipText }, 		{ Attributes::PlaceholderText, QPalette::PlaceholderText } };
+
+				static const QStringList tab_item_ids {
+					Attributes::ProtItem,	Attributes::RelAddedItem,
+					Attributes::AddedItem, Attributes::UpdatedItem,
+					Attributes::RemovedItem, Attributes::ProtItemAlt,
+					Attributes::RelAddedItemAlt };
+				
+				QPalette pal;
+				std::map<QString, attribs_map> theme_conf;
+
+				pal_file = fi.absoluteFilePath();
+
+				try
+				{
+					// Load the palette file
+					BaseConfigWidget::loadConfiguration(pal_file, "", theme_conf, { Attributes::Role });			
+					
+					for(auto &[role_attr, cl_role] : role_ids)
+					{
+						pal.setColor(QPalette::Active, cl_role, QColor(theme_conf[role_attr][Attributes::Active]));
+						pal.setColor(QPalette::Inactive, cl_role, QColor(theme_conf[role_attr][Attributes::Inactive]));
+						pal.setColor(QPalette::Disabled, cl_role, QColor(theme_conf[role_attr][Attributes::Disabled]));
+					}
+					
+					theme_palettes[theme_name] = pal;
+				}
+				catch(Exception &e)
+				{
+					ignored_themes.append(theme_name);
+					errors.push_back(Exception(e, __PRETTY_FUNCTION__, __FILE__, __LINE__));
+				}
+			}
+		}
+	}
+
+	if(!ignored_themes.isEmpty())
+	{
+		Messagebox::error(tr("Unable to load theme(s) <strong>%1</strong> in path <strong>%2</strong> due to some missing or corrputed configuration file(s)!")
+											.arg(ignored_themes.join(", "), themes_root_dir.absolutePath()),
+											ErrorCode::Custom, __PRETTY_FUNCTION__, __FILE__, __LINE__, errors);
+	}
+}
+
 void AppearanceConfigWidget::loadExampleModel()
 {
 	try
@@ -472,6 +557,8 @@ void AppearanceConfigWidget::loadConfiguration()
 	{
 		// Storing the original system palette before loading the appearance config file
 		system_pal = qApp->palette();
+
+		loadThemesPaletteConf();
 
 		BaseConfigWidget::loadConfiguration(GlobalAttributes::AppearanceConf, config_params, { Attributes::Id }, true);
 
@@ -1051,9 +1138,8 @@ void AppearanceConfigWidget::applyUiStyleSheet()
 
 	if(!ui_style.isOpen())
 	{
-		Messagebox msg;
-		msg.show(Exception(Exception::getErrorMessage(ErrorCode::FileDirectoryNotAccessed).arg(ui_style.fileName()),
-											 ErrorCode::FileDirectoryNotAccessed, PGM_FUNC, PGM_FILE, PGM_LINE));
+		Messagebox::error(Exception::getErrorMessage(ErrorCode::FileDirectoryNotAccessed).arg(ui_style.fileName()),
+											ErrorCode::FileDirectoryNotAccessed, PGM_FUNC, PGM_FILE, PGM_LINE);
 	}
 	else
 	{
@@ -1086,9 +1172,8 @@ void AppearanceConfigWidget::applyUiStyleSheet()
 
 			if(!ico_style.isOpen())
 			{
-				Messagebox msg;
-				msg.show(Exception(Exception::getErrorMessage(ErrorCode::FileDirectoryNotAccessed).arg(ico_style_conf),
-														ErrorCode::FileDirectoryNotAccessed,PGM_FUNC,PGM_FILE,PGM_LINE));
+				Messagebox::error(Exception::getErrorMessage(ErrorCode::FileDirectoryNotAccessed).arg(ico_style_conf),
+													ErrorCode::FileDirectoryNotAccessed,PGM_FUNC,PGM_FILE,PGM_LINE);
 			}
 			else
 				ui_stylesheet.append(ico_style.readAll());

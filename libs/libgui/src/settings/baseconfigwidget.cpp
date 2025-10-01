@@ -136,8 +136,12 @@ void BaseConfigWidget::loadConfiguration(const QString &filename, const QString 
 	{
 		config_params.clear();
 		xmlparser.restartParser();
-		xmlparser.setDTDFile(GlobalAttributes::getTmplConfigurationFilePath(GlobalAttributes::ObjectDTDDir,
-																																				dtd + GlobalAttributes::ObjectDTDExt), dtd);
+
+		if(!dtd.isEmpty())
+		{
+			xmlparser.setDTDFile(GlobalAttributes::getTmplConfigurationFilePath(GlobalAttributes::ObjectDTDDir,
+																																					dtd + GlobalAttributes::ObjectDTDExt), dtd);
+		}
 
 		xmlparser.loadXMLFile(filename);
 
