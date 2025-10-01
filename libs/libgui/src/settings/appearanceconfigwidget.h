@@ -32,7 +32,6 @@
 #include "databasemodel.h"
 #include "widgets/numberedtexteditor.h"
 #include "utils/syntaxhighlighter.h"
-#include <algorithm>
 
 class __libgui AppearanceConfigWidget: public BaseConfigWidget, public Ui::AppearanceConfigWidget  {
 	Q_OBJECT
@@ -115,6 +114,12 @@ class __libgui AppearanceConfigWidget: public BaseConfigWidget, public Ui::Appea
 		std::vector<AppearanceConfigItem> conf_items;
 		
 		bool show_grid, show_delimiters;
+
+		#warning "TODO: this method must return a list of available themes in the themes/ folder"
+		attribs_map getAvailableThemes();
+
+		#warning "TODO: this method must be called before loading/applying the main appearance configuration"
+		void loadPaletteConfig();
 
 		//! \brief Loads the example model from file (conf/exampledb.dbm)
 		void loadExampleModel();
