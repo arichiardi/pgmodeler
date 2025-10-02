@@ -418,6 +418,59 @@ void AppearanceConfigWidget::loadThemesPaletteConf()
 			pal.setColor(cl_group, QPalette::Dark, light_cl);
 		}
 	}
+	else
+	{
+		static const std::map<QPalette::ColorRole, int> role_ids {
+			{ QPalette::Light, 240 }, { QPalette::Midlight, 200 }, 
+			{ QPalette::Mid, 195 }, { QPalette::Dark, 190 }, 
+			{ QPalette::Button, 210 }, { QPalette::Highlight, 180 }
+		};
+
+		for(auto [rl_id, min_lum] : role_ids)
+		{
+			QColor cl = pal.color(QPalette::Active, rl_id);
+			cl.setHsl(cl.hue(), cl.saturation(), min_lum);
+			pal.setColor(QPalette::Active, rl_id, cl);
+		}
+	}
+
+	// Debug: Display palette color roles and their luminance
+	qDebug() << "=== Palette Debug - System Theme ===";
+	qDebug() << QString("Is Dark Palette: %1").arg(CustomUiStyle::isDarkPalette(pal) ? "YES" : "NO");
+	
+	std::map<QPalette::ColorRole, QString> color_role_names = {
+		{ QPalette::WindowText, "WindowText" },
+		{ QPalette::Button, "Button" },
+		{ QPalette::Light, "Light" },
+		{ QPalette::Midlight, "Midlight" },
+		{ QPalette::Dark, "Dark" },
+		{ QPalette::Mid, "Mid" },
+		{ QPalette::Text, "Text" },
+		{ QPalette::BrightText, "BrightText" },
+		{ QPalette::ButtonText, "ButtonText" },
+		{ QPalette::Base, "Base" },
+		{ QPalette::Window, "Window" },
+		{ QPalette::Shadow, "Shadow" },
+		{ QPalette::Highlight, "Highlight" },
+		{ QPalette::HighlightedText, "HighlightedText" },
+		{ QPalette::Link, "Link" },
+		{ QPalette::LinkVisited, "LinkVisited" },
+		{ QPalette::AlternateBase, "AlternateBase" },
+		{ QPalette::ToolTipBase, "ToolTipBase" },
+		{ QPalette::ToolTipText, "ToolTipText" },
+		{ QPalette::PlaceholderText, "PlaceholderText" }
+	};
+	
+	for(auto &[role, role_name] : color_role_names)
+	{
+		QColor color = pal.color(QPalette::Active, role);
+		qDebug() << QString("  %1: %2 (luminance: %3)")
+								.arg(role_name, -20)  // -20 for left-aligned, 20 char width
+								.arg(color.name())
+								.arg(color.lightness());
+	}
+	
+	qDebug() << "====================================";
 	
 	theme_palettes[Attributes::System] = pal;
 
