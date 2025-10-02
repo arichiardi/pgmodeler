@@ -339,20 +339,12 @@ void CustomUiStyle::drawCCSpinBox(ComplexControl control, const QStyleOptionComp
 	painter->save();
 	painter->setRenderHint(QPainter::Antialiasing, true);
 
-	QRect edit_field_rect = subControlRect(CC_SpinBox, spin_opt, SC_SpinBoxEditField, widget);	
-	QStyleOption aux_option = *option;
-	bool is_enabled = (option->state & State_Enabled),
-			 is_focused = (option->state & State_HasFocus),
-			 is_pressed = (option->state & State_Sunken),
-			 is_hovered = (option->state & State_MouseOver);
+	QRect edit_field_rect = subControlRect(CC_SpinBox, spin_opt, SC_SpinBoxEditField, widget);
+	QStyleOptionSpinBox aux_sp_opt = *spin_opt;
 	
 	// Draw edit field if visible
 	if(spin_opt->subControls & SC_SpinBoxEditField && !edit_field_rect.isEmpty())
-	{
-		aux_option = *option;
-		aux_option.rect = edit_field_rect.adjusted(-2, -2, 2, 2);
-		drawSpinBoxEditField(&aux_option, painter, widget);
-	}
+		drawSpinBoxEditField(spin_opt, painter, widget);
 
 	// Draw up buttons if visible
 	drawSpinBoxButton(spin_opt, painter, widget, SC_SpinBoxUp);
@@ -746,9 +738,11 @@ void CustomUiStyle::drawControlArrow(const QStyleOption *option, QPainter *paint
 	WidgetState wgt_st(option, nullptr);
 	
 	// Adjust arrow color based on button state for better visibility
-	if(!wgt_st.is_enabled)
-		arr_color = arr_color.lighter(MidFactor); // Lighter for disabled state
-	else if(wgt_st.is_pressed)
+	//if(!wgt_st.is_enabled)
+	//	arr_color = arr_color.lighter(MidFactor); // Lighter for disabled state
+	//else
+		
+	if(wgt_st.is_enabled && wgt_st.is_pressed)
 		arr_color = arr_color.darker(MinFactor); // Slightly darker when pressed
 
 	// Calculate arrow geometry - fixed size calculation to ensure consistency
@@ -895,17 +889,21 @@ void CustomUiStyle::drawEditableComboBox(const QStyleOptionComboBox *option, QPa
 
 	WidgetState wgt_st(option, widget);
 
-	if(!wgt_st.is_enabled)
+	/* if(!wgt_st.is_enabled)
 	{
 		bg_color = bg_color.darker(MinFactor);
 		border_color = border_color.darker(MinFactor);
 	}
-	else if(wgt_st.is_focused)
-		border_color = getStateColor(QPalette::Highlight, option);
-	else if(wgt_st.is_hovered)
+	else */
+	if(wgt_st.is_enabled)
 	{
-		bg_color = bg_color.lighter(MaxFactor);
-		border_color = border_color.lighter(MaxFactor);
+		if(wgt_st.is_focused)
+			border_color = getStateColor(QPalette::Highlight, option);
+		else if(wgt_st.is_hovered)
+		{
+			bg_color = bg_color.lighter(MaxFactor);
+			border_color = border_color.lighter(MaxFactor);
+		}
 	}
 
 	// Create shape with all corners rounded
@@ -1458,23 +1456,27 @@ void CustomUiStyle::drawCCScrollBar(const QStyleOption *option, QPainter *painte
 				 border_color = getStateColor(QPalette::Midlight, sbar_opt).darker(MinFactor);
 
 	// Apply state-based color modifications with reduced luminosity
-	if(!wgt_st.is_enabled)
+	/* if(!wgt_st.is_enabled)
 	{
 		bg_color = bg_color.darker(MidFactor);
 		border_color = border_color.darker(MidFactor);
 	}
-	else if(wgt_st.is_pressed)
+	else */
+	if(wgt_st.is_enabled)
 	{
-		bg_color = getStateColor(QPalette::Dark, sbar_opt);
-		border_color = getStateColor(QPalette::Mid, sbar_opt);
+		if(wgt_st.is_pressed)
+		{
+			bg_color = getStateColor(QPalette::Dark, sbar_opt);
+			border_color = getStateColor(QPalette::Mid, sbar_opt);
+		}
+		else if(wgt_st.is_hovered)
+		{
+			// Reduced hover brightness to be more subtle
+			bg_color = bg_color.lighter(XMinFactor); 
+			border_color = border_color.lighter(XMinFactor);
+		}	
 	}
-	else if(wgt_st.is_hovered)
-	{
-		// Reduced hover brightness to be more subtle
-		bg_color = bg_color.lighter(XMinFactor); 
-		border_color = border_color.lighter(XMinFactor);
-	}
-
+	
 	painter->save();
 	painter->setRenderHint(QPainter::Antialiasing, true);
 
@@ -1577,20 +1579,24 @@ void CustomUiStyle::drawCEScrollBar(ControlElement element, const QStyleOption *
 		QColor border_color = getStateColor(QPalette::Midlight, &btn_opt);
 
 		// Apply state-based color modifications
-		if(!wgt_st.is_enabled)
+		/* if(!wgt_st.is_enabled)
 		{
 			bg_color = bg_color.darker(MidFactor);
 			border_color = border_color.darker(MidFactor);
 		}
-		else if(wgt_st.is_pressed)
+		else */
+		if(wgt_st.is_enabled)
 		{
-			bg_color = getStateColor(QPalette::Dark, &btn_opt);
-			border_color = getStateColor(QPalette::Mid, &btn_opt);
-		}
-		else if(wgt_st.is_hovered)
-		{
-			bg_color = bg_color.lighter(MaxFactor);
-			border_color = border_color.lighter(MaxFactor);
+			if(wgt_st.is_pressed)
+			{
+				bg_color = getStateColor(QPalette::Dark, &btn_opt);
+				border_color = getStateColor(QPalette::Mid, &btn_opt);
+			}
+			else if(wgt_st.is_hovered)
+			{
+				bg_color = bg_color.lighter(MaxFactor);
+				border_color = border_color.lighter(MaxFactor);
+			}
 		}
 
 		painter->save();
@@ -1636,20 +1642,25 @@ void CustomUiStyle::drawCEScrollBar(ControlElement element, const QStyleOption *
 		QColor bg_color = getStateColor(QPalette::Button, option);
 		QColor border_color = getStateColor(QPalette::Midlight, option);
 
-		if(!wgt_st.is_enabled)
+		/* if(!wgt_st.is_enabled)
 		{
 			bg_color = bg_color.darker(MidFactor);
 			border_color = border_color.darker(MidFactor);
 		}
-		else if(wgt_st.is_pressed)
+		else */
+
+		if(wgt_st.is_enabled)
 		{
-			bg_color = getStateColor(QPalette::Dark, option);
-			border_color = getStateColor(QPalette::Mid, option);
-		}
-		else if(wgt_st.is_hovered)
-		{
-			bg_color = bg_color.lighter(MaxFactor);
-			border_color = border_color.lighter(MaxFactor);
+			if(wgt_st.is_pressed)
+			{
+				bg_color = getStateColor(QPalette::Dark, option);
+				border_color = getStateColor(QPalette::Mid, option);
+			}
+			else if(wgt_st.is_hovered)
+			{
+				bg_color = bg_color.lighter(MaxFactor);
+				border_color = border_color.lighter(MaxFactor);
+			}
 		}
 
 		painter->save();
@@ -1707,22 +1718,27 @@ void CustomUiStyle::drawSpinBoxButton(const QStyleOptionSpinBox *option, QPainte
 		   	 border_color = getStateColor(QPalette::Midlight, option);
 
 	// Apply state-based color modifications (same as drawPEButtonPanel)
-	if(!wgt_st.is_enabled)
+	/* if(!wgt_st.is_enabled)
 	{
-		bg_color = bg_color.darker(MidFactor);
-		border_color = bg_color.darker(MidFactor);
+		bg_color = bg_color.darker(MinFactor);
+		border_color = bg_color.darker(MinFactor);
 	}
-	else if(wgt_st.is_focused)
-		border_color = getStateColor(QPalette::Highlight, option);
-	else if(wgt_st.is_pressed)
+	else */
+
+	if(wgt_st.is_enabled)
 	{
-		bg_color = getStateColor(QPalette::Dark, option);
-		border_color = getStateColor(QPalette::Mid, option);
-	}
-	else if(wgt_st.is_hovered)
-	{
-		bg_color = bg_color.lighter(MaxFactor);
-		border_color = border_color.lighter(MaxFactor);
+		if(wgt_st.is_focused)
+			border_color = getStateColor(QPalette::Highlight, option);
+		else if(wgt_st.is_pressed)
+		{
+			bg_color = getStateColor(QPalette::Dark, option);
+			border_color = getStateColor(QPalette::Mid, option);
+		}
+		else if(wgt_st.is_hovered)
+		{
+			bg_color = bg_color.lighter(MaxFactor);
+			border_color = border_color.lighter(MaxFactor);
+		}
 	}
 
 	QPainterPath btn_path;
@@ -1731,14 +1747,12 @@ void CustomUiStyle::drawSpinBoxButton(const QStyleOptionSpinBox *option, QPainte
 	if(btn_sc_id == SC_SpinBoxUp)
 	{
 		// Up button: only top-right corner rounded, extend slightly upward
-		rect.adjust(0, -2, 0, 1);
-		btn_path = createControlShape(rect, radius, CustomUiStyle::TopRight);
+		btn_path = createControlShape(rect, radius, CustomUiStyle::TopRight, 0, -1.5, 0, 1.5);
 	}
 	else
 	{
 		// Down button: only bottom-right corner rounded, extend slightly downward
-		rect.adjust(0, 0, 0, 2);
-		btn_path = createControlShape(rect, radius, CustomUiStyle::BottomRight);
+		btn_path = createControlShape(rect, radius, CustomUiStyle::BottomRight, 0, 0, 0, 1.5);
 	}
 
 	painter->save();
@@ -1771,37 +1785,39 @@ void CustomUiStyle::drawSpinBoxEditField(const QStyleOption *option, QPainter *p
 	if(!option || !painter || !widget)
 		return;
 
-	painter->save();
-	painter->setRenderHint(QPainter::Antialiasing, true);
-
 	// Get background color - no border needed for edit field
 	QPalette pal = qApp->palette();
 	QColor bg_color = getStateColor(pal, QPalette::Base, option),
-		  	 border_color = getStateColor(pal, QPalette::Dark, option).lighter(MaxFactor);
-	bool is_enabled = (option->state & State_Enabled),
-		 	 is_focused = (option->state & State_HasFocus),
-		 	 is_hovered = (option->state & State_MouseOver);
+		   border_color = getStateColor(pal, QPalette::Midlight, option);
+	WidgetState wgt_st(option, widget);
 
-	if(!is_enabled)
+	/* if(!wgt_st.is_enabled)
 	{
 		bg_color = bg_color.darker(MinFactor);
 		border_color = border_color.darker(MinFactor);
 	}
-	else if(is_focused)
-		border_color = getStateColor(pal, QPalette::Highlight, option);
-	else if(is_hovered)
+	else */
+	if(wgt_st.is_enabled)
 	{
-		bg_color = bg_color.lighter(MaxFactor);
-		border_color = border_color.lighter(MaxFactor);
+		if(wgt_st.is_focused)
+			border_color = getStateColor(pal, QPalette::Highlight, option);
+		else if(wgt_st.is_hovered)
+		{
+			bg_color = bg_color.lighter(MaxFactor);
+			border_color = border_color.lighter(MaxFactor);
+		}		
 	}
 
 	// Create custom path for edit field with specific rounded corners
-	QPainterPath edit_path = createControlShape(option->rect, InputRadius - 2, 
-																				CustomUiStyle::TopLeft | CustomUiStyle::BottomLeft);
+	QPainterPath edit_path = createControlShape(option->rect, InputRadius - 1,
+																							CustomUiStyle::TopLeft | CustomUiStyle::BottomLeft,
+																							1.5, 1.5, -1.5, -1.5);
 
-	// Draw only background (no border for edit field)
+	painter->save();
+	painter->setRenderHint(QPainter::Antialiasing, true);
+
+	painter->setPen(QPen(border_color, PenWidth));
 	painter->setBrush(bg_color);
-	painter->setPen(border_color);
 	painter->drawPath(edit_path);
 
 	painter->restore();
@@ -1821,10 +1837,11 @@ QColor CustomUiStyle::getStateColor(const QPalette &pal, QPalette::ColorRole rol
 	
 	// Determine color group based on widget state
 	QPalette::ColorGroup group = QPalette::Active;
+	WidgetState wgt_st(option, nullptr);
 	
-	if(!(option->state & State_Enabled))
+	if(!wgt_st.is_enabled)
 		group = QPalette::Disabled;
-	else if(!(option->state & State_Active))
+	else if(!wgt_st.is_active)
 		group = QPalette::Inactive;
 	
 	return pal.color(group, role);

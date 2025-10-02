@@ -70,6 +70,7 @@ class __libutils CustomUiStyle : public QProxyStyle {
 
 		struct WidgetState {
 			const bool is_enabled,
+							is_active,
 							is_hovered,
 							is_checked,
 							is_selected,
@@ -80,6 +81,7 @@ class __libutils CustomUiStyle : public QProxyStyle {
 
 			WidgetState(const QStyleOption *option, const QWidget *widget) :
 					is_enabled(option->state & State_Enabled),
+					is_active(option->state & State_Active),
 					is_hovered(option->state & State_MouseOver),
 					is_checked(option->state & State_On),
 					is_selected(option->state & State_Selected),
