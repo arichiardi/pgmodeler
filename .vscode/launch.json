@@ -2,7 +2,7 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Debug w/ Qt6 Printers",
+      "name": "Debug w/ Qt6 Printers (LLDB)",
       "type": "cppdbg",
       "request": "launch",
       "program": "${workspaceFolder}/build/bin/pgmodeler",
@@ -11,19 +11,36 @@
       "cwd": "${workspaceFolder}/build",
       "environment": [],
       "externalConsole": false,
-      "MIMode": "gdb",
+      "MIMode": "lldb",
       "setupCommands": [
-      {
-            "description": "Enable pretty-printing for gdb",
-            "text": "-enable-pretty-printing",
-            "ignoreFailures": true
+        {
+          "description": "Enable pretty-printing for LLDB (Qt printers etc.)",
+          "text": "settings set target.pretty-print-children true",
+          "ignoreFailures": true
         },
         {
-            "description": "Set Disassembly Flavor to Intel",
-            "text": "-gdb-set disassembly-flavor intel",
-            "ignoreFailures": true
+          "description": "Limit number of array/children elements shown",
+          "text": "settings set target.max-children-count 200",
+          "ignoreFailures": true
+        },
+        {
+          "description": "Limit string summaries (caracteres máximos)",
+          "text": "settings set target.max-string-summary-length 200",
+          "ignoreFailures": true
+        },
+        {
+          "description": "Limit summary depth (evita expansão recursiva infinita)",
+          "text": "settings set target.max-summary-depth 1",
+          "ignoreFailures": true
         }
-      ]
+      ],
+      "limitVariables": 100,   
+      "showDisplayString": true,
+      "logging": {
+        "engineLogging": false,
+        "trace": false,
+        "traceResponse": false
+      }
     }
   ]
 }

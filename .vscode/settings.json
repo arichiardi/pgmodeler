@@ -100,7 +100,8 @@
         "typeinfo": "cpp",
         "variant": "cpp",
         "filesystem": "cpp",
-        "qtoolbar": "cpp"
+        "qtoolbar": "cpp",
+        "bitset": "cpp"
     },
 
     // Hiding build artifacts and moc generated files from the explorer
@@ -116,6 +117,19 @@
         "**/cmake-build/**": true,
         ".qt": true
     },
+
+    "files.watcherExclude": {
+        "**/moc/**": true,      
+        "**/obj/**": true, 
+        "**/CMakeFiles/**": true,
+        "**/*.o": true,         
+        "**/*.a": true,         
+        "**/*.so*": true,
+        ".qtc_clangd": true,
+        "**/build/**": true,
+        "**/cmake-build/**": true,
+        ".qt": true
+    }
 
     "editor.tokenColorCustomizations": {
         "textMateRules": [

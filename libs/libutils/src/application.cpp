@@ -165,9 +165,9 @@ void Application::copyFilesRecursively(const QString &src_path, const QString &d
 			new_dst_path = dst_path + dst_dir.separator() + filename;
 			fi.setFile(new_src_path);
 
-			// Ignoring the files icons-*.conf, ui-*.conf, diff-*.conf
+			// Ignoring the files icons-*.conf, ui-*.conf, *-highlight.conf, appearance.conf
 			if((filename.startsWith("icons-") ||
-					filename.startsWith("ui-")) ||
+					filename.startsWith(GlobalAttributes::UiStyleConf)) ||
 
 					/* Ignore the file if it exists in the destination and we are creating
 					 * the missing files */
@@ -191,7 +191,9 @@ void Application::copyFilesRecursively(const QString &src_path, const QString &d
 		/* Forcing the removal of files that are not backward compatible
 		 * if they already exists in the destination folder */
 		if(dst_path.contains(GlobalAttributes::HighlightFileSuffix) ||
-			 dst_path.contains(GlobalAttributes::DiffPresetsConf))
+			 dst_path.contains(GlobalAttributes::DiffPresetsConf) ||
+			 dst_path.contains(GlobalAttributes::HighlightFileSuffix) ||
+			 dst_path.contains(GlobalAttributes::AppearanceConf))
 			QFile::remove(dst_path);
 
 		file_copied = QFile::copy(src_path, dst_path);

@@ -1047,9 +1047,9 @@ void CustomUiStyle::drawPEGenericElemFrame(PrimitiveElement element, const QStyl
 			if(wgt_st.is_pressed)
 				border_color = border_color.darker(MinFactor);
 			else if(!wgt_st.is_pressed && wgt_st.is_hovered)
-				border_color = border_color.lighter(MaxFactor);
-			else if(!wgt_st.is_pressed && !wgt_st.is_hovered)
 				border_color = border_color.lighter(MidFactor);
+			else if(!wgt_st.is_pressed && !wgt_st.is_hovered)
+				border_color = border_color.lighter(MinFactor);
 		}
 		else if(wgt_st.is_pressed && !is_edit_frm && !is_basic_frm)
 			border_color = getStateColor(QPalette::Button, option);

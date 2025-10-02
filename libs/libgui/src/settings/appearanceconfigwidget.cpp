@@ -30,7 +30,7 @@
 
 std::map<QString, QPalette> AppearanceConfigWidget::theme_palettes;
 std::map<QString, attribs_map> AppearanceConfigWidget::config_params;
-std::map<QString, QStringList> AppearanceConfigWidget::theme_tab_item_colors;
+std::map<QString, std::map<CustomTableWidget::TableItemColor, QColor>> AppearanceConfigWidget::theme_tab_item_colors;
 QPalette AppearanceConfigWidget::system_pal;
 QString AppearanceConfigWidget::UiThemeId;
 
@@ -258,11 +258,6 @@ CREATE TABLE public.table_b (\n \
 	ui_theme_gb->layout()->setAlignment(Qt::AlignTop | Qt::AlignLeft);
 	code_style_gb->layout()->setAlignment(Qt::AlignTop | Qt::AlignLeft);
 
-	ui_theme_cmb->addItem(tr("System default"), Attributes::System);
-	ui_theme_cmb->addItem(tr("Light"), Attributes::Light);
-	ui_theme_cmb->addItem(tr("Dark"), Attributes::Dark);
-	ui_theme_cmb->addItem(tr("InkSaver"), Attributes::InkSaver);
-
 	ico_sz_btn_grp = new QButtonGroup(this);
 	ico_sz_btn_grp->setExclusive(true);
 
@@ -314,7 +309,7 @@ CREATE TABLE public.table_b (\n \
 	connect(grid_size_spb, &QSpinBox::textChanged, this, &AppearanceConfigWidget::previewCanvasColors);
 	connect(grid_pattern_cmb, &QComboBox::currentIndexChanged, this, &AppearanceConfigWidget::previewCanvasColors);
 
-	connect(ui_theme_cmb, &QComboBox::activated, this, __slot(this, AppearanceConfigWidget::previewUiSettings));
+	connect(__theme_cmb, &QComboBox::activated, this, __slot(this, AppearanceConfigWidget::previewUiSettings));
 
 	connect(custom_scale_chk, &QCheckBox::toggled, this, [this](bool toggled){
 		custom_scale_spb->setEnabled(toggled);
@@ -398,8 +393,45 @@ void AppearanceConfigWidget::loadThemesPaletteConf()
 													 GlobalAttributes::SQLHighlightConf, GlobalAttributes::XMLHighlightConf,
 													 GlobalAttributes::PaletteConf };
 
+	/* Storing the original system palette as a fallback theme if none of the the
+	 * other themes can't be loaded */
+	QPalette pal = qApp->palette();
+
+	/* A small adjustment in the system palette need to be made.
+	 * In CustomUiStyle, the semantics of color roles Light, Midlight, Mid and Dark
+	 * are the same from light color schemes (light is the brightest color and dark the darkest)
+	 * to make the implementation more simple.
+	 *
+	 * The majority of dark palettes invert the semantics of that color roles being light the darkest one
+	 * and dark the lightest one. So below we just adjust the palette to work as needed by CustomUiStyle.
+	 * */
+	if(CustomUiStyle::isDarkPalette(pal))
+	{
+		QColor light_cl;
+				
+		for(auto cl_group : { QPalette::Active, QPalette::Inactive, QPalette::Disabled })
+		{
+			light_cl = pal.color(cl_group, QPalette::Light);
+			pal.setColor(cl_group, QPalette::Light, pal.color(cl_group, QPalette::Dark));
+			pal.setColor(cl_group, QPalette::Midlight, pal.color(cl_group, QPalette::Mid));
+			pal.setColor(cl_group, QPalette::Mid, pal.color(cl_group, QPalette::Midlight));
+			pal.setColor(cl_group, QPalette::Dark, light_cl);
+		}
+	}
+	
+	theme_palettes[Attributes::System] = pal;
+
+	__theme_cmb->blockSignals(true);
+	__theme_cmb->addItem(tr("System default"), Attributes::System);
+	__theme_cmb->blockSignals(false);
+
 	for(auto &theme_name : themes_root_dir.entryList({ "*" }, QDir::Dirs | QDir::NoDotAndDotDot))
 	{
+		/* Skip the system theme because it's has a different directory structure
+		 * which is used as fallback theme (see applyUiTheme) */
+		if(theme_name == Attributes::System)
+			continue;
+
 		theme_dir = themes_root_dir.absolutePath() + GlobalAttributes::DirSeparator + theme_name;
 
 		for(auto &file : theme_files)
@@ -426,12 +458,23 @@ void AppearanceConfigWidget::loadThemesPaletteConf()
 					{ Attributes::AlternateBase, QPalette::AlternateBase }, { Attributes::ToolTipBase, QPalette::ToolTipBase },
 					{ Attributes::ToolTipText, QPalette::ToolTipText }, 		{ Attributes::PlaceholderText, QPalette::PlaceholderText } };
 
-				static const QStringList tab_item_ids {
-					Attributes::ProtItem,	Attributes::RelAddedItem,
-					Attributes::AddedItem, Attributes::UpdatedItem,
-					Attributes::RemovedItem, Attributes::ProtItemAlt,
-					Attributes::RelAddedItemAlt };
+				static const QString tmpl_attr= QString("%1-%2");
 				
+				static const std::map<QString, CustomTableWidget::TableItemColor> tab_item_ids {
+					{ tmpl_attr.arg(Attributes::ProtItem, Attributes::BgColor), CustomTableWidget::ProtItemBgColor },
+					{ tmpl_attr.arg(Attributes::ProtItem, Attributes::FgColor), CustomTableWidget::ProtItemFgColor },
+					{ tmpl_attr.arg(Attributes::ProtItemAlt, Attributes::FgColor), CustomTableWidget::ProtItemAltFgColor },
+					{ tmpl_attr.arg(Attributes::RelAddedItem, Attributes::FgColor), CustomTableWidget::TableItemColor::RelAddedItemFgColor },
+					{ tmpl_attr.arg(Attributes::RelAddedItem, Attributes::BgColor), CustomTableWidget::TableItemColor::RelAddedItemBgColor },
+					{ tmpl_attr.arg(Attributes::RelAddedItemAlt, Attributes::FgColor), CustomTableWidget::TableItemColor::RelAddedItemAltFgColor },
+					{ tmpl_attr.arg(Attributes::AddedItem, Attributes::FgColor), CustomTableWidget::TableItemColor::AddedItemFgColor },
+					{ tmpl_attr.arg(Attributes::AddedItem, Attributes::BgColor), CustomTableWidget::TableItemColor::AddedItemBgColor },
+					{ tmpl_attr.arg(Attributes::UpdatedItem, Attributes::FgColor), CustomTableWidget::TableItemColor::UpdatedItemFgColor },
+					{ tmpl_attr.arg(Attributes::UpdatedItem, Attributes::BgColor), CustomTableWidget::TableItemColor::UpdatedItemBgColor },
+					{ tmpl_attr.arg(Attributes::RemovedItem, Attributes::FgColor), CustomTableWidget::TableItemColor::RemovedItemFgColor },
+					{ tmpl_attr.arg(Attributes::RemovedItem, Attributes::BgColor), CustomTableWidget::TableItemColor::RemovedItemBgColor }
+				};
+
 				QPalette pal;
 				std::map<QString, attribs_map> theme_conf;
 
@@ -440,6 +483,7 @@ void AppearanceConfigWidget::loadThemesPaletteConf()
 				try
 				{
 					// Load the palette file
+					#warning "Create DTD file for palette configuration"
 					BaseConfigWidget::loadConfiguration(pal_file, "", theme_conf, { Attributes::Role });			
 					
 					for(auto &[role_attr, cl_role] : role_ids)
@@ -448,8 +492,18 @@ void AppearanceConfigWidget::loadThemesPaletteConf()
 						pal.setColor(QPalette::Inactive, cl_role, QColor(theme_conf[role_attr][Attributes::Inactive]));
 						pal.setColor(QPalette::Disabled, cl_role, QColor(theme_conf[role_attr][Attributes::Disabled]));
 					}
-					
+
 					theme_palettes[theme_name] = pal;
+
+					for(auto &[tb_item_attr, tb_item_id] : tab_item_ids)
+					{
+						theme_tab_item_colors[theme_name][tb_item_id] =
+										QColor(theme_conf[tb_item_attr][Attributes::Color]);
+					}
+
+					__theme_cmb->blockSignals(true);
+					__theme_cmb->addItem(theme_name, theme_name);
+					__theme_cmb->blockSignals(false);
 				}
 				catch(Exception &e)
 				{
@@ -555,20 +609,20 @@ void AppearanceConfigWidget::loadConfiguration()
 {
 	try
 	{
-		// Storing the original system palette before loading the appearance config file
-		system_pal = qApp->palette();
-
+		/* Load the available themes palettes before loading the appearance config file
+		 * because the appearance config file contains the name of the theme to use */
 		loadThemesPaletteConf();
 
 		BaseConfigWidget::loadConfiguration(GlobalAttributes::AppearanceConf, config_params, { Attributes::Id }, true);
 
-		ui_theme_cmb->blockSignals(true);
+		__theme_cmb->blockSignals(true);
 		ico_sz_btn_grp->blockSignals(true);
 
 		QString icon_size = config_params[GlobalAttributes::AppearanceConf][Attributes::IconsSize];
-		int idx = ui_theme_cmb->findData(config_params[GlobalAttributes::AppearanceConf][Attributes::UiTheme], Qt::UserRole, Qt::MatchExactly);
 
-		ui_theme_cmb->setCurrentIndex(idx < 0 ? 0 : idx);
+		int idx = __theme_cmb->findData(config_params[GlobalAttributes::AppearanceConf][Attributes::UiTheme], Qt::UserRole, Qt::MatchExactly);
+
+		__theme_cmb->setCurrentIndex(idx < 0 ? 0 : idx);
 
 		if(icon_size == Attributes::Big)
 			icon_big_tb->setChecked(true);
@@ -577,7 +631,7 @@ void AppearanceConfigWidget::loadConfiguration()
 		else
 			icon_small_tb->setChecked(true);
 
-		ui_theme_cmb->blockSignals(false);
+		__theme_cmb->blockSignals(false);
 		ico_sz_btn_grp->blockSignals(false);
 
 		custom_scale_chk->setChecked(config_params[GlobalAttributes::AppearanceConf].count(Attributes::CustomScale));
@@ -706,7 +760,7 @@ void AppearanceConfigWidget::saveConfiguration()
 		QFont font;
 
 		config_params.erase(GlobalAttributes::AppearanceConf);
-		attribs[Attributes::UiTheme] =  ui_theme_cmb->currentData(Qt::UserRole).toString();
+		attribs[Attributes::UiTheme] =  __theme_cmb->currentData(Qt::UserRole).toString();
 		attribs[Attributes::IconsSize] = ico_sz_btn_grp->checkedButton()->property(Attributes::IconsSize.toLatin1()).toString();
 
 		attribs[Attributes::CustomScale] = custom_scale_chk->isChecked() ?
@@ -1005,7 +1059,7 @@ void AppearanceConfigWidget::previewCanvasColors()
 	setConfigurationChanged(true);
 }
 
-void AppearanceConfigWidget::applyUiTheme()
+/* void AppearanceConfigWidget::applyUiTheme()
 {
 	std::map<QString, std::map<QPalette::ColorRole, QStringList> *> color_maps = {
 		{ { Attributes::System }, { &system_ui_colors } },
@@ -1053,12 +1107,38 @@ void AppearanceConfigWidget::applyUiTheme()
 	applySyntaxHighlightTheme();
 	applyUiStyleSheet();
 	setConfigurationChanged(true);
+} */
+
+void AppearanceConfigWidget::applyUiTheme()
+{
+	QPalette pal = system_pal;
+	QString ui_theme = __theme_cmb->currentData(Qt::UserRole).toString();
+
+	UiThemeId = ui_theme;
+
+	// Configuring the tab item colors for the selected theme
+	for(auto &[tb_item_id, tb_item_cl] : theme_tab_item_colors[ui_theme])
+		CustomTableWidget::setTableItemColor(tb_item_id, tb_item_cl);
+
+	pal = theme_palettes[ui_theme];
+	qApp->setPalette(pal);
+
+	if(CustomUiStyle::isDarkPalette(qApp->palette()))
+	{
+		// Forcing QMenu class to use a lighter base color
+		pal.setColor(QPalette::Base, pal.color(QPalette::Base));
+		qApp->setPalette(pal, "QMenu");
+	}
+
+	applySyntaxHighlightTheme();
+	applyUiStyleSheet();
+	setConfigurationChanged(true);
 }
 
 QString AppearanceConfigWidget::__getUiThemeId()
 {
-	if(ui_theme_cmb->currentIndex() > 0)
-		return ui_theme_cmb->currentData(Qt::UserRole).toString();
+	if(__theme_cmb->currentIndex() > 0)
+		return __theme_cmb->currentData(Qt::UserRole).toString();
 
 	/* If the user chose the "System default" theme
 	 * we check if the system is using dark theme (text color lightness greater
@@ -1069,7 +1149,8 @@ QString AppearanceConfigWidget::__getUiThemeId()
 
 bool AppearanceConfigWidget::isDarkUiTheme()
 {
-	return UiThemeId == Attributes::Dark;
+	// return UiThemeId == Attributes::Dark;
+	return CustomUiStyle::isDarkPalette(qApp->palette());
 }
 
 void AppearanceConfigWidget::previewUiSettings()
