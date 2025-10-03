@@ -403,8 +403,7 @@ void AppearanceConfigWidget::loadThemesPaletteConf()
 	 * to make the implementation more simple.
 	 *
 	 * The majority of dark palettes invert the semantics of that color roles being light the darkest one
-	 * and dark the lightest one. So below we just adjust the palette to work as needed by CustomUiStyle.
-	 * */
+	 * and dark the lightest one. So below we just adjust the palette to work as needed by CustomUiStyle. */
 	if(CustomUiStyle::isDarkPalette(pal))
 	{
 		QColor light_cl;
@@ -412,6 +411,11 @@ void AppearanceConfigWidget::loadThemesPaletteConf()
 		for(auto cl_group : { QPalette::Active, QPalette::Inactive, QPalette::Disabled })
 		{
 			light_cl = pal.color(cl_group, QPalette::Light);
+
+			// If the light color is too dark in a dark palette, we set a minimum luminance to avoid very dark colors
+			if(light_cl.lightness() < 40)
+				light_cl.setHsl(light_cl.hue(), light_cl.saturation(), 40);
+
 			pal.setColor(cl_group, QPalette::Light, pal.color(cl_group, QPalette::Dark));
 			pal.setColor(cl_group, QPalette::Midlight, pal.color(cl_group, QPalette::Mid));
 			pal.setColor(cl_group, QPalette::Mid, pal.color(cl_group, QPalette::Midlight));
@@ -420,6 +424,7 @@ void AppearanceConfigWidget::loadThemesPaletteConf()
 	}
 	else
 	{
+		// Adjusting some color roles to have a minimum luminance in light palettes
 		static const std::map<QPalette::ColorRole, int> role_ids {
 			{ QPalette::Light, 225 }, { QPalette::Midlight, 200 }, 
 			{ QPalette::Mid, 195 }, { QPalette::Dark, 190 }, 
