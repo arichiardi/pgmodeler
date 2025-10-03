@@ -38,11 +38,6 @@ class __libgui AppearanceConfigWidget: public BaseConfigWidget, public Ui::Appea
 	Q_OBJECT
 
 	private:
-		/*! \brief This palette instance holds the current system palette. It is used
-		 * to detect if the system uses dark or light theme and helps pgModeler to
-		 * determine the proper colors when user used System default theme setting */
-		static QPalette system_pal;
-		
 		//! \brief Holds the currently loaded config params
 		static std::map<QString, attribs_map> config_params;
 
@@ -51,19 +46,6 @@ class __libgui AppearanceConfigWidget: public BaseConfigWidget, public Ui::Appea
 
 		//! \brief Holds the table widget item colors for each available theme
 		static std::map<QString, std::map<CustomTableWidget::TableItemColor, QColor>> theme_tab_item_colors;
-
-		/*! \brief Holds the QPalette settings that defines dark theme.
-		 * This map key is a color role which value is a string list that
-		 * contains 3 elements: active color, inactive color and disabled color. */
-		static std::map<QPalette::ColorRole, QStringList> dark_ui_colors,
-
-		/*! \brief Holds the QPalette settings that defines light theme.
-		 * This map key is a color role which value is a string list that
-			* contains 3 elements: active color, inactive color and disabled color. */
-		light_ui_colors,
-
-		//! \brief Holds the default/system QPalette settings.
-		system_ui_colors;
 
 		//! \brief Colors used for CustomTableWidget items when in system default dark theme
 		static QStringList dark_tab_item_colors,
@@ -146,9 +128,6 @@ class __libgui AppearanceConfigWidget: public BaseConfigWidget, public Ui::Appea
 
 		//! \brief Applies the design and code settings loaded from file
 		void applyDesignCodeStyle();
-
-		//! \brief Stores in system_ui_colors the default colors of ui elements
-		void storeSystemUiColors();
 
 		void applyDesignCodeTheme();
 

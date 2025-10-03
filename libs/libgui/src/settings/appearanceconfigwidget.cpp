@@ -31,69 +31,7 @@
 std::map<QString, QPalette> AppearanceConfigWidget::theme_palettes;
 std::map<QString, attribs_map> AppearanceConfigWidget::config_params;
 std::map<QString, std::map<CustomTableWidget::TableItemColor, QColor>> AppearanceConfigWidget::theme_tab_item_colors;
-QPalette AppearanceConfigWidget::system_pal;
 QString AppearanceConfigWidget::UiThemeId;
-
-// Dark theme palette definition (0 -> Active, 1 -> Inactive, 2 -> Disabled)
-std::map<QPalette::ColorRole, QStringList> AppearanceConfigWidget::dark_ui_colors {
-    { QPalette::Light, {"#4a5673", "#4a5673", "#374055"} },
-    { QPalette::Midlight, {"#404a64", "#404a64", "#30374b"} },
-    { QPalette::Mid, {"#3c445c", "#3c445c", "#2a3041"} },
-    { QPalette::Button, {"#394158", "#394158", "#242937"} },
-    { QPalette::Dark, {"#2a3041", "#2a3041", "#1d212d"} },
-    { QPalette::Base, {"#151a26", "#151a26", "#151a26"} },
-    { QPalette::Window, {"#151b25", "#151b25", "#151b25"} },
-    { QPalette::Shadow, {"#000000", "#000000", "#000000"} },
-    { QPalette::Text, {"#e1e2e5", "#d2d3d5", "#545e68"} },
-    { QPalette::BrightText, {"#f1f1f1", "#f1f1f1", "#f1f1f1"} },
-    { QPalette::ButtonText, {"#e1e2e5", "#d2d3d5", "#545e68"} },
-    { QPalette::WindowText, {"#e1e2e5", "#d2d3d5", "#545e68"} },
-    { QPalette::Highlight, {"#1b76af", "#166796", "#125378"} },
-    { QPalette::HighlightedText, {"#e1e2e5", "#e1e2e5", "#171b1e"} },
-    { QPalette::Link, {"#1a72ab", "#1a72ab", "#1a72ab"} },
-    { QPalette::LinkVisited, {"#717e7f", "#717e7f", "#717e7f"} },
-    { QPalette::AlternateBase, {"#191f2d", "#191f2d", "#111623"} },
-    { QPalette::ToolTipBase, {"#23282d", "#23282d", "#23282d"} },
-    { QPalette::ToolTipText, {"#e1e2e5", "#e1e2e5", "#e1e2e5"} },
-    { QPalette::PlaceholderText, {"#3a3c3e", "#3a3c3e", "#3a3c3e"} }
-};
-
-// Light theme palette definition (0 -> Active, 1 -> Inactive, 2 -> Disabled)
-std::map<QPalette::ColorRole, QStringList> AppearanceConfigWidget::light_ui_colors {
-	{ QPalette::WindowText, {"#232627", "#232627", "#777878"} },
-	{ QPalette::Button, {"#e2e3e4", "#e2e3e4", "#e2e3e4"} },
-	{ QPalette::Light, {"#ffffff", "#ffffff", "#ffffff"} },
-	{ QPalette::Midlight, {"#dadbdc", "#b0b1b2", "#b0b1b2"} },
-	{ QPalette::Mid, {"#a8a9aa", "#9fa0a1", "#9fa0a1"} },
-	{ QPalette::Dark, {"#909090", "#868686", "#777878"} },
-	{ QPalette::Text, {"#232627", "#232627", "#777878"} },
-	{ QPalette::BrightText, {"#ffffff", "#ffffff", "#ffffff"} },
-	{ QPalette::ButtonText, {"#232627", "#232627", "#777878"} },
-	{ QPalette::Base, {"#fcfcfc", "#fcfcfc", "#eff0f1"} },
-	{ QPalette::Window, {"#e4e5e6", "#e4e5e6", "#e4e5e6"} },
-	{ QPalette::Shadow, {"#404040", "#404040", "#7d7d7d"} },
-	{ QPalette::Highlight, {"#6ec7ff", "#6ec7ff", "#9fa0a1"} },
-	{ QPalette::HighlightedText, {"#fcfcfc", "#fcfcfc", "#fcfcfc"} },
-	{ QPalette::Link, {"#2980b9", "#2980b9", "#2980b9"} },
-	{ QPalette::LinkVisited, {"#7f8c8d", "#7f8c8d", "#7f8c8d"} },
-	{ QPalette::AlternateBase, {"#eff0f1", "#eff0f1", "#eff0f1"} },
-	{ QPalette::ToolTipBase, {"#232627", "#232627", "#232627"} },
-	{ QPalette::ToolTipText, {"#fcfcfc", "#fcfcfc", "#fcfcfc"} },
-	{ QPalette::PlaceholderText, {"#2e2f30", "#2e2f30", "#2e2f30"} }
-};
-
-std::map<QPalette::ColorRole, QStringList> AppearanceConfigWidget::system_ui_colors {
-	{ QPalette::WindowText, {} }, { QPalette::Button, {} },
-	{ QPalette::Light, {} }, { QPalette::Midlight, {} },
-	{ QPalette::Dark, {} }, { QPalette::Mid, {} },
-	{ QPalette::Text, {} }, { QPalette::BrightText, {} },
-	{ QPalette::ButtonText, {} }, { QPalette::Base, {} },
-	{ QPalette::Window, {} }, { QPalette::Shadow, {} },
-	{ QPalette::Highlight, {} }, { QPalette::HighlightedText, {} },
-	{ QPalette::Link, {} }, { QPalette::LinkVisited, {} },
-	{ QPalette::AlternateBase, {} }, { QPalette::ToolTipBase, {} },
-	{ QPalette::ToolTipText, {} }, { QPalette::PlaceholderText, {} }
-};
 
 QStringList AppearanceConfigWidget::dark_tab_item_colors {
 	"#b54225", "#fff", "#54a800", "#fff",
@@ -110,7 +48,6 @@ QStringList AppearanceConfigWidget::light_tab_item_colors {
 AppearanceConfigWidget::AppearanceConfigWidget(QWidget * parent) : BaseConfigWidget(parent)
 {
 	setupUi(this);
-	storeSystemUiColors();
 	show_grid = show_delimiters = false;
 
 	QStringList conf_ids={
@@ -420,6 +357,7 @@ void AppearanceConfigWidget::loadThemesPaletteConf()
 			pal.setColor(cl_group, QPalette::Midlight, pal.color(cl_group, QPalette::Mid));
 			pal.setColor(cl_group, QPalette::Mid, pal.color(cl_group, QPalette::Midlight));
 			pal.setColor(cl_group, QPalette::Dark, light_cl);
+			pal.setColor(cl_group, QPalette::Accent, pal.color(cl_group, QPalette::Highlight).lighter(CustomUiStyle::MinFactor));
 		}
 	}
 	else
@@ -427,8 +365,8 @@ void AppearanceConfigWidget::loadThemesPaletteConf()
 		// Adjusting some color roles to have a minimum luminance in light palettes
 		static const std::map<QPalette::ColorRole, int> role_ids {
 			{ QPalette::Light, 225 }, { QPalette::Midlight, 200 }, 
-			{ QPalette::Mid, 195 }, { QPalette::Dark, 190 }, 
-			{ QPalette::Button, 225 }, { QPalette::Highlight, 180 }
+			{ QPalette::Mid, 190 }, { QPalette::Dark, 185 }, 
+			{ QPalette::Button, 235 }, { QPalette::Highlight, 180 }
 		};
 
 		for(auto [rl_id, min_lum] : role_ids)
@@ -439,6 +377,10 @@ void AppearanceConfigWidget::loadThemesPaletteConf()
 			pal.setColor(QPalette::Inactive, rl_id, cl);
 			pal.setColor(QPalette::Disabled, rl_id, cl.darker(CustomUiStyle::XMinFactor));
 		}
+
+		pal.setColor(QPalette::Active, QPalette::Accent, pal.color(QPalette::Active, QPalette::Highlight));
+		pal.setColor(QPalette::Inactive, QPalette::Accent, pal.color(QPalette::Inactive, QPalette::Highlight));
+		pal.setColor(QPalette::Disabled, QPalette::Accent, pal.color(QPalette::Disabled, QPalette::Highlight).darker(CustomUiStyle::MinFactor));
 	}
 
 	// Debug: Display palette color roles and their luminance
@@ -459,6 +401,7 @@ void AppearanceConfigWidget::loadThemesPaletteConf()
 		{ QPalette::Window, "Window" },
 		{ QPalette::Shadow, "Shadow" },
 		{ QPalette::Highlight, "Highlight" },
+		{ QPalette::Accent, "Accent" },
 		{ QPalette::HighlightedText, "HighlightedText" },
 		{ QPalette::Link, "Link" },
 		{ QPalette::LinkVisited, "LinkVisited" },
@@ -516,7 +459,8 @@ void AppearanceConfigWidget::loadThemesPaletteConf()
 					{ Attributes::Highlight, QPalette::Highlight }, 				{ Attributes::HighlightedText, QPalette::HighlightedText },
 					{ Attributes::Link, QPalette::Link }, 									{ Attributes::LinkVisited, QPalette::LinkVisited },
 					{ Attributes::AlternateBase, QPalette::AlternateBase }, { Attributes::ToolTipBase, QPalette::ToolTipBase },
-					{ Attributes::ToolTipText, QPalette::ToolTipText }, 		{ Attributes::PlaceholderText, QPalette::PlaceholderText } };
+					{ Attributes::ToolTipText, QPalette::ToolTipText }, 		{ Attributes::PlaceholderText, QPalette::PlaceholderText },
+					{ Attributes::Accent, QPalette::Accent } };
 
 				static const QString tmpl_attr= QString("%1-%2");
 				
@@ -1171,7 +1115,7 @@ void AppearanceConfigWidget::previewCanvasColors()
 
 void AppearanceConfigWidget::applyUiTheme()
 {
-	QPalette pal = system_pal;
+	QPalette pal;
 	QString ui_theme = theme_cmb->currentData(Qt::UserRole).toString();
 
 	UiThemeId = ui_theme;
@@ -1292,7 +1236,7 @@ void AppearanceConfigWidget::applyUiStyleSheet()
 		 * to the current system palette */
 		if(theme_cmb->currentData(Qt::UserRole).toString() == Attributes::System)
 		{
-			prefix.prepend(CustomUiStyle::isDarkPalette(system_pal) ? "dark-" : "light-");
+			prefix.prepend(CustomUiStyle::isDarkPalette(theme_palettes[Attributes::System]) ? "dark-" : "light-");
 			
 			// Forcing the theme id to be "system" so the files can be found correctly
 			ui_theme = Attributes::System;
@@ -1341,20 +1285,5 @@ void AppearanceConfigWidget::applyUiStyleSheet()
 			small_ico_sz = 24;
 
 		CustomUiStyle::setPixelMetricValue(QStyle::PM_SmallIconSize, small_ico_sz);
-	}
-}
-
-void AppearanceConfigWidget::storeSystemUiColors()
-{
-	if(!system_ui_colors[QPalette::Base].isEmpty())
-		return;
-
-	QPalette pal = qApp->palette();
-
-	for(auto &itr : system_ui_colors)
-	{
-		itr.second.append(pal.color(QPalette::Active, itr.first).name());
-		itr.second.append(pal.color(QPalette::Inactive, itr.first).name());
-		itr.second.append(pal.color(QPalette::Disabled, itr.first).name());
 	}
 }

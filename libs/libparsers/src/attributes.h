@@ -33,6 +33,7 @@
 
 namespace Attributes {
 	static const QString
+	Accent("accent"),
 	Action("action"),
 	Active("active"),
 	ActiveLayers("active-layers"),
