@@ -113,11 +113,6 @@ class __libutils CustomUiStyle : public QProxyStyle {
 							 TabBarRadius = 5,
 							 ScrollBarRadius = 2;
 
-		static constexpr int XMinFactor = 105,
-												 MinFactor = 120,
-							 					 MidFactor = 135,
-							 					 MaxFactor = 150;
-
 		// Helper method to add edge with optional rounded corner to QPainterPath
 		void addEdgeWithCorner(QPainterPath &path, const QRectF &rect, OpenEdge side, int radius) const;
 
@@ -216,7 +211,15 @@ class __libutils CustomUiStyle : public QProxyStyle {
 		//! \brief Helper function to get color from application palette considering widget state
 		static QColor getStateColor(QPalette::ColorRole role, const QStyleOption *option);
 
+		static QColor getAdjustedColor(const QColor &color, int dark_ui_factor, int light_ui_factor);
+
 	public:
+		static constexpr int NoFactor = 0,
+												 XMinFactor = 105,
+												 MinFactor = 120,
+							 					 MidFactor = 135,
+							 					 MaxFactor = 150;
+
 		CustomUiStyle();
 
 		CustomUiStyle(const QString &key);

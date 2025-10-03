@@ -421,9 +421,9 @@ void AppearanceConfigWidget::loadThemesPaletteConf()
 	else
 	{
 		static const std::map<QPalette::ColorRole, int> role_ids {
-			{ QPalette::Light, 240 }, { QPalette::Midlight, 200 }, 
+			{ QPalette::Light, 225 }, { QPalette::Midlight, 200 }, 
 			{ QPalette::Mid, 195 }, { QPalette::Dark, 190 }, 
-			{ QPalette::Button, 210 }, { QPalette::Highlight, 180 }
+			{ QPalette::Button, 225 }, { QPalette::Highlight, 180 }
 		};
 
 		for(auto [rl_id, min_lum] : role_ids)
@@ -431,6 +431,8 @@ void AppearanceConfigWidget::loadThemesPaletteConf()
 			QColor cl = pal.color(QPalette::Active, rl_id);
 			cl.setHsl(cl.hue(), cl.saturation(), min_lum);
 			pal.setColor(QPalette::Active, rl_id, cl);
+			pal.setColor(QPalette::Inactive, rl_id, cl);
+			pal.setColor(QPalette::Disabled, rl_id, cl.darker(CustomUiStyle::XMinFactor));
 		}
 	}
 
