@@ -309,7 +309,7 @@ CREATE TABLE public.table_b (\n \
 	connect(grid_size_spb, &QSpinBox::textChanged, this, &AppearanceConfigWidget::previewCanvasColors);
 	connect(grid_pattern_cmb, &QComboBox::currentIndexChanged, this, &AppearanceConfigWidget::previewCanvasColors);
 
-	connect(__theme_cmb, &QComboBox::activated, this, __slot(this, AppearanceConfigWidget::previewUiSettings));
+	connect(theme_cmb, &QComboBox::activated, this, __slot(this, AppearanceConfigWidget::previewUiSettings));
 
 	connect(custom_scale_chk, &QCheckBox::toggled, this, [this](bool toggled){
 		custom_scale_spb->setEnabled(toggled);
@@ -481,9 +481,9 @@ void AppearanceConfigWidget::loadThemesPaletteConf()
 	
 	theme_palettes[Attributes::System] = pal;
 
-	__theme_cmb->blockSignals(true);
-	__theme_cmb->addItem(tr("System default"), Attributes::System);
-	__theme_cmb->blockSignals(false);
+	theme_cmb->blockSignals(true);
+	theme_cmb->addItem(tr("System default"), Attributes::System);
+	theme_cmb->blockSignals(false);
 
 	for(auto &theme_name : themes_root_dir.entryList({ "*" }, QDir::Dirs | QDir::NoDotAndDotDot))
 	{
@@ -561,9 +561,9 @@ void AppearanceConfigWidget::loadThemesPaletteConf()
 										QColor(theme_conf[tb_item_attr][Attributes::Color]);
 					}
 
-					__theme_cmb->blockSignals(true);
-					__theme_cmb->addItem(theme_name, theme_name);
-					__theme_cmb->blockSignals(false);
+					theme_cmb->blockSignals(true);
+					theme_cmb->addItem(theme_name, theme_name);
+					theme_cmb->blockSignals(false);
 				}
 				catch(Exception &e)
 				{
@@ -675,14 +675,14 @@ void AppearanceConfigWidget::loadConfiguration()
 
 		BaseConfigWidget::loadConfiguration(GlobalAttributes::AppearanceConf, config_params, { Attributes::Id }, true);
 
-		__theme_cmb->blockSignals(true);
+		theme_cmb->blockSignals(true);
 		ico_sz_btn_grp->blockSignals(true);
 
 		QString icon_size = config_params[GlobalAttributes::AppearanceConf][Attributes::IconsSize];
 
-		int idx = __theme_cmb->findData(config_params[GlobalAttributes::AppearanceConf][Attributes::UiTheme], Qt::UserRole, Qt::MatchExactly);
+		int idx = theme_cmb->findData(config_params[GlobalAttributes::AppearanceConf][Attributes::UiTheme], Qt::UserRole, Qt::MatchExactly);
 
-		__theme_cmb->setCurrentIndex(idx < 0 ? 0 : idx);
+		theme_cmb->setCurrentIndex(idx < 0 ? 0 : idx);
 
 		if(icon_size == Attributes::Big)
 			icon_big_tb->setChecked(true);
@@ -691,7 +691,7 @@ void AppearanceConfigWidget::loadConfiguration()
 		else
 			icon_small_tb->setChecked(true);
 
-		__theme_cmb->blockSignals(false);
+		theme_cmb->blockSignals(false);
 		ico_sz_btn_grp->blockSignals(false);
 
 		custom_scale_chk->setChecked(config_params[GlobalAttributes::AppearanceConf].count(Attributes::CustomScale));
@@ -820,7 +820,7 @@ void AppearanceConfigWidget::saveConfiguration()
 		QFont font;
 
 		config_params.erase(GlobalAttributes::AppearanceConf);
-		attribs[Attributes::UiTheme] =  __theme_cmb->currentData(Qt::UserRole).toString();
+		attribs[Attributes::UiTheme] =  theme_cmb->currentData(Qt::UserRole).toString();
 		attribs[Attributes::IconsSize] = ico_sz_btn_grp->checkedButton()->property(Attributes::IconsSize.toLatin1()).toString();
 
 		attribs[Attributes::CustomScale] = custom_scale_chk->isChecked() ?
@@ -899,7 +899,7 @@ void AppearanceConfigWidget::saveConfiguration()
 		config_params[Attributes::Objects] = attribs;
 		BaseConfigWidget::saveConfiguration(GlobalAttributes::AppearanceConf, config_params);
 
-		QString hl_theme = __getUiThemeId();
+		QString hl_theme = getThemeId();
 
 		/* Copying the syntax highilighting files from the selected theme folder to the user's storage
 		 * in order to reflect the new syntax highlighting setting in the whole application */
@@ -1135,7 +1135,7 @@ void AppearanceConfigWidget::previewCanvasColors()
 		{ { Attributes::InkSaver }, { &light_tab_item_colors } },
 	};
 
-	QString ui_theme = __getUiThemeId();
+	QString ui_theme = getThemeId();
 	std::map<QPalette::ColorRole, QStringList> *color_map = color_maps[ui_theme];
 	QStringList *item_colors = item_color_lists[ui_theme];
 	QPalette pal = system_pal;
@@ -1172,7 +1172,7 @@ void AppearanceConfigWidget::previewCanvasColors()
 void AppearanceConfigWidget::applyUiTheme()
 {
 	QPalette pal = system_pal;
-	QString ui_theme = __theme_cmb->currentData(Qt::UserRole).toString();
+	QString ui_theme = theme_cmb->currentData(Qt::UserRole).toString();
 
 	UiThemeId = ui_theme;
 
@@ -1195,22 +1195,15 @@ void AppearanceConfigWidget::applyUiTheme()
 	setConfigurationChanged(true);
 }
 
-QString AppearanceConfigWidget::__getUiThemeId()
+QString AppearanceConfigWidget::getThemeId()
 {
-	if(__theme_cmb->currentIndex() > 0)
-		return __theme_cmb->currentData(Qt::UserRole).toString();
+	QString theme_id = theme_cmb->currentData(Qt::UserRole).toString();
 
-	/* If the user chose the "System default" theme
-	 * we check if the system is using dark theme (text color lightness greater
-	 * than window color lightness) or light theme */
-	return CustomUiStyle::isDarkPalette(system_pal) ? 
+	if(theme_cmb->currentIndex() > 0)
+		return theme_id;
+
+	return CustomUiStyle::isDarkPalette(theme_palettes[theme_id]) ? 
 				 Attributes::Dark : Attributes::Light;
-}
-
-bool AppearanceConfigWidget::isDarkUiTheme()
-{
-	// return UiThemeId == Attributes::Dark;
-	return CustomUiStyle::isDarkPalette(qApp->palette());
 }
 
 void AppearanceConfigWidget::previewUiSettings()
@@ -1230,7 +1223,7 @@ void AppearanceConfigWidget::applySyntaxHighlightTheme()
 {
 	QString filename = GlobalAttributes::getTmplConfigurationFilePath(GlobalAttributes::ThemesDir +
 																																		GlobalAttributes::DirSeparator +
-																																				__getUiThemeId(),
+																																		getThemeId(),
 																																		GlobalAttributes::SQLHighlightConf +
 																																		GlobalAttributes::ConfigurationExt);
 
@@ -1250,7 +1243,7 @@ void AppearanceConfigWidget::applyDesignCodeTheme()
 {
 	QString filename = GlobalAttributes::getTmplConfigurationFilePath(GlobalAttributes::ThemesDir +
 																																		GlobalAttributes::DirSeparator +
-																																				__getUiThemeId(),
+																																		getThemeId(),
 																																		GlobalAttributes::AppearanceConf +
 																																		GlobalAttributes::ConfigurationExt);
 
@@ -1290,12 +1283,25 @@ void AppearanceConfigWidget::applyUiStyleSheet()
 				ico_style_conf = GlobalAttributes::getTmplConfigurationFilePath("",
 																																				"icons-" + icon_size +
 																																				GlobalAttributes::ConfigurationExt);
-		QString ui_theme = __getUiThemeId(), extra_style_conf;
+		QString ui_theme = getThemeId(),
+						extra_style_conf,	prefix = "extra-";
+		
+		/* Special case for extra style sheet of System's theme:
+		 * This theme has two extra style sheets: dark-extra-ui-style.conf
+		 * and light-extra-ui-style.conf. We use the one according 
+		 * to the current system palette */
+		if(theme_cmb->currentData(Qt::UserRole).toString() == Attributes::System)
+		{
+			prefix.prepend(CustomUiStyle::isDarkPalette(system_pal) ? "dark-" : "light-");
+			
+			// Forcing the theme id to be "system" so the files can be found correctly
+			ui_theme = Attributes::System;
+		}
 
 		extra_style_conf = GlobalAttributes::getTmplConfigurationFilePath(GlobalAttributes::ThemesDir +
 																																			GlobalAttributes::DirSeparator +
 																																			ui_theme,
-																																			"extra-" + GlobalAttributes::UiStyleConf +
+																																			prefix + GlobalAttributes::UiStyleConf +
 																																			GlobalAttributes::ConfigurationExt);
 
 		if(QFileInfo::exists(extra_style_conf))
@@ -1322,9 +1328,6 @@ void AppearanceConfigWidget::applyUiStyleSheet()
 
 		/* Forcing the title element of group box to have a font size 85% of
 		 * the app's original/global font size */
-		//ui_stylesheet.append(QString("\n QGroupBox { font-size: %1pt; font-weight: bold; }")
-		//										 .arg(qApp->font().pointSizeF() * 0.80).toUtf8());
-
 		qApp->setStyleSheet(ui_stylesheet);
 
 		// Overriding pixel metrics of small icons in table headers, menu icons, etc

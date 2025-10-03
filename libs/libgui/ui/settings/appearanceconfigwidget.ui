@@ -482,7 +482,7 @@
               </layout>
              </item>
              <item row="0" column="0" colspan="2">
-              <widget class="QComboBox" name="__theme_cmb"/>
+              <widget class="QComboBox" name="theme_cmb"/>
              </item>
              <item row="1" column="0" colspan="2">
               <layout class="QHBoxLayout" name="horizontalLayout_5">

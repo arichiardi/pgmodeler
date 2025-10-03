@@ -33,7 +33,6 @@
 #include "baseobject.h"
 #include "widgets/numberedtexteditor.h"
 #include "csvdocument.h"
-#include "roundedrectitem.h"
 #include "settings/appearanceconfigwidget.h"
 #include <QMargins>
 

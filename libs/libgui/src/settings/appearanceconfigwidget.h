@@ -154,8 +154,8 @@ class __libgui AppearanceConfigWidget: public BaseConfigWidget, public Ui::Appea
 
 		void applyUiStyleSheet();
 
-		//! \brief Returns the theme id (light/dark) depending on the selection in ui_theme_cmb
-		QString __getUiThemeId();
+		//! \brief Returns the theme id depending on the selection in theme_cmb
+		QString getThemeId();
 
 	public:
 		AppearanceConfigWidget(QWidget * parent = nullptr);
@@ -172,9 +172,6 @@ class __libgui AppearanceConfigWidget: public BaseConfigWidget, public Ui::Appea
 
 		//! \brief Applies the selected ui theme to the whole application
 		void applyUiTheme();
-
-		//! \brief Returns whether the currently used theme is a dark one
-		static bool isDarkUiTheme();
 
 		static std::map<QString, attribs_map> getConfigurationParams();
 
