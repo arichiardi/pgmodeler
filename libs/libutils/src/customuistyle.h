@@ -215,8 +215,6 @@ class __libutils CustomUiStyle : public QProxyStyle {
 		//! \brief Helper function to get color from application palette considering widget state
 		static QColor getStateColor(QPalette::ColorRole role, const QStyleOption *option);
 
-		static QColor getAdjustedColor(const QColor &color, int dark_ui_factor, int light_ui_factor);
-
 	public:
 		static constexpr int NoFactor = 0,
 												 XMinFactor = 105,
@@ -231,6 +229,8 @@ class __libutils CustomUiStyle : public QProxyStyle {
 		virtual ~CustomUiStyle() = default;
 
 		QPixmap createGrayMaskedPixmap(const QPixmap &original) const;
+
+		static QColor getAdjustedColor(const QColor &color, int dark_ui_factor, int light_ui_factor);
 
 		void drawComplexControl(ComplexControl control, const QStyleOptionComplex *option, QPainter *painter, const QWidget *widget) const override;
 

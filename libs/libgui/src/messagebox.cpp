@@ -17,8 +17,10 @@
 */
 
 #include "messagebox.h"
+#include "customuistyle.h"
 #include "guiutilsns.h"
 #include "utilsns.h"
+#include <qobject.h>
 
 Messagebox::Messagebox(QWidget *parent, Qt::WindowFlags f) : QDialog(parent, f)
 {
@@ -105,6 +107,28 @@ void Messagebox::setCustomOptionTooltip(const QString &tooltip)
 bool Messagebox::isCustomOptionChecked()
 {
 	return custom_option_chk->isChecked();
+}
+
+void Messagebox::setMessageFrameColor(QFrame *frame, IconType icon_type)
+{
+	if(!frame || icon_type == NoIcon)
+		return;
+
+	static const QString tmpl_css = "QFrame#%1 { background-color: palette(%2); border: 2px solid %3; }";
+
+	static const std::map<IconType, QColor> frm_colors = {
+																					{ ErrorIcon, QColor("#f55858") },
+																					{ InfoIcon, QColor("#62daf5") },
+																					{ AlertIcon, QColor("#f5e65a") },
+																					{ ConfirmIcon, QColor("#62daf5") } };
+
+	QString pal_role = CustomUiStyle::isDarkPalette() ? "Dark" : "Light";
+																					
+	frame->setStyleSheet(tmpl_css.arg(frame->objectName(), 
+																		pal_role,	
+																		CustomUiStyle::getAdjustedColor(frm_colors.at(icon_type), 
+																																		CustomUiStyle::NoFactor,
+																																	  -CustomUiStyle::XMinFactor).name()));
 }
 
 int Messagebox::show(Exception e, const QString &msg, IconType icon_type, ButtonsId buttons, const QString &yes_lbl, const QString &no_lbl, const QString &cancel_lbl,
@@ -326,6 +350,7 @@ int Messagebox::show(const QString &title, const QString &msg, IconType icon_typ
 		resize(minimumSize());
 
 	setBaseSize(size());
+	setMessageFrameColor(frame, icon_type);
 
 	return exec();
 }

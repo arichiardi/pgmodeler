@@ -130,6 +130,9 @@ class __libgui Messagebox: public QDialog, public Ui::Messagebox {
 		void setCustomOptionTooltip(const QString &tooltip);
 		bool isCustomOptionChecked();
 
+		//! \brief Configures the color of message frame according to the icon type giving it a proper context
+		static void setMessageFrameColor(QFrame *frame, IconType icon_type);
+
 	private slots:
 		void handleYesOkClick();
 		void handleNoCancelClick();
