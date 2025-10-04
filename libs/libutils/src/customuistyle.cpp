@@ -817,13 +817,15 @@ void CustomUiStyle::drawScrollBarButton(const QStyleOptionSlider *option, QPaint
 	{
 		if(wgt_st.is_pressed)
 		{
-			btn_bg = getStateColor(QPalette::Dark, option);
-			btn_border = getStateColor(QPalette::Mid, option);
+			// Pressed: darker in both themes
+			btn_bg = getAdjustedColor(bg_color, -XMinFactor, -XMinFactor);
+			btn_border = getAdjustedColor(border_color, -XMinFactor, -XMinFactor);
 		}
 		else if(wgt_st.is_hovered)
 		{
-			btn_bg = btn_bg.lighter(MaxFactor);
-			btn_border = btn_border.lighter(MaxFactor);
+			// Hover: lighter in both themes (subtle effect)
+			btn_bg = getAdjustedColor(bg_color, XMinFactor, XMinFactor);
+			btn_border = getAdjustedColor(border_color, XMinFactor, XMinFactor);
 		}
 	}
 
@@ -1464,23 +1466,9 @@ void CustomUiStyle::drawCCScrollBar(const QStyleOption *option, QPainter *painte
 
 	WidgetState wgt_st(option, widget);
 
-	// Use more subtle colors for scroll bar to reduce prominence
-	QColor bg_color = getAdjustedColor(getStateColor(QPalette::Button, sbar_opt), -MinFactor, -XMinFactor),
-		   	 border_color = getAdjustedColor(getStateColor(QPalette::Midlight, sbar_opt), -MinFactor, -XMinFactor);
-
-	if(wgt_st.is_enabled)
-	{
-		if(wgt_st.is_pressed)
-		{
-			bg_color = getAdjustedColor(getStateColor(QPalette::Dark, sbar_opt), MinFactor, MinFactor);
-			border_color = getAdjustedColor(getStateColor(QPalette::Mid, sbar_opt), MinFactor, MinFactor);
-		}
-		else if(wgt_st.is_hovered)
-		{
-			bg_color = getAdjustedColor(bg_color, MinFactor, XMinFactor);
-			border_color = getAdjustedColor(border_color, MinFactor, XMinFactor);
-		}
-	}
+	// Handle and buttons use same color as QToolButton in normal state
+	QColor bg_color = getStateColor(QPalette::Button, sbar_opt),
+		   	 border_color = getAdjustedColor(getStateColor(QPalette::Mid, sbar_opt), MinFactor, NoFactor);
 
 	painter->save();
 	painter->setRenderHint(QPainter::Antialiasing, true);
@@ -1490,13 +1478,16 @@ void CustomUiStyle::drawCCScrollBar(const QStyleOption *option, QPainter *painte
 
 	if(!sub_ctrl_rect.isEmpty())
 	{
-		// Draw groove background
-		painter->setBrush(getAdjustedColor(bg_color, -MinFactor, -XMinFactor));
+		// Groove darker than handle: more contrast in dark theme, subtle in light theme
+		QColor groove_bg = getAdjustedColor(bg_color, -MidFactor, -XMinFactor - 5),
+					 groove_border = getAdjustedColor(border_color, -XMinFactor, -XMinFactor - 5);
+
+		painter->setBrush(groove_bg);
 		painter->setPen(Qt::NoPen);
 		painter->drawRoundedRect(sub_ctrl_rect, ScrollBarRadius, ScrollBarRadius);
 
 		// Draw groove border
-		painter->setPen(QPen(getAdjustedColor(border_color, -MinFactor, -XMinFactor), PenWidth));
+		painter->setPen(QPen(groove_border, PenWidth));
 		painter->setBrush(Qt::NoBrush);
 
 		sub_ctrl_rect.adjust(0.5, 0.5, -0.5, -0.5);
@@ -1516,13 +1507,15 @@ void CustomUiStyle::drawCCScrollBar(const QStyleOption *option, QPainter *painte
 		{
 			if(wgt_st.is_pressed)
 			{
-				slider_bg = getStateColor(QPalette::Dark, sbar_opt);
-				slider_border = getStateColor(QPalette::Mid, sbar_opt);
+				// Pressed: darker in both themes
+				slider_bg = getAdjustedColor(bg_color, -XMinFactor, -XMinFactor);
+				slider_border = getAdjustedColor(border_color, -XMinFactor, -XMinFactor);
 			}
 			else if(wgt_st.is_hovered)
 			{
-				slider_bg = getAdjustedColor(slider_bg, MinFactor, XMinFactor - 5);
-				slider_border = getAdjustedColor(slider_border, MinFactor, XMinFactor - 5);
+				// Hover: lighter in both themes (subtle effect)
+				slider_bg = getAdjustedColor(bg_color, XMinFactor, XMinFactor);
+				slider_border = getAdjustedColor(border_color, XMinFactor, XMinFactor);
 			}
 		}
 
