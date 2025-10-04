@@ -829,17 +829,45 @@ void CustomUiStyle::drawScrollBarButton(const QStyleOptionSlider *option, QPaint
 		}
 	}
 
+	// Determine scrollbar orientation and open edge for button border
+	const QScrollBar *scrollbar = qobject_cast<const QScrollBar *>(widget);
+	bool is_horizontal = scrollbar && scrollbar->orientation() == Qt::Horizontal;
+	
+	OpenEdge open_edge = NotOpen;
+	
+	if(is_horizontal)
+	{
+		// Horizontal scrollbar
+		if(button_type == SC_ScrollBarAddLine)
+			open_edge = OpenLeft;   // AddLine (right button): omit left border
+		else
+			open_edge = OpenRight;  // SubLine (left button): omit right border
+	}
+	else
+	{
+		// Vertical scrollbar
+		if(button_type == SC_ScrollBarAddLine)
+			open_edge = OpenTop;    // AddLine (bottom button): omit top border
+		else
+			open_edge = OpenBottom; // SubLine (top button): omit bottom border
+	}
+
+	// Create button shape with omitted edge (no rounded corners)
+	QPainterPath btn_shape = createControlShape(btn_rect.toRect(), NoRadius, NoCorners, 
+																							0, 0, 0, 0, open_edge);
+
 	// Draw button background
 	painter->setBrush(btn_bg);
 	painter->setPen(Qt::NoPen);
-	painter->drawRoundedRect(btn_rect, ScrollBarRadius, ScrollBarRadius);
+	painter->drawPath(btn_shape);
 
-	// Draw button border
+	// Draw button border with omitted edge for fusion effect
+	QPainterPath btn_border_shape = createControlShape(btn_rect.toRect(), NoRadius, NoCorners,
+																											0.5, 0.5, -0.5, -0.5, open_edge);
+	
 	painter->setPen(QPen(btn_border, PenWidth));
 	painter->setBrush(Qt::NoBrush);
-
-	btn_rect.adjust(0.5, 0.5, -0.5, -0.5);
-	painter->drawRoundedRect(btn_rect, ScrollBarRadius, ScrollBarRadius);
+	painter->drawPath(btn_border_shape);
 
 	// Create option for arrow drawing with proper state
 	QStyleOption arrow_opt = *option;
@@ -857,12 +885,7 @@ void CustomUiStyle::drawScrollBarButton(const QStyleOptionSlider *option, QPaint
 	else
 		arrow_opt.state &= ~(State_MouseOver | State_Sunken);
 
-	// Determine arrow arr_type intelligently based on button type and scrollbar orientation
-	const QScrollBar *scrollbar =
-					qobject_cast<const QScrollBar *>(widget);
-
-	bool is_horizontal = scrollbar && scrollbar->orientation() == Qt::Horizontal;
-
+	// Determine arrow direction based on button type and scrollbar orientation
 	ArrowType arrow_dir;
 
 	if(button_type == SC_ScrollBarAddLine)
@@ -1484,14 +1507,14 @@ void CustomUiStyle::drawCCScrollBar(const QStyleOption *option, QPainter *painte
 
 		painter->setBrush(groove_bg);
 		painter->setPen(Qt::NoPen);
-		painter->drawRoundedRect(sub_ctrl_rect, ScrollBarRadius, ScrollBarRadius);
+		painter->drawRect(sub_ctrl_rect);
 
-		// Draw groove border
+		// Draw groove border (straight, no rounded corners)
 		painter->setPen(QPen(groove_border, PenWidth));
 		painter->setBrush(Qt::NoBrush);
 
 		sub_ctrl_rect.adjust(0.5, 0.5, -0.5, -0.5);
-		painter->drawRoundedRect(sub_ctrl_rect, ScrollBarRadius, ScrollBarRadius);
+		painter->drawRect(sub_ctrl_rect);
 	}
 
 	// Draw the scroll bar handle/slider
