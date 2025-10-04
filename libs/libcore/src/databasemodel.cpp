@@ -3427,7 +3427,7 @@ void DatabaseModel::loadModel(const QString &filename)
 
 		setObjectListsCapacity(attribs[Attributes::MaxObjCount].toUInt());
 
-		this->author = attribs[Attributes::ModelAuthor];
+		this->author = attribs[Attributes::Author];
 
 		pos_str = attribs[Attributes::LastPosition].split(',');
 
@@ -7863,7 +7863,7 @@ QString DatabaseModel::getSourceCode(SchemaParser::CodeType def_type, bool expor
 
 void DatabaseModel::setDatabaseModelAttributes(attribs_map &attribs, SchemaParser::CodeType code_type)
 {
-	attribs[Attributes::ModelAuthor] = author;
+	attribs[Attributes::Author] = author;
 	attribs[Attributes::PgModelerVersion] = GlobalAttributes::PgModelerVersion;
 
 	if(code_type == SchemaParser::XmlCode)
@@ -9280,7 +9280,7 @@ void DatabaseModel::saveObjectsMetadata(const QString &filename, MetaAttrOptions
 			//Configuring database model attributes
 			if(save_db_attribs && object==this)
 			{			
-				attribs[Attributes::ModelAuthor]=this->getAuthor();
+				attribs[Attributes::Author]=this->getAuthor();
 				attribs[Attributes::LastPosition]=QString("%1,%2").arg(last_pos.x()).arg(last_pos.y());
 				attribs[Attributes::LastZoom]=QString::number(last_zoom);
 				attribs[Attributes::DefaultCollation]=(default_objs[ObjectType::Collation] ? default_objs[ObjectType::Collation]->getSignature() : "");
@@ -9586,7 +9586,7 @@ void DatabaseModel::loadObjectsMetadata(const QString &filename, MetaAttrOptions
 								default_objs[ObjectType::Role]=getRole(attribs[Attributes::DefaultOwner]);
 								default_objs[ObjectType::Collation]=getCollation(attribs[Attributes::DefaultCollation]);
 								default_objs[ObjectType::Tablespace]=getTablespace(attribs[Attributes::DefaultTablespace]);
-								author=attribs[Attributes::ModelAuthor];
+								author=attribs[Attributes::Author];
 								last_zoom=attribs[Attributes::LastZoom].toDouble();
 
 								if(pos.size()>=2)

@@ -1080,8 +1080,8 @@ void CustomUiStyle::drawPEGroupBoxFrame(PrimitiveElement element, const QStyleOp
 {
 	if(element != PE_FrameGroupBox || !option || !painter || !widget)
 		return;
-
-  QColor bg_color = getAdjustedColor(getStateColor(QPalette::Dark, option), XMinFactor, MinFactor),
+	
+	QColor bg_color = getAdjustedColor(getStateColor(QPalette::Dark, option), XMinFactor, MinFactor),
 	       border_color = getAdjustedColor(getStateColor(QPalette::Mid, option), XMinFactor, -XMinFactor);
 
 	painter->save();

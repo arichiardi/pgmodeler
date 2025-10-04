@@ -56,12 +56,7 @@ class __libgui AppearanceConfigWidget: public BaseConfigWidget, public Ui::Appea
 		//! \brief Holds the current user interface theme id (light/dark)
 		static QString UiThemeId;
 
-		/*! \brief This attributes map stores the name of valid UI themes found
-		 * in themes/ folder. To be considered valid a theme must have at least
-		 * five files in its folder: appearance.conf, palette.conf, 
-		 * (sql|xml|pattern)-highlight.conf. Optionally the file extra-ui-style.conf
-		 * will be checked and used if present too. */
-		static attribs_map themes;
+		static QPalette system_pal;
 
 		//! \brief Auxiliary class that stores the formating data of each element
 		class AppearanceConfigItem {
@@ -111,11 +106,7 @@ class __libgui AppearanceConfigWidget: public BaseConfigWidget, public Ui::Appea
 		
 		bool show_grid, show_delimiters;
 
-		#warning "TODO: this method must return a list of available themes in the themes/ folder"
 		void loadThemesPaletteConf();
-
-		#warning "TODO: this method must be called before loading/applying the main appearance configuration"
-		void loadPaletteConfig();
 
 		//! \brief Loads the example model from file (conf/exampledb.dbm)
 		void loadExampleModel();
@@ -135,6 +126,9 @@ class __libgui AppearanceConfigWidget: public BaseConfigWidget, public Ui::Appea
 
 		//! \brief Returns the theme id depending on the selection in theme_cmb
 		QString getThemeId();
+
+	protected:
+		bool eventFilter(QObject *object, QEvent *event) override;
 
 	public:
 		AppearanceConfigWidget(QWidget * parent = nullptr);
