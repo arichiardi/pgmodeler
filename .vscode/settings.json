@@ -1,5 +1,5 @@
 {
-   "cmake.parallelJobs": 20,
+   "cmake.parallelJobs": 22,
    "cmake.buildDirectory": "${workspaceFolder}/cmake-build",
    "cmake.generator": "Unix Makefiles",
    "cmake.configureSettings": {

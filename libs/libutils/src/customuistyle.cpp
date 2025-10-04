@@ -635,6 +635,13 @@ void CustomUiStyle::drawPrimitive(PrimitiveElement element, const QStyleOption *
 		return;
 	}
 
+	// Handle tooltip rendering with custom border
+	if(element == PE_PanelTipLabel)
+	{
+		drawPEToolTip(element, option, painter, widget);
+		return;
+	}
+
 	QProxyStyle::drawPrimitive(element, option, painter, widget);
 }
 
@@ -1024,8 +1031,7 @@ void CustomUiStyle::drawPEGenericElemFrame(PrimitiveElement element, const QStyl
 	if(!option || !painter || !widget)
 		return;
 
-	QColor border_color = /* getStateColor(QPalette::Midlight, option); */ 
-												getAdjustedColor(getStateColor(QPalette::Midlight, option), NoFactor, -XMinFactor);
+	QColor border_color = getAdjustedColor(getStateColor(QPalette::Midlight, option), NoFactor, -XMinFactor);
 
 	WidgetState wgt_st(option, widget);
 
@@ -1123,6 +1129,27 @@ void CustomUiStyle::drawPELineEditPanel(PrimitiveElement element, const QStyleOp
 
 	painter->setPen(Qt::NoPen);
 	painter->drawPath(shape);
+	painter->restore();
+}
+
+void CustomUiStyle::drawPEToolTip(PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const
+{
+	if(element != PE_PanelTipLabel || !option || !painter)
+		return;
+
+	QPalette pal = option->palette;
+	QColor bg_color = pal.color(QPalette::ToolTipBase),
+		   text_color = pal.color(QPalette::ToolTipText),
+		   border_color = getAdjustedColor(bg_color, MidFactor, -MinFactor);
+
+	painter->save();
+	painter->setRenderHint(QPainter::Antialiasing, true);
+
+	painter->fillRect(option->rect, bg_color);
+	painter->setPen(QPen(border_color, PenWidth));
+	painter->setBrush(Qt::NoBrush);
+	painter->drawRect(QRectF(option->rect).adjusted(0.5, 0.5, -0.5, -0.5));
+
 	painter->restore();
 }
 

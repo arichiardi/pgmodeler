@@ -479,7 +479,7 @@ void AppearanceConfigWidget::loadThemesPaletteConf()
 					theme_cmb->blockSignals(true);
 					theme_cmb->addItem(theme_conf[GlobalAttributes::ThemeConf][Attributes::Name], theme_id);
 					theme_cmb->setItemData(theme_cmb->count() - 1,
-																 theme_conf[GlobalAttributes::ThemeConf][Attributes::Description],
+																 theme_conf[Attributes::Description][Attributes::Contents].trimmed(),
 																 Qt::ToolTipRole);
 					theme_cmb->blockSignals(false);
 				}
@@ -1071,7 +1071,8 @@ bool AppearanceConfigWidget::eventFilter(QObject *object, QEvent *event)
 	if(object == theme_cmb && event->type() == QEvent::ToolTip)
 	{
 		QToolTip::showText(QCursor::pos(), 
-											 theme_cmb->currentData(Qt::ToolTipRole).toString(), theme_cmb);
+											 "<p>" + theme_cmb->currentData(Qt::ToolTipRole).toString() + "</p>",
+											 theme_cmb);
 		return true;
 	}
 
