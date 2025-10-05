@@ -114,7 +114,7 @@ void Messagebox::setMessageFrameColor(QFrame *frame, IconType icon_type)
 	if(!frame || icon_type == NoIcon)
 		return;
 
-	static const QString tmpl_css = "QFrame#%1 { background-color: palette(%2); border: 2px solid %3; }";
+	static const QString tmpl_css = "QFrame#%1 { background-color: palette(%2); border: 2px solid %3; border-radius: %4px; }";
 
 	static const std::map<IconType, QColor> frm_colors = {
 																					{ ErrorIcon, QColor("#f55858") },
@@ -122,13 +122,15 @@ void Messagebox::setMessageFrameColor(QFrame *frame, IconType icon_type)
 																					{ AlertIcon, QColor("#f5e65a") },
 																					{ ConfirmIcon, QColor("#62daf5") } };
 
-	QString pal_role = CustomUiStyle::isDarkPalette() ? "Dark" : "Light";
+	QString pal_role = CustomUiStyle::isDarkPalette() ?
+										 Attributes::Dark : Attributes::Light;
 																					
 	frame->setStyleSheet(tmpl_css.arg(frame->objectName(), 
 																		pal_role,	
 																		CustomUiStyle::getAdjustedColor(frm_colors.at(icon_type), 
 																																		CustomUiStyle::NoFactor,
-																																	  -CustomUiStyle::XMinFactor).name()));
+																																	  -CustomUiStyle::XMinFactor).name())
+															 .arg(CustomUiStyle::FrameRadius));
 }
 
 int Messagebox::show(Exception e, const QString &msg, IconType icon_type, ButtonsId buttons, const QString &yes_lbl, const QString &no_lbl, const QString &cancel_lbl,

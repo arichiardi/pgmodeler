@@ -2793,8 +2793,9 @@ void ModelWidget::protectObject()
 		//Protects the whole model if there is no selected object
 		if(this->selected_objects.empty())
 		{
-			if(obj_sender==action_protect || obj_sender==action_unprotect)
-				db_model->setProtected(!db_model->isProtected());
+			if(obj_sender == action_protect || obj_sender == action_unprotect)
+				//db_model->setProtected(!db_model->isProtected());
+				setProtected(!db_model->isProtected());
 		}
 		//If there is more than one selected object, make a batch protection/unprotection
 		else
@@ -2849,8 +2850,6 @@ void ModelWidget::protectObject()
 
 		for(auto &obj : upd_objects)
 			obj->setModified(true);
-
-		setProtected(db_model->isProtected());
 
 		scene->blockSignals(false);
 		scene->clearSelection();

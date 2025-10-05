@@ -324,7 +324,7 @@ std::map<QString, attribs_map> AppearanceConfigWidget::getConfigurationParams()
 	return config_params;
 }
 
-void AppearanceConfigWidget::loadThemesPaletteConf()
+void AppearanceConfigWidget::loadThemesConfiguration()
 {
 	QDir themes_root_dir { GlobalAttributes::getTmplConfigurationFilePath(GlobalAttributes::ThemesDir) };
 	QString theme_dir, pal_file, dtd_file { GlobalAttributes::getTmplConfigurationFilePath(GlobalAttributes::ObjectDTDDir, 
@@ -415,21 +415,14 @@ void AppearanceConfigWidget::loadThemesPaletteConf()
 								{Attributes::ToolTipText, QPalette::ToolTipText}, {Attributes::PlaceholderText, QPalette::PlaceholderText},
 								{Attributes::Accent, QPalette::Accent}};
 
-	static const QString tmpl_attr { "%1-%2" };
-
-	static const std::map<QString, CustomTableWidget::TableItemColor> tab_item_ids{
-					{tmpl_attr.arg(Attributes::ProtItem, Attributes::BgColor), CustomTableWidget::ProtItemBgColor},
-					{tmpl_attr.arg(Attributes::ProtItem, Attributes::FgColor), CustomTableWidget::ProtItemFgColor},
-					{tmpl_attr.arg(Attributes::ProtItemAlt, Attributes::FgColor), CustomTableWidget::ProtItemAltFgColor},
-					{tmpl_attr.arg(Attributes::RelAddedItem, Attributes::FgColor), CustomTableWidget::TableItemColor::RelAddedItemFgColor},
-					{tmpl_attr.arg(Attributes::RelAddedItem, Attributes::BgColor), CustomTableWidget::TableItemColor::RelAddedItemBgColor},
-					{tmpl_attr.arg(Attributes::RelAddedItemAlt, Attributes::FgColor), CustomTableWidget::TableItemColor::RelAddedItemAltFgColor},
-					{tmpl_attr.arg(Attributes::AddedItem, Attributes::FgColor), CustomTableWidget::TableItemColor::AddedItemFgColor},
-					{tmpl_attr.arg(Attributes::AddedItem, Attributes::BgColor), CustomTableWidget::TableItemColor::AddedItemBgColor},
-					{tmpl_attr.arg(Attributes::UpdatedItem, Attributes::FgColor), CustomTableWidget::TableItemColor::UpdatedItemFgColor},
-					{tmpl_attr.arg(Attributes::UpdatedItem, Attributes::BgColor), CustomTableWidget::TableItemColor::UpdatedItemBgColor},
-					{tmpl_attr.arg(Attributes::RemovedItem, Attributes::FgColor), CustomTableWidget::TableItemColor::RemovedItemFgColor},
-					{tmpl_attr.arg(Attributes::RemovedItem, Attributes::BgColor), CustomTableWidget::TableItemColor::RemovedItemBgColor}};
+	static const std::map<QString, QList<CustomTableWidget::TableItemColor>> tab_item_ids{
+					{ Attributes::ProtItem, { CustomTableWidget::ProtItemBgColor, CustomTableWidget::ProtItemFgColor } },
+					{ Attributes::ProtItemAlt, { CustomTableWidget::ProtItemAltFgColor } },
+					{ Attributes::RelAddedItem, { CustomTableWidget::RelAddedItemBgColor, CustomTableWidget::RelAddedItemFgColor } },
+					{ Attributes::RelAddedItemAlt, { CustomTableWidget::RelAddedItemAltFgColor } },
+					{ Attributes::AddedItem, { CustomTableWidget::AddedItemBgColor, CustomTableWidget::AddedItemFgColor } },
+					{ Attributes::UpdatedItem, { CustomTableWidget::UpdatedItemBgColor, CustomTableWidget::UpdatedItemFgColor } },
+					{ Attributes::RemovedItem, { CustomTableWidget::RemovedItemBgColor, CustomTableWidget::RemovedItemFgColor } }}	;
 
 	std::map<QString, attribs_map> theme_conf;
 
@@ -461,6 +454,7 @@ void AppearanceConfigWidget::loadThemesPaletteConf()
 					BaseConfigWidget::loadConfiguration(pal_file, GlobalAttributes::ThemeConf, theme_conf, 
 																							{ Attributes::Role, GlobalAttributes::ThemeConf });
 
+					// Storing theme palette colors
 					for(auto &[role_attr, cl_role] : role_ids)
 					{
 						pal.setColor(QPalette::Active, cl_role, QColor(theme_conf[role_attr][Attributes::Active]));
@@ -470,10 +464,23 @@ void AppearanceConfigWidget::loadThemesPaletteConf()
 
 					theme_palettes[theme_id] = pal;
 
-					for(auto &[tb_item_attr, tb_item_id] : tab_item_ids)
+					// Storing tab widget item colors for the current theme
+					for(auto &[item_attr, item_ids] : tab_item_ids)
 					{
-						theme_tab_item_colors[theme_id][tb_item_id] =
-										QColor(theme_conf[tb_item_attr][Attributes::Color]);
+						
+						if(item_attr.endsWith("Alt"))
+						{
+							theme_tab_item_colors[theme_id][item_ids.front()] =
+								QColor(theme_conf[item_attr][Attributes::FgColor]);
+						}
+						else
+						{
+							theme_tab_item_colors[theme_id][item_ids.front()] =
+								QColor(theme_conf[item_attr][Attributes::BgColor]);
+
+							theme_tab_item_colors[theme_id][item_ids.back()] =
+								QColor(theme_conf[item_attr][Attributes::FgColor]);
+						}
 					}
 
 					theme_cmb->blockSignals(true);
@@ -589,7 +596,7 @@ void AppearanceConfigWidget::loadConfiguration()
 	{
 		/* Load the available themes palettes before loading the appearance config file
 		 * because the appearance config file contains the name of the theme to use */
-		loadThemesPaletteConf();
+		loadThemesConfiguration();
 
 		BaseConfigWidget::loadConfiguration(GlobalAttributes::AppearanceConf, config_params, {Attributes::Id}, true);
 

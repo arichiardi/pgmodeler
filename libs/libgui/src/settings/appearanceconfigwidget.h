@@ -106,7 +106,7 @@ class __libgui AppearanceConfigWidget: public BaseConfigWidget, public Ui::Appea
 		
 		bool show_grid, show_delimiters;
 
-		void loadThemesPaletteConf();
+		void loadThemesConfiguration();
 
 		//! \brief Loads the example model from file (conf/exampledb.dbm)
 		void loadExampleModel();

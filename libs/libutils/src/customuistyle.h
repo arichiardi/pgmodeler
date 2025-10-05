@@ -105,14 +105,6 @@ class __libutils CustomUiStyle : public QProxyStyle {
 							 					 ArrowHeight = 5,  // Complex control up arrow height
 												 SplitterSize = 20;
 
-		static constexpr int NoRadius = 0,
-							 ButtonRadius = 4,
-							 InputRadius = 5,
-							 FrameRadius = 4,
-							 TabWgtRadius = 2,
-							 TabBarRadius = 5,
-							 ScrollBarRadius = 2;
-
 		// Helper method to add edge with optional rounded corner to QPainterPath
 		void addEdgeWithCorner(QPainterPath &path, const QRectF &rect, OpenEdge side, int radius) const;
 
@@ -216,6 +208,14 @@ class __libutils CustomUiStyle : public QProxyStyle {
 		static QColor getStateColor(QPalette::ColorRole role, const QStyleOption *option);
 
 	public:
+		static constexpr int NoRadius = 0,
+							 ButtonRadius = 4,
+							 InputRadius = 5,
+							 FrameRadius = 4,
+							 TabWgtRadius = 2,
+							 TabBarRadius = 5,
+							 ScrollBarRadius = 2;
+
 		static constexpr int NoFactor = 0,
 												 XMinFactor = 105,
 												 MinFactor = 120,
