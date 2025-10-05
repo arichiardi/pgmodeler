@@ -497,7 +497,7 @@ void DiffToolWidget::startDiff()
 									tr("The options <strong>%1</strong> and <strong>%2</strong> are currently unchecked. This can lead to the generation of extra <strong>DROP</strong> commands\
  for objects not present in the filtered set used in the <strong>partial diff</strong>. Take extra caution when applying the resulting diff! How do you want to proceed?")
 										.arg(dont_drop_missing_objs_chk->text(), drop_missing_cols_constr_chk->text()),
-										 Messagebox::AlertIcon,
+										 Messagebox::Alert,
 										 Messagebox::AllButtons,
 										 tr("Check them and diff"),
 										 tr("Diff anyway"),
@@ -722,7 +722,7 @@ void DiffToolWidget::exportDiff(bool confirm)
 	{
 		msg_box.show(tr("Confirmation"),
 					 tr(" <strong>WARNING:</strong> The generated diff is ready to be exported! Once started this process will cause irreversible changes on the database. Do you really want to proceed?"),
-					 Messagebox::AlertIcon, Messagebox::AllButtons,
+					 Messagebox::Alert, Messagebox::AllButtons,
 					 tr("Apply diff"), tr("Preview diff"), "",
 					 GuiUtilsNs::getIconPath("diff"), GuiUtilsNs::getIconPath("sqlcode"));
 	}
@@ -931,7 +931,7 @@ void DiffToolWidget::handleImportFinished(Exception e)
 	if(!e.getErrorMessage().isEmpty())
 	{
 		Messagebox msgbox;
-		msgbox.show(e, e.getErrorMessage(), Messagebox::AlertIcon);
+		msgbox.show(e, e.getErrorMessage(), Messagebox::Alert);
 	}
 
 	curr_step++;
@@ -1146,7 +1146,7 @@ void DiffToolWidget::loadConfiguration()
 	{
 		Messagebox msg_box;
 		msg_box.show(e, QString("%1 %2").arg(e.getErrorMessage()).arg(tr("In some cases restore the default settings related to it may solve the problem. Would like to do that?")),
-								 Messagebox::AlertIcon, Messagebox::YesNoButtons, tr("Restore"), "", "", GuiUtilsNs::getIconPath("refresh"));
+								 Messagebox::Alert, Messagebox::YesNoButtons, tr("Restore"), "", "", GuiUtilsNs::getIconPath("refresh"));
 
 		if(msg_box.isAccepted())
 			restoreDefaults();

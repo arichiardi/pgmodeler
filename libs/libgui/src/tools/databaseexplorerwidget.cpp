@@ -1482,7 +1482,7 @@ bool DatabaseExplorerWidget::truncateTable(const QString &sch_name, const QStrin
 			msg=tr("Do you really want to truncate in <strong>cascade</strong> mode the table <strong>%1.%2</strong>? This action will truncate all the tables that depends on it?").arg(sch_name).arg(obj_name);
 
 		msg_box.setCustomOptionText(tr("Also restart sequences"));
-		msg_box.show(msg, Messagebox::ConfirmIcon, Messagebox::YesNoButtons);
+		msg_box.show(msg, Messagebox::Confirm, Messagebox::YesNoButtons);
 
 		if(msg_box.isAccepted())
 		{

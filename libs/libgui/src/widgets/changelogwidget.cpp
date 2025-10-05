@@ -96,7 +96,7 @@ void ChangelogWidget::clearChangelog()
 	msgbox.show("",
 							tr("<strong>ATTENTION:</strong> All the changelog records made until today will be lost and the filtering by \
 date of modification in partial diff will be unavailable! Do you want to proceed?"),
-								 Messagebox::AlertIcon, Messagebox::YesNoButtons);
+								 Messagebox::Alert, Messagebox::YesNoButtons);
 
 	if(msgbox.isAccepted())
 	{

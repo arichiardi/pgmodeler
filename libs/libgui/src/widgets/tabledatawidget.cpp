@@ -369,7 +369,7 @@ void TableDataWidget::populateDataGrid(const CsvDocument &csv_doc)
 			Messagebox msgbox;
 			msgbox.show(e,
 									tr("Failed to parse the table's initial data, check the stack trace for more detail. Do you want to dump the data into an external file in order to fix and import them back into the table?"),
-									Messagebox::AlertIcon,
+									Messagebox::Alert,
 									Messagebox::YesNoButtons);
 
 			if(msgbox.isAccepted())

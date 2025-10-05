@@ -358,7 +358,7 @@ void DatabaseImportWidget::importDatabase()
 			Messagebox msg_box;
 
 			msg_box.show(tr("<strong>ATTENTION:</strong> You are about to import objects to the current working model! This action will cause irreversible changes to it even in case of critical errors during the process. Do you want to proceed?"),
-						 Messagebox::AlertIcon, Messagebox::YesNoButtons);
+						 Messagebox::Alert, Messagebox::YesNoButtons);
 
 			if(msg_box.isRejected())
 				return;
@@ -549,7 +549,7 @@ void DatabaseImportWidget::listObjects()
 Trying to import such database can take minutes or even hours and, in extreme cases, crash the application. \
 Please, consider using the <strong>Filter</strong> tab in order to refine the set of objects to be imported. \
 Do you really want to proceed?"),
-										Messagebox::AlertIcon, Messagebox::YesNoButtons);
+										Messagebox::Alert, Messagebox::YesNoButtons);
 
 				if(msgbox.isRejected())
 				{
@@ -801,7 +801,7 @@ void DatabaseImportWidget::handleImportFinished(Exception e)
 	if(!e.getErrorMessage().isEmpty())
 	{
 		Messagebox msgbox;
-		msgbox.show(e, e.getErrorMessage(), Messagebox::AlertIcon);
+		msgbox.show(e, e.getErrorMessage(), Messagebox::Alert);
 	}
 
 	model_wgt->getDatabaseModel()->setInvalidated(false);

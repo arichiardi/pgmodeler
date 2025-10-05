@@ -266,7 +266,7 @@ void SQLToolWidget::disconnectFromDatabases()
 
 		msg_box.show(tr("Warning"),
 					 tr("<strong>ATTENTION:</strong> Disconnect from all databases will close any opened tab in this view! Do you really want to proceed?"),
-					 Messagebox::AlertIcon, Messagebox::YesNoButtons);
+					 Messagebox::Alert, Messagebox::YesNoButtons);
 
 		if(msg_box.isAccepted())
 		{
@@ -429,7 +429,7 @@ void SQLToolWidget::closeDatabaseExplorer(int idx, bool confirm_close)
 		Messagebox msg_box;
 		msg_box.show(tr("Warning"),
 					 tr("<strong>ATTENTION:</strong> Close the database being browsed will close any opened SQL execution pane related to it! Do you really want to proceed?"),
-					 Messagebox::AlertIcon, Messagebox::YesNoButtons);
+					 Messagebox::Alert, Messagebox::YesNoButtons);
 
 		if(msg_box.isRejected())
 			return;
@@ -478,7 +478,7 @@ void SQLToolWidget::closeSQLExecutionTab(int idx, bool confirm_close)
 			Messagebox msg_box;
 			msg_box.show(tr("Warning"),
 									 tr("The SQL execution panel contains a typed command! Do you really want to close it?"),
-									 Messagebox::AlertIcon, Messagebox::YesNoButtons);
+									 Messagebox::Alert, Messagebox::YesNoButtons);
 
 			if(msg_box.isRejected())
 				return;
@@ -589,7 +589,7 @@ void SQLToolWidget::dropDatabase(int database_idx)
 		msg_box.show(tr("Warning"),
 								 tr("<strong>CAUTION:</strong> You are about to drop the entire database <strong>%1</strong> from the server <strong>%2</strong>! All data will be completely wiped out. Do you really want to proceed?")
 								.arg(dbname).arg(tmpl_conn->getConnectionId(true)),
-								 Messagebox::AlertIcon, Messagebox::YesNoButtons);
+								 Messagebox::Alert, Messagebox::YesNoButtons);
 
 		if(msg_box.isAccepted())
 		{

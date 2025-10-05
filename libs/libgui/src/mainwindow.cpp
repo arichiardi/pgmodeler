@@ -419,7 +419,7 @@ void MainWindow::handleInitializationFailure(Exception &e)
 	/* In case of initialization problems related to broken configuration files
 			 * We try to restore them so the next initialization can occur without problems */
 	msgbox.show(e, tr("Failed to initialize one or more components of the UI due to corrupted or incompatible configuration files. Running the CLI tool to restore the default settings may solve this issue. How do you want to proceed?"),
-							Messagebox::ErrorIcon, Messagebox::YesNoButtons,
+							Messagebox::Error, Messagebox::YesNoButtons,
 							tr("Restore"), tr("Abort"), "",
 							GuiUtilsNs::getIconPath("defaults"), GuiUtilsNs::getIconPath("cancel"), "");
 
@@ -438,12 +438,12 @@ void MainWindow::handleInitializationFailure(Exception &e)
 										 The command executed was: <br/><br/> <strong>%1</strong> \
 										 <br/><br/> Error(s) returned: <br/><br/><em>%2</em>")
 										 .arg(proc.program() + " " + proc.arguments().join(" "),
-													proc.readAllStandardOutput()), Messagebox::ErrorIcon);
+													proc.readAllStandardOutput()), Messagebox::Error);
 		}
 		else
 		{
 			msgbox.show(tr("The default settings were successfully restored! pgModeler will be restarted now so the configuration files can be correctly loaded."),
-									Messagebox::InfoIcon);
+									Messagebox::Info);
 
 			// Starting a new instance of pgModeler (detached)
 			proc.setProgram(GlobalAttributes::getPgModelerAppPath());
@@ -994,7 +994,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
 				msg_box.setCustomOptionText(tr("Always close without alerting me next time."));
 				msg_box.show(tr("Unsaved model(s)"),
 										 tr("The following models were modified but not saved: %1. Do you really want to quit pgModeler?").arg(model_names.join(", ")),
-										 Messagebox::ConfirmIcon,Messagebox::YesNoButtons);
+										 Messagebox::Confirm,Messagebox::YesNoButtons);
 
 				conf_wgt->appendConfigurationSection(Attributes::Configuration,
 																						 {{ Attributes::AlertUnsavedModels,
@@ -1015,7 +1015,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
 			msg_box.setCustomOptionText(tr("Always close without alerting me next time."));
 			msg_box.show(tr("Open SQL execution tab(s)"),
 									 tr("There are one or more SQL execution tabs with typed commands! Do you really want to quit pgModeler?"),
-									 Messagebox::ConfirmIcon,Messagebox::YesNoButtons);
+									 Messagebox::Confirm,Messagebox::YesNoButtons);
 
 			conf_wgt->appendConfigurationSection(Attributes::Configuration,
 																					 {{ Attributes::AlertOpenSqlTabs,
@@ -1849,7 +1849,7 @@ void MainWindow::saveModel(ModelWidget *model)
 			{
 				msg_box.show(tr("Confirmation"),
 										 tr(" <strong>WARNING:</strong> The model <strong>%1</strong> has not been validated since the last modification! It's recommended to validate it before save in order to create a consistent model otherwise the generated file will be broken demanding manual fixes to be loadable again!").arg(db_model->getName()),
-										 Messagebox::AlertIcon, Messagebox::AllButtons,
+										 Messagebox::Alert, Messagebox::AllButtons,
 										 tr("Validate"), tr("Save anyway"), "",
 										 GuiUtilsNs::getIconPath("validation"), GuiUtilsNs::getIconPath("save"));
 
@@ -1909,7 +1909,7 @@ void MainWindow::saveModel(ModelWidget *model)
 						{
 							msg_box.show(tr("<strong>WARNING:</strong> the database model <strong>%1</strong>, file <strong>%2</strong>, is also loaded in another tab! Saving the current model to the file may lead to data loss if its version in memory is outdated compared to what is loaded in the other tab. Do you really want to proceed with the saving?")
 													 .arg(model->getDatabaseModel()->getName()).arg(model->getFilename()),
-													 Messagebox::AlertIcon, Messagebox::YesNoButtons);
+													 Messagebox::Alert, Messagebox::YesNoButtons);
 
 							save_model = msg_box.isAccepted();
 							break;
@@ -1953,7 +1953,7 @@ void MainWindow::validateBeforeOperation()
 				icon_pth = GuiUtilsNs::getIconPath(is_export ? "export" : "diff");
 
 		msgbox.show(tr("Confirmation"), tr("<strong>WARNING:</strong> The model <strong>%1</strong> has not been validated since the last modification! Before running the selected operation it's recommended to validate in order to correctly create the objects on database server!").arg(db_model->getName()),
-								Messagebox::AlertIcon, Messagebox::YesNoButtons, tr("Validate"), btn_lbl, "",
+								Messagebox::Alert, Messagebox::YesNoButtons, tr("Validate"), btn_lbl, "",
 								GuiUtilsNs::getIconPath("validation"), icon_pth);
 
 		if(msgbox.isAccepted())
@@ -2020,7 +2020,7 @@ void MainWindow::printModel()
 				 orig_page_lt.pageSize().rectPoints() != curr_page_lt.pageSize().rectPoints())
 			{
 				msg_box.show("", tr("Changes were detected in the definitions of paper/margin which may cause the incorrect printing of the objects. Which configurations do you want to use?"),
-										 Messagebox::AlertIcon, Messagebox::AllButtons,
+										 Messagebox::Alert, Messagebox::AllButtons,
 										 tr("New settings"), tr("Defaults"), tr("Cancel"),
 										 GuiUtilsNs::getIconPath("new"),
 										 GuiUtilsNs::getIconPath("defaults"));
@@ -2117,7 +2117,7 @@ void MainWindow::showFixMessage(Exception &e, const QString &filename)
 	msg_box.show(Exception(Exception::getErrorMessage(ErrorCode::ModelFileNotLoaded).arg(filename),
 												 ErrorCode::ModelFileNotLoaded ,PGM_FUNC,PGM_FILE,PGM_LINE, &e),
 							 tr("Could not load the database model file `%1'! Check the error stack to see details. You can try to fix it in order to make it loadable again.").arg(filename),
-							 Messagebox::ErrorIcon, Messagebox::YesNoButtons,
+							 Messagebox::Error, Messagebox::YesNoButtons,
 							 tr("Fix model"), tr("Cancel"), "",
 							 GuiUtilsNs::getIconPath("fixobject"), GuiUtilsNs::getIconPath("cancel"));
 
@@ -2394,14 +2394,14 @@ void MainWindow::showDemoVersionWarning(bool exit_msg)
 							Please, support this project <a href='%2'>buying a full binary copy</a>, use the promo code <strong>DEMOTESTER</strong> and receive a special discount on any purchase. You can also get the <a href='%3'>source code</a> and compile it yourself.\
 							<strong>NOTE:</strong> pgModeler is open-source software, but purchasing binary copies or providing a donation of any amount will support the project and keep its development alive!<br/><br/>")
 							.arg(GlobalAttributes::PgModelerDownloadURL + "?purchase=true&promocode=DEMOTESTER", GlobalAttributes::PgModelerDownloadURL + "?source=true"),
-							Messagebox::AlertIcon, Messagebox::OkButton);
+							Messagebox::Alert, Messagebox::OkButton);
 	}
 	else
 	{
 		msg_box.show(tr("Info"),
 					 tr("Thank you for testing pgModeler! Do not forget that you can support this project by <a href='%2'>buying a full binary copy</a> using the promo code <strong>DEMOTESTER</strong> to receive a special discount. Also, you can get the <a href='%3'>source code</a> and compile it yourself, instructions are on the site.")
 							.arg(GlobalAttributes::PgModelerDownloadURL + "?purchase=true&promocode=DEMOTESTER", GlobalAttributes::PgModelerDownloadURL + "?source=true"),
-							Messagebox::InfoIcon, Messagebox::OkButton);
+							Messagebox::Info, Messagebox::OkButton);
 	}
 }
 #endif
