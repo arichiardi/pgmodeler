@@ -17,6 +17,7 @@
 */
 
 #include "databaseexplorerwidget.h"
+#include "customuistyle.h"
 #include "databaseimportwidget.h"
 #include "sqlexecutionwidget.h"
 #include "settings/snippetsconfigwidget.h"
@@ -156,7 +157,7 @@ DatabaseExplorerWidget::DatabaseExplorerWidget(QWidget *parent): QWidget(parent)
 		installPluginButton(btn);
 
 	pg_version_alert_frm->setVisible(false);
-	Messagebox::setMessageFrameColor(pg_version_alert_frm, Messagebox::Alert);
+	CustomUiStyle::setStyleHint(CustomUiStyle::AlertFrmHint, pg_version_alert_frm);
 
 	curr_scroll_value = 0;
 	filter_parent->setVisible(false);

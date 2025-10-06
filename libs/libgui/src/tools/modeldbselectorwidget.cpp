@@ -17,6 +17,7 @@
 */
 
 #include "modeldbselectorwidget.h"
+#include "customuistyle.h"
 #include "settings/connectionsconfigwidget.h"
 #include "databaseimporthelper.h"
 #include "databaseimportwidget.h"
@@ -27,7 +28,7 @@ ModelDbSelectorWidget::ModelDbSelectorWidget(QWidget *parent) : QWidget(parent)
 	setSelectMode(SelectModel);
 	
 	alert_frm->setVisible(false);
-	Messagebox::setMessageFrameColor(alert_frm, Messagebox::Alert);
+	CustomUiStyle::setStyleHint(CustomUiStyle::AlertFrmHint, alert_frm);
 
 	connect(connections_cmb, &QComboBox::activated, this, &ModelDbSelectorWidget::listDatabases);
 	connect(database_cmb, &QComboBox::activated, this, &ModelDbSelectorWidget::s_selectionChanged);

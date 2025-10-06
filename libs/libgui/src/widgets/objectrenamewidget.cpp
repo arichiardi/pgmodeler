@@ -17,6 +17,7 @@
 */
 
 #include "objectrenamewidget.h"
+#include "customuistyle.h"
 #include "guiutilsns.h"
 #include "coreutilsns.h"
 #include "messagebox.h"
@@ -32,7 +33,7 @@ ObjectRenameWidget::ObjectRenameWidget(QWidget * parent) : QDialog(parent)
 	setWindowFlags(Qt::Dialog | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
 	setAttribute(Qt::WA_TranslucentBackground, true);
 
-	Messagebox::setMessageFrameColor(alert_frm, Messagebox::Alert);
+	CustomUiStyle::setStyleHint(CustomUiStyle::AlertFrmHint, alert_frm);
 
 	connect(new_name_edt, &QLineEdit::returnPressed, apply_btn, &QPushButton::click);
 	connect(cancel_btn, &QPushButton::clicked, this, &ObjectRenameWidget::reject);

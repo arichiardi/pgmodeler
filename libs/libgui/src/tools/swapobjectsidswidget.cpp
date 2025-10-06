@@ -1,4 +1,5 @@
 #include "swapobjectsidswidget.h"
+#include "customuistyle.h"
 #include "guiutilsns.h"
 
 const QString SwapObjectsIdsWidget::IdLabel {"ID: <strong>%1</strong>"};
@@ -11,7 +12,7 @@ SwapObjectsIdsWidget::SwapObjectsIdsWidget(QWidget *parent, Qt::WindowFlags f) :
 																																	 ObjectType::Constraint });
 	setupUi(this);
 
-	Messagebox::setMessageFrameColor(alert_frm, Messagebox::Alert);
+	CustomUiStyle::setStyleHint(CustomUiStyle::AlertFrmHint, alert_frm);
 
 	sort_column = 0;
 	sort_order = Qt::AscendingOrder;

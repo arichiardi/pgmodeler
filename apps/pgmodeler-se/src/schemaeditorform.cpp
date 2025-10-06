@@ -17,6 +17,7 @@
 */
 
 #include "schemaeditorform.h"
+#include "customuistyle.h"
 #include "guiutilsns.h"
 #include "globalattributes.h"
 #include "messagebox.h"
@@ -40,7 +41,7 @@ SchemaEditorForm::SchemaEditorForm(QWidget *parent) : QWidget(parent)
 
 	setupUi(this);
 	setWindowTitle(windowTitle() + " " + GlobalAttributes::PgModelerVersion);
-	Messagebox::setMessageFrameColor(alert_frm, Messagebox::Alert);
+	CustomUiStyle::setStyleHint(CustomUiStyle::AlertFrmHint, alert_frm);
 
 	for(auto &obj : btns_parent_wgt->children())
 	{

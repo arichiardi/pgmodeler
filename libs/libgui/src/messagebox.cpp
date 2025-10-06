@@ -109,30 +109,6 @@ bool Messagebox::isCustomOptionChecked()
 	return custom_option_chk->isChecked();
 }
 
-void Messagebox::setMessageFrameColor(QFrame *frame, MessageType icon_type)
-{
-	if(!frame || icon_type == None)
-		return;
-
-	static const QString tmpl_css = "QFrame#%1 { background-color: palette(%2); border: 2px solid %3; border-radius: %4px; }";
-
-	static const std::map<MessageType, QColor> frm_colors = {
-																					{ Error, QColor("#f55858") },
-																					{ Info, QColor("#62daf5") },
-																					{ Alert, QColor("#f5e65a") },
-																					{ Confirm, QColor("#62daf5") } };
-
-	QString pal_role = CustomUiStyle::isDarkPalette() ?
-										 Attributes::Dark : Attributes::Light;
-																					
-	frame->setStyleSheet(tmpl_css.arg(frame->objectName(), 
-																		pal_role,	
-																		CustomUiStyle::getAdjustedColor(frm_colors.at(icon_type), 
-																																		CustomUiStyle::NoFactor,
-																																	  -CustomUiStyle::XMinFactor).name())
-															 .arg(CustomUiStyle::FrameRadius));
-}
-
 int Messagebox::show(Exception e, const QString &msg, MessageType icon_type, ButtonsId buttons, const QString &yes_lbl, const QString &no_lbl, const QString &cancel_lbl,
 											const QString &yes_ico, const QString &no_ico, const QString &cancel_ico)
 {
@@ -235,8 +211,9 @@ int Messagebox::show(const QString &title, const QString &msg, MessageType icon_
 										 const QString &yes_lbl, const QString &no_lbl, const QString &cancel_lbl,
 										 const QString &yes_ico, const QString &no_ico, const QString &cancel_ico)
 {
-	QString icon_name, aux_title=title;
+	QString icon_name, aux_title;
 	QWidgetList btns = { yes_ok_btn, no_btn, cancel_btn, show_errors_btn };
+	CustomUiStyle::StyleHint style_hint;
 
 	if(!yes_lbl.isEmpty())
 		yes_ok_btn->setText(yes_lbl);
@@ -274,51 +251,35 @@ int Messagebox::show(const QString &title, const QString &msg, MessageType icon_
 		btn->setMinimumSize(btn->size());
 	}
 
-	if(title.isEmpty())
-	{
-		switch(icon_type)
-		{
-		case Error:
-			aux_title=tr("Error");
-			break;
-
-		case Alert:
-			aux_title=tr("Alert");
-			break;
-
-		case Info:
-			aux_title=tr("Information");
-			break;
-
-		case Confirm:
-			aux_title=tr("Confirmation");
-			break;
-
-		default:
-			break;
-		}
-	}
-
 	switch(icon_type)
 	{
-	case Error:
-		icon_name="error";
+		case Error:
+			icon_name = "error";
+			aux_title = title.isEmpty() ? tr("Error") : title;
+			style_hint = CustomUiStyle::ErrorFrmHint;
 		break;
 
-	case Info:
-		icon_name="info";
+		case Info:
+			icon_name = "info";
+			aux_title = title.isEmpty() ? tr("Information") : title;
+			style_hint = CustomUiStyle::InfoFrmHint;
 		break;
 
-	case Alert:
-		icon_name="alert";
+		case Alert:
+			icon_name = "alert";
+			aux_title = title.isEmpty() ? tr("Alert") : title;
+			style_hint = CustomUiStyle::AlertFrmHint;
 		break;
 
-	case Confirm:
-		icon_name="question";
+		case Confirm:
+			icon_name = "question";
+			aux_title = title.isEmpty() ? tr("Confirmation") : title;
+			style_hint = CustomUiStyle::ConfirmFrmHint;
 		break;
 
-	default:
-		icon_name="";
+		default:
+			icon_name = "";
+			aux_title = title;
 		break;
 	}
 
@@ -352,7 +313,7 @@ int Messagebox::show(const QString &title, const QString &msg, MessageType icon_
 		resize(minimumSize());
 
 	setBaseSize(size());
-	setMessageFrameColor(frame, icon_type);
+	CustomUiStyle::setStyleHint(style_hint, frame);
 
 	return exec();
 }

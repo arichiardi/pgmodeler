@@ -17,6 +17,7 @@
 */
 
 #include "modelfixwidget.h"
+#include "customuistyle.h"
 #include "globalattributes.h"
 
 const QString ModelFixWidget::PgModelerCli {
@@ -30,6 +31,8 @@ const QString ModelFixWidget::PgModelerCli {
 ModelFixWidget::ModelFixWidget(QWidget *parent) : QWidget(parent)
 {
 	setupUi(this);
+
+	CustomUiStyle::setStyleHint(CustomUiStyle::AlertFrmHint, alert2_frm);
 
 	input_file_sel = new FileSelectorWidget(this);
 	input_file_sel->setObjectName("input_file_sel");

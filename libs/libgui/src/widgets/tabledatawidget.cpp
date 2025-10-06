@@ -17,6 +17,7 @@
 */
 
 #include "tabledatawidget.h"
+#include "customuistyle.h"
 #include "messagebox.h"
 #include "tools/sqlexecutionwidget.h"
 #include "guiutilsns.h"
@@ -31,7 +32,7 @@ TableDataWidget::TableDataWidget(QWidget *parent): BaseObjectWidget(parent, Obje
 	Ui_TableDataWidget::setupUi(this);
 	configureFormLayout(tabledata_grid, ObjectType::BaseObject);
  	
-	Messagebox::setMessageFrameColor(alert_frm, Messagebox::Alert);
+	CustomUiStyle::setStyleHint(CustomUiStyle::AlertFrmHint, alert_frm);
 
 	obj_icon_lbl->setPixmap(QPixmap(GuiUtilsNs::getIconPath(ObjectType::Table)));
 

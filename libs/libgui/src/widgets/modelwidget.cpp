@@ -18,6 +18,7 @@
 
 #include "baseform.h"
 #include "modelwidget.h"
+#include "customuistyle.h"
 #include "sourcecodewidget.h"
 #include "dbobjects/databasewidget.h"
 #include "dbobjects/schemawidget.h"
@@ -132,7 +133,7 @@ ModelWidget::ModelWidget(QWidget *parent) : QWidget(parent)
 	protected_model_frm->setFrameShadow(QFrame::Raised);
 	protected_model_frm->setVisible(false);
 
-	Messagebox::setMessageFrameColor(protected_model_frm, Messagebox::Alert);
+	CustomUiStyle::setStyleHint(CustomUiStyle::AlertFrmHint, protected_model_frm);
 
 	label = new QLabel(protected_model_frm);
 	label->setMinimumSize(QSize(20, 20));
@@ -4969,10 +4970,10 @@ void ModelWidget::highlightObject()
 
 void ModelWidget::toggleNewObjectOverlay()
 {
-if(new_obj_overlay_wgt->isHidden() &&
-			(selected_objects.empty() ||
-			 (selected_objects[0]->getObjectType()!=ObjectType::BaseRelationship &&
-			 selected_objects[0]->getObjectType()!=ObjectType::Textbox)))
+	if(new_obj_overlay_wgt->isHidden() &&
+		(selected_objects.empty() ||
+		(selected_objects[0]->getObjectType()!=ObjectType::BaseRelationship &&
+		selected_objects[0]->getObjectType()!=ObjectType::Textbox)))
 	{
 		new_obj_overlay_wgt->raise();
 		new_obj_overlay_wgt->show();
@@ -4980,7 +4981,7 @@ if(new_obj_overlay_wgt->isHidden() &&
 		this->adjustOverlayPosition();
 	}
 	else
-		new_obj_overlay_wgt->hide();
+			new_obj_overlay_wgt->hide();
 }
 
 void ModelWidget::adjustOverlayPosition()

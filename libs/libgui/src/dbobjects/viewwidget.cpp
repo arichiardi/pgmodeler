@@ -17,6 +17,7 @@
 */
 
 #include "viewwidget.h"
+#include "customuistyle.h"
 #include "rulewidget.h"
 #include "triggerwidget.h"
 #include "indexwidget.h"
@@ -33,7 +34,7 @@ ViewWidget::ViewWidget(QWidget *parent): BaseObjectWidget(parent, ObjectType::Vi
 
 	Ui_ViewWidget::setupUi(this);
 	alert_frm->setVisible(false);
-	Messagebox::setMessageFrameColor(alert_frm, Messagebox::Alert);
+	CustomUiStyle::setStyleHint(CustomUiStyle::AlertFrmHint, alert_frm);
 
 	check_option_cmb->addItem(tr("No check"));
 	check_option_cmb->addItems(CheckOptionType::getTypes());

@@ -17,6 +17,7 @@
 */
 
 #include "datagridwidget.h"
+#include "customuistyle.h"
 #include "plaintextitemdelegate.h"
 #include "messagebox.h"
 #include "guiutilsns.h"
@@ -30,7 +31,7 @@ DataGridWidget::DataGridWidget(const QString &sch_name, const QString &tab_name,
 {
 	setupUi(this);
 
-	Messagebox::setMessageFrameColor(result_info_frm, Messagebox::Info);
+	CustomUiStyle::setStyleHint(CustomUiStyle::InfoFrmHint, result_info_frm);
 
 	schema_lbl->setText(sch_name);
 

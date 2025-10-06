@@ -17,6 +17,7 @@
 */
 
 #include "difftoolwidget.h"
+#include "customuistyle.h"
 #include "databaseimportwidget.h"
 #include "guiutilsns.h"
 #include <QTemporaryFile>
@@ -34,7 +35,7 @@ DiffToolWidget::DiffToolWidget(QWidget *parent) : BaseConfigWidget (parent)
 	setupUi(this);
 
 	inv_model_alert_frm->setVisible(false);
-	Messagebox::setMessageFrameColor(inv_model_alert_frm, Messagebox::Alert);
+	CustomUiStyle::setStyleHint(CustomUiStyle::AlertFrmHint, inv_model_alert_frm);
 
 	GuiUtilsNs::configureWidgetsFont({ generate_btn, cancel_btn }, GuiUtilsNs::BigFontFactor);
 

@@ -17,6 +17,7 @@
 */
 
 #include "modelexportwidget.h"
+#include "customuistyle.h"
 #include "guiutilsns.h"
 #include "utilsns.h"
 #include "connectionsconfigwidget.h"
@@ -33,7 +34,7 @@ ModelExportWidget::ModelExportWidget(QWidget *parent) : QWidget(parent)
 	setupUi(this);
 
 	alert_frm->setVisible(false);
-	Messagebox::setMessageFrameColor(alert_frm, Messagebox::Alert);
+	CustomUiStyle::setStyleHint(CustomUiStyle::AlertFrmHint, alert_frm);
 	GuiUtilsNs::configureWidgetsFont({ export_btn, cancel_btn }, GuiUtilsNs::BigFontFactor);
 
 	model_sel_wgt = new ModelDbSelectorWidget(this);

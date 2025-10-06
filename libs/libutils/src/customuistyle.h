@@ -148,10 +148,14 @@ class __libutils CustomUiStyle : public QProxyStyle {
 
 		// Draws primitive elements (PE) of checkboxes and radio buttons
 		void drawPECheckBoxRadioBtn(PrimitiveElement element, const QStyleOption *option,
-																 QPainter *painter, const QWidget *widget) const;
+															 QPainter *painter, const QWidget *widget) const;
+
+		// Draws primitive elements (PE) of frame background (when StyleHint is set)
+		void drawPEHintFramePanel(PrimitiveElement element, const QStyleOption *option,
+															QPainter *painter, const QWidget *widget) const;
 
 		void drawPEGenericElemFrame(PrimitiveElement element, const QStyleOption *option,	
-																 QPainter *painter, const QWidget *widget, int border_radius) const;
+															 QPainter *painter, const QWidget *widget, int border_radius) const;
 
 		void drawPEGroupBoxFrame(PrimitiveElement element, const QStyleOption *option,	
 														 QPainter *painter, const QWidget *widget) const;
@@ -207,11 +211,15 @@ class __libutils CustomUiStyle : public QProxyStyle {
 		//! \brief Helper function to get color from application palette considering widget state
 		static QColor getStateColor(QPalette::ColorRole role, const QStyleOption *option);
 
+		static constexpr char StyleHintProp[] = "style-hint",
+													StyleHintColor[] = "style-hint-color";
+
 	public:
 		static constexpr int NoRadius = 0,
 							 ButtonRadius = 4,
 							 InputRadius = 5,
 							 FrameRadius = 4,
+							 HintFrameRadius = 6,
 							 TabWgtRadius = 2,
 							 TabBarRadius = 5,
 							 ScrollBarRadius = 2;
@@ -221,6 +229,15 @@ class __libutils CustomUiStyle : public QProxyStyle {
 												 MinFactor = 120,
 							 					 MidFactor = 135,
 							 					 MaxFactor = 150;
+
+		//! \brief Enum for setting style hints on widgets via setProperty method			
+		enum StyleHint {
+			NoHint,
+			InfoFrmHint, // Blueish border (informational)
+			ConfirmFrmHint, // Green border (confirmation)
+			AlertFrmHint, // Yellow border (alert)
+			ErrorFrmHint // Red border (error)
+		};
 
 		CustomUiStyle();
 
@@ -243,6 +260,8 @@ class __libutils CustomUiStyle : public QProxyStyle {
 		QPixmap generatedIconPixmap(QIcon::Mode iconMode, const QPixmap &pixmap, const QStyleOption *option) const override;
 
 		int pixelMetric(PixelMetric metric, const QStyleOption * option = 0, const QWidget * widget = 0) const override;
+
+		static void setStyleHint(StyleHint hint, QWidget *widget);
 
 		//! \brief Checks if the current application palette is dark (dark theme)
 		static bool isDarkPalette();

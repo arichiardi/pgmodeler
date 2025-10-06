@@ -17,6 +17,7 @@
 */
 
 #include "objectsfilterwidget.h"
+#include "customuistyle.h"
 #include "guiutilsns.h"
 #include "catalog.h"
 #include "utilsns.h"
@@ -26,6 +27,8 @@ ObjectsFilterWidget::ObjectsFilterWidget(QWidget *parent) : QWidget(parent)
 	std::vector<ObjectType> types = BaseObject::getChildObjectTypes(ObjectType::Table);
 
 	setupUi(this);
+
+	CustomUiStyle::setStyleHint(CustomUiStyle::InfoFrmHint, hint_frm);
 
 	hint_lbl->setText(tr("Using a pattern in <strong>%1</strong> mode where no wildcard character <strong>%2</strong> is present has the same effect as performing an exact match search on the names or signatures.")
 											 .arg(UtilsNs::FilterWildcard)

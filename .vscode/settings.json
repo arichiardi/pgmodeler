@@ -14,7 +14,22 @@
     "C_Cpp.autocomplete": "default",           
     "C_Cpp.autocompleteAddParentheses": true, 
     "C_Cpp.hoverEnabled": true,                 
-    "C_Cpp.errorSquiggles": "enabled",     
+    "C_Cpp.errorSquiggles": "enabled",
+    
+    // Delay para sugestões de código (menos intrusivo)
+    "editor.quickSuggestionsDelay": 500,  // Delay de 500ms antes de mostrar sugestões
+    "editor.suggestOnTriggerCharacters": false,  // Não mostrar sugestões ao digitar caracteres especiais
+    "editor.acceptSuggestionOnCommitCharacter": false,  // Não aceitar sugestão ao digitar . ou (
+    
+    // GitHub Copilot - delays e controles
+    "github.copilot.editor.enableAutoCompletions": true,
+    "editor.inlineSuggest.enabled": true,
+    "github.copilot.enable": {
+        "*": true,
+        "yaml": false,
+        "plaintext": false,
+        "markdown": false
+    },     
 
     "C_Cpp.commentContinuationPatterns": [
         {
@@ -129,7 +144,7 @@
         "**/build/**": true,
         "**/cmake-build/**": true,
         ".qt": true
-    }
+    },
 
     "editor.tokenColorCustomizations": {
         "textMateRules": [

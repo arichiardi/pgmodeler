@@ -22,6 +22,7 @@
 #include <QApplication>
 #include <QComboBox>
 #include <QDebug>
+#include <QFrame>
 #include <QHeaderView>
 #include <QPainterPath>
 #include <QProgressBar>
@@ -605,7 +606,10 @@ void CustomUiStyle::drawPrimitive(PrimitiveElement element, const QStyleOption *
 	{
 		// Don't draw frame if this is part of a SpinBox edit field
 		if(!widget || !qobject_cast<const QAbstractSpinBox *>(widget))
+		{
+			drawPEHintFramePanel(element, option, painter, widget);
 			drawPEGenericElemFrame(element, option, painter, widget, NoRadius);
+		}
 
 		return;
 	}
@@ -960,15 +964,13 @@ void CustomUiStyle::drawPEButtonPanel(PrimitiveElement element, const QStyleOpti
 	{
 		if(wgt_st.has_custom_color)
 			bg_color = getStateColor(widget->palette(), QPalette::Button, option);
-		else if(wgt_st.is_default || wgt_st.is_checked)
+		else if(!wgt_st.is_pressed && (wgt_st.is_default || wgt_st.is_checked))
 		{
 			QColor base_bg_color = getStateColor(QPalette::Highlight, option);
-
-			if(wgt_st.is_pressed)
-				bg_color = getAdjustedColor(base_bg_color, -MinFactor, -MinFactor);
-			else if(!wgt_st.is_pressed && wgt_st.is_hovered)
+			
+			if(wgt_st.is_hovered)
 				bg_color = getAdjustedColor(base_bg_color, MinFactor, MinFactor);
-			else if(!wgt_st.is_pressed && !wgt_st.is_hovered)
+			else
 				bg_color = getAdjustedColor(base_bg_color, NoFactor, NoFactor);
 		}
 		else if(wgt_st.is_pressed)
@@ -1037,6 +1039,55 @@ void CustomUiStyle::drawPECheckBoxRadioBtn(PrimitiveElement element, const QStyl
 	painter->restore();
 }
 
+void CustomUiStyle::drawPEHintFramePanel(PrimitiveElement element, const QStyleOption *option,
+																			 QPainter *painter, const QWidget *widget) const
+{
+	if(element != PE_Frame || !option || !painter || !widget)
+		return;
+
+	// Check if widget is a QFrame and has a StyleHint set
+	const QFrame *frame = qobject_cast<const QFrame *>(widget);
+
+	if(!frame || widget->property(StyleHintProp).toInt() == NoHint)
+		return;
+
+	// Get the style hint color
+	QColor hint_color = widget->property(StyleHintColor).value<QColor>();
+	WidgetState wgt_st(option, widget);
+
+	// Get the light color from palette for blending
+	QColor base_color = getStateColor(QPalette::Light, option);
+
+	/* Blend the hint color with the light color
+	 * Use a lower blend factor (0.3) to give more weight to light */
+	QColor bg_color;
+
+	if(!wgt_st.is_enabled)
+		bg_color = getStateColor(QPalette::Dark, option);
+	else
+	{	
+		if(isDarkPalette())
+			bg_color = getAdjustedColor(bg_color, XMinFactor, NoFactor);
+		else
+			bg_color = getAdjustedColor(bg_color, NoFactor, -XMinFactor);
+
+		// Blend hint color with base light color
+		bg_color.setRedF(hint_color.redF() * 0.25 + base_color.redF() * 0.75);
+		bg_color.setGreenF(hint_color.greenF() * 0.25 + base_color.greenF() * 0.75);
+		bg_color.setBlueF(hint_color.blueF() * 0.25 + base_color.blueF() * 0.75);
+	}
+
+	// Create the shape with frame radius plus one pixel for a better context
+	QPainterPath shape = createControlShape(option->rect, HintFrameRadius, AllCorners);
+
+	painter->save();
+	painter->setRenderHint(QPainter::Antialiasing, true);
+	painter->setPen(Qt::NoPen);
+	painter->setBrush(bg_color);
+	painter->drawPath(shape);
+	painter->restore();
+}
+
 void CustomUiStyle::drawPEGenericElemFrame(PrimitiveElement element, const QStyleOption *option,
 				QPainter *painter, const QWidget *widget, int border_radius) const
 {
@@ -1044,13 +1095,23 @@ void CustomUiStyle::drawPEGenericElemFrame(PrimitiveElement element, const QStyl
 		return;
 
 	QColor border_color = getAdjustedColor(getStateColor(QPalette::Midlight, option), NoFactor, -XMinFactor);
-
 	WidgetState wgt_st(option, widget);
+	qreal pen_width = PenWidth;
 
 	/* Detecting if its a line edit frame, because some states
 	 * are not rendered for it, like hover and pressed */
 	bool is_edit_frm = (element == PE_FrameLineEdit),
 		 is_basic_frm = (element == PE_Frame);
+
+	/* The widget has a style hint property set, we use it to 
+	 * render a specific border color and radius. */
+	if(widget->property(StyleHintProp).toInt() != NoHint)
+	{
+		if(wgt_st.is_enabled)
+			border_color = getAdjustedColor(widget->property(StyleHintColor).value<QColor>(), NoFactor, -XMinFactor);
+
+		border_radius = HintFrameRadius;
+	}
 
 	if(wgt_st.is_enabled)
 	{
@@ -1059,15 +1120,13 @@ void CustomUiStyle::drawPEGenericElemFrame(PrimitiveElement element, const QStyl
 			border_color = getStateColor(widget->palette(), QPalette::Button, option);
 			border_color = border_color.lighter(QColor(border_color).lightness() < 128 ? MidFactor : MaxFactor);
 		}
-		else if(wgt_st.is_default || wgt_st.is_checked)
+		else if(!wgt_st.is_pressed && (wgt_st.is_default || wgt_st.is_checked))
 		{
 			QColor base_border_cl = getStateColor(QPalette::Highlight, option);
 
-			if(wgt_st.is_pressed)
-				border_color = getAdjustedColor(base_border_cl, -MidFactor, -XMinFactor);
-			else if(!wgt_st.is_pressed && wgt_st.is_hovered)
+			if(wgt_st.is_hovered)
 				border_color = getAdjustedColor(base_border_cl, MidFactor, XMinFactor);
-			else if(!wgt_st.is_pressed && !wgt_st.is_hovered)
+			else
 				border_color = getAdjustedColor(base_border_cl, MidFactor, -MinFactor);
 		}
 		else if(wgt_st.is_pressed && !is_edit_frm && !is_basic_frm)
@@ -1086,9 +1145,10 @@ void CustomUiStyle::drawPEGenericElemFrame(PrimitiveElement element, const QStyl
 	else
 		shape = createControlShape(option->rect, 0,
 						CustomUiStyle::NoCorners, 1, 1, -1, -1);
+
 	painter->save();
 	painter->setRenderHint(QPainter::Antialiasing, true);
-	painter->setPen(QPen(border_color, PenWidth));
+	painter->setPen(QPen(border_color, pen_width));
 	painter->setBrush(Qt::NoBrush);
 	painter->drawPath(shape);
 	painter->restore();
@@ -1980,4 +2040,20 @@ void CustomUiStyle::drawPEHeaderArrow(const QStyleOption *option, QPainter *pain
 
 	// Draw the sort arrow using our standard method
 	drawControlArrow(&arrow_opt, painter, widget, arrow_type);
+}
+
+void CustomUiStyle::setStyleHint(StyleHint hint, QWidget *widget)
+{
+	if(!widget)
+		return;
+
+	static const std::map<StyleHint, QColor> frm_colors = {
+		{ ErrorFrmHint, "#eb4848" },
+		{ InfoFrmHint, "#52d0eb" },
+		{ AlertFrmHint, "#ebdc4a" },
+		{ ConfirmFrmHint, "#52d0eb" }
+	};
+
+	widget->setProperty(StyleHintProp, static_cast<int>(hint));
+	widget->setProperty(StyleHintColor, frm_colors.at(hint));
 }
