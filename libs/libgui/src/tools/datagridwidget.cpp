@@ -30,6 +30,8 @@ DataGridWidget::DataGridWidget(const QString &sch_name, const QString &tab_name,
 {
 	setupUi(this);
 
+	Messagebox::setMessageFrameColor(result_info_frm, Messagebox::Info);
+
 	schema_lbl->setText(sch_name);
 
 	rows_cnt_lbl->setToolTip(rows_cnt_ico_lbl->toolTip());

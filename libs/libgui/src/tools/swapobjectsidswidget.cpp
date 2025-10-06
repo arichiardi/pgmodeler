@@ -11,6 +11,8 @@ SwapObjectsIdsWidget::SwapObjectsIdsWidget(QWidget *parent, Qt::WindowFlags f) :
 																																	 ObjectType::Constraint });
 	setupUi(this);
 
+	Messagebox::setMessageFrameColor(alert_frm, Messagebox::Alert);
+
 	sort_column = 0;
 	sort_order = Qt::AscendingOrder;
 

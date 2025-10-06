@@ -17,6 +17,7 @@
 */
 
 #include "modelrestorationform.h"
+#include "messagebox.h"
 #include "utilsns.h"
 #include "globalattributes.h"
 #include <QDir>
@@ -25,6 +26,7 @@
 ModelRestorationForm::ModelRestorationForm(QWidget *parent, Qt::WindowFlags f) : QDialog(parent, f)
 {
 	setupUi(this);
+	Messagebox::setMessageFrameColor(alert_frm, Messagebox::Alert);
 
 	connect(restore_btn, &QPushButton::clicked, this, &ModelRestorationForm::accept);
 	connect(cancel_btn, &QPushButton::clicked, this, &ModelRestorationForm::reject);

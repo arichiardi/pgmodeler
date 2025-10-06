@@ -17,6 +17,7 @@
 */
 
 #include "tabledatawidget.h"
+#include "messagebox.h"
 #include "tools/sqlexecutionwidget.h"
 #include "guiutilsns.h"
 #include "csvparser.h"
@@ -29,6 +30,8 @@ TableDataWidget::TableDataWidget(QWidget *parent): BaseObjectWidget(parent, Obje
 {
 	Ui_TableDataWidget::setupUi(this);
 	configureFormLayout(tabledata_grid, ObjectType::BaseObject);
+ 	
+	Messagebox::setMessageFrameColor(alert_frm, Messagebox::Alert);
 
 	obj_icon_lbl->setPixmap(QPixmap(GuiUtilsNs::getIconPath(ObjectType::Table)));
 

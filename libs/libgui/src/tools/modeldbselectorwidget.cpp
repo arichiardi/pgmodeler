@@ -25,7 +25,9 @@ ModelDbSelectorWidget::ModelDbSelectorWidget(QWidget *parent) : QWidget(parent)
 {
 	setupUi(this);
 	setSelectMode(SelectModel);
+	
 	alert_frm->setVisible(false);
+	Messagebox::setMessageFrameColor(alert_frm, Messagebox::Alert);
 
 	connect(connections_cmb, &QComboBox::activated, this, &ModelDbSelectorWidget::listDatabases);
 	connect(database_cmb, &QComboBox::activated, this, &ModelDbSelectorWidget::s_selectionChanged);

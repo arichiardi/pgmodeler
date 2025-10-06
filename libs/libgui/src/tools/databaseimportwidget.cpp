@@ -48,6 +48,7 @@ DatabaseImportWidget::DatabaseImportWidget(QWidget *parent) : QWidget(parent)
 	import_to_model_lt->insertWidget(0, model_sel_wgt);
 
 	pg_version_alert_frm->setVisible(false);
+	Messagebox::setMessageFrameColor(pg_version_alert_frm, Messagebox::Alert);
 	tree_filter_wgt->setVisible(false);
 
 	objs_filter_wgt = new ObjectsFilterWidget(this);

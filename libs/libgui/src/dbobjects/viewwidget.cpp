@@ -33,6 +33,7 @@ ViewWidget::ViewWidget(QWidget *parent): BaseObjectWidget(parent, ObjectType::Vi
 
 	Ui_ViewWidget::setupUi(this);
 	alert_frm->setVisible(false);
+	Messagebox::setMessageFrameColor(alert_frm, Messagebox::Alert);
 
 	check_option_cmb->addItem(tr("No check"));
 	check_option_cmb->addItems(CheckOptionType::getTypes());

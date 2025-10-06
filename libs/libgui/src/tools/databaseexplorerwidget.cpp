@@ -156,6 +156,8 @@ DatabaseExplorerWidget::DatabaseExplorerWidget(QWidget *parent): QWidget(parent)
 		installPluginButton(btn);
 
 	pg_version_alert_frm->setVisible(false);
+	Messagebox::setMessageFrameColor(pg_version_alert_frm, Messagebox::Alert);
+
 	curr_scroll_value = 0;
 	filter_parent->setVisible(false);
 	sort_column = 0;

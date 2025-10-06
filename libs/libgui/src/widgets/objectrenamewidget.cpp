@@ -32,6 +32,8 @@ ObjectRenameWidget::ObjectRenameWidget(QWidget * parent) : QDialog(parent)
 	setWindowFlags(Qt::Dialog | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
 	setAttribute(Qt::WA_TranslucentBackground, true);
 
+	Messagebox::setMessageFrameColor(alert_frm, Messagebox::Alert);
+
 	connect(new_name_edt, &QLineEdit::returnPressed, apply_btn, &QPushButton::click);
 	connect(cancel_btn, &QPushButton::clicked, this, &ObjectRenameWidget::reject);
 
