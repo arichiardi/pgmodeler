@@ -425,7 +425,7 @@ std::pair<bool, int> DataHandlingForm::confirmDataGridClose(int idx)
 		data_grids_tbw->setCurrentIndex(idx);
 
 		msgbox.show(tr("<strong>WARNING: </strong> The table <strong>%1</strong> is modified but the changes are not yet saved! Do you really want to close and discard the pending operations?").arg(data_grid_wgt->objectName()),
-								Messagebox::AlertIcon, Messagebox::YesNoButtons);
+								Messagebox::Alert, Messagebox::YesNoButtons);
 
 		return { true, msgbox.result() };
 	}

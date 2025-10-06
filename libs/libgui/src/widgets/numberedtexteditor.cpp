@@ -21,6 +21,7 @@
 #include <QScrollBar>
 #include <QFileDialog>
 #include <QTemporaryFile>
+#include "customuistyle.h"
 #include "guiutilsns.h"
 #include <QMenu>
 #include <QHBoxLayout>
@@ -777,7 +778,7 @@ void NumberedTextEditor::resizeWidgets()
 														width, top_widget->height());
 	}
 
-	QString border_pal = AppearanceConfigWidget::isDarkUiTheme() ? "dark" : "mid",
+	QString border_pal = CustomUiStyle::isDarkPalette() ? "dark" : "mid",
 
 			vp_style = QString("QWidget#%1 { \
 														background-color: palette(base); \
@@ -792,7 +793,7 @@ void NumberedTextEditor::resizeWidgets()
 	viewport()->setStyleSheet(vp_style);
 
 	setStyleSheet(QString("NumberedTextEditor { background-color: palette(window); border: 1px solid palette(%1); }")
-								.arg(AppearanceConfigWidget::isDarkUiTheme() ? "dark" : "mid"));
+								.arg(CustomUiStyle::isDarkPalette() ? "dark" : "mid"));
 }
 
 int NumberedTextEditor::getLineNumbersWidth()

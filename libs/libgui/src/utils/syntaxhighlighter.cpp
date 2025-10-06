@@ -596,8 +596,8 @@ void SyntaxHighlighter::loadConfiguration(const QString &filename)
 						EnclosingCharsCfg cfg;
 						cfg.open_char = attribs[Attributes::OpenChar].front();
 						cfg.close_char = attribs[Attributes::CloseChar].front();
-						cfg.fg_color = QColor::fromString(attribs[Attributes::ForegroundColor]);
-						cfg.bg_color = QColor::fromString(attribs[Attributes::BackgroundColor]);
+						cfg.fg_color = QColor::fromString(attribs[Attributes::FgColor]);
+						cfg.bg_color = QColor::fromString(attribs[Attributes::BgColor]);
 
 						enclosing_chrs.push_back(cfg);
 					}
@@ -628,16 +628,16 @@ void SyntaxHighlighter::loadConfiguration(const QString &filename)
 
 						/* If the attribute isn't defined the fg color will be the same as the
 						 * parent's default text color */
-						if(attribs[Attributes::ForegroundColor].isEmpty())
+						if(attribs[Attributes::FgColor].isEmpty())
 							fg_color = code_field_txt->palette().color(QPalette::WindowText);
 						else
-							fg_color = QColor::fromString(attribs[Attributes::ForegroundColor]);
+							fg_color = QColor::fromString(attribs[Attributes::FgColor]);
 
 						// If the attribute isn't defined the default the bg color will be transparent
-						if(attribs[Attributes::BackgroundColor].isEmpty())
+						if(attribs[Attributes::BgColor].isEmpty())
 							bg_color = Qt::transparent;
 						else
-							bg_color = QColor::fromString(attribs[Attributes::BackgroundColor]);
+							bg_color = QColor::fromString(attribs[Attributes::BgColor]);
 
 						format.setFontFamilies({ default_font.family() });
 						format.setFontPointSize(default_font.pointSizeF());

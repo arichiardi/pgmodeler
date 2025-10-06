@@ -20,6 +20,7 @@
 #include <QGraphicsDropShadowEffect>
 #include <QSettings>
 #include "guiutilsns.h"
+#include "customuistyle.h"
 #include "messagebox.h"
 #include "widgets/numberedtexteditor.h"
 #include "baseform.h"
@@ -29,6 +30,7 @@
 #include "objectslistmodel.h"
 #include "customsortproxymodel.h"
 #include <unordered_map>
+#include "customuistyle.h"
 
 namespace GuiUtilsNs {
 	NumberedTextEditor *createNumberedTextEditor(QWidget *parent, bool act_btns_enabled, qreal custom_fnt_size)
@@ -698,7 +700,7 @@ namespace GuiUtilsNs {
 
 		color.setAlpha(80);
 
-		if(!AppearanceConfigWidget::isDarkUiTheme())
+		if(!CustomUiStyle::isDarkPalette())
 			radius = 1;
 
 		if(!wgt->graphicsEffect())

@@ -108,6 +108,7 @@ const QString GlobalAttributes::ConnectionsConf {"connections"};
 const QString GlobalAttributes::RelationshipsConf {"relationships"};
 const QString GlobalAttributes::SnippetsConf {"snippets"};
 const QString GlobalAttributes::DiffPresetsConf {"diff-presets"};
+const QString GlobalAttributes::ThemeConf {"theme"};
 
 const QString GlobalAttributes::SQLHighlightConf {"sql-highlight"};
 const QString GlobalAttributes::XMLHighlightConf {"xml-highlight"};

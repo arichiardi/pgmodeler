@@ -17,8 +17,10 @@
 */
 
 #include "messagebox.h"
+#include "customuistyle.h"
 #include "guiutilsns.h"
 #include "utilsns.h"
+#include <qobject.h>
 
 Messagebox::Messagebox(QWidget *parent, Qt::WindowFlags f) : QDialog(parent, f)
 {
@@ -107,7 +109,31 @@ bool Messagebox::isCustomOptionChecked()
 	return custom_option_chk->isChecked();
 }
 
-int Messagebox::show(Exception e, const QString &msg, IconType icon_type, ButtonsId buttons, const QString &yes_lbl, const QString &no_lbl, const QString &cancel_lbl,
+void Messagebox::setMessageFrameColor(QFrame *frame, MessageType icon_type)
+{
+	if(!frame || icon_type == None)
+		return;
+
+	static const QString tmpl_css = "QFrame#%1 { background-color: palette(%2); border: 2px solid %3; border-radius: %4px; }";
+
+	static const std::map<MessageType, QColor> frm_colors = {
+																					{ Error, QColor("#f55858") },
+																					{ Info, QColor("#62daf5") },
+																					{ Alert, QColor("#f5e65a") },
+																					{ Confirm, QColor("#62daf5") } };
+
+	QString pal_role = CustomUiStyle::isDarkPalette() ?
+										 Attributes::Dark : Attributes::Light;
+																					
+	frame->setStyleSheet(tmpl_css.arg(frame->objectName(), 
+																		pal_role,	
+																		CustomUiStyle::getAdjustedColor(frm_colors.at(icon_type), 
+																																		CustomUiStyle::NoFactor,
+																																	  -CustomUiStyle::XMinFactor).name())
+															 .arg(CustomUiStyle::FrameRadius));
+}
+
+int Messagebox::show(Exception e, const QString &msg, MessageType icon_type, ButtonsId buttons, const QString &yes_lbl, const QString &no_lbl, const QString &cancel_lbl,
 											const QString &yes_ico, const QString &no_ico, const QString &cancel_ico)
 {
 	QString fmt_msg, title;
@@ -138,7 +164,7 @@ int Messagebox::show(Exception e, const QString &msg, IconType icon_type, Button
 	return show(title, fmt_msg, icon_type, buttons, yes_lbl, no_lbl, cancel_lbl, yes_ico, no_ico, cancel_ico);
 }
 
-int Messagebox::show(const QString &msg, IconType icon_type, ButtonsId buttons)
+int Messagebox::show(const QString &msg, MessageType icon_type, ButtonsId buttons)
 {
 	return show("", msg,  icon_type, buttons);
 }
@@ -146,7 +172,7 @@ int Messagebox::show(const QString &msg, IconType icon_type, ButtonsId buttons)
 void Messagebox::error(const QString &msg)
 {
 	Messagebox msgbox;
-	msgbox.show(msg, ErrorIcon);
+	msgbox.show(msg, Error);
 }
 
 void Messagebox::error(const QString &msg, ErrorCode error_code, const QString &method, const QString &file, int line, Exception *e)
@@ -176,15 +202,15 @@ void Messagebox::alert(const QString &msg, Exception *ex)
 	Messagebox msgbox;
 
 	if(ex)
-		msgbox.show(*ex, msg, AlertIcon);
+		msgbox.show(*ex, msg, Alert);
 	else
-		msgbox.show(msg, AlertIcon);
+		msgbox.show(msg, Alert);
 }
 
 void Messagebox::info(const QString &msg)
 {
 	Messagebox msgbox;
-	msgbox.show(msg, InfoIcon);
+	msgbox.show(msg, Info);
 }
 
 int Messagebox::confirm(const QString &msg, ButtonsId btns_id,
@@ -192,7 +218,7 @@ int Messagebox::confirm(const QString &msg, ButtonsId btns_id,
 												const QString &yes_ico, const QString &no_ico, const QString &cancel_ico)
 {
 	Messagebox msgbox;
-	return msgbox.show("", msg, ConfirmIcon, btns_id,
+	return msgbox.show("", msg, Confirm, btns_id,
 										 yes_lbl, no_lbl, cancel_lbl,
 										 yes_ico, no_ico, cancel_ico);
 }
@@ -200,12 +226,12 @@ int Messagebox::confirm(const QString &msg, ButtonsId btns_id,
 int Messagebox::confirm(const QString &title, const QString &msg, ButtonsId btns_id, const QString &yes_lbl, const QString &no_lbl, const QString &cancel_lbl, const QString &yes_ico, const QString &no_ico, const QString &cancel_ico)
 {
 	Messagebox msgbox;
-	return msgbox.show(title, msg, ConfirmIcon, btns_id,
+	return msgbox.show(title, msg, Confirm, btns_id,
 										 yes_lbl, no_lbl, cancel_lbl,
 										 yes_ico, no_ico, cancel_ico);
 }
 
-int Messagebox::show(const QString &title, const QString &msg, IconType icon_type, ButtonsId buttons,
+int Messagebox::show(const QString &title, const QString &msg, MessageType icon_type, ButtonsId buttons,
 										 const QString &yes_lbl, const QString &no_lbl, const QString &cancel_lbl,
 										 const QString &yes_ico, const QString &no_ico, const QString &cancel_ico)
 {
@@ -252,19 +278,19 @@ int Messagebox::show(const QString &title, const QString &msg, IconType icon_typ
 	{
 		switch(icon_type)
 		{
-		case ErrorIcon:
+		case Error:
 			aux_title=tr("Error");
 			break;
 
-		case AlertIcon:
+		case Alert:
 			aux_title=tr("Alert");
 			break;
 
-		case InfoIcon:
+		case Info:
 			aux_title=tr("Information");
 			break;
 
-		case ConfirmIcon:
+		case Confirm:
 			aux_title=tr("Confirmation");
 			break;
 
@@ -275,19 +301,19 @@ int Messagebox::show(const QString &title, const QString &msg, IconType icon_typ
 
 	switch(icon_type)
 	{
-	case ErrorIcon:
+	case Error:
 		icon_name="error";
 		break;
 
-	case InfoIcon:
+	case Info:
 		icon_name="info";
 		break;
 
-	case AlertIcon:
+	case Alert:
 		icon_name="alert";
 		break;
 
-	case ConfirmIcon:
+	case Confirm:
 		icon_name="question";
 		break;
 
@@ -326,6 +352,7 @@ int Messagebox::show(const QString &title, const QString &msg, IconType icon_typ
 		resize(minimumSize());
 
 	setBaseSize(size());
+	setMessageFrameColor(frame, icon_type);
 
 	return exec();
 }

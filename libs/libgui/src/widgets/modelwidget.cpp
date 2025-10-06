@@ -132,6 +132,8 @@ ModelWidget::ModelWidget(QWidget *parent) : QWidget(parent)
 	protected_model_frm->setFrameShadow(QFrame::Raised);
 	protected_model_frm->setVisible(false);
 
+	Messagebox::setMessageFrameColor(protected_model_frm, Messagebox::Alert);
+
 	label = new QLabel(protected_model_frm);
 	label->setMinimumSize(QSize(20, 20));
 	label->setMaximumSize(QSize(20, 20));
@@ -1701,7 +1703,7 @@ void ModelWidget::convertRelationship1N()
 
 	msg_box.show(tr("<strong>WARNING:</strong> Converting a <strong>one-to-one</strong> or <strong>one-to-many</strong>\
  relationship can lead to unreversible changes or break other relationships in the linking chain! Do you want to proceed?"),
-							 Messagebox::AlertIcon, Messagebox::YesNoButtons);
+							 Messagebox::Alert, Messagebox::YesNoButtons);
 
 	if(msg_box.isRejected())
 		return;
@@ -2793,8 +2795,9 @@ void ModelWidget::protectObject()
 		//Protects the whole model if there is no selected object
 		if(this->selected_objects.empty())
 		{
-			if(obj_sender==action_protect || obj_sender==action_unprotect)
-				db_model->setProtected(!db_model->isProtected());
+			if(obj_sender == action_protect || obj_sender == action_unprotect)
+				//db_model->setProtected(!db_model->isProtected());
+				setProtected(!db_model->isProtected());
 		}
 		//If there is more than one selected object, make a batch protection/unprotection
 		else
@@ -2827,7 +2830,7 @@ void ModelWidget::protectObject()
 						msgbox.setCustomOptionText("Apply to all other selected schemas");
 						msgbox.show(QString(QT_TR_NOOP("Do you want to %1 the children of the schema <strong>%2</strong> too?"))
 												.arg(protect ? QT_TR_NOOP("protect") : QT_TR_NOOP("unprotect")).arg(object->getName()),
-												Messagebox::ConfirmIcon, Messagebox::YesNoButtons);
+												Messagebox::Confirm, Messagebox::YesNoButtons);
 					}
 
 					if(msgbox.isAccepted() || msgbox.isCustomOptionChecked())
@@ -2849,8 +2852,6 @@ void ModelWidget::protectObject()
 
 		for(auto &obj : upd_objects)
 			obj->setModified(true);
-
-		setProtected(db_model->isProtected());
 
 		scene->blockSignals(false);
 		scene->clearSelection();
@@ -3332,7 +3333,7 @@ void ModelWidget::pasteObjects(bool duplicate_mode)
 		Messagebox msg_box;
 		msg_box.show(Exception(tr("Not all objects were pasted to the model due to errors returned during the process! Refer to error stack for more details!"),
 								 ErrorCode::Custom,PGM_FUNC,PGM_FILE,PGM_LINE, errors), "",
-								 Messagebox::AlertIcon);
+								 Messagebox::Alert);
 	}
 
 	if(!ModelWidget::cut_operation)
@@ -3534,20 +3535,20 @@ void ModelWidget::removeObjects(bool cascade)
 		{
 			if(cascade)
 				msg_box.show(tr("<strong>CAUTION:</strong> You are about to delete objects in cascade mode which means more objects than the selected will be dropped too. Do you really want to proceed?"),
-							 Messagebox::AlertIcon, Messagebox::YesNoButtons);
+							 Messagebox::Alert, Messagebox::YesNoButtons);
 			else if(sel_objs.size() > 1)
 			{
 				msg_box.show(tr("<strong>CAUTION:</strong> Remove multiple objects at once can cause irreversible invalidations to other objects in the model causing such invalid objects to be deleted too. Do you really want to proceed?"),
-							 Messagebox::AlertIcon, Messagebox::YesNoButtons);
+							 Messagebox::Alert, Messagebox::YesNoButtons);
 			}
 			else
 			{
 				if(sel_objs[0]->getObjectType()==ObjectType::Relationship)
 					msg_box.show(tr("<strong>CAUTION:</strong> Remove a relationship can cause irreversible invalidations to other objects in the model causing such invalid objects to be deleted too. Do you really want to proceed?"),
-								 Messagebox::AlertIcon, Messagebox::YesNoButtons);
+								 Messagebox::Alert, Messagebox::YesNoButtons);
 				else
 					msg_box.show(tr("Do you really want to delete the selected object?"),
-								 Messagebox::ConfirmIcon, Messagebox::YesNoButtons);
+								 Messagebox::Confirm, Messagebox::YesNoButtons);
 			}
 		}
 
@@ -3787,7 +3788,7 @@ void ModelWidget::removeObjects(bool cascade)
 				{
 					msg_box.show(Exception(ErrorCode::RemInvalidatedObjects, PGM_FUNC,PGM_FILE,PGM_LINE, errors),
 								 tr("The cascade deletion found some problems when running! Some objects could not be deleted or registered in the operation's history! Please, refer to error stack for more details."),
-								 Messagebox::AlertIcon);
+								 Messagebox::Alert);
 				}
 			}
 			catch(Exception &e)

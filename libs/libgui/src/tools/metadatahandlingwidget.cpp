@@ -143,7 +143,7 @@ void MetadataHandlingWidget::handleObjectsMetada()
 		Messagebox msgbox;
 		msgbox.setCustomOptionText("Always proceed without alerting me next time.");
 		msgbox.show(tr("Applying the contents of a metadata file to a database model is an irreversible operation! Do you want to proceed?"),
-								Messagebox::AlertIcon, Messagebox::YesNoButtons);
+								Messagebox::Alert, Messagebox::YesNoButtons);
 
 		GeneralConfigWidget::appendConfigurationSection(Attributes::Configuration,
 																										{{ Attributes::AlertApplyMetadata,

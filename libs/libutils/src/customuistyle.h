@@ -70,6 +70,7 @@ class __libutils CustomUiStyle : public QProxyStyle {
 
 		struct WidgetState {
 			const bool is_enabled,
+							is_active,
 							is_hovered,
 							is_checked,
 							is_selected,
@@ -80,6 +81,7 @@ class __libutils CustomUiStyle : public QProxyStyle {
 
 			WidgetState(const QStyleOption *option, const QWidget *widget) :
 					is_enabled(option->state & State_Enabled),
+					is_active(option->state & State_Active),
 					is_hovered(option->state & State_MouseOver),
 					is_checked(option->state & State_On),
 					is_selected(option->state & State_Selected),
@@ -102,19 +104,6 @@ class __libutils CustomUiStyle : public QProxyStyle {
 		static constexpr int ArrowWidth = 9, // Complex control up arrow width
 							 					 ArrowHeight = 5,  // Complex control up arrow height
 												 SplitterSize = 20;
-
-		static constexpr int NoRadius = 0,
-							 ButtonRadius = 4,
-							 InputRadius = 5,
-							 FrameRadius = 4,
-							 TabWgtRadius = 2,
-							 TabBarRadius = 5,
-							 ScrollBarRadius = 2;
-
-		static constexpr int XMinFactor = 105,
-												 MinFactor = 120,
-							 					 MidFactor = 135,
-							 					 MaxFactor = 150;
 
 		// Helper method to add edge with optional rounded corner to QPainterPath
 		void addEdgeWithCorner(QPainterPath &path, const QRectF &rect, OpenEdge side, int radius) const;
@@ -171,6 +160,10 @@ class __libutils CustomUiStyle : public QProxyStyle {
 		void drawPELineEditPanel(PrimitiveElement element, const QStyleOption *option,
 														 QPainter *painter, const QWidget *widget) const;
 
+		// Draws primitive elements (PE) of tooltips
+		void drawPEToolTip(PrimitiveElement element, const QStyleOption *option,
+											 QPainter *painter, const QWidget *widget) const;
+
 		// Draws control elements (CE) of progress bars
 		void drawCEProgressBar(ControlElement element, const QStyleOption *option,
 													 QPainter *painter, const QWidget *widget) const;
@@ -215,6 +208,20 @@ class __libutils CustomUiStyle : public QProxyStyle {
 		static QColor getStateColor(QPalette::ColorRole role, const QStyleOption *option);
 
 	public:
+		static constexpr int NoRadius = 0,
+							 ButtonRadius = 4,
+							 InputRadius = 5,
+							 FrameRadius = 4,
+							 TabWgtRadius = 2,
+							 TabBarRadius = 5,
+							 ScrollBarRadius = 2;
+
+		static constexpr int NoFactor = 0,
+												 XMinFactor = 105,
+												 MinFactor = 120,
+							 					 MidFactor = 135,
+							 					 MaxFactor = 150;
+
 		CustomUiStyle();
 
 		CustomUiStyle(const QString &key);
@@ -222,6 +229,8 @@ class __libutils CustomUiStyle : public QProxyStyle {
 		virtual ~CustomUiStyle() = default;
 
 		QPixmap createGrayMaskedPixmap(const QPixmap &original) const;
+
+		static QColor getAdjustedColor(const QColor &color, int dark_ui_factor, int light_ui_factor);
 
 		void drawComplexControl(ComplexControl control, const QStyleOptionComplex *option, QPainter *painter, const QWidget *widget) const override;
 

@@ -17,6 +17,7 @@
 */
 
 #include "tabledatawidget.h"
+#include "messagebox.h"
 #include "tools/sqlexecutionwidget.h"
 #include "guiutilsns.h"
 #include "csvparser.h"
@@ -29,6 +30,8 @@ TableDataWidget::TableDataWidget(QWidget *parent): BaseObjectWidget(parent, Obje
 {
 	Ui_TableDataWidget::setupUi(this);
 	configureFormLayout(tabledata_grid, ObjectType::BaseObject);
+ 	
+	Messagebox::setMessageFrameColor(alert_frm, Messagebox::Alert);
 
 	obj_icon_lbl->setPixmap(QPixmap(GuiUtilsNs::getIconPath(ObjectType::Table)));
 
@@ -369,7 +372,7 @@ void TableDataWidget::populateDataGrid(const CsvDocument &csv_doc)
 			Messagebox msgbox;
 			msgbox.show(e,
 									tr("Failed to parse the table's initial data, check the stack trace for more detail. Do you want to dump the data into an external file in order to fix and import them back into the table?"),
-									Messagebox::AlertIcon,
+									Messagebox::Alert,
 									Messagebox::YesNoButtons);
 
 			if(msgbox.isAccepted())

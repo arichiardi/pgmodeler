@@ -33,6 +33,7 @@ ModelExportWidget::ModelExportWidget(QWidget *parent) : QWidget(parent)
 	setupUi(this);
 
 	alert_frm->setVisible(false);
+	Messagebox::setMessageFrameColor(alert_frm, Messagebox::Alert);
 	GuiUtilsNs::configureWidgetsFont({ export_btn, cancel_btn }, GuiUtilsNs::BigFontFactor);
 
 	model_sel_wgt = new ModelDbSelectorWidget(this);
@@ -274,7 +275,7 @@ void ModelExportWidget::exportModel()
 			else
 				msg = tr("<strong>CAUTION:</strong> You are about to drop objects in a database of the chosen server! Data can be lost in the process. Do you really want to proceed?");
 
-			msg_box.show(tr("Warning"), msg, Messagebox::AlertIcon, Messagebox::YesNoButtons);
+			msg_box.show(tr("Warning"), msg, Messagebox::Alert, Messagebox::YesNoButtons);
 
 			if(msg_box.isRejected())
 				return;

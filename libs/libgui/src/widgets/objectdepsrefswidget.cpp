@@ -18,6 +18,7 @@
 
 #include "objectdepsrefswidget.h"
 #include "guiutilsns.h"
+#include "messagebox.h"
 
 ObjectDepsRefsWidget::ObjectDepsRefsWidget(QWidget *parent): BaseObjectWidget(parent)
 {
@@ -25,6 +26,7 @@ ObjectDepsRefsWidget::ObjectDepsRefsWidget(QWidget *parent): BaseObjectWidget(pa
 	configureFormLayout(objectdepsrefs_grid, ObjectType::BaseObject);
 
 	model_wgt=nullptr;
+	Messagebox::setMessageFrameColor(alert_frm, Messagebox::Alert);
 	alert_frm->setVisible(false);
 
 	connect(inc_indirect_links_chk,	&QCheckBox::toggled, this, &ObjectDepsRefsWidget::updateObjectTables);

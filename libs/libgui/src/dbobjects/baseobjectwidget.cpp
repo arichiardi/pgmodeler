@@ -17,6 +17,7 @@
 */
 
 #include "baseobjectwidget.h"
+#include "messagebox.h"
 #include "permissionwidget.h"
 #include "widgets/customsqlwidget.h"
 #include "baseform.h"
@@ -522,6 +523,7 @@ QFrame *BaseObjectWidget::generateInformationFrame(const QString &msg)
 	info_frm->setFrameShape(QFrame::StyledPanel);
 	info_frm->setFrameShadow(QFrame::Raised);
 	info_frm->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+	Messagebox::setMessageFrameColor(info_frm, Messagebox::Info);
 
 	grid = new QGridLayout(info_frm);
 	grid->setContentsMargins(GuiUtilsNs::LtMargins);
@@ -593,12 +595,11 @@ QFrame *BaseObjectWidget::generateVersionWarningFrame(std::map<QString, std::vec
 	font.setItalic(false);
 	font.setBold(false);
 
-	//GuiUtilsNs::configureWidgetFont(alert_frm, GuiUtilsNs::MediumFontFactor);
-
 	alert_frm->setObjectName("alert_frm");
 	alert_frm->setFrameShape(QFrame::StyledPanel);
 	alert_frm->setFrameShadow(QFrame::Raised);
 	alert_frm->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+	Messagebox::setMessageFrameColor(alert_frm, Messagebox::Alert);
 
 	grid = new QGridLayout(alert_frm);
 	grid->setObjectName("grid");

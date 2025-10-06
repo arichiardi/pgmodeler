@@ -297,6 +297,12 @@ Exception::Exception()
 	configureException("",ErrorCode::Custom,"","",-1,"");
 }
 
+Exception::Exception(Exception &e, const QString &method, const QString &file, int line)
+{
+	configureException(e.getErrorMessage(), e.getErrorCode(), method, file, line, e.getExtraInfo());
+	addException(&e);
+}
+
 Exception::Exception(const QString &msg, const QString &method, const QString &file, int line, Exception *exception, const QString &extra_info)
 {
 	configureException(msg,ErrorCode::Custom, method, file, line, extra_info);

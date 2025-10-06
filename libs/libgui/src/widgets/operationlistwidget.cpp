@@ -170,7 +170,7 @@ void OperationListWidget::undoOperation()
 		if(e.getErrorCode()==ErrorCode::UndoRedoOperationInvalidObject)
 		{
 			Messagebox msg_box;
-			msg_box.show(e, "", Messagebox::AlertIcon);
+			msg_box.show(e, "", Messagebox::Alert);
 		}
 		else
 			Messagebox::error(e, PGM_FUNC, PGM_FILE, PGM_LINE);
@@ -195,7 +195,7 @@ void OperationListWidget::redoOperation()
 		if(e.getErrorCode()==ErrorCode::UndoRedoOperationInvalidObject)
 		{
 			Messagebox msg_box;
-			msg_box.show(e, "", Messagebox::AlertIcon);
+			msg_box.show(e, "", Messagebox::Alert);
 		}
 		else
 			Messagebox::error(e, PGM_FUNC, PGM_FILE, PGM_LINE);

@@ -173,7 +173,7 @@ void ConfigurationWidget::loadConfiguration()
 				Exception ex = Exception(Exception::getErrorMessage(ErrorCode::ConfigurationNotLoaded).arg(e.getExtraInfo()),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 
 				msg_box.show(ex, QString("%1 %2").arg(ex.getErrorMessage(), tr("In some cases restore the default settings related to it may solve the problem. Would like to do that?")),
-										 Messagebox::AlertIcon, Messagebox::YesNoButtons, tr("Restore"), "", "", GuiUtilsNs::getIconPath("refresh"));
+										 Messagebox::Alert, Messagebox::YesNoButtons, tr("Restore"), "", "", GuiUtilsNs::getIconPath("refresh"));
 
 				if(msg_box.isAccepted())
 					conf_wgt->restoreDefaults();

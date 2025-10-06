@@ -32,6 +32,8 @@ ObjectRenameWidget::ObjectRenameWidget(QWidget * parent) : QDialog(parent)
 	setWindowFlags(Qt::Dialog | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
 	setAttribute(Qt::WA_TranslucentBackground, true);
 
+	Messagebox::setMessageFrameColor(alert_frm, Messagebox::Alert);
+
 	connect(new_name_edt, &QLineEdit::returnPressed, apply_btn, &QPushButton::click);
 	connect(cancel_btn, &QPushButton::clicked, this, &ObjectRenameWidget::reject);
 
@@ -179,7 +181,7 @@ void ObjectRenameWidget::applyRenaming()
 			{
 				Messagebox msg_box;
 				msg_box.show(tr("<strong>CAUTION:</strong> You are about to rename multiple objects at once! This operation may cause irreversible changes to other objects not necessarily selected. Do you really want to proceed?"),
-										 Messagebox::AlertIcon, Messagebox::YesNoButtons);
+										 Messagebox::Alert, Messagebox::YesNoButtons);
 
 				if(msg_box.isRejected())
 					return;

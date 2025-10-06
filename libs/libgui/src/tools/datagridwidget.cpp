@@ -30,6 +30,8 @@ DataGridWidget::DataGridWidget(const QString &sch_name, const QString &tab_name,
 {
 	setupUi(this);
 
+	Messagebox::setMessageFrameColor(result_info_frm, Messagebox::Info);
+
 	schema_lbl->setText(sch_name);
 
 	rows_cnt_lbl->setToolTip(rows_cnt_ico_lbl->toolTip());
@@ -376,7 +378,7 @@ void DataGridWidget::retrieveData()
 			Messagebox msg_box;
 
 			msg_box.show(tr("<strong>WARNING: </strong> There are some changed rows waiting the commit! Do you really want to discard them and retrieve the data now?"),
-						 Messagebox::AlertIcon, Messagebox::YesNoButtons);
+						 Messagebox::Alert, Messagebox::YesNoButtons);
 
 			if(msg_box.isRejected())
 				return;
@@ -1300,7 +1302,7 @@ void DataGridWidget::saveChanges()
 		Messagebox msg_box;
 
 		msg_box.show(tr("<strong>WARNING:</strong> Once commited its not possible to undo the changes! Proceed with saving?"),
-								 Messagebox::AlertIcon,
+								 Messagebox::Alert,
 								 Messagebox::YesNoButtons);
 
 		if(msg_box.isAccepted())
