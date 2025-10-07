@@ -13,43 +13,44 @@ Diagnostics:
       # Bug-prone patterns
       - bugprone-*
       # Readability improvements
-      - readability-*
+      # - readability-*
       # Best practices
-      - cppcoreguidelines-*
+      # - cppcoreguidelines-*
       # Misc checks
       - misc-*
       # CERT secure coding
-      - cert-*
+      # - cert-*
       # Concurrency checks
-      - concurrency-*
+      # - concurrency-*
       # Portability
-      - portability-*
+      # - portability-*
     
     Remove:
+      - readability-*
       # Disable checks that conflict with pgModeler style
-      - modernize-use-trailing-return-type
-      - modernize-use-auto
-      - readability-identifier-length
-      - readability-magic-numbers
-      - readability-isolate-declaration
-      - readability-implicit-bool-conversion
-      - cppcoreguidelines-avoid-magic-numbers
-      - cppcoreguidelines-pro-bounds-pointer-arithmetic
-      - cppcoreguidelines-pro-type-reinterpret-cast
-      - cppcoreguidelines-owning-memory
-      - cppcoreguidelines-init-variables
-      - cppcoreguidelines-avoid-non-const-global-variables
-      - cppcoreguidelines-pro-bounds-array-to-pointer-decay
-      - readability-redundant-member-init
-      - modernize-use-nodiscard
-      - readability-convert-member-functions-to-static
-      - readability-function-cognitive-complexity
-      - bugprone-easily-swappable-parameters
-      - misc-non-private-member-variables-in-classes
-      - cppcoreguidelines-non-private-member-variables-in-classes
-      - readability-braces-around-statements
-      - modernize-avoid-c-arrays
-      - cppcoreguidelines-avoid-c-arrays
+      # - modernize-use-trailing-return-type
+      # - modernize-use-auto
+      # - readability-identifier-length
+      # - readability-magic-numbers
+      # - readability-isolate-declaration
+      # - readability-implicit-bool-conversion
+      # - cppcoreguidelines-avoid-magic-numbers
+      # - cppcoreguidelines-pro-bounds-pointer-arithmetic
+      # - cppcoreguidelines-pro-type-reinterpret-cast
+      # - cppcoreguidelines-owning-memory
+      # - cppcoreguidelines-init-variables
+      # - cppcoreguidelines-avoid-non-const-global-variables
+      # - cppcoreguidelines-pro-bounds-array-to-pointer-decay
+      # - cppcoreguidelines-narrowing-conversions
+      # - readability-redundant-member-init
+      # - modernize-use-nodiscard
+      # - bugprone-easily-swappable-parameters
+      # - bugprone-narrowing-conversions
+      # - misc-non-private-member-variables-in-classes
+      # - cppcoreguidelines-non-private-member-variables-in-classes
+      # - readability-braces-around-statements
+      # - modernize-avoid-c-arrays
+      # - cppcoreguidelines-avoid-c-arrays
       
     CheckOptions:
       # Allow longer function names (Qt/pgModeler style)
