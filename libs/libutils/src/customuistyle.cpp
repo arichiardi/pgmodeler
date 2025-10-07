@@ -540,6 +540,12 @@ void CustomUiStyle::drawControl(ControlElement element, const QStyleOption *opti
 		return;
 	}
 
+	if(element == CE_MenuItem)
+	{
+		drawCEMenuItem(element, option, painter, widget);
+		return;
+	}
+
 	QProxyStyle::drawControl(element, option, painter, widget);
 }
 
@@ -639,6 +645,13 @@ void CustomUiStyle::drawPrimitive(PrimitiveElement element, const QStyleOption *
 	if(element == PE_PanelTipLabel)
 	{
 		drawPEToolTip(element, option, painter, widget);
+		return;
+	}
+
+	// Handle menu panel rendering with custom background and border
+	if(element == PE_PanelMenu)
+	{
+		drawPEMenuPanel(element, option, painter, widget);
 		return;
 	}
 
@@ -751,8 +764,8 @@ void CustomUiStyle::drawControlArrow(const QStyleOption *option, QPainter *paint
 	QRect btn_rect = option->rect;
 
 	// Calculate precise center to avoid rounding issues
-	QPointF center = QPointF(btn_rect.x() + btn_rect.width() / 2.0,
-					btn_rect.y() + btn_rect.height() / 2.0);
+	QPointF center = QPointF(btn_rect.x() + (btn_rect.width() / 2.0),
+					btn_rect.y() + (btn_rect.height() / 2.0));
 
 	// Round to pixel boundaries for crisp rendering
 	qreal half_w = qRound(ArrowWidth * 0.5) * (small_sz ? 0.70 : 1.0),
@@ -1203,14 +1216,77 @@ void CustomUiStyle::drawPELineEditPanel(PrimitiveElement element, const QStyleOp
 	painter->restore();
 }
 
+void CustomUiStyle::drawPEMenuPanel(PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const
+{
+	if(element != PE_PanelMenu || !option || !painter)
+		return;
+
+	QPalette pal = option->palette;
+	QColor bg_color, border_color;
+
+	// Different colors based on theme
+	if(isDarkPalette(pal))
+	{
+		// Dark theme: Dark background, Mid border
+		bg_color = getStateColor(QPalette::Dark, option);
+		border_color = getStateColor(QPalette::Mid, option);
+	}
+	else
+	{
+		// Light theme: Light background, Mid border
+		bg_color = getStateColor(QPalette::Window, option);
+		border_color = getStateColor(QPalette::Mid, option);
+	}
+
+	painter->save();
+	painter->setRenderHint(QPainter::Antialiasing, true);
+
+	// Draw background
+	painter->fillRect(option->rect, bg_color);
+
+	// Draw border
+	painter->setPen(QPen(border_color, PenWidth));
+	painter->setBrush(Qt::NoBrush);
+	painter->drawRect(QRectF(option->rect).adjusted(0.5, 0.5, -0.5, -0.5));
+
+	painter->restore();
+}
+
+void CustomUiStyle::drawCEMenuItem(ControlElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const
+{
+	const QStyleOptionMenuItem *menu_item_opt = qstyleoption_cast<const QStyleOptionMenuItem *>(option);
+
+	if(!menu_item_opt || !painter)
+		return;
+
+	// Custom rendering for menu separators
+	if(menu_item_opt->menuItemType == QStyleOptionMenuItem::Separator)
+	{
+		QColor sep_color = getStateColor(QPalette::Mid, option);
+
+		painter->save();
+		painter->setPen(QPen(sep_color, PenWidth));
+
+		// Draw horizontal line with margins
+		int margin = 5;
+		QPoint p1(menu_item_opt->rect.left() + margin, menu_item_opt->rect.center().y()),
+			     p2(menu_item_opt->rect.right() - margin, menu_item_opt->rect.center().y());
+
+		painter->drawLine(p1, p2);
+		painter->restore();
+	}
+	else
+		QProxyStyle::drawControl(element, option, painter, widget);
+}
+
 void CustomUiStyle::drawPEToolTip(PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const
 {
 	if(element != PE_PanelTipLabel || !option || !painter)
 		return;
 
 	QPalette pal = option->palette;
-	QColor bg_color = pal.color(QPalette::ToolTipBase),
-		   text_color = pal.color(QPalette::ToolTipText),
+	QColor bg_color = getStateColor(QPalette::ToolTipBase, option),
+		   text_color = getStateColor(QPalette::ToolTipText, option),
 		   border_color = getAdjustedColor(bg_color, MidFactor, -MinFactor);
 
 	painter->save();
@@ -1872,12 +1948,6 @@ void CustomUiStyle::drawSpinBoxEditField(const QStyleOption *option, QPainter *p
 		   border_color = getStateColor(pal, QPalette::Midlight, option);
 	WidgetState wgt_st(option, widget);
 
-	/* if(!wgt_st.is_enabled)
-	{
-		bg_color = bg_color.darker(MinFactor);
-		border_color = border_color.darker(MinFactor);
-	}
-	else */
 	if(wgt_st.is_enabled)
 	{
 		if(wgt_st.is_focused)

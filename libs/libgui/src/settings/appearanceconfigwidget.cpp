@@ -1051,12 +1051,12 @@ void AppearanceConfigWidget::applyUiTheme()
 	pal = theme_palettes[ui_theme];
 	qApp->setPalette(pal);
 
-	if(CustomUiStyle::isDarkPalette(qApp->palette()))
+	/* if(CustomUiStyle::isDarkPalette(qApp->palette()))
 	{
 		// Forcing QMenu class to use a lighter base color
 		pal.setColor(QPalette::Base, pal.color(QPalette::Base));
 		qApp->setPalette(pal, "QMenu");
-	}
+	} */
 
 	applySyntaxHighlightTheme();
 	applyUiStyleSheet();

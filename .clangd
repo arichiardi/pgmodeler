@@ -1,0 +1,84 @@
+CompileFlags:
+  # Use compile_commands.json from cmake-build directory
+  CompilationDatabase: cmake-build
+
+Diagnostics:
+  # Enable all clang-tidy checks for comprehensive linting
+  ClangTidy:
+    Add: 
+      # Modern C++ checks
+      - modernize-*
+      # Performance checks
+      - performance-*
+      # Bug-prone patterns
+      - bugprone-*
+      # Readability improvements
+      - readability-*
+      # Best practices
+      - cppcoreguidelines-*
+      # Misc checks
+      - misc-*
+      # CERT secure coding
+      - cert-*
+      # Concurrency checks
+      - concurrency-*
+      # Portability
+      - portability-*
+    
+    Remove:
+      # Disable checks that conflict with pgModeler style
+      - modernize-use-trailing-return-type
+      - modernize-use-auto
+      - readability-identifier-length
+      - readability-magic-numbers
+      - readability-isolate-declaration
+      - readability-implicit-bool-conversion
+      - cppcoreguidelines-avoid-magic-numbers
+      - cppcoreguidelines-pro-bounds-pointer-arithmetic
+      - cppcoreguidelines-pro-type-reinterpret-cast
+      - cppcoreguidelines-owning-memory
+      - cppcoreguidelines-init-variables
+      - cppcoreguidelines-avoid-non-const-global-variables
+      - cppcoreguidelines-pro-bounds-array-to-pointer-decay
+      - readability-redundant-member-init
+      - modernize-use-nodiscard
+      - readability-convert-member-functions-to-static
+      - readability-function-cognitive-complexity
+      - bugprone-easily-swappable-parameters
+      - misc-non-private-member-variables-in-classes
+      - cppcoreguidelines-non-private-member-variables-in-classes
+      - readability-braces-around-statements
+      - modernize-avoid-c-arrays
+      - cppcoreguidelines-avoid-c-arrays
+      
+    CheckOptions:
+      # Allow longer function names (Qt/pgModeler style)
+      readability-identifier-naming.FunctionCase: camelBack
+      readability-identifier-naming.VariableCase: lower_case
+      readability-identifier-naming.ClassCase: CamelCase
+      readability-identifier-naming.EnumCase: CamelCase
+      readability-identifier-naming.ConstantCase: CamelCase
+      readability-identifier-naming.NamespaceCase: CamelCase
+      
+  # Suppress warnings from system headers
+  UnusedIncludes: Strict
+  
+  # Show all diagnostics
+  Suppress: []
+
+InlayHints:
+  # Show inline hints for better code understanding
+  Enabled: Yes
+  ParameterNames: Yes
+  DeducedTypes: Yes
+  Designators: Yes
+
+Hover:
+  ShowAKA: Yes
+
+Completion:
+  AllScopes: Yes
+
+Index:
+  Background: Build
+  StandardLibrary: Yes

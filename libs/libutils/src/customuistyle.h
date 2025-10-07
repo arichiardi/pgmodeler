@@ -168,6 +168,13 @@ class __libutils CustomUiStyle : public QProxyStyle {
 		void drawPEToolTip(PrimitiveElement element, const QStyleOption *option,
 											 QPainter *painter, const QWidget *widget) const;
 
+		// Draws primitive elements (PE) of menu panels
+		void drawPEMenuPanel(PrimitiveElement element, const QStyleOption *option,
+												 QPainter *painter, const QWidget *widget) const;
+
+		// Draws control elements (CE) of menu separators. Returns true if a separator was drawn
+		void drawCEMenuItem(ControlElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const;
+
 		// Draws control elements (CE) of progress bars
 		void drawCEProgressBar(ControlElement element, const QStyleOption *option,
 													 QPainter *painter, const QWidget *widget) const;

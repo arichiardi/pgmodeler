@@ -10,11 +10,11 @@
 
     // Intelisense configurations
     "C_Cpp.default.compileCommands": "${workspaceFolder}/cmake-build/compile_commands.json",
-    "C_Cpp.intelliSenseEngine": "default",    
-    "C_Cpp.autocomplete": "default",           
+    "C_Cpp.intelliSenseEngine": "disabled",    
+    "C_Cpp.autocomplete": "disabled",           
     "C_Cpp.autocompleteAddParentheses": true, 
-    "C_Cpp.hoverEnabled": true,                 
-    "C_Cpp.errorSquiggles": "enabled",
+    "C_Cpp.hoverEnabled": false,                 
+    "C_Cpp.errorSquiggles": "disabled",
     
     // Delay para sugestões de código (menos intrusivo)
     "editor.quickSuggestionsDelay": 500,  // Delay de 500ms antes de mostrar sugestões
