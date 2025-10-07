@@ -1673,8 +1673,8 @@ void CustomUiStyle::drawCCScrollBar(const QStyleOption *option, QPainter *painte
 			else if(wgt_st.is_hovered)
 			{
 				// Hover: lighter in both themes (subtle effect)
-				slider_bg = getAdjustedColor(bg_color, XMinFactor, XMinFactor);
-				slider_border = getAdjustedColor(border_color, XMinFactor, XMinFactor);
+				slider_bg = getAdjustedColor(bg_color, MidFactor, XMinFactor);
+				slider_border = getAdjustedColor(border_color, MidFactor, XMinFactor);
 			}
 		}
 
