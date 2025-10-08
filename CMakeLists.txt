@@ -10,6 +10,12 @@ include(BuildNumDate)
 include(PrintSummary)
 include(InstallAssets)
 
+# Include clang-tidy configuration BEFORE adding subdirectories
+# so that CMAKE_CXX_CLANG_TIDY is set before any targets are created
+if(CMAKE_BUILD_TYPE STREQUAL Debug)
+    include(ClangTidyConf)
+endif()
+
 add_subdirectory(${LIBS_DIR}/${LIBUTILS})
 add_subdirectory(${LIBS_DIR}/${LIBPARSERS})
 add_subdirectory(${LIBS_DIR}/${LIBCORE})
