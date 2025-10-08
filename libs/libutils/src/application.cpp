@@ -119,7 +119,10 @@ void Application::createUserConfiguration()
 	}
 	catch(Exception &e)
 	{
-		throw Exception(e.getErrorMessage(ErrorCode::InitialUserConfigNotCreated).arg(GlobalAttributes::getConfigurationsPath(), GlobalAttributes::getTmplConfigurationPath()), ErrorCode::InitialUserConfigNotCreated,PGM_FUNC,PGM_FILE,PGM_LINE, &e);
+		throw Exception(e.getErrorMessage(ErrorCode::InitialUserConfigNotCreated)
+										.arg(GlobalAttributes::getConfigurationsPath(),
+												 GlobalAttributes::getTmplConfigurationPath()),
+										ErrorCode::InitialUserConfigNotCreated, PGM_FUNC, PGM_FILE, PGM_LINE, &e);
 	}
 }
 
@@ -203,7 +206,8 @@ void Application::copyFilesRecursively(const QString &src_path, const QString &d
 			throw Exception(Exception::getErrorMessage(ErrorCode::FileDirectoryNotWritten).arg(dst_path),
 											PGM_FUNC, PGM_FILE, PGM_LINE);
 		}
-		else if(file_exists || file_copied)
+
+		if(file_exists || file_copied)
 		{
 			// Set write permissions when copying file with read-only permissions
 			QFile file(dst_path);

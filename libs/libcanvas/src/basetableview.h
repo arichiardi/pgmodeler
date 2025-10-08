@@ -91,7 +91,7 @@ class __libcanvas BaseTableView: public BaseObjectView {
 		//! \brief Stores the original table's tool tip
 		QString table_tooltip;
 
-		QVariant itemChange(GraphicsItemChange change, const QVariant &value);
+		QVariant itemChange(GraphicsItemChange change, const QVariant &value) override;
 
 		void addConnectedRelationship(BaseRelationship *base_rel);
 
@@ -133,11 +133,11 @@ class __libcanvas BaseTableView: public BaseObjectView {
 		};
 
 		BaseTableView(BaseTable *base_tab);
-		virtual ~BaseTableView();
+		~BaseTableView() override;
 
-		void hoverLeaveEvent(QGraphicsSceneHoverEvent *);
-		void hoverMoveEvent(QGraphicsSceneHoverEvent *event);
-		void mousePressEvent(QGraphicsSceneMouseEvent *event);
+		void hoverLeaveEvent(QGraphicsSceneHoverEvent *) override;
+		void hoverMoveEvent(QGraphicsSceneHoverEvent *event) override;
+		void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
 
 		//! brief Defines the amount of attributes per page to be displayed
 		static void setAttributesPerPage(BaseTable::TableSection section_id, unsigned value);
@@ -164,7 +164,7 @@ class __libcanvas BaseTableView: public BaseObjectView {
 		void requestRelationshipsUpdate();
 
 		//! \brief Toggles the placeholder object when there is at least one relationship connected to the object
-		virtual void togglePlaceholder(bool value);
+		void togglePlaceholder(bool value) override;
 
 		unsigned getConnectedRelsCount(BaseTable *src_tab, BaseTable *dst_tab);
 

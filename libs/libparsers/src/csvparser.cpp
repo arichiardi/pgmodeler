@@ -23,8 +23,8 @@
 CsvParser::CsvParser()
 {
 	setSpecialChars(CsvDocument::Separator,
-						 CsvDocument::TextDelimiter,
-						 CsvDocument::LineBreak);
+									CsvDocument::TextDelimiter,
+									CsvDocument::LineBreak);
 	cols_in_first_row = false;
 	curr_pos = curr_row = 0;
 }
@@ -56,7 +56,7 @@ CsvDocument CsvParser::parseFile(const QString &filename)
 CsvDocument CsvParser::parseBuffer(const QString &csv_buf)
 {
 	if(csv_buf.isEmpty())
-		return CsvDocument();
+		return {};
 
 	try
 	{

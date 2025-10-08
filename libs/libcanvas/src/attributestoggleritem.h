@@ -102,7 +102,7 @@ class __libcanvas AttributesTogglerItem: public QObject, public RoundedRectItem 
 	public:
 		AttributesTogglerItem(QGraphicsItem *parent = nullptr);
 
-		virtual ~AttributesTogglerItem();
+		~AttributesTogglerItem() override;
 
 		/*! \brief Configures the postion and dimensions of the buttons based on the provided bounding rect
 		 * If the provided rect is smaller than the total width/height of the buttons it will be assumed
@@ -144,7 +144,7 @@ class __libcanvas AttributesTogglerItem: public QObject, public RoundedRectItem 
 		double getButtonsHeight();
 
 		//! \brief Paints the toggler and its internal componets
-		void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = nullptr);
+		void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = nullptr) override;
 
 	signals:
 		//! \brief Signal emitted when the current collapse mode changes (the user clicks the collpase/expand buttons)

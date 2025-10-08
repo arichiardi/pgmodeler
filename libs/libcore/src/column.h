@@ -79,14 +79,14 @@ class __libcore Column: public TableObject{
 		//! \brief Underlying sequence's cache value (only for identity column)
 		seq_cache;
 
-		virtual void configureSearchAttributes() override;
+		void configureSearchAttributes() override;
 
 	public:
 		//! \brief Holds the pattern for nextval() function call
 		static const QString NextValFuncTmpl;
 
 		Column();
-		virtual ~Column() = default;
+		~Column() override = default;
 
 		//! \brief Defines if the column accepts null values or not
 		void setNotNull(bool value);
@@ -107,7 +107,7 @@ class __libcore Column: public TableObject{
 		/*! \brief Defines the column name. This method keeps the last column name
 		 stored to assist the objects like constraints / indixes and sequences
 		 that is referencing the column by its old name. */
-		virtual void setName(const QString &name) override;
+		void setName(const QString &name) override;
 
 		//! \brief Returns the not null state of the column
 		bool isNotNull();
@@ -128,9 +128,9 @@ class __libcore Column: public TableObject{
 		QString getDefaultValue();
 
 		//! \brief Returns the SQL/XML code definition for the column
-		virtual QString getSourceCode(SchemaParser::CodeType def_type) override;
+		QString getSourceCode(SchemaParser::CodeType def_type) override;
 
-		virtual QString getAlterCode(BaseObject *object) override;
+		QString getAlterCode(BaseObject *object) override;
 
 		/*! \brief Returns the old column name. The parameter 'format' indicates
 		 whether the name must be formatted or not */
@@ -160,9 +160,9 @@ class __libcore Column: public TableObject{
 
 		QString getDataDictionary(bool md_format, const attribs_map &extra_attribs = {});
 
-		virtual void updateDependencies() override;
+		void updateDependencies() override;
 
-		virtual void generateHashCode() override;
+		void generateHashCode() override;
 };
 
 #endif

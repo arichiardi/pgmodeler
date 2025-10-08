@@ -129,7 +129,7 @@ class __libutils CustomUiStyle : public QProxyStyle {
 		void drawCETabBar(ControlElement element, const QStyleOption *option,	
 											QPainter *painter, const QWidget *widget) const;
 
-		void drawControlArrow(const QStyleOption *option, QPainter *painter, const QWidget *widget, 
+		void drawControlArrow(const QStyleOption *option, QPainter *painter, const QWidget *,
 													ArrowType arr_type, bool small_sz = false) const;
 
 		// Draws menu arrow for QToolButton and QPushButton with menus (returns true if handled)
@@ -170,7 +170,7 @@ class __libutils CustomUiStyle : public QProxyStyle {
 
 		// Draws primitive elements (PE) of menu panels
 		void drawPEMenuPanel(PrimitiveElement element, const QStyleOption *option,
-												 QPainter *painter, const QWidget *widget) const;
+												 QPainter *painter, const QWidget *) const;
 
 		// Draws control elements (CE) of menu separators. Returns true if a separator was drawn
 		void drawCEMenuItem(ControlElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const;
@@ -246,27 +246,30 @@ class __libutils CustomUiStyle : public QProxyStyle {
 			ErrorFrmHint // Red border (error)
 		};
 
-		CustomUiStyle();
+		CustomUiStyle() = default;
 
 		CustomUiStyle(const QString &key);
 
-		virtual ~CustomUiStyle() = default;
+		~CustomUiStyle() override = default;
 
 		QPixmap createGrayMaskedPixmap(const QPixmap &original) const;
 
 		static QColor getAdjustedColor(const QColor &color, int dark_ui_factor, int light_ui_factor);
 
-		void drawComplexControl(ComplexControl control, const QStyleOptionComplex *option, QPainter *painter, const QWidget *widget) const override;
+		void drawComplexControl(ComplexControl control, const QStyleOptionComplex *option,
+														QPainter *painter, const QWidget *widget) const override;
 
-		void drawControl(ControlElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const override;
+		void drawControl(ControlElement element, const QStyleOption *option,
+										 QPainter *painter, const QWidget *widget) const override;
 
 		void drawItemPixmap(QPainter *painter, const QRect &rect, int alignment, const QPixmap &pixmap) const override;
 
-		void drawPrimitive(PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const override;
+		void drawPrimitive(PrimitiveElement element, const QStyleOption *option,
+											 QPainter *painter, const QWidget *widget) const override;
 
-		QPixmap generatedIconPixmap(QIcon::Mode iconMode, const QPixmap &pixmap, const QStyleOption *option) const override;
+		QPixmap generatedIconPixmap(QIcon::Mode icon_mode, const QPixmap &pixmap, const QStyleOption *option) const override;
 
-		int pixelMetric(PixelMetric metric, const QStyleOption * option = 0, const QWidget * widget = 0) const override;
+		int pixelMetric(PixelMetric metric, const QStyleOption * option = nullptr, const QWidget * widget = nullptr) const override;
 
 		static void setStyleHint(StyleHint hint, QWidget *widget);
 
