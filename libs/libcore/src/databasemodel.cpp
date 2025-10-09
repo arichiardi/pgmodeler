@@ -3347,22 +3347,20 @@ int DatabaseModel::getObjectIndex(BaseObject *object)
 
 	if(!obj_list)
 		throw Exception(ErrorCode::ObtObjectInvalidType,PGM_FUNC,PGM_FILE,PGM_LINE);
-	else
+	
+	itr = obj_list->begin();
+	itr_end = obj_list->end();
+
+	while(itr != itr_end && !found)
 	{
-		itr=obj_list->begin();
-		itr_end=obj_list->end();
-
-		while(itr!=itr_end && !found)
-		{
-			found=((*itr)==object);
-			if(!found) itr++;
-		}
-
-		if(found)
-			return itr - obj_list->begin();
-		else
-			return -1;
+		found=((*itr)==object);
+		if(!found) itr++;
 	}
+
+	if(found)
+		return itr - obj_list->begin();
+		
+	return -1;
 }
 
 void DatabaseModel::configureDatabase(attribs_map &attribs)
@@ -3640,19 +3638,19 @@ void DatabaseModel::loadModel(const QString &filename)
 	catch(Exception &e)
 	{
 		QString extra_info;
-		loading_model=false;
+		loading_model = false;
 
 		if(xmlparser.getCurrentElement())
-			extra_info=QString(QObject::tr("%1 (line: %2)")).arg(xmlparser.getLoadedFilename()).arg(xmlparser.getCurrentElement()->line);
+			extra_info = QObject::tr("%1 (line: %2)").arg(xmlparser.getLoadedFilename()).arg(xmlparser.getCurrentElement()->line);
 
 		if(e.getErrorCode() != ErrorCode::FileDirectoryNotAccessed &&
-				e.getErrorCode() >= ErrorCode::InvalidSyntax)
+			 e.getErrorCode() >= ErrorCode::InvalidSyntax)
 		{
-			str_aux=Exception::getErrorMessage(ErrorCode::InvModelFileNotLoaded).arg(filename);
-			throw Exception(str_aux,ErrorCode::InvModelFileNotLoaded,PGM_FUNC,PGM_FILE,PGM_LINE, &e, extra_info);
+			throw Exception(Exception::getErrorMessage(ErrorCode::InvModelFileNotLoaded).arg(filename),
+											ErrorCode::InvModelFileNotLoaded,PGM_FUNC,PGM_FILE,PGM_LINE, &e, extra_info);
 		}
-		else
-			throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e, extra_info);
+
+		throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e, extra_info);
 	}
 }
 
@@ -3815,13 +3813,13 @@ void DatabaseModel::setBasicAttributes(BaseObject *object)
 				.arg(BaseObject::getTypeName(obj_type)),
 				ErrorCode::RefObjectInexistsModel,PGM_FUNC,PGM_FILE,PGM_LINE);
 	}
-	//Schema on extensions are optional
-	else if(!object->getSchema() && (BaseObject::acceptsSchema(obj_type_aux) && obj_type_aux != ObjectType::Extension))
+	
+	if(!object->getSchema() && (BaseObject::acceptsSchema(obj_type_aux) && obj_type_aux != ObjectType::Extension))
 	{
 		throw Exception(Exception::getErrorMessage(ErrorCode::InvObjectAllocationNoSchema)
-						.arg(object->getName())
-						.arg(object->getTypeName()),
-						ErrorCode::InvObjectAllocationNoSchema,PGM_FUNC,PGM_FILE,PGM_LINE);
+										.arg(object->getName())
+										.arg(object->getTypeName()),
+										ErrorCode::InvObjectAllocationNoSchema,PGM_FUNC,PGM_FILE,PGM_LINE);
 	}
 }
 
@@ -4327,8 +4325,8 @@ Function *DatabaseModel::createFunction()
 							.arg(str_aux)
 							.arg(BaseObject::getTypeName(ObjectType::Function)),
 							ErrorCode::AsgObjectInvalidDefinition,PGM_FUNC,PGM_FILE,PGM_LINE,&e, getErrorExtraInfo());
-		else
-			throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e, getErrorExtraInfo());
+
+		throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e, getErrorExtraInfo());
 	}
 
 	return func;
@@ -4484,20 +4482,17 @@ PgSqlType DatabaseModel::createPgSQLType()
 		name.remove(" with time zone", Qt::CaseInsensitive);
 	}
 
-	type_idx=PgSqlType::getBaseTypeIndex(name);
-	if(type_idx!=PgSqlType::Null)
-	{
-		return PgSqlType(name, dimension, length, precision, with_timezone, interv_type, spatial_type);
-	}
-	else
-	{
-		//Raises an error if the referenced type name doesn't exists
-		if(PgSqlType::getUserTypeIndex(name, nullptr, this) == PgSqlType::Null)
-			throw Exception(ErrorCode::RefUserTypeInexistsModel,PGM_FUNC,PGM_FILE,PGM_LINE);
+	type_idx = PgSqlType::getBaseTypeIndex(name);
 
-		type_idx = PgSqlType::getUserTypeIndex(name, ptype, this);
-		return PgSqlType(type_idx, dimension, length, precision, with_timezone, interv_type, spatial_type);
-	}
+	if(type_idx != PgSqlType::Null)
+		return PgSqlType(name, dimension, length, precision, with_timezone, interv_type, spatial_type);
+
+	//Raises an error if the referenced type name doesn't exists
+	if(PgSqlType::getUserTypeIndex(name, nullptr, this) == PgSqlType::Null)
+		throw Exception(ErrorCode::RefUserTypeInexistsModel,PGM_FUNC,PGM_FILE,PGM_LINE);
+
+	type_idx = PgSqlType::getUserTypeIndex(name, ptype, this);
+	return PgSqlType(type_idx, dimension, length, precision, with_timezone, interv_type, spatial_type);
 }
 
 Type *DatabaseModel::createType()
@@ -4641,14 +4636,17 @@ Type *DatabaseModel::createType()
 
 						//Raises an error if the function doesn't exists
 						if(!func && !attribs[Attributes::Signature].isEmpty())
+						{
 							throw Exception(Exception::getErrorMessage(ErrorCode::RefObjectInexistsModel)
-											.arg(type->getName())
-											.arg(type->getTypeName())
-											.arg(attribs[Attributes::Signature])
-								.arg(BaseObject::getTypeName(ObjectType::Function)),
-								ErrorCode::RefObjectInexistsModel,PGM_FUNC,PGM_FILE,PGM_LINE);
+															.arg(type->getName())
+															.arg(type->getTypeName())
+															.arg(attribs[Attributes::Signature])
+															.arg(BaseObject::getTypeName(ObjectType::Function)),
+															ErrorCode::RefObjectInexistsModel,PGM_FUNC,PGM_FILE,PGM_LINE);
+						}
+						
 						//Raises an error if the function type is invalid
-						else if(func_types.count(attribs[Attributes::RefType])==0)
+						if(func_types.count(attribs[Attributes::RefType]) == 0)
 							throw Exception(ErrorCode::RefFunctionInvalidType,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 						type->setFunction(func_types[attribs[Attributes::RefType]],	dynamic_cast<Function *>(func));
@@ -4667,12 +4665,14 @@ Type *DatabaseModel::createType()
 		}
 
 		if(e.getErrorCode()==ErrorCode::RefUserTypeInexistsModel)
+		{
 			throw Exception(Exception::getErrorMessage(ErrorCode::AsgObjectInvalidDefinition)
-							.arg(str_aux)
-							.arg(type->getTypeName()),
-							ErrorCode::AsgObjectInvalidDefinition,PGM_FUNC,PGM_FILE,PGM_LINE,&e, getErrorExtraInfo());
-		else
-			throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e, getErrorExtraInfo());
+											.arg(str_aux)
+											.arg(type->getTypeName()),
+											ErrorCode::AsgObjectInvalidDefinition,PGM_FUNC,PGM_FILE,PGM_LINE,&e, getErrorExtraInfo());
+		}
+		
+		throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e, getErrorExtraInfo());
 	}
 
 	return type;
@@ -5517,20 +5517,18 @@ void DatabaseModel::createElement(Element &elem, TableObject *tab_obj, BaseObjec
 						if(!is_part_key)
 						{
 							throw Exception(Exception::getErrorMessage(ErrorCode::RefObjectInexistsModel)
-											.arg(tab_obj->getName())
-											.arg(tab_obj->getTypeName())
-											.arg(attribs[Attributes::Signature])
-									.arg(BaseObject::getTypeName(ObjectType::OpClass)),
-									ErrorCode::RefObjectInexistsModel,PGM_FUNC,PGM_FILE,PGM_LINE);
+															.arg(tab_obj->getName())
+															.arg(tab_obj->getTypeName())
+															.arg(attribs[Attributes::Signature])
+															.arg(BaseObject::getTypeName(ObjectType::OpClass)),
+															ErrorCode::RefObjectInexistsModel,PGM_FUNC,PGM_FILE,PGM_LINE);
 						}
-						else
-						{
-							throw Exception(Exception::getErrorMessage(ErrorCode::PartKeyObjectInexistsModel)
-											.arg(parent_obj->getName())
-											.arg(attribs[Attributes::Signature])
-									.arg(BaseObject::getTypeName(ObjectType::OpClass)),
-									ErrorCode::RefObjectInexistsModel,PGM_FUNC,PGM_FILE,PGM_LINE);
-						}
+
+						throw Exception(Exception::getErrorMessage(ErrorCode::PartKeyObjectInexistsModel)
+														.arg(parent_obj->getName())
+														.arg(attribs[Attributes::Signature])
+														.arg(BaseObject::getTypeName(ObjectType::OpClass)),
+														ErrorCode::RefObjectInexistsModel,PGM_FUNC,PGM_FILE,PGM_LINE);
 					}
 
 					elem.setOperatorClass(op_class);
@@ -5571,14 +5569,14 @@ void DatabaseModel::createElement(Element &elem, TableObject *tab_obj, BaseObjec
 															.arg(BaseObject::getTypeName(ObjectType::Collation)),
 															ErrorCode::RefObjectInexistsModel,PGM_FUNC,PGM_FILE,PGM_LINE);
 						}
-						else
-						{
-							throw Exception(Exception::getErrorMessage(ErrorCode::PartKeyObjectInexistsModel)
-															.arg(parent_obj->getName())
-															.arg(attribs[Attributes::Name])
-															.arg(BaseObject::getTypeName(ObjectType::Collation)),
-															ErrorCode::RefObjectInexistsModel,PGM_FUNC,PGM_FILE,PGM_LINE);
-						}
+						
+						
+						throw Exception(Exception::getErrorMessage(ErrorCode::PartKeyObjectInexistsModel)
+														.arg(parent_obj->getName())
+														.arg(attribs[Attributes::Name])
+														.arg(BaseObject::getTypeName(ObjectType::Collation)),
+														ErrorCode::RefObjectInexistsModel,PGM_FUNC,PGM_FILE,PGM_LINE);
+						
 					}
 
 					elem.setCollation(collation);
@@ -5616,20 +5614,19 @@ void DatabaseModel::createElement(Element &elem, TableObject *tab_obj, BaseObjec
 						if(!is_part_key)
 						{
 							throw Exception(Exception::getErrorMessage(ErrorCode::RefObjectInexistsModel)
-											.arg(tab_obj->getName())
-											.arg(tab_obj->getTypeName())
-											.arg(attribs[Attributes::Name])
-									.arg(BaseObject::getTypeName(ObjectType::Column)),
-									ErrorCode::RefObjectInexistsModel,PGM_FUNC,PGM_FILE,PGM_LINE);
+															.arg(tab_obj->getName())
+															.arg(tab_obj->getTypeName())
+															.arg(attribs[Attributes::Name])
+															.arg(BaseObject::getTypeName(ObjectType::Column)),
+															ErrorCode::RefObjectInexistsModel,PGM_FUNC,PGM_FILE,PGM_LINE);
 						}
-						else
-						{
-							throw Exception(Exception::getErrorMessage(ErrorCode::PartKeyObjectInexistsModel)
-											.arg(parent_obj->getName())
-											.arg(attribs[Attributes::Name])
-									.arg(BaseObject::getTypeName(ObjectType::Column)),
-									ErrorCode::RefObjectInexistsModel,PGM_FUNC,PGM_FILE,PGM_LINE);
-						}
+						
+						throw Exception(Exception::getErrorMessage(ErrorCode::PartKeyObjectInexistsModel)
+														.arg(parent_obj->getName())	
+														.arg(attribs[Attributes::Name])
+														.arg(BaseObject::getTypeName(ObjectType::Column)),
+														ErrorCode::RefObjectInexistsModel,PGM_FUNC,PGM_FILE,PGM_LINE);
+						
 					}
 				}
 				else if(xml_elem==Attributes::Expression)
@@ -9210,9 +9207,9 @@ void DatabaseModel::saveObjectsMetadata(const QString &filename, MetaAttrOptions
 				objects.insert(objects.end(), getObjectList(type)->begin(), getObjectList(type)->end());
 		}
 
-		for(BaseObject *object : objects)
+		for(auto &object : objects)
 		{
-			obj_type=object->getObjectType();
+			obj_type = object->getObjectType();
 
 			//When handling a tag , textbox or generic sql we just extract their XML code
 			if(obj_type==ObjectType::Textbox || obj_type==ObjectType::Tag || obj_type == ObjectType::GenericSql)
@@ -9224,8 +9221,10 @@ void DatabaseModel::saveObjectsMetadata(const QString &filename, MetaAttrOptions
 				objs_def+=object->getSourceCode(SchemaParser::XmlCode);
 				continue;
 			}
+			
 			//Discarding the relationship added table objects (when extracting aliases)
-			else if(TableObject::isTableObject(obj_type) && dynamic_cast<TableObject *>(object)->isAddedByRelationship())
+			if(TableObject::isTableObject(obj_type) && 
+				 dynamic_cast<TableObject *>(object)->isAddedByRelationship())
 				continue;
 
 			graph_obj=dynamic_cast<BaseGraphicObject *>(object);
