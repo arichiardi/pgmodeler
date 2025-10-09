@@ -35,7 +35,9 @@ DiffToolWidget::DiffToolWidget(QWidget *parent) : BaseConfigWidget (parent)
 	setupUi(this);
 
 	inv_model_alert_frm->setVisible(false);
+
 	CustomUiStyle::setStyleHint(CustomUiStyle::AlertFrmHint, inv_model_alert_frm);
+	CustomUiStyle::setStyleHint(CustomUiStyle::AlertFrmHint, diff_wgt_alert_frm);
 
 	GuiUtilsNs::configureWidgetsFont({ generate_btn, cancel_btn }, GuiUtilsNs::BigFontFactor);
 
@@ -734,7 +736,7 @@ void DiffToolWidget::exportDiff(bool confirm)
 		export_conn = new Connection;
 		*export_conn = compared_sel_wgt->getSelectedConnection();
 
-		settings_tbw->setCurrentIndex(2);
+		settings_tbw->setCurrentIndex(1);
 		apply_on_server_btn->setEnabled(true);
 
 		step_lbl->setText(tr("Step %1/%2: Exporting diff to database <strong>%3@%4</strong>...")

@@ -34,6 +34,7 @@
 #include <QTabWidget>
 #include <QToolBar>
 #include <QToolButton>
+#include <qframe.h>
 #include <qnamespace.h>
 #include <qpen.h>
 #include <qpoint.h>
@@ -1058,7 +1059,7 @@ void CustomUiStyle::drawPEHintFramePanel(PrimitiveElement element, const QStyleO
 
 	if(!frame || widget->property(StyleHintProp).toInt() == NoHint)
 		return;
-
+	
 	// Get the style hint color
 	QColor hint_color = widget->property(StyleHintColor).value<QColor>();
 	WidgetState wgt_st(option, widget);
@@ -2107,9 +2108,9 @@ void CustomUiStyle::drawPEHeaderArrow(const QStyleOption *option, QPainter *pain
 	drawControlArrow(&arrow_opt, painter, widget, arrow_type);
 }
 
-void CustomUiStyle::setStyleHint(StyleHint hint, QWidget *widget)
+void CustomUiStyle::setStyleHint(StyleHint hint, QFrame *frame)
 {
-	if(!widget)
+	if(!frame)
 		return;
 
 	static const std::map<StyleHint, QColor> frm_colors = {
@@ -2119,6 +2120,7 @@ void CustomUiStyle::setStyleHint(StyleHint hint, QWidget *widget)
 		{ ConfirmFrmHint, "#52d0eb" }
 	};
 
-	widget->setProperty(StyleHintProp, static_cast<int>(hint));
-	widget->setProperty(StyleHintColor, frm_colors.at(hint));
+	frame->setProperty(StyleHintProp, static_cast<int>(hint));
+	frame->setProperty(StyleHintColor, frm_colors.at(hint));
+	frame->setFrameShape(QFrame::StyledPanel);
 }

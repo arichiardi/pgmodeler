@@ -271,7 +271,10 @@ class __libutils CustomUiStyle : public QProxyStyle {
 
 		int pixelMetric(PixelMetric metric, const QStyleOption * option = nullptr, const QWidget * widget = nullptr) const override;
 
-		static void setStyleHint(StyleHint hint, QWidget *widget);
+		/*! \brief Sets a style hint on a QFrame to customize its border color and radius
+		 * So it can be rendered as a inlined alert/info/error frame. 
+		 * This method forces the frame shape to StyledPanel. */
+		static void setStyleHint(StyleHint hint, QFrame *frame);
 
 		//! \brief Checks if the current application palette is dark (dark theme)
 		static bool isDarkPalette();

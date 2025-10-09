@@ -1965,7 +1965,7 @@
             </widget>
            </item>
            <item row="3" column="0" colspan="4">
-            <widget class="QFrame" name="alert_frm">
+            <widget class="QFrame" name="diff_wgt_alert_frm">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                <horstretch>0</horstretch>
@@ -1979,7 +1979,7 @@
               </size>
              </property>
              <property name="frameShape">
-              <enum>QFrame::Shape::NoFrame</enum>
+              <enum>QFrame::Shape::StyledPanel</enum>
              </property>
              <property name="frameShadow">
               <enum>QFrame::Shadow::Raised</enum>
