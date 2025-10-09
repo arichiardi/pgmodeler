@@ -1451,13 +1451,11 @@ QString DataGridWidget::getDMLCommand(int row)
 
 		if(col_list.isEmpty())
 			return "";
+
+		if(op_type == OpUpdate)
+			fmt_cmd = fmt_cmd.arg(fmt_tb_name).arg(val_list.join(", ")).arg(flt_list.join(" AND "));
 		else
-		{
-			if(op_type == OpUpdate)
-				fmt_cmd = fmt_cmd.arg(fmt_tb_name).arg(val_list.join(", ")).arg(flt_list.join(" AND "));
-			else
-				fmt_cmd = fmt_cmd.arg(fmt_tb_name).arg(col_list.join(", ")).arg(val_list.join(", "));
-		}
+			fmt_cmd = fmt_cmd.arg(fmt_tb_name).arg(col_list.join(", ")).arg(val_list.join(", "));
 	}
 
 	return fmt_cmd;

@@ -449,11 +449,14 @@ void DatabaseImportHelper::createObjects()
 				if(!import_canceled)
 				{
 					/* If the previous list size is the same as the not_created_object list means
-				 that no object was created in this interaction which means error */
+					 * that no object was created in this interaction which means error */
 					if(prev_size==not_created_objs.size() && !ignore_errors)
+					{
 						throw Exception(aux_errors.back().getErrorMessage(), aux_errors.back().getErrorCode(),
-										PGM_FUNC,PGM_FILE,PGM_LINE, aux_errors);
-					else if(ignore_errors)
+														PGM_FUNC,PGM_FILE,PGM_LINE, aux_errors);
+					}
+
+					if(ignore_errors)
 						errors.insert(errors.end(), aux_errors.begin(), aux_errors.end());
 
 					aux_errors.clear();
@@ -770,9 +773,10 @@ void DatabaseImportHelper::createObject(attribs_map &attribs)
 		created_objs.push_back(oid);
 		return;
 	}
+
 	/* If we are importing to the working model and the object already exists
 	 * we just mark it as created */
-	else if(is_working_model && obj_type != ObjectType::Database)
+	if(is_working_model && obj_type != ObjectType::Database)
 	{
 		bool obj_exists = false;
 
@@ -2773,49 +2777,48 @@ void DatabaseImportHelper::createPermission(attribs_map &attribs)
 			/* If the role doesn't exists and there is a name defined, throws an error because
 			the roles wasn't found on the model */
 			if(!role && !role_name.isEmpty())
-				throw Exception(Exception::getErrorMessage(ErrorCode::RefObjectInexistsModel)
-								.arg(QString("%1").arg(perm_str)).arg(BaseObject::getTypeName(ObjectType::Permission))
-								.arg(role_name).arg(BaseObject::getTypeName(ObjectType::Role))
-								,PGM_FUNC,PGM_FILE,PGM_LINE);
-			else
 			{
-				try
+				throw Exception(Exception::getErrorMessage(ErrorCode::RefObjectInexistsModel)
+												.arg(perm_str).arg(BaseObject::getTypeName(ObjectType::Permission))
+												.arg(role_name).arg(BaseObject::getTypeName(ObjectType::Role)), PGM_FUNC, PGM_FILE, PGM_LINE);
+			}
+
+			try
+			{
+				//Configuring the permisison
+				permission = new Permission(object);
+
+				if(role)
+					permission->addRole(role);
+
+				//Setting the ordinary privileges
+				while(!privs.empty())
 				{
-					//Configuring the permisison
-					permission = new Permission(object);
-
-					if(role)
-						permission->addRole(role);
-
-					//Setting the ordinary privileges
-					while(!privs.empty())
-					{
-						permission->setPrivilege(privs.back(), true, false);
-						privs.pop_back();
-					}
-
-					//Setting the grant option privileges
-					while(!gop_privs.empty())
-					{
-						permission->setPrivilege(gop_privs.back(), true, true);
-						gop_privs.pop_back();
-					}
-
-					dbmodel->addPermission(permission);
+					permission->setPrivilege(privs.back(), true, false);
+					privs.pop_back();
 				}
-				catch(Exception &e)
+
+				//Setting the grant option privileges
+				while(!gop_privs.empty())
 				{
-					delete permission;
-
-					if(ignore_errors)
-						errors.push_back(Exception(e.getErrorMessage(), e.getErrorCode(), PGM_FUNC,PGM_FILE,PGM_LINE, &e, dumpObjectAttributes(attribs)));
-					else
-						throw Exception(e.getErrorMessage(), e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
+					permission->setPrivilege(gop_privs.back(), true, true);
+					gop_privs.pop_back();
 				}
+
+				dbmodel->addPermission(permission);
+			}
+			catch(Exception &e)
+			{
+				delete permission;
+
+				if(!ignore_errors)
+					throw Exception(e.getErrorMessage(), e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
+
+				errors.push_back(Exception(e.getErrorMessage(), e.getErrorCode(),
+												 PGM_FUNC,PGM_FILE,PGM_LINE, &e, dumpObjectAttributes(attribs)));
 			}
 		}
 	}
-
 }
 
 void DatabaseImportHelper::createTableInheritances()

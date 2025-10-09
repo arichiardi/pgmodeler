@@ -139,13 +139,14 @@ bool SQLToolWidget::eventFilter(QObject *object, QEvent *event)
 
 		return true;
 	}
-	else if(event->type() == QEvent::MouseButtonPress &&
-					dynamic_cast<QMouseEvent *>(event)->button()==Qt::MiddleButton &&
-					object == sourcecode_txt &&
-					sourcecode_txt->textCursor().hasSelection())
+
+	if(event->type() == QEvent::MouseButtonPress &&
+		 dynamic_cast<QMouseEvent *>(event)->button()==Qt::MiddleButton &&
+		 object == sourcecode_txt &&
+		 sourcecode_txt->textCursor().hasSelection())
 	{
-			showSnippet(sourcecode_txt->textCursor().selectedText());
-			return true;
+		showSnippet(sourcecode_txt->textCursor().selectedText());
+		return true;
 	}
 
 	return QWidget::eventFilter(object, event);

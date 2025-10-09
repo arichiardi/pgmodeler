@@ -212,15 +212,18 @@ void Type::setFunction(FunctionId func_id, Function *func)
 	if((config==BaseType && func_id >= CanonicalFunc) ||
 			(config==RangeType && func_id <= AnalyzeFunc))
 		throw Exception(ErrorCode::RefInvalidFunctionIdTypeConfig,PGM_FUNC,PGM_FILE,PGM_LINE);
+
 	/* Raises an error if the function isn't defined and the function id is INPUT or OUTPUT,
 		because this function is mandatory for base types */
-	else if(!func && (func_id==InputFunc || func_id==OutputFunc))
+	if(!func && (func_id==InputFunc || func_id==OutputFunc))
+	{
 		throw Exception(Exception::getErrorMessage(ErrorCode::AsgNotAllocatedFunction)
-						.arg(this->getName(true))
-						.arg(BaseObject::getTypeName(ObjectType::Type)),
-						ErrorCode::AsgNotAllocatedFunction,PGM_FUNC,PGM_FILE,PGM_LINE);
+										.arg(this->getName(true))
+										.arg(BaseObject::getTypeName(ObjectType::Type)),
+										ErrorCode::AsgNotAllocatedFunction,PGM_FUNC,PGM_FILE,PGM_LINE);
+	}
 
-	else if(func)
+	if(func)
 	{
 		/* Raises an error if the function language is not C.
 		 Functions assigned to base type must be written in C */
@@ -231,17 +234,20 @@ void Type::setFunction(FunctionId func_id, Function *func)
 
 		/* Raises an error if the parameter count for INPUT and RECV functions
 		 is different from 1 or 3. */
-		else if((param_count!=1 && param_count!=3 &&
+		if((param_count!=1 && param_count!=3 &&
 				 (func_id==InputFunc || func_id==RecvFunc)) ||
 				(param_count!=2 && func_id==SubtypeDiffFunc) ||
 				(param_count!=1 &&
 				 (func_id==OutputFunc   || func_id==SendFunc ||
 				  func_id==TpmodInFunc || func_id==TpmodOutFunc ||
 				  func_id==AnalyzeFunc  || func_id==CanonicalFunc)))
+		{
 			throw Exception(Exception::getErrorMessage(ErrorCode::AsgFunctionInvalidParamCount)
-							.arg(this->getName())
-							.arg(BaseObject::getTypeName(ObjectType::Type)),
-							ErrorCode::AsgFunctionInvalidParamCount,PGM_FUNC,PGM_FILE,PGM_LINE);
+											.arg(this->getName())
+											.arg(BaseObject::getTypeName(ObjectType::Type)),
+											ErrorCode::AsgFunctionInvalidParamCount,PGM_FUNC,PGM_FILE,PGM_LINE);
+		}
+
 		/* Checking the return types of function in relation to type.
 		 INPUT, RECV and CANONICAL functions must return the data type that is being defined according to the
 		 documentation, but to facilitate the implementation the function must return data type
@@ -258,10 +264,12 @@ void Type::setFunction(FunctionId func_id, Function *func)
 				(func_id==AnalyzeFunc && func->getReturnType()!="boolean") ||
 				(func_id==CanonicalFunc && func->getReturnType()!="\"any\"") ||
 				(func_id==SubtypeDiffFunc && func->getReturnType()!="double precision"))
+		{
 			throw Exception(Exception::getErrorMessage(ErrorCode::AsgFunctionInvalidReturnType)
-							.arg(this->getName())
-							.arg(BaseObject::getTypeName(ObjectType::Type)),
-							ErrorCode::AsgFunctionInvalidReturnType,PGM_FUNC,PGM_FILE,PGM_LINE);
+											.arg(this->getName())
+											.arg(BaseObject::getTypeName(ObjectType::Type)),
+											ErrorCode::AsgFunctionInvalidReturnType,PGM_FUNC,PGM_FILE,PGM_LINE);
+		}
 
 		/* Validating the parameter types of function in relation to the type configuration.
 		 The INPUT function must have parameters with type (cstring, oid, integer).
@@ -290,10 +298,12 @@ void Type::setFunction(FunctionId func_id, Function *func)
 				(func_id==SubtypeDiffFunc &&
 				 (func->getParameter(0).getType()!=this->subtype ||
 				  func->getParameter(1).getType()!=this->subtype)))
+		{
 			throw Exception(Exception::getErrorMessage(ErrorCode::AsgFunctionInvalidParameters)
-							.arg(this->getName())
-							.arg(this->getTypeName()),
-							ErrorCode::AsgFunctionInvalidParameters,PGM_FUNC,PGM_FILE,PGM_LINE);
+											.arg(this->getName())
+											.arg(this->getTypeName()),
+											ErrorCode::AsgFunctionInvalidParameters,PGM_FUNC,PGM_FILE,PGM_LINE);
+		}
 
 		func->setProtected(false);
 	}
@@ -304,8 +314,7 @@ void Type::setFunction(FunctionId func_id, Function *func)
 
 void Type::convertFunctionParameters(bool inverse_conv)
 {
-	unsigned i, conf_funcs[]={ InputFunc, RecvFunc,
-							   OutputFunc, SendFunc };
+	unsigned i, conf_funcs[]={ InputFunc, RecvFunc, OutputFunc, SendFunc };
 	Parameter param;
 	Function *func=nullptr;
 
@@ -386,13 +395,18 @@ void Type::setDefaultValue(const QString &value)
 void Type::setElement(PgSqlType elem)
 {
 	if(PgSqlType::getUserTypeIndex(this->getName(true), this) == !elem)
+	{
 		throw Exception(Exception::getErrorMessage(ErrorCode::InvUserTypeSelfReference).arg(this->getName(true)),
-						ErrorCode::InvUserTypeSelfReference,PGM_FUNC,PGM_FILE,PGM_LINE);
-	else if(elem!="\"any\"" &&
+										ErrorCode::InvUserTypeSelfReference,PGM_FUNC,PGM_FILE,PGM_LINE);
+	}
+
+	if(elem!="\"any\"" &&
 			(elem.isOidType() || elem.isPseudoType() ||
 			 elem.isUserType() || elem.isArrayType()))
+	{
 		throw Exception(Exception::getErrorMessage(ErrorCode::AsgInvalidElementType).arg(this->getName(true)),
-						ErrorCode::AsgInvalidElementType,PGM_FUNC,PGM_FILE,PGM_LINE);
+										ErrorCode::AsgInvalidElementType,PGM_FUNC,PGM_FILE,PGM_LINE);
+	}
 
 	elem.reset();
 	setCodeInvalidated(element != elem);

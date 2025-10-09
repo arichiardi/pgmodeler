@@ -364,7 +364,8 @@ void ModelExportHelper::exportToDBMS(DatabaseModel *db_model, Connection conn, c
 		undo column addition (this can be changed in the future) */
 		if(simulate && (ignore_dup || drop_db || drop_objs || transactional))
 			throw Exception(ErrorCode::MixingIncompExportOptions,PGM_FUNC,PGM_FILE,PGM_LINE);
-		else if(drop_db && drop_objs)
+
+		if(drop_db && drop_objs)
 			throw Exception(ErrorCode::MixingIncompDropOptions,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 		connect(db_model, &DatabaseModel::s_objectLoaded, this, &ModelExportHelper::updateProgress, Qt::DirectConnection);
@@ -606,14 +607,11 @@ void ModelExportHelper::exportToDBMS(DatabaseModel *db_model, Connection conn, c
 		}
 		else
 		{
-			//Redirects any error to terrorsr
 			if(errors.empty())
 				throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
-			else
-			{
-				errors.push_back(e);
-				throw Exception(e.getErrorMessage(),PGM_FUNC,PGM_FILE,PGM_LINE, errors);
-			}
+
+			errors.push_back(e);
+			throw Exception(e.getErrorMessage(),PGM_FUNC,PGM_FILE,PGM_LINE, errors);
 		}
 	}
 }

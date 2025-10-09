@@ -259,70 +259,68 @@ bool SchemaParser::parseInclude(const QString &include_ln, QString &src_buf, qin
 										QString(QT_TR_NOOP("Expected a valid include statement in the form `%1 \"file.sch\"'.")).arg(TokenInclude),
 										ErrorCode::InvalidSyntax, PGM_FUNC, PGM_FILE, PGM_LINE);
 	}
-	else
+
+	QDir dir;
+	QStringList texts = match.capturedTexts();
+	QString incl_file = dir.absoluteFilePath(texts.last());
+	QFileInfo fi(incl_file);
+
+	/* If the user specificed the include file without the extension
+	 * we set the default extension .sch in order to locate the file */
+	if(fi.suffix().isEmpty())
+		fi.setFile(incl_file + GlobalAttributes::SchemaExt);
+
+	// Check if the included file exists, if not, abort the parsing
+	if(!fi.isFile() || !fi.isReadable())
 	{
-		QDir dir;
-		QStringList texts = match.capturedTexts();
-		QString incl_file = dir.absoluteFilePath(texts.last());
-		QFileInfo fi(incl_file);
+		throw Exception(Exception::getErrorMessage(ErrorCode::InvalidInclude)
+										.arg(filename).arg(getCurrentLine()).arg(getCurrentColumn()) + " " +
+										QString(QT_TR_NOOP("Include file `%1' not found.")).arg(fi.absoluteFilePath()),
+										ErrorCode::InvalidInclude, PGM_FUNC, PGM_FILE, PGM_LINE,
+										nullptr, fi.absoluteFilePath());
+	}
 
-		/* If the user specificed the include file without the extension
-		 * we set the default extension .sch in order to locate the file */
-		if(fi.suffix().isEmpty())
-			fi.setFile(incl_file + GlobalAttributes::SchemaExt);
+	try
+	{
+		// Load the code of the included file
+		QString incl_buf = UtilsNs::loadFile(fi.absoluteFilePath());
 
-		// Check if the included file exists, if not, abort the parsing
-		if(!fi.isFile() || !fi.isReadable())
+		/* Appending a line feed char to the loaded include file to avoid
+		 * errors when the loaded include is followed by another @include */
+		incl_buf.append(QChar::LineFeed);
+
+		/* If the loaded code contains one or more @include statements we abort
+		 * the parsing because chained/nested file inclusion is not yet supported. */
+		if(incl_buf.contains(TokenIncludeRegexp))
 		{
 			throw Exception(Exception::getErrorMessage(ErrorCode::InvalidInclude)
 											.arg(filename).arg(getCurrentLine()).arg(getCurrentColumn()) + " " +
-											QString(QT_TR_NOOP("Include file `%1' not found.")).arg(fi.absoluteFilePath()),
+											QString(QT_TR_NOOP("The included file `%1' contains one or more `%2' statements. Nested file inclusion is not currently supported!")).arg(fi.absoluteFilePath(), TokenInclude),
 											ErrorCode::InvalidInclude, PGM_FUNC, PGM_FILE, PGM_LINE,
 											nullptr, fi.absoluteFilePath());
 		}
 
-		try
-		{
-			// Load the code of the included file
-			QString incl_buf = UtilsNs::loadFile(fi.absoluteFilePath());
+		src_buf.insert(curr_stream_pos, incl_buf);
 
-			/* Appending a line feed char to the loaded include file to avoid
-			 * errors when the loaded include is followed by another @include */
-			incl_buf.append(QChar::LineFeed);
+		/* Registering the included buffer start and end lines based upon
+		 * the current number of lines in the main buffer where @include was found
+		 * and by counting the number of line breaks in the included buffer, this is
+		 * enough to know where the included buffer starts and ends */
+		include_infos.push_back(IncludeInfo { fi.absoluteFilePath(),
+																					static_cast<int>(buffer.size()),
+																					static_cast<int>(buffer.size() + incl_buf.count(QChar::LineFeed)),
+																					static_cast<int>(include_ln.length()) });
 
-			/* If the loaded code contains one or more @include statements we abort
-			 * the parsing because chained/nested file inclusion is not yet supported. */
-			if(incl_buf.contains(TokenIncludeRegexp))
-			{
-				throw Exception(Exception::getErrorMessage(ErrorCode::InvalidInclude)
-												.arg(filename).arg(getCurrentLine()).arg(getCurrentColumn()) + " " +
-												QString(QT_TR_NOOP("The included file `%1' contains one or more `%2' statements. Nested file inclusion is not currently supported!")).arg(fi.absoluteFilePath(), TokenInclude),
-												ErrorCode::InvalidInclude, PGM_FUNC, PGM_FILE, PGM_LINE,
-												nullptr, fi.absoluteFilePath());
-			}
+		/* Reset the line/column values so the parser can start the parsing of
+		 * the loaded buffer as soon as it exits this methods and no lines is left
+		 * to be loaded from the source file */
+		line = column = 0;
 
-			src_buf.insert(curr_stream_pos, incl_buf);
-
-			/* Registering the included buffer start and end lines based upon
-			 * the current number of lines in the main buffer where @include was found
-			 * and by counting the number of line breaks in the included buffer, this is
-			 * enough to know where the included buffer starts and ends */
-			include_infos.push_back(IncludeInfo { fi.absoluteFilePath(),
-																						static_cast<int>(buffer.size()),
-																						static_cast<int>(buffer.size() + incl_buf.count(QChar::LineFeed)),
-																						static_cast<int>(include_ln.length()) });
-
-			/* Reset the line/column values so the parser can start the parsing of
-			 * the loaded buffer as soon as it exits this methods and no lines is left
-			 * to be loaded from the source file */
-			line = column = 0;
-
-			return true;
-		}
-		catch(Exception &e)
-		{
-			throw Exception(e.getErrorMessage(), e.getErrorCode(), PGM_FUNC, PGM_FILE, PGM_LINE, &e);
-		}
+		return true;
+	}
+	catch(Exception &e)
+	{
+		throw Exception(e.getErrorMessage(), e.getErrorCode(), PGM_FUNC, PGM_FILE, PGM_LINE, &e);
 	}
 }
 
@@ -412,11 +410,12 @@ QString SchemaParser::getAttribute(bool &found_conv_to_xml)
 	if(error)
 	{
 		throw Exception(getParseError(ErrorCode::InvalidSyntax,
-																	 QString(QT_TR_NOOP("Expected a valid attribute token enclosed by `%1%2'."))
-																	 .arg(CharStartAttribute).arg(CharEndAttribute)),
+										QString(QT_TR_NOOP("Expected a valid attribute token enclosed by `%1%2'."))
+										.arg(CharStartAttribute).arg(CharEndAttribute)),
 										ErrorCode::InvalidSyntax, PGM_FUNC, PGM_FILE, PGM_LINE);
 	}
-	else if(!AttribRegExp.match(atrib).hasMatch())
+
+	if(!AttribRegExp.match(atrib).hasMatch())
 	{
 		throw Exception(getParseError(ErrorCode::InvalidAttribute),
 										ErrorCode::InvalidAttribute, PGM_FUNC, PGM_FILE, PGM_LINE);
@@ -945,7 +944,8 @@ void SchemaParser::unsetAttribute()
 					throw Exception(getParseError(ErrorCode::UnkownAttribute, "", attrib),
 													 ErrorCode::UnkownAttribute, PGM_FUNC, PGM_FILE, PGM_LINE);
 				}
-				else if(!AttribRegExp.match(attrib).hasMatch())
+
+				if(!AttribRegExp.match(attrib).hasMatch())
 				{
 					throw Exception(getParseError(ErrorCode::InvalidAttribute, "", attrib),
 													 ErrorCode::InvalidAttribute, PGM_FUNC, PGM_FILE, PGM_LINE);
@@ -1292,36 +1292,34 @@ QString SchemaParser::getSourceCode(const attribs_map &attribs)
 					throw Exception(getParseError(ErrorCode::InvalidSyntax),
 													ErrorCode::InvalidSyntax, PGM_FUNC, PGM_FILE, PGM_LINE);
 				}
-				else
+
+				//Converting the metacharacter/escaped char to the character that it represents
+				meta = convertMetaOrEscaped(meta, chr == CharStartEscaped);
+
+				//If the parser is inside an 'if / else' extracting tokens
+				if(if_level>=0)
 				{
-					//Converting the metacharacter/escaped char to the character that it represents
-					meta = convertMetaOrEscaped(meta, chr == CharStartEscaped);
+					/* If the parser is in 'if' section,
+						 places the metacharacter on the word map of the current 'if' */
+					if(vet_tk_if[if_level] &&
+							vet_tk_then[if_level] &&
+							!vet_tk_else[if_level])
+						if_map[if_level].push_back(meta);
 
-					//If the parser is inside an 'if / else' extracting tokens
-					if(if_level>=0)
-					{
-						/* If the parser is in 'if' section,
-							 places the metacharacter on the word map of the current 'if' */
-						if(vet_tk_if[if_level] &&
-								vet_tk_then[if_level] &&
-								!vet_tk_else[if_level])
-							if_map[if_level].push_back(meta);
-
-						/* If the parser is in 'else' section,
-						 * places the metacharacter on the word map of the current 'else'*/
-						else if(vet_tk_else[if_level])
-							else_map[if_level].push_back(meta);
-					}
-					else
-						/* If the parsers is not in a 'if / else', puts the metacharacter
-						 * in the definition sql */
-						object_def += meta;
+					/* If the parser is in 'else' section,
+					 * places the metacharacter on the word map of the current 'else'*/
+					else if(vet_tk_else[if_level])
+						else_map[if_level].push_back(meta);
 				}
+				else
+					/* If the parsers is not in a 'if / else', puts the metacharacter
+					 * in the definition sql */
+					object_def += meta;
 			}
 			//Attribute extraction
 			else if(chr == CharToXmlEntity ||
-							 chr == CharStartAttribute ||
-							 chr == CharEndAttribute)
+							chr == CharStartAttribute ||
+							chr == CharEndAttribute)
 			{
 				atrib = getAttribute(to_xml_entity);
 
@@ -1333,8 +1331,8 @@ QString SchemaParser::getSourceCode(const attribs_map &attribs)
 						throw Exception(getParseError(ErrorCode::UnkownAttribute, "", atrib),
 														ErrorCode::UnkownAttribute, PGM_FUNC, PGM_FILE, PGM_LINE);
 					}
-					else
-						attributes[atrib]	= "";
+
+					attributes[atrib]	= "";
 				}
 
 				//If the parser is inside an 'if / else' extracting tokens
@@ -1394,7 +1392,8 @@ QString SchemaParser::getSourceCode(const attribs_map &attribs)
 					throw Exception(getParseError(ErrorCode::InvalidInstruction, "", cond),
 													ErrorCode::InvalidInstruction, PGM_FUNC, PGM_FILE, PGM_LINE);
 				}
-				else if(cond == TokenSet || cond == TokenUnset)
+
+				if(cond == TokenSet || cond == TokenUnset)
 				{
 					bool extract = false;
 
@@ -1632,10 +1631,11 @@ QString SchemaParser::getSourceCode(const attribs_map &attribs)
 						throw Exception(getParseError(ErrorCode::InvalidSyntax),
 														ErrorCode::InvalidSyntax, PGM_FUNC, PGM_FILE, PGM_LINE);
 					}
+
 					//Case the parser is in 'if' section
-					else if(vet_tk_if[if_level] &&
-									 vet_tk_then[if_level] &&
-									 !vet_tk_else[if_level])
+					if(vet_tk_if[if_level] &&
+						 vet_tk_then[if_level] &&
+						 !vet_tk_else[if_level])
 					{
 						//Inserts the word on the words map extracted on 'if' section
 						if_map[if_level].push_back(word);

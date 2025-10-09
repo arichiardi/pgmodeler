@@ -212,12 +212,13 @@ void Relationship::setNamePattern(PatternId pat_id, const QString &pattern)
 	if(pat_id > FkIdxPattern)
 	{
 		throw Exception(Exception::getErrorMessage(ErrorCode::RefInvalidNamePatternId)
-						.arg(this->getName()),PGM_FUNC,PGM_FILE,PGM_LINE);
+										.arg(this->getName()),PGM_FUNC,PGM_FILE,PGM_LINE);
 	}
-	else if(!BaseObject::isValidName(aux_name))
+
+	if(!BaseObject::isValidName(aux_name))
 	{
 		throw Exception(Exception::getErrorMessage(ErrorCode::AsgInvalidNamePattern)
-						.arg(this->getName()),PGM_FUNC,PGM_FILE,PGM_LINE);
+										.arg(this->getName()),PGM_FUNC,PGM_FILE,PGM_LINE);
 	}
 
 	invalidated = name_patterns[pat_id] != pattern;
@@ -499,60 +500,9 @@ int Relationship::getObjectIndex(TableObject *object)
 
 	if(found)
 		return ((itr-list->begin())-1);
-	else
-		return -1;
+
+	return -1;
 }
-
-/* template<class Class>
-Class *Relationship::createObject()
-{
-	if constexpr (std::is_same_v<Class, Column>)
-	{
-		Column *new_col = nullptr;
-
-		if(cols_stack.empty())
-			new_col = new Column;
-		else
-		{
-			new_col = cols_stack.top();
-			cols_stack.pop();
-		}
-
-		return new_col;
-	}
-
-	if constexpr (std::is_same_v<Class, Constraint>)
-	{
-		Constraint *new_constr = nullptr;
-
-		if(constrs_stack.empty())
-			new_constr = new Constraint;
-		else
-		{
-			new_constr = constrs_stack.top();
-			constrs_stack.pop();
-		}
-
-		return new_constr;
-	}
-
-	if constexpr (std::is_same_v<Class, Index>)
-	{
-		Index *new_index = nullptr;
-
-		if(indexes_stack.empty())
-			new_index = new Index;
-		else
-		{
-			new_index = indexes_stack.top();
-			indexes_stack.pop();
-		}
-
-		return new_index;
-	}
-
-	return nullptr;
-} */
 
 template<class Class>
 Class *Relationship::createObject()
@@ -703,12 +653,14 @@ void Relationship::addObject(TableObject *tab_obj, int obj_idx)
 	catch(Exception &e)
 	{
 		if(e.getErrorCode()==ErrorCode::UndefinedAttributeValue)
+		{
 			throw Exception(Exception::getErrorMessage(ErrorCode::AsgObjectInvalidDefinition)
-							.arg(tab_obj->getName())
-							.arg(tab_obj->getTypeName()),
-							ErrorCode::AsgObjectInvalidDefinition,PGM_FUNC,PGM_FILE,PGM_LINE, &e);
-		else
-			throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
+											.arg(tab_obj->getName())
+											.arg(tab_obj->getTypeName()),
+											ErrorCode::AsgObjectInvalidDefinition,PGM_FUNC,PGM_FILE,PGM_LINE, &e);
+		}
+
+		throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 	}
 }
 
@@ -919,8 +871,8 @@ TableObject *Relationship::getObject(const QString &name, ObjectType obj_type)
 
 	if(found)
 		return obj_aux;
-	else
-		return nullptr;
+
+	return nullptr;
 }
 
 Column *Relationship::getAttribute(unsigned attrib_idx)
@@ -975,10 +927,11 @@ unsigned Relationship::getObjectCount(ObjectType obj_type)
 {
 	if(obj_type==ObjectType::Column)
 		return rel_attributes.size();
-	else if(obj_type==ObjectType::Constraint)
+
+	if(obj_type==ObjectType::Constraint)
 		return rel_constraints.size();
-	else
-		throw Exception(ErrorCode::RefObjectInvalidType,PGM_FUNC,PGM_FILE,PGM_LINE);
+
+	throw Exception(ErrorCode::RefObjectInvalidType,PGM_FUNC,PGM_FILE,PGM_LINE);
 }
 
 void Relationship::addConstraints(PhysicalTable *recv_tab)
@@ -2284,15 +2237,13 @@ PhysicalTable *Relationship::getReferenceTable()
 {
 	/* Many to Many relationships doesn't has only one reference table so
 		is returned nullptr */
-	if(rel_type==RelationshipNn)
+	if(rel_type == RelationshipNn)
 		return nullptr;
-	else
-	{
-		if(src_table==getReceiverTable())
-			return dynamic_cast<PhysicalTable *>(dst_table);
-		else
-			return dynamic_cast<PhysicalTable *>(src_table);
-	}
+
+	if(src_table == getReceiverTable())
+		return dynamic_cast<PhysicalTable *>(dst_table);
+
+	return dynamic_cast<PhysicalTable *>(src_table);
 }
 
 void Relationship::setSiglePKColumn(bool value)
@@ -2311,35 +2262,38 @@ bool Relationship::isSiglePKColumn()
 
 PhysicalTable *Relationship::getReceiverTable()
 {
-	if(rel_type==Relationship11)
+	if(rel_type == Relationship11)
 	{
 		/* Case 1: (0,1) ---<>--- (0,1)
 		 Case 2: (1,1) ---<>--- (0,1) */
 		if((!src_mandatory && !dst_mandatory) ||
 				(src_mandatory && !dst_mandatory))
 			return dynamic_cast<PhysicalTable *>(dst_table);
+
 		/* Case 3: (0,1) ---<>--- (1,1) */
-		else if(!src_mandatory && dst_mandatory)
+		if(!src_mandatory && dst_mandatory)
 			return dynamic_cast<PhysicalTable *>(src_table);
+
 		// Case 4: (1,1) ---<>--- (1,1)
-		else
-			/* Returns nullptr since this type of relationship isn't implemented. Refer to
-		 header file top comment for details */
+		/* Returns nullptr since this type of relationship isn't implemented.
+		 * Refer to header file top comment for details */
 			return nullptr;
 	}
+
 	/* For 1-n relationships, the table order is unchagned this means that
-		the columns are always included in the destination table */
-	else if(rel_type==Relationship1n)
+	 * the columns are always included in the destination table */
+	if(rel_type == Relationship1n)
 		return dynamic_cast<PhysicalTable *>(dst_table);
+
 	/* For generalization / copy relationships the columns are always added
 		in the source table */
-	else if(rel_type==RelationshipGen ||
-			rel_type==RelationshipDep ||
-			rel_type==RelationshipPart)
+	if(rel_type==RelationshipGen ||
+		 rel_type==RelationshipDep ||
+		 rel_type==RelationshipPart)
 		return dynamic_cast<PhysicalTable *>(src_table);
+
 	//For n-n relationships, the columns are added in the table that represents the relationship (table_relnn)
-	else
-		return dynamic_cast<PhysicalTable *>(table_relnn);
+	return dynamic_cast<PhysicalTable *>(table_relnn);
 }
 
 void Relationship::removeTableObjectsRefCols(PhysicalTable *table)
@@ -2739,7 +2693,8 @@ bool Relationship::isInvalidated()
 
 		return true;
 	}
-	else if(connected)
+
+	if(connected)
 	{
 		/* Checking if the tables were renamed. For 1:1, 1:n and n:n this situation may cause the
 		renaming of all generated objects */

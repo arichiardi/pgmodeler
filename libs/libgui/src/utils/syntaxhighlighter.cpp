@@ -613,8 +613,9 @@ void SyntaxHighlighter::loadConfiguration(const QString &filename)
 							throw Exception(Exception::getErrorMessage(ErrorCode::DefDuplicatedGroup).arg(group),
 															 ErrorCode::DefDuplicatedGroup, PGM_FUNC, PGM_FILE, PGM_LINE);
 						}
+
 						//Raises an error if the group does not have children element
-						else if(!xmlparser.hasElement(XmlParser::ChildElement))
+						if(!xmlparser.hasElement(XmlParser::ChildElement))
 						{
 							throw Exception(Exception::getErrorMessage(ErrorCode::DefEmptyGroup).arg(group),
 															ErrorCode::DefEmptyGroup, PGM_FUNC, PGM_FILE, PGM_LINE);
@@ -708,13 +709,15 @@ void SyntaxHighlighter::loadConfiguration(const QString &filename)
 																	ErrorCode::InvGroupRegExpPattern, PGM_FUNC, PGM_FILE, PGM_LINE, nullptr,
 																	tr("Pattern: %1").arg(regexp.pattern()));
 								}
-								else if(group_cfg.persistent && (initial_expr || final_expr))
+
+								if(group_cfg.persistent && (initial_expr || final_expr))
 								{
 									throw Exception(Exception::getErrorMessage(ErrorCode::InvExprPersistentGroup).arg(group, filename),
 																	 ErrorCode::InvExprPersistentGroup, PGM_FUNC, PGM_FILE, PGM_LINE, nullptr,
 																	 tr("Pattern: %1").arg(regexp.pattern()));
 								}
-								else if(initial_expr && final_expr)
+
+								if(initial_expr && final_expr)
 								{
 									throw Exception(Exception::getErrorMessage(ErrorCode::InvExprMultilineGroup).arg(group, filename),
 																	 ErrorCode::InvExprMultilineGroup, PGM_FUNC, PGM_FILE, PGM_LINE, nullptr,

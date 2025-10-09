@@ -178,39 +178,38 @@ void Operator::setOperator(Operator *oper, OperatorId op_id)
 	//Raises an error if the operator type is invalid
 	if(op_id > OperNegator)
 		throw Exception(ErrorCode::RefOperatorInvalidType,PGM_FUNC,PGM_FILE,PGM_LINE);
-	else
-	{
-		/* Validating the Commutator OP: According to the PostgreSQL documentation
-		 the commutator must have its right argument as the same type of left argument
-		 from the commuted operator. That is, if the operator ++(typeA, typeB)
-		 is being defined and its commutator operator is +*+ then the signature
-		 of the latter should be +*+ (typeB, typeA). Raises an error when this condition
-		 is not satisfied. */
-		if(oper && op_id==OperCommutator && argument_types[LeftArg]!=oper->argument_types[RightArg])
-		{
-			throw Exception(Exception::getErrorMessage(ErrorCode::AsgInvalidCommutatorOperator)
-							.arg(oper->getSignature(true))
-							.arg(this->getSignature(true)),
-							ErrorCode::AsgFunctionInvalidParamCount,PGM_FUNC,PGM_FILE,PGM_LINE);
-		}
-		/* Validating Negator OP: According to the PostgreSQL documentation the negator
-		 operator must have its arguments as the same type of arguments from the
-		 operator to be defined. That is, if the operator !!(typeA) is being
-		 set and its negator is !*! then the signature of the latter should be !*! (typeA).
-		 Raises an error when this condition is not satisfied. */
-		else if(oper && op_id==OperNegator &&
-				(argument_types[LeftArg]!=oper->argument_types[LeftArg] &&
-				 argument_types[RightArg]!=oper->argument_types[RightArg]))
-		{
-			throw Exception(Exception::getErrorMessage(ErrorCode::AsgInvalidNegatorOperator)
-							.arg(oper->getSignature(true))
-							.arg(this->getSignature(true)),
-							ErrorCode::AsgFunctionInvalidParamCount,PGM_FUNC,PGM_FILE,PGM_LINE);
-		}
 
-		setCodeInvalidated(operators[op_id] != oper);
-		operators[op_id]=oper;
+	/* Validating the Commutator OP: According to the PostgreSQL documentation
+	 the commutator must have its right argument as the same type of left argument
+	 from the commuted operator. That is, if the operator ++(typeA, typeB)
+	 is being defined and its commutator operator is +*+ then the signature
+	 of the latter should be +*+ (typeB, typeA). Raises an error when this condition
+	 is not satisfied. */
+	if(oper && op_id==OperCommutator && argument_types[LeftArg]!=oper->argument_types[RightArg])
+	{
+		throw Exception(Exception::getErrorMessage(ErrorCode::AsgInvalidCommutatorOperator)
+										.arg(oper->getSignature(true))
+										.arg(this->getSignature(true)),
+										ErrorCode::AsgFunctionInvalidParamCount, PGM_FUNC, PGM_FILE, PGM_LINE);
 	}
+
+	/* Validating Negator OP: According to the PostgreSQL documentation the negator
+	 operator must have its arguments as the same type of arguments from the
+	 operator to be defined. That is, if the operator !!(typeA) is being
+	 set and its negator is !*! then the signature of the latter should be !*! (typeA).
+	 Raises an error when this condition is not satisfied. */
+	if(oper && op_id==OperNegator &&
+					(argument_types[LeftArg]!=oper->argument_types[LeftArg] &&
+					 argument_types[RightArg]!=oper->argument_types[RightArg]))
+	{
+		throw Exception(Exception::getErrorMessage(ErrorCode::AsgInvalidNegatorOperator)
+										.arg(oper->getSignature(true))
+										.arg(this->getSignature(true)),
+										ErrorCode::AsgFunctionInvalidParamCount, PGM_FUNC, PGM_FILE, PGM_LINE);
+	}
+
+	setCodeInvalidated(operators[op_id] != oper);
+	operators[op_id]=oper;
 }
 
 void Operator::setHashes(bool value)

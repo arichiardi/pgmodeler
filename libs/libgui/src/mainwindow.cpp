@@ -1398,7 +1398,8 @@ void MainWindow::addModel(ModelWidget *model_wgt)
 	{
 		if(!model_wgt)
 			throw Exception(ErrorCode::AsgNotAllocattedObject,PGM_FUNC,PGM_FILE,PGM_LINE);
-		else if(model_wgt->parent())
+
+		if(model_wgt->parent())
 			throw Exception(ErrorCode::AsgWidgetAlreadyHasParent,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 		model_nav_wgt->addModel(model_wgt);

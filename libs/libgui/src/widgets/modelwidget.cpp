@@ -868,7 +868,8 @@ bool ModelWidget::eventFilter(QObject *object, QEvent *event)
 
 			return true;
 		}
-		else if(m_event->button() == Qt::NoButton && event->type() == QEvent::GraphicsSceneMouseMove && magnifier_area_lbl->isVisible())
+
+		if(m_event->button() == Qt::NoButton && event->type() == QEvent::GraphicsSceneMouseMove && magnifier_area_lbl->isVisible())
 		{
 			updateMagnifierArea();
 		}
@@ -2310,8 +2311,9 @@ void ModelWidget::showObjectForm(ObjectType obj_type, BaseObject *object, BaseOb
 		{
 			if(object && obj_type!=object->getObjectType())
 				throw Exception(ErrorCode::OprObjectInvalidType,PGM_FUNC,PGM_FILE,PGM_LINE);
+
 			//If the user try to call the table object form without specify a parent object
-			else if(!parent_obj && TableObject::isTableObject(obj_type))
+			if(!parent_obj && TableObject::isTableObject(obj_type))
 				throw Exception(ErrorCode::OprNotAllocatedObject,PGM_FUNC,PGM_FILE,PGM_LINE);
 		}
 
@@ -3655,7 +3657,8 @@ void ModelWidget::removeObjects(bool cascade)
 
 					if(obj_type==ObjectType::BaseRelationship)
 						continue;
-					else if(parent_type!=ObjectType::Database)
+
+					if(parent_type!=ObjectType::Database)
 					{
 						/* If the parent table does not exist on the model of the object to be removed
 						 * does not exists in parent table, it'll not be processed */
@@ -3676,53 +3679,83 @@ void ModelWidget::removeObjects(bool cascade)
 						throw Exception(Exception::getErrorMessage(ErrorCode::OprReservedObject)
 														.arg(object->getName()).arg(object->getTypeName()),
 														ErrorCode::OprReservedObject,PGM_FUNC,PGM_FILE,PGM_LINE);
+
 					//Raises an error if the user try to remove a protected object
-					else if(object->isProtected())
+					if(object->isProtected())
 					{
 						throw Exception(Exception::getErrorMessage(ErrorCode::RemProtectedObject)
 														.arg(object->getName(true))
 														.arg(object->getTypeName()),
 														ErrorCode::RemProtectedObject,PGM_FUNC,PGM_FILE,PGM_LINE);
 					}
+
+					tab_obj=dynamic_cast<TableObject *>(object);
+
+					if(tab_obj)
+					{
+						if(tab_obj->isAddedByRelationship())
+						{
+							throw Exception(Exception::getErrorMessage(ErrorCode::RemProtectedObject)
+															.arg(tab_obj->getName(true))
+															.arg(tab_obj->getTypeName()),
+															ErrorCode::RemProtectedObject,PGM_FUNC,PGM_FILE,PGM_LINE);
+						}
+
+						table=dynamic_cast<BaseTable *>(tab_obj->getParentTable());
+						obj_idx=table->getObjectIndex(tab_obj->getName(true), obj_type);
+
+						try
+						{
+							//Register the removed object on the operation list
+							op_list->registerObject(tab_obj, Operation::ObjRemoved, obj_idx, table);
+							table->removeObject(obj_idx, obj_type);
+							db_model->removePermissions(tab_obj);
+
+							aux_table=dynamic_cast<Table *>(table);
+
+							if(aux_table && obj_type==ObjectType::Constraint &&
+								 (dynamic_cast<Constraint *>(tab_obj)->getConstraintType()==ConstraintType::ForeignKey ||
+									dynamic_cast<Constraint *>(tab_obj)->getConstraintType()==ConstraintType::Unique))
+								db_model->updateTableFKRelationships(aux_table);
+
+							table->setModified(true);
+							dynamic_cast<Schema *>(table->getSchema())->setModified(true);
+
+							if(aux_table)
+								db_model->validateRelationships(tab_obj, aux_table);
+
+							if(obj_type == ObjectType::Column)
+								db_model->updateViewsReferencingTable(aux_table);
+						}
+						catch(Exception &e)
+						{
+							if(cascade && (e.getErrorCode()==ErrorCode::RemInvalidatedObjects ||
+														 e.getErrorCode()==ErrorCode::RemDirectReference ||
+														 e.getErrorCode()==ErrorCode::RemInderectReference ||
+														 e.getErrorCode()==ErrorCode::RemProtectedObject ||
+														 e.getErrorCode()==ErrorCode::OprReservedObject))
+								errors.push_back(e);
+							else
+								throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE,&e);
+						}
+					}
 					else
 					{
-						tab_obj=dynamic_cast<TableObject *>(object);
+						obj_idx=db_model->getObjectIndex(object);
 
-						if(tab_obj)
+						if(obj_idx >=0 )
 						{
-							if(tab_obj->isAddedByRelationship())
+							if(obj_type==ObjectType::Relationship)
 							{
-								throw Exception(Exception::getErrorMessage(ErrorCode::RemProtectedObject)
-																.arg(tab_obj->getName(true))
-																.arg(tab_obj->getTypeName()),
-																ErrorCode::RemProtectedObject,PGM_FUNC,PGM_FILE,PGM_LINE);
+								rel=dynamic_cast<BaseRelationship *>(object);
+								src_table=rel->getTable(BaseRelationship::SrcTable);
+								dst_table=rel->getTable(BaseRelationship::DstTable);
 							}
 
-							table=dynamic_cast<BaseTable *>(tab_obj->getParentTable());
-							obj_idx=table->getObjectIndex(tab_obj->getName(true), obj_type);
-
 							try
-							{								
-								//Register the removed object on the operation list
-								op_list->registerObject(tab_obj, Operation::ObjRemoved, obj_idx, table);
-								table->removeObject(obj_idx, obj_type);
-								db_model->removePermissions(tab_obj);
-
-								aux_table=dynamic_cast<Table *>(table);
-
-								if(aux_table && obj_type==ObjectType::Constraint &&
-									 (dynamic_cast<Constraint *>(tab_obj)->getConstraintType()==ConstraintType::ForeignKey ||
-										dynamic_cast<Constraint *>(tab_obj)->getConstraintType()==ConstraintType::Unique))
-									db_model->updateTableFKRelationships(aux_table);
-
-								table->setModified(true);
-								dynamic_cast<Schema *>(table->getSchema())->setModified(true);
-
-								if(aux_table)
-									db_model->validateRelationships(tab_obj, aux_table);
-
-								if(obj_type == ObjectType::Column)
-									db_model->updateViewsReferencingTable(aux_table);
+							{
+								db_model->removeObject(object, obj_idx);
+								op_list->registerObject(object, Operation::ObjRemoved, obj_idx);
 							}
 							catch(Exception &e)
 							{
@@ -3735,44 +3768,13 @@ void ModelWidget::removeObjects(bool cascade)
 								else
 									throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE,&e);
 							}
-						}
-						else
-						{
-							obj_idx=db_model->getObjectIndex(object);
 
-							if(obj_idx >=0 )
+							if(rel)
 							{
-								if(obj_type==ObjectType::Relationship)
-								{
-									rel=dynamic_cast<BaseRelationship *>(object);
-									src_table=rel->getTable(BaseRelationship::SrcTable);
-									dst_table=rel->getTable(BaseRelationship::DstTable);
-								}
-
-								try
-								{
-									db_model->removeObject(object, obj_idx);
-									op_list->registerObject(object, Operation::ObjRemoved, obj_idx);
-								}
-								catch(Exception &e)
-								{
-									if(cascade && (e.getErrorCode()==ErrorCode::RemInvalidatedObjects ||
-																 e.getErrorCode()==ErrorCode::RemDirectReference ||
-																 e.getErrorCode()==ErrorCode::RemInderectReference ||
-																 e.getErrorCode()==ErrorCode::RemProtectedObject ||
-																 e.getErrorCode()==ErrorCode::OprReservedObject))
-										errors.push_back(e);
-									else
-										throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE,&e);
-								}
-
-								if(rel)
-								{
-									src_table->setModified(true);
-									dst_table->setModified(true);
-									rel=nullptr;
-									dst_table=src_table=nullptr;
-								}
+								src_table->setModified(true);
+								dst_table->setModified(true);
+								rel=nullptr;
+								dst_table=src_table=nullptr;
 							}
 						}
 					}

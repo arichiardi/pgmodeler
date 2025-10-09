@@ -458,10 +458,11 @@ QSize RelationshipWidget::getIdealSize()
 		 (rel_type == BaseRelationship::RelationshipDep &&
 			this->object && this->object->getObjectType()==ObjectType::BaseRelationship))
 		return QSize(640, 320);
-	else if(rel_type == BaseRelationship::RelationshipGen)
+
+	if(rel_type == BaseRelationship::RelationshipGen)
 		return QSize(640, 520);
-	else
-		return QSize(640, 680);
+
+	return QSize(640, 680);
 }
 
 void RelationshipWidget::useFKGlobalSettings(bool value)

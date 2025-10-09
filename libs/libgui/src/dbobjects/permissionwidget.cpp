@@ -490,7 +490,8 @@ void PermissionWidget::checkPrivilege()
 				chk_priv->setChecked(chk_gop->isChecked());
 				break;
 			}
-			else if(chk==chk_priv && !chk->isChecked())
+
+			if(chk==chk_priv && !chk->isChecked())
 			{
 				chk_gop->setChecked(false);
 				break;

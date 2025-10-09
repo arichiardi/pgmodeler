@@ -157,13 +157,17 @@ bool CodeCompletionWidget::eventFilter(QObject *object, QEvent *event)
 
 				//Filters the Crtl+Space to trigger the code completion
 				if(k_event->key() == Qt::Key_Space &&
-						(k_event->modifiers() == Qt::ControlModifier || k_event->modifiers() == Qt::MetaModifier))
+						(k_event->modifiers() == Qt::ControlModifier ||
+						 k_event->modifiers() == Qt::MetaModifier))
 				{
 					setQualifyingLevel(nullptr);
 					this->show();
 					return true;
 				}
-				else if(k_event->key() == Qt::Key_Space || k_event->key() == Qt::Key_Backspace || k_event->key() == Qt::Key_Delete)
+
+				if(k_event->key() == Qt::Key_Space ||
+					 k_event->key() == Qt::Key_Backspace ||
+					 k_event->key() == Qt::Key_Delete)
 				{
 					QTextCursor tc=code_field_txt->textCursor();
 					tc.movePosition(QTextCursor::PreviousCharacter, QTextCursor::KeepAnchor);
@@ -177,7 +181,8 @@ bool CodeCompletionWidget::eventFilter(QObject *object, QEvent *event)
 						event->ignore();
 						return true;
 					}
-					else if(k_event->key() == Qt::Key_Space)
+
+					if(k_event->key() == Qt::Key_Space)
 					{
 						setQualifyingLevel(nullptr);
 
@@ -197,8 +202,9 @@ bool CodeCompletionWidget::eventFilter(QObject *object, QEvent *event)
 				this->close();
 				return true;
 			}
+
 			//Filters the ENTER/RETURN press to close the code completion widget select the name
-			else if(k_event->key() == Qt::Key_Enter || k_event->key() == Qt::Key_Return)
+			if(k_event->key() == Qt::Key_Enter || k_event->key() == Qt::Key_Return)
 			{
 				if(!always_on_top_chk->isChecked())
 					this->selectItem();
@@ -220,8 +226,9 @@ bool CodeCompletionWidget::eventFilter(QObject *object, QEvent *event)
 
 				return true;
 			}
+
 			//Filters other key press and redirects to the code input field
-			else if(k_event->key() != Qt::Key_Up && k_event->key() != Qt::Key_Down &&
+			if(k_event->key() != Qt::Key_Up && k_event->key() != Qt::Key_Down &&
 							k_event->key() != Qt::Key_PageUp && k_event->key() != Qt::Key_PageDown &&
 							k_event->key() != Qt::Key_Home && k_event->key() != Qt::Key_End &&
 							k_event->modifiers() != Qt::AltModifier)

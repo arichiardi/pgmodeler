@@ -234,15 +234,17 @@ bool SQLExecutionWidget::eventFilter(QObject *object, QEvent *event)
 		output_tb->setChecked(!v_splitter->handle(1)->isEnabled());
 		return true;
 	}
-	else if(event->type()== QEvent::MouseButtonPress &&
-					dynamic_cast<QMouseEvent *>(event)->button()==Qt::MiddleButton &&
-					object == cmd_history_txt &&
-					cmd_history_txt->textCursor().hasSelection())
+
+	if(event->type()== QEvent::MouseButtonPress &&
+		 dynamic_cast<QMouseEvent *>(event)->button()==Qt::MiddleButton &&
+		 object == cmd_history_txt &&
+		 cmd_history_txt->textCursor().hasSelection())
 	{
 		sql_cmd_txt->appendPlainText(cmd_history_txt->textCursor().selectedText());
 		return true;
 	}
-	else if(event->type() == QEvent::Show && object == output_tbw->widget(2))
+
+	if(event->type() == QEvent::Show && object == output_tbw->widget(2))
 	{
 		if(cmd_history_txt->toPlainText().count(QChar('\n')) !=
 			 cmd_history[sql_cmd_conn.getConnectionId(true,true)].count(QChar('\n')))

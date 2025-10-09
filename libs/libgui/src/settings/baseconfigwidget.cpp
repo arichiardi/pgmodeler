@@ -103,30 +103,30 @@ void BaseConfigWidget::restoreDefaults(const QString &conf_id, bool silent)
 																															GlobalAttributes::ConfigurationExt);
 	//Raises an error if the default file doesn't exists
 	if(!QFile::exists(default_file))
+	{
 		throw Exception(Exception::getErrorMessage(ErrorCode::DefaultConfigNotRestored).arg(default_file),
 										ErrorCode::DefaultConfigNotRestored,PGM_FUNC,PGM_FILE,PGM_LINE);
-	else
-	{
-		bool bkp_saved = false;
-		QFileInfo fi(current_file);
-		QDir dir;
-		QString bkp_dir = fi.absolutePath() + GlobalAttributes::DirSeparator + GlobalAttributes::ConfsBackupsDir,
-				bkp_filename = bkp_dir + GlobalAttributes::DirSeparator +
-											 QString("%1.bkp_%2").arg(fi.fileName()).arg(QDateTime::currentDateTime().toString("yyyyMMd_hhmmss"));
-
-		dir.mkpath(bkp_dir);
-		bkp_saved = QFile::rename(current_file, bkp_filename);
-		QFile::copy(default_file, current_file);
-
-		// Set write permissions when copying file with read-only permissions
-		QFile file(current_file);
-
-		if(!file.permissions().testFlag(QFile::WriteOwner))
-			file.setPermissions(file.permissions() | QFileDevice::WriteOwner);
-
-		if(bkp_saved && !silent)
-			Messagebox::info(tr("A backup of the previous settings was saved into <strong>%1</strong>!").arg(bkp_filename));
 	}
+
+	bool bkp_saved = false;
+	QFileInfo fi(current_file);
+	QDir dir;
+	QString bkp_dir = fi.absolutePath() + GlobalAttributes::DirSeparator + GlobalAttributes::ConfsBackupsDir,
+			bkp_filename = bkp_dir + GlobalAttributes::DirSeparator +
+										 QString("%1.bkp_%2").arg(fi.fileName()).arg(QDateTime::currentDateTime().toString("yyyyMMd_hhmmss"));
+
+	dir.mkpath(bkp_dir);
+	bkp_saved = QFile::rename(current_file, bkp_filename);
+	QFile::copy(default_file, current_file);
+
+	// Set write permissions when copying file with read-only permissions
+	QFile file(current_file);
+
+	if(!file.permissions().testFlag(QFile::WriteOwner))
+		file.setPermissions(file.permissions() | QFileDevice::WriteOwner);
+
+	if(bkp_saved && !silent)
+		Messagebox::info(tr("A backup of the previous settings was saved into <strong>%1</strong>!").arg(bkp_filename));
 }
 
 void BaseConfigWidget::loadConfiguration(const QString &filename, const QString &dtd, std::map<QString, attribs_map> &config_params,

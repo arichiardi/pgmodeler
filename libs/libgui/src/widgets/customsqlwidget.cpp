@@ -115,7 +115,8 @@ void CustomSQLWidget::setAttributes(DatabaseModel *model, BaseObject *object)
 {
 	if(!object)
 		throw Exception(ErrorCode::OprNotAllocatedObject,PGM_FUNC,PGM_FILE,PGM_LINE);
-	else if(!BaseObject::acceptsCustomSQL(object->getObjectType()))
+
+	if(!BaseObject::acceptsCustomSQL(object->getObjectType()))
 		throw Exception(ErrorCode::OprObjectInvalidType,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	try

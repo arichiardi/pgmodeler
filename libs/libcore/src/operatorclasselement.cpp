@@ -34,7 +34,7 @@ void OperatorClassElement::setFunction(Function *func, unsigned stg_number)
 		throw Exception(ErrorCode::AsgNotAllocattedObject,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	//Raises an error case the stratagy number is zero (invalid)
-	else if(stg_number==0)
+	if(stg_number == 0)
 		throw Exception(ErrorCode::AsgInvalidSupportStrategyNumber,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	//Clear the attributes not related to the FUNCTION element type
@@ -54,7 +54,7 @@ void OperatorClassElement::setOperator(Operator *oper, unsigned stg_number)
 		throw Exception(ErrorCode::AsgNotAllocattedObject,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	//Raises an error case the stratagy number is zero (invalid)
-	else if(stg_number==0)
+	if(stg_number==0)
 		throw Exception(ErrorCode::AsgInvalidSupportStrategyNumber,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	//Clear the attributes not related to the OPERATOR element type
