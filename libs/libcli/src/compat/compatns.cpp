@@ -241,7 +241,7 @@ namespace CompatNs {
 		}
 		catch(Exception &e)
 		{
-			if(view) delete view;
+			delete view;
 			throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 		}
 

@@ -3998,7 +3998,7 @@ Role *DatabaseModel::createRole()
 	}
 	catch(Exception &e)
 	{
-		if(role) delete role;
+		delete role;
 		throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e, getErrorExtraInfo());
 	}
 
@@ -4019,7 +4019,7 @@ Tablespace *DatabaseModel::createTablespace()
 	}
 	catch(Exception &e)
 	{
-		if(tabspc) delete tabspc;
+		delete tabspc;
 		throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e, getErrorExtraInfo());
 	}
 
@@ -4044,7 +4044,7 @@ Schema *DatabaseModel::createSchema()
 	}
 	catch(Exception &e)
 	{
-		if(schema) delete schema;
+		delete schema;
 		throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e, getErrorExtraInfo());
 	}
 
@@ -4120,7 +4120,7 @@ Language *DatabaseModel::createLanguage()
 	}
 	catch(Exception &e)
 	{
-		if(lang) delete lang;
+		delete lang;
 		throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e, getErrorExtraInfo());
 	}
 
@@ -4728,7 +4728,7 @@ Domain *DatabaseModel::createDomain()
 	}
 	catch(Exception &e)
 	{
-		if(domain) delete domain;
+		delete domain;
 		throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e, getErrorExtraInfo());
 	}
 
@@ -4801,7 +4801,7 @@ Cast *DatabaseModel::createCast()
 	}
 	catch(Exception &e)
 	{
-		if(cast) delete cast;
+		delete cast;
 		throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e, getErrorExtraInfo());
 	}
 
@@ -4860,7 +4860,7 @@ Conversion *DatabaseModel::createConversion()
 	}
 	catch(Exception &e)
 	{
-		if(conv) delete conv;
+		delete conv;
 		throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e, getErrorExtraInfo());
 	}
 
@@ -4955,7 +4955,7 @@ Operator *DatabaseModel::createOperator()
 	}
 	catch(Exception &e)
 	{
-		if(oper) delete oper;
+		delete oper;
 		throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e, getErrorExtraInfo());
 	}
 
@@ -5073,7 +5073,7 @@ OperatorClass *DatabaseModel::createOperatorClass()
 	}
 	catch(Exception &e)
 	{
-		if(op_class) delete op_class;
+		delete op_class;
 		throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e, getErrorExtraInfo());
 	}
 
@@ -5094,7 +5094,7 @@ OperatorFamily *DatabaseModel::createOperatorFamily()
 	}
 	catch(Exception &e)
 	{
-		if(op_family) delete op_family;
+		delete op_family;
 		throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e, getErrorExtraInfo());
 	}
 
@@ -5163,7 +5163,7 @@ Aggregate *DatabaseModel::createAggregate()
 	}
 	catch(Exception &e)
 	{
-		if(aggreg) delete aggreg;
+		delete aggreg;
 		throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e, getErrorExtraInfo());
 	}
 
@@ -5251,7 +5251,7 @@ Column *DatabaseModel::createColumn()
 	}
 	catch(Exception &e)
 	{
-		if(column) delete column;
+		delete column;
 		throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e, getErrorExtraInfo());
 	}
 
@@ -5468,7 +5468,7 @@ Constraint *DatabaseModel::createConstraint(BaseObject *parent_obj)
 	}
 	catch(Exception &e)
 	{
-		if(constr) delete constr;
+		delete constr;
 		throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e, getErrorExtraInfo());
 	}
 
@@ -5781,7 +5781,7 @@ Index *DatabaseModel::createIndex()
 	}
 	catch(Exception &e)
 	{
-		if(index) delete index;
+		delete index;
 		throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e, getErrorExtraInfo());
 	}
 
@@ -5861,7 +5861,7 @@ Rule *DatabaseModel::createRule()
 	}
 	catch(Exception &e)
 	{
-		if(rule) delete rule;
+		delete rule;
 		throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e, getErrorExtraInfo());
 	}
 
@@ -6017,7 +6017,7 @@ Trigger *DatabaseModel::createTrigger()
 	}
 	catch(Exception &e)
 	{
-		if(trigger) delete trigger;
+		delete trigger;
 		throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e, getErrorExtraInfo());
 	}
 
@@ -6109,7 +6109,7 @@ Policy *DatabaseModel::createPolicy()
 	}
 	catch(Exception &e)
 	{
-		if(policy) delete policy;
+		delete policy;
 		throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e, getErrorExtraInfo());
 	}
 
@@ -6169,7 +6169,7 @@ EventTrigger *DatabaseModel::createEventTrigger()
 	}
 	catch(Exception &e)
 	{
-		if(event_trig) delete event_trig;
+		delete event_trig;
 		throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e, getErrorExtraInfo());
 	}
 
@@ -6254,7 +6254,7 @@ GenericSQL *DatabaseModel::createGenericSQL()
 	}
 	catch(Exception &e)
 	{
-		if(genericsql) delete genericsql;
+		delete genericsql;
 		throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e, getErrorExtraInfo());
 	}
 
@@ -6323,9 +6323,7 @@ ForeignDataWrapper *DatabaseModel::createForeignDataWrapper()
 	}
 	catch(Exception &e)
 	{
-		if(fdw)
-			delete fdw;
-
+		delete fdw;
 		throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e, getErrorExtraInfo());
 	}
 
@@ -6379,9 +6377,7 @@ ForeignServer *DatabaseModel::createForeignServer()
 	}
 	catch(Exception &e)
 	{
-		if(server)
-			delete server;
-
+		delete server;
 		throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e, getErrorExtraInfo());
 	}
 
@@ -6435,9 +6431,7 @@ UserMapping *DatabaseModel::createUserMapping()
 	}
 	catch(Exception &e)
 	{
-		if(user_map)
-			delete user_map;
-
+		delete user_map;
 		throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e, getErrorExtraInfo());
 	}
 
@@ -6494,7 +6488,7 @@ ForeignTable *DatabaseModel::createForeignTable()
 	}
 	catch(Exception &e)
 	{
-		if(ftable) delete ftable;
+		delete ftable;
 		throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 	}
 }
@@ -6577,7 +6571,7 @@ Transform *DatabaseModel::createTransform()
 	}
 	catch(Exception &e)
 	{
-		if(transf) delete transf;
+		delete transf;
 		throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 	}
 }
@@ -6593,7 +6587,7 @@ Procedure *DatabaseModel::createProcedure()
 	}
 	catch(Exception &e)
 	{
-		if(proc) delete proc;
+		delete proc;
 		throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e, getErrorExtraInfo());
 	}
 
@@ -6699,7 +6693,7 @@ Sequence *DatabaseModel::createSequence(bool ignore_onwer)
 	}
 	catch(Exception &e)
 	{
-		if(sequence) delete sequence;
+		delete sequence;
 		throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e, getErrorExtraInfo());
 	}
 
@@ -6827,7 +6821,7 @@ View *DatabaseModel::createView()
 	}
 	catch(Exception &e)
 	{
-		if(view) delete view;
+		delete view;
 		throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e, getErrorExtraInfo());
 	}
 
@@ -6886,7 +6880,7 @@ Collation *DatabaseModel::createCollation()
 	}
 	catch(Exception &e)
 	{
-		if(collation) delete collation;
+		delete collation;
 		throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e, getErrorExtraInfo());
 	}
 
@@ -6929,9 +6923,7 @@ Extension *DatabaseModel::createExtension()
 	}
 	catch(Exception &e)
 	{
-		if(extension)
-			delete extension;
-
+		delete extension;
 		throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e, getErrorExtraInfo());
 	}
 
@@ -6971,7 +6963,7 @@ Tag *DatabaseModel::createTag()
 	}
 	catch(Exception &e)
 	{
-		if(tag) delete tag;
+		delete tag;
 		throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e, getErrorExtraInfo());
 	}
 }
@@ -7004,7 +6996,7 @@ Textbox *DatabaseModel::createTextbox()
 	}
 	catch(Exception &e)
 	{
-		if(txtbox) delete txtbox;
+		delete txtbox;
 		throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e, getErrorExtraInfo());
 	}
 
@@ -7485,7 +7477,7 @@ Permission *DatabaseModel::createPermission()
 	}
 	catch(Exception &e)
 	{
-		if(perm) delete perm;
+		delete perm;
 		throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e, getErrorExtraInfo());
 	}
 
@@ -10144,7 +10136,7 @@ TableClass *DatabaseModel::createPhysicalTable()
 		QString extra_info=getErrorExtraInfo();
 		xmlparser.restorePosition();
 
-		if(table) delete table;
+		delete table;
 		throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e, extra_info);
 	}
 

@@ -445,8 +445,7 @@ void SQLToolWidget::closeDatabaseExplorer(int idx, bool confirm_close)
 	sql_exec_wgts.remove(db_explorer);
 	databases_tbw->removeTab(idx);
 
-	if(db_explorer)
-		delete db_explorer;
+	delete db_explorer;
 }
 
 void SQLToolWidget::ignoreAutoBrowseFlag(bool value)
@@ -490,9 +489,7 @@ void SQLToolWidget::closeSQLExecutionTab(int idx, bool confirm_close)
 
 	sql_exec_tbw->removeTab(idx);
 	setCornerButtonPos();
-
-	if(sql_exec_wgt)
-		delete sql_exec_wgt;
+	delete sql_exec_wgt;
 }
 
 void SQLToolWidget::showSnippet(const QString &snip)

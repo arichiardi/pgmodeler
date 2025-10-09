@@ -346,28 +346,14 @@ PgModelerCliApp::~PgModelerCliApp()
 	if(show_flush_msg)
 		printMessage(tr("Flushing used memory..."));
 
-	if(scene)
-		delete scene;
-
+	delete scene;
 	delete input_model;
-
-	if(export_hlp)
-		delete export_hlp;
-
-	if(import_hlp)
-		delete import_hlp;
-
-	if(diff_hlp)
-		delete diff_hlp;
-
-	if(conn_conf)
-		delete conn_conf;
-
-	if(rel_conf)
-		delete rel_conf;
-
-	if(general_conf)
-		delete general_conf;
+	delete export_hlp;
+	delete import_hlp;
+	delete diff_hlp;
+	delete conn_conf;
+	delete rel_conf;
+	delete general_conf;
 
 	while(!plugins.empty())
 	{
@@ -2403,9 +2389,7 @@ void PgModelerCliApp::diffModels()
 	}
 	catch(Exception &e)
 	{
-		if(compared_model)
-			delete compared_model;
-
+		delete compared_model;
 		throw Exception(e.getErrorMessage(), e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 	}
 }

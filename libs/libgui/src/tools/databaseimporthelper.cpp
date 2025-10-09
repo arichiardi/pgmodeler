@@ -1068,7 +1068,7 @@ Tablespace *DatabaseImportHelper::createTablespace(attribs_map &attribs)
 	}
 	catch(Exception &e)
 	{
-		if(tabspc) delete tabspc;
+		delete tabspc;
 		throw Exception(e.getErrorMessage(), e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 	}
 }
@@ -1100,9 +1100,9 @@ Schema *DatabaseImportHelper::createSchema(attribs_map &attribs)
 	}
 	catch(Exception &e)
 	{
-		if(schema) delete schema;
+		delete schema;
 		throw Exception(e.getErrorMessage(), e.getErrorCode(),
-						PGM_FUNC,PGM_FILE,PGM_LINE, &e, xmlparser->getXMLBuffer());
+										PGM_FUNC,PGM_FILE,PGM_LINE, &e, xmlparser->getXMLBuffer());
 	}
 }
 
@@ -1134,9 +1134,9 @@ Role *DatabaseImportHelper::createRole(attribs_map &attribs)
 	}
 	catch(Exception &e)
 	{
-		if(role) delete role;
+		delete role;
 		throw Exception(e.getErrorMessage(), e.getErrorCode(),
-						PGM_FUNC,PGM_FILE,PGM_LINE, &e, xmlparser->getXMLBuffer());
+										PGM_FUNC,PGM_FILE,PGM_LINE, &e, xmlparser->getXMLBuffer());
 	}
 }
 
@@ -1173,9 +1173,9 @@ Domain *DatabaseImportHelper::createDomain(attribs_map &attribs)
 	}
 	catch(Exception &e)
 	{
-		if(dom) delete dom;
+		delete dom;
 		throw Exception(e.getErrorMessage(), e.getErrorCode(),
-						PGM_FUNC,PGM_FILE,PGM_LINE, &e, xmlparser->getXMLBuffer());
+										PGM_FUNC,PGM_FILE,PGM_LINE, &e, xmlparser->getXMLBuffer());
 	}
 }
 
@@ -1239,9 +1239,9 @@ Extension *DatabaseImportHelper::createExtension(attribs_map &attribs)
 	}
 	catch(Exception &e)
 	{
-		if(ext) delete ext;
+		delete ext;
 		throw Exception(e.getErrorMessage(), e.getErrorCode(),
-						PGM_FUNC,PGM_FILE,PGM_LINE, &e, xmlparser->getXMLBuffer());
+										PGM_FUNC,PGM_FILE,PGM_LINE, &e, xmlparser->getXMLBuffer());
 	}
 }
 
@@ -1413,7 +1413,7 @@ Function *DatabaseImportHelper::createFunction(attribs_map &attribs)
 	}
 	catch(Exception &e)
 	{
-		if(func) delete func;
+		delete func;
 		throw Exception(e.getErrorMessage(), e.getErrorCode(),
 										PGM_FUNC,PGM_FILE,PGM_LINE, &e, xmlparser->getXMLBuffer());
 	}
@@ -1434,7 +1434,7 @@ Procedure *DatabaseImportHelper::createProcedure(attribs_map &attribs)
 	}
 	catch(Exception &e)
 	{
-		if(proc) delete proc;
+		delete proc;
 		throw Exception(e.getErrorMessage(), e.getErrorCode(),
 										PGM_FUNC,PGM_FILE,PGM_LINE, &e, xmlparser->getXMLBuffer());
 	}
@@ -1473,9 +1473,9 @@ Language *DatabaseImportHelper::createLanguage(attribs_map &attribs)
 	}
 	catch(Exception &e)
 	{
-		if(lang) delete lang;
+		delete lang;
 		throw Exception(e.getErrorMessage(), e.getErrorCode(),
-						PGM_FUNC,PGM_FILE,PGM_LINE, &e, xmlparser->getXMLBuffer());
+										PGM_FUNC,PGM_FILE,PGM_LINE, &e, xmlparser->getXMLBuffer());
 	}
 }
 
@@ -1493,9 +1493,9 @@ OperatorFamily *DatabaseImportHelper::createOperatorFamily(attribs_map &attribs)
 	}
 	catch(Exception &e)
 	{
-		if(opfam) delete opfam;
+		delete opfam;
 		throw Exception(e.getErrorMessage(), e.getErrorCode(),
-						PGM_FUNC,PGM_FILE,PGM_LINE, &e, xmlparser->getXMLBuffer());
+										PGM_FUNC,PGM_FILE,PGM_LINE, &e, xmlparser->getXMLBuffer());
 	}
 }
 
@@ -1577,9 +1577,9 @@ OperatorClass *DatabaseImportHelper::createOperatorClass(attribs_map &attribs)
 	}
 	catch(Exception &e)
 	{
-		if(opclass) delete opclass;
+		delete opclass;
 		throw Exception(e.getErrorMessage(), e.getErrorCode(),
-						PGM_FUNC,PGM_FILE,PGM_LINE, &e, xmlparser->getXMLBuffer());
+										PGM_FUNC,PGM_FILE,PGM_LINE, &e, xmlparser->getXMLBuffer());
 	}
 }
 
@@ -1640,9 +1640,9 @@ Operator *DatabaseImportHelper::createOperator(attribs_map &attribs)
 	}
 	catch(Exception &e)
 	{
-		if(oper) delete oper;
+		delete oper;
 		throw Exception(e.getErrorMessage(), e.getErrorCode(),
-						PGM_FUNC,PGM_FILE,PGM_LINE, &e, xmlparser->getXMLBuffer());
+										PGM_FUNC,PGM_FILE,PGM_LINE, &e, xmlparser->getXMLBuffer());
 	}
 }
 
@@ -1660,9 +1660,9 @@ Collation *DatabaseImportHelper::createCollation(attribs_map &attribs)
 	}
 	catch(Exception &e)
 	{
-		if(coll) delete coll;
+		delete coll;
 		throw Exception(e.getErrorMessage(), e.getErrorCode(),
-						PGM_FUNC,PGM_FILE,PGM_LINE, &e, xmlparser->getXMLBuffer());
+										PGM_FUNC,PGM_FILE,PGM_LINE, &e, xmlparser->getXMLBuffer());
 	}
 }
 
@@ -1683,9 +1683,9 @@ Cast *DatabaseImportHelper::createCast(attribs_map &attribs)
 	}
 	catch(Exception &e)
 	{
-		if(cast) delete cast;
+		delete cast;
 		throw Exception(e.getErrorMessage(), e.getErrorCode(),
-						PGM_FUNC,PGM_FILE,PGM_LINE, &e, xmlparser->getXMLBuffer());
+										PGM_FUNC,PGM_FILE,PGM_LINE, &e, xmlparser->getXMLBuffer());
 	}
 }
 
@@ -1704,9 +1704,9 @@ Conversion *DatabaseImportHelper::createConversion(attribs_map &attribs)
 	}
 	catch(Exception &e)
 	{
-		if(conv) delete conv;
+		delete conv;
 		throw Exception(e.getErrorMessage(), e.getErrorCode(),
-						PGM_FUNC,PGM_FILE,PGM_LINE, &e, xmlparser->getXMLBuffer());
+										PGM_FUNC,PGM_FILE,PGM_LINE, &e, xmlparser->getXMLBuffer());
 	}
 }
 
@@ -1777,9 +1777,9 @@ Sequence *DatabaseImportHelper::createSequence(attribs_map &attribs)
 	}
 	catch(Exception &e)
 	{
-		if(seq) delete seq;
+		delete seq;
 		throw Exception(e.getErrorMessage(), e.getErrorCode(),
-						PGM_FUNC,PGM_FILE,PGM_LINE, &e, xmlparser->getXMLBuffer());
+										PGM_FUNC,PGM_FILE,PGM_LINE, &e, xmlparser->getXMLBuffer());
 	}
 }
 
@@ -1827,9 +1827,9 @@ Aggregate *DatabaseImportHelper::createAggregate(attribs_map &attribs)
 	}
 	catch(Exception &e)
 	{
-		if(agg) delete agg;
+		delete agg;
 		throw Exception(e.getErrorMessage(), e.getErrorCode(),
-						PGM_FUNC,PGM_FILE,PGM_LINE, &e, xmlparser->getXMLBuffer());
+										PGM_FUNC,PGM_FILE,PGM_LINE, &e, xmlparser->getXMLBuffer());
 	}
 }
 
@@ -1923,9 +1923,9 @@ Type *DatabaseImportHelper::createType(attribs_map &attribs)
 	}
 	catch(Exception &e)
 	{
-		if(type) delete type;
+		delete type;
 		throw Exception(e.getErrorMessage(), e.getErrorCode(),
-						PGM_FUNC,PGM_FILE,PGM_LINE, &e, xmlparser->getXMLBuffer());
+										PGM_FUNC,PGM_FILE,PGM_LINE, &e, xmlparser->getXMLBuffer());
 	}
 }
 
@@ -2164,9 +2164,9 @@ View *DatabaseImportHelper::createView(attribs_map &attribs)
 	}
 	catch(Exception &e)
 	{
-		if(view) delete view;
+		delete view;
 		throw Exception(e.getErrorMessage(), e.getErrorCode(),
-						PGM_FUNC,PGM_FILE,PGM_LINE, &e, xmlparser->getXMLBuffer());
+										PGM_FUNC,PGM_FILE,PGM_LINE, &e, xmlparser->getXMLBuffer());
 	}
 }
 
@@ -2553,7 +2553,7 @@ ForeignDataWrapper *DatabaseImportHelper::createForeignDataWrapper(attribs_map &
 	}
 	catch(Exception &e)
 	{
-		if(fdw) delete fdw;
+		delete fdw;
 		throw Exception(e.getErrorMessage(), e.getErrorCode(),
 										PGM_FUNC,PGM_FILE,PGM_LINE, &e, xmlparser->getXMLBuffer());
 	}
@@ -2576,7 +2576,7 @@ ForeignServer *DatabaseImportHelper::createForeignServer(attribs_map &attribs)
 	}
 	catch(Exception &e)
 	{
-		if(server) delete server;
+		delete server;
 		throw Exception(e.getErrorMessage(), e.getErrorCode(),
 										PGM_FUNC,PGM_FILE,PGM_LINE, &e, xmlparser->getXMLBuffer());
 	}
@@ -2599,7 +2599,7 @@ UserMapping *DatabaseImportHelper::createUserMapping(attribs_map &attribs)
 	}
 	catch(Exception &e)
 	{
-		if(usr_map) delete usr_map;
+		delete usr_map;
 		throw Exception(e.getErrorMessage(), e.getErrorCode(),
 										PGM_FUNC,PGM_FILE,PGM_LINE, &e, xmlparser->getXMLBuffer());
 	}
@@ -2685,7 +2685,7 @@ Transform *DatabaseImportHelper::createTransform(attribs_map &attribs)
 	}
 	catch(Exception &e)
 	{
-		if(transf) delete transf;
+		delete transf;
 		throw Exception(e.getErrorMessage(), e.getErrorCode(),
 										PGM_FUNC,PGM_FILE,PGM_LINE, &e, xmlparser->getXMLBuffer());
 	}
@@ -2805,8 +2805,7 @@ void DatabaseImportHelper::createPermission(attribs_map &attribs)
 				}
 				catch(Exception &e)
 				{
-					if(permission)
-						delete permission;
+					delete permission;
 
 					if(ignore_errors)
 						errors.push_back(Exception(e.getErrorMessage(), e.getErrorCode(), PGM_FUNC,PGM_FILE,PGM_LINE, &e, dumpObjectAttributes(attribs)));
@@ -2993,9 +2992,7 @@ void DatabaseImportHelper::createColumns()
 				}
 				catch(Exception &e)
 				{
-					if(col)
-						delete col;
-
+					delete col;
 					throw Exception(e.getErrorMessage(), e.getErrorCode(), PGM_FUNC, PGM_FILE, PGM_LINE, &e);
 				}
 			}
@@ -3309,7 +3306,7 @@ void DatabaseImportHelper::__createTableInheritances()
 				{
 					dbmodel->removeRelationship(rel);
 
-					if(rel) delete rel;
+					delete rel;
 
 					if(ignore_errors)
 						errors.push_back(e);

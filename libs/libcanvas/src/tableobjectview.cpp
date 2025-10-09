@@ -46,8 +46,7 @@ TableObjectView::TableObjectView(TableObject *object) : BaseObjectView(object)
 	for(unsigned i=0; i < 3; i++)
 		lables[i]=new QGraphicsSimpleTextItem;
 
-	if(obj_selection)
-		delete obj_selection;
+	delete obj_selection;
 }
 
 TableObjectView::~TableObjectView()
