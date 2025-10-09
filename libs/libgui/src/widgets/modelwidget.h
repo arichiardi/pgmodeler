@@ -242,7 +242,7 @@ class __libgui ModelWidget: public QWidget {
 		int openEditingForm(BaseObject *object, BaseObject *parent_obj, const QPointF &pos);
 
 		//! \brief Opens a editing form specific for tables and foreign tables
-		int openTableEditingForm(ObjectType tab_type, PhysicalTable *object, Schema *parent_obj, const QPointF &pos);
+		int openTableEditingForm(ObjectType tab_type, PhysicalTable *object, Schema *schema, const QPointF &pos);
 
 		//! \brief Configures the submenu related to the installed plugins actions
 		void configurePluginsActions();

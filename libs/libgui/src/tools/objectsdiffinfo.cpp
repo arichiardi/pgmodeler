@@ -24,11 +24,11 @@ ObjectsDiffInfo::ObjectsDiffInfo()
 	diff_type=NoDifference;
 }
 
-ObjectsDiffInfo::ObjectsDiffInfo(DiffType diff_type, BaseObject *object, BaseObject *new_object)
+ObjectsDiffInfo::ObjectsDiffInfo(DiffType diff_type, BaseObject *object, BaseObject *old_obj)
 {
 	this->diff_type=diff_type;
 	this->object=object;
-	this->old_object=new_object;
+	this->old_object=old_obj;
 }
 
 ObjectsDiffInfo::DiffType ObjectsDiffInfo::getDiffType()

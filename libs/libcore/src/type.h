@@ -230,7 +230,7 @@ class __libcore Type: public BaseObject {
 		QString getAlterCode(BaseObject *object) final;
 
 		//! \brief Makes a copy between two type
-		void operator = (Type &tipo);
+		void operator = (Type &type);
 
 		void updateDependencies() override;
 

@@ -141,7 +141,7 @@ class __libcore PhysicalTable: public BaseTable {
 		void setCopyTable(PhysicalTable *tab);
 
 		//! \brief Configures the copy table options
-		void setCopyTableOptions(CopyOptions copy_op);
+		void setCopyTableOptions(CopyOptions cpy_op);
 
 		//! \brief Returns the copy table
 		PhysicalTable *getCopyTable();

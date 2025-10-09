@@ -33,7 +33,7 @@ class __libgui ProcedureWidget: public BaseFunctionWidget  {
 	public:
 		ProcedureWidget(QWidget * parent = nullptr);
 
-		void setAttributes(DatabaseModel *model, OperationList *op_list, Schema *schema, Procedure *func);
+		void setAttributes(DatabaseModel *model, OperationList *op_list, Schema *schema, Procedure *proc);
 
 	private slots:
 		//! \brief Shows the parameter configuration form

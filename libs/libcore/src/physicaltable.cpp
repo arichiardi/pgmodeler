@@ -81,12 +81,12 @@ void PhysicalTable::setCopyTable(PhysicalTable *tab)
 		copy_op = CopyOptions();
 }
 
-void PhysicalTable::setCopyTableOptions(CopyOptions like_op)
+void PhysicalTable::setCopyTableOptions(CopyOptions cpy_op)
 {
 	if(copy_table)
 	{
-		setCodeInvalidated(copy_op != like_op);
-		this->copy_op=like_op;
+		setCodeInvalidated(copy_op != cpy_op);
+		this->copy_op = cpy_op;
 	}
 }
 

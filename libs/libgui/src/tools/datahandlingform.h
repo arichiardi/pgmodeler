@@ -96,8 +96,8 @@ class __libgui DataHandlingForm: public QDialog, public Ui::DataHandlingForm {
 		void enableRefreshButton();
 
 		/*! \brief Appeds or removes the '*' to the tab name that called this slot indicating
-		 *  depending on the value of 'changed', indicating that the tab has unsaved modifications */
-		void setDataGridModified(bool changed);
+		 *  depending on the value of 'modified', indicating that the tab has unsaved modifications */
+		void setDataGridModified(bool modified);
 };
 
 #endif

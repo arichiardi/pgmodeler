@@ -795,7 +795,7 @@ void MainWindow::restoreTemporaryModels()
 	for(int idx = 0; idx < models_tbw->count(); idx++)
 		ignored_files += QFileInfo(dynamic_cast<ModelWidget *>(models_tbw->widget(idx))->getTempFilename()).fileName();
 
-	GuiUtilsNs::resizeDialog(restoration_form);
+	GuiUtilsNs::resizeWidget(restoration_form);
 	restoration_form->setIgnoredFiles(ignored_files);
 
 	//Restore temporary models (if exists)
@@ -2515,7 +2515,7 @@ void MainWindow::changeCurrentView(bool checked)
 void MainWindow::reportBug()
 {
 	BugReportForm bugrep_frm;
-	GuiUtilsNs::resizeDialog(&bugrep_frm);
+	GuiUtilsNs::resizeWidget(&bugrep_frm);
 	GeneralConfigWidget::restoreWidgetGeometry(&bugrep_frm);
 	bugrep_frm.exec();
 	GeneralConfigWidget::saveWidgetGeometry(&bugrep_frm);

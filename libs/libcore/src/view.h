@@ -222,7 +222,7 @@ class __libcore View: public BaseTable {
 		QString getAlterCode(BaseObject *object) final;
 
 		//! \brief Copy the attributes between two views
-		void operator = (View &visao);
+		void operator = (View &view);
 
 		void updateDependencies() override;
 

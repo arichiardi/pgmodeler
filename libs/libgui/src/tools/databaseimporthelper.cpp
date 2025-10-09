@@ -901,7 +901,8 @@ QString DatabaseImportHelper::getComment(attribs_map &attribs)
 	}
 }
 
-QString DatabaseImportHelper::getDependencyObject(const QString &oid, ObjectType obj_type, bool use_signature, bool recursive_dep_res, bool generate_xml, attribs_map extra_attribs)
+QString DatabaseImportHelper::getDependencyObject(const QString &oid, ObjectType obj_type, bool use_signature,
+																									bool recursive_dep_res, bool generate_xml, attribs_map extra_attribs)
 {
 	try
 	{

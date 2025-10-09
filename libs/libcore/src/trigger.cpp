@@ -78,7 +78,8 @@ void Trigger::setArgumentAttribute(unsigned def_type)
 			str_args.append(arg);
 	}
 
-	attributes[Attributes::Arguments] = str_args.join(def_type == SchemaParser::SqlCode ? "," : UtilsNs::DataSeparator);
+	attributes[Attributes::Arguments] =
+			str_args.join(def_type == SchemaParser::SqlCode ? "," : UtilsNs::DataSeparator);
 }
 
 void Trigger::setFiringType(FiringType firing_type)

@@ -627,13 +627,13 @@ class __libcore DatabaseModel:  public QObject, public BaseObject {
 		OperatorClass *getOperatorClass(unsigned obj_idx);
 		OperatorClass *getOperatorClass(const QString &name);
 
-		void addOperatorFamily(OperatorFamily *familia_op, int obj_idx=-1);
+		void addOperatorFamily(OperatorFamily *op_family, int obj_idx=-1);
 		void removeOperatorFamily(OperatorFamily *op_family, int obj_idx=-1);
 		OperatorFamily *getOperatorFamily(unsigned obj_idx);
 		OperatorFamily *getOperatorFamily(const QString &name);
 
 		void addDomain(Domain *domain, int obj_idx=-1);
-		void removeDomain(Domain *dominio, int obj_idx=-1);
+		void removeDomain(Domain *domain, int obj_idx=-1);
 		Domain *getDomain(unsigned obj_idx);
 		Domain *getDomain(const QString &name);
 

@@ -17,6 +17,7 @@
 */
 
 #include "pgmodelercliapp.h"
+#include "modelwidget.h"
 #include "utilsns.h"
 #include "settings/appearanceconfigwidget.h"
 #include "tableview.h"

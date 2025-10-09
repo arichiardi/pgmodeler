@@ -105,7 +105,7 @@ class __libgui NumberedTextEditor : public QPlainTextEdit {
 		void keyPressEvent(QKeyEvent *event)  override;
 
 	public:
-		NumberedTextEditor(QWidget * parent = nullptr, bool edit_btns_enabled = false, qreal custom_fnt_size = 0);
+		NumberedTextEditor(QWidget * parent = nullptr, bool act_btns_enabled = false, qreal custom_fnt_size = 0);
 		~NumberedTextEditor() override;
 
 		static void setDefaultFont(const QFont &font);
@@ -125,7 +125,7 @@ class __libgui NumberedTextEditor : public QPlainTextEdit {
 		void setCustomContextMenuEnabled(bool enabled);
 
 		//! \brief Configure the filename filters for the save action
-		void setFilenameFilters(const QStringList &list, const QString &default_ext);
+		void setFilenameFilters(const QStringList &list, const QString &def_ext);
 
 	private slots:
 		void showContextMenu();

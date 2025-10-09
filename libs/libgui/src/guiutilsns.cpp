@@ -348,7 +348,7 @@ namespace GuiUtilsNs {
 		return getIconPath(BaseObject::getSchemaName(obj_type) + suffix);
 	}
 
-	void resizeDialog(QWidget *widget)
+	void resizeWidget(QWidget *widget)
 	{
 		if(!widget)
 			return;

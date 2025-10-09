@@ -76,7 +76,7 @@ class __libcore Trigger: public TableObject{
 		void setBasicAttributes(SchemaParser::CodeType def_type);
 
 		//! \brief Format the function arguments to be used by the SchemaParser
-		void setArgumentAttribute(unsigned tipo_def);
+		void setArgumentAttribute(unsigned def_type);
 
 	public:
 		enum TransitionTableId: unsigned {
