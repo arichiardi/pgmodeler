@@ -124,7 +124,7 @@ class __libgui DiffToolWidget: public BaseConfigWidget, public Ui::DiffToolWidge
 
 		bool process_paused;
 
-		void showEvent(QShowEvent *event);
+		void showEvent(QShowEvent *event) override;
 
 		//! \brief Creates the helpers and threads
 		void createThread(ThreadId thread_id);
@@ -141,13 +141,13 @@ class __libgui DiffToolWidget: public BaseConfigWidget, public Ui::DiffToolWidge
 		void finishDiff();
 
 		//! \brief Applies the loaded configurations to the form. In this widget only list the loaded presets
-		virtual void applyConfiguration();
+		void applyConfiguration() override;
 
 		//! \brief Loads a set of configurations from a file
-		virtual void loadConfiguration();
+		void loadConfiguration() override;
 
 		//! \brief Saves the current settings to a file
-		virtual void saveConfiguration();
+		void saveConfiguration() override;
 
 		void togglePresetConfiguration(bool toggle, bool is_edit = false);
 
@@ -160,7 +160,7 @@ class __libgui DiffToolWidget: public BaseConfigWidget, public Ui::DiffToolWidge
 	public:
 		DiffToolWidget(QWidget * parent = nullptr);
 
-		virtual ~DiffToolWidget();
+		~DiffToolWidget() override;
 
 		//! \brief Defines if all the output generated during the import process should be displayed
 		static void setLowVerbosity(bool value);
@@ -206,7 +206,7 @@ class __libgui DiffToolWidget: public BaseConfigWidget, public Ui::DiffToolWidge
 		void generateFiltersFromChangelog();
 
 		//! \brief Destroy the current configuration file and makes a copy of the default one located at conf/defaults
-		virtual void restoreDefaults();
+		void restoreDefaults() override;
 
 	signals:
 		/*! \brief This signal is emitted whenever the user changes the connections settings

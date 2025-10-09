@@ -134,7 +134,7 @@ class __libgui DataGridWidget: public QWidget, public Ui::DataGridWidget {
 
 		/*! \brief This event filter toggles the visibility of the columns in the data grid
 		 *  when clicking the columns items in the "Columns"tab in the filter widget */
-		bool eventFilter(QObject *object, QEvent *event);
+		bool eventFilter(QObject *object, QEvent *event) override;
 
 		//! \brief Updates the information about operations pending over the rows
 		void updateRowOperationsInfo();

@@ -132,8 +132,8 @@ class __libgui DatabaseImportWidget: public QWidget, public Ui::DatabaseImportWi
 		
 		DatabaseImportWidget(QWidget * parent = nullptr);
 
-		virtual ~DatabaseImportWidget();
-		
+		~DatabaseImportWidget() override;
+
 		//! \brief Defines if all the output generated during the import process should be displayed
 		static void setLowVerbosity(bool value);
 		

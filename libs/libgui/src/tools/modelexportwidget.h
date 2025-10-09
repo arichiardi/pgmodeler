@@ -64,8 +64,8 @@ class __libgui ModelExportWidget: public QWidget, public Ui::ModelExportWidget {
 
 		void finishExport(const QString &msg);
 		void enableExportModes(bool value);
-		void closeEvent(QCloseEvent *event);
-		void showEvent(QShowEvent *);
+		void closeEvent(QCloseEvent *event) override;
+		void showEvent(QShowEvent *) override;
 
 	public:
 		ModelExportWidget(QWidget * parent = nullptr);

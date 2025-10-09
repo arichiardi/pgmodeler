@@ -24,10 +24,7 @@
 const QString ForeignObject::OptionsSeparator {","};
 const QString ForeignObject::OptionValueSeparator {"="};
 
-ForeignObject::ForeignObject()
-{
-
-}
+ForeignObject::ForeignObject() = default;
 
 void ForeignObject::setOption(const QString &opt, const QString &value)
 {

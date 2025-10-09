@@ -133,15 +133,15 @@ class __libgui AppearanceConfigWidget: public BaseConfigWidget, public Ui::Appea
 	public:
 		AppearanceConfigWidget(QWidget * parent = nullptr);
 
-		virtual ~AppearanceConfigWidget();
-		
-		virtual void showEvent(QShowEvent *) override;
+		~AppearanceConfigWidget() override;
 
-		virtual void hideEvent(QHideEvent *) override;
+		void showEvent(QShowEvent *) override;
 
-		virtual void saveConfiguration() override;
+		void hideEvent(QHideEvent *) override;
 
-		virtual void loadConfiguration() override;
+		void saveConfiguration() override;
+
+		void loadConfiguration() override;
 
 		//! \brief Applies the selected ui theme to the whole application
 		void applyUiTheme();
@@ -156,13 +156,13 @@ class __libgui AppearanceConfigWidget: public BaseConfigWidget, public Ui::Appea
 		void previewCanvasColors();
 		void applySyntaxHighlightTheme();
 
-		virtual void applyConfiguration() override;
+		void applyConfiguration() override;
 
 		//! \brief Applies temporarily all the settings related to the UI
 		void previewUiSettings();
 
 	public slots:
-		virtual void restoreDefaults() override;
+		void restoreDefaults() override;
 };
 
 #endif

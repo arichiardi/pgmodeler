@@ -43,7 +43,7 @@ class __libcore Operator: public BaseObject {
 		merges;  //! \brief Indicates that the operator can execute a merge join
 
 	protected:
-		virtual void configureSearchAttributes() override;
+		void configureSearchAttributes() override;
 
 	public:
 		enum FunctionId: unsigned {

@@ -360,13 +360,13 @@ class __libgui ModelWidget: public QWidget {
 
 		cut_menu;
 
-		void resizeEvent(QResizeEvent *);
-		void mousePressEvent(QMouseEvent *event);
-		void keyPressEvent(QKeyEvent *event);
-		void hideEvent(QHideEvent *);
+		void resizeEvent(QResizeEvent *) override;
+		void mousePressEvent(QMouseEvent *event) override;
+		void keyPressEvent(QKeyEvent *event) override;
+		void hideEvent(QHideEvent *) override;
 
 		//! \brief Captures and handles the QWeelEvent raised on the viewport scrollbars
-		bool eventFilter(QObject *object, QEvent *event);
+		bool eventFilter(QObject *object, QEvent *event) override;
 
 		//! \brief Cancel the creation of a new object (only for graphical objects)
 		void cancelObjectAddition();
@@ -389,7 +389,7 @@ class __libgui ModelWidget: public QWidget {
 		ZoomIncrement = 0.050000;
 
 		ModelWidget(QWidget *parent = nullptr);
-		virtual ~ModelWidget();
+		~ModelWidget() override;
 
 		//! \brief Creates a BaseForm instance and insert the widget into it. A custom configuration for dialog buttons can be passed
 		template<class WidgetClass>

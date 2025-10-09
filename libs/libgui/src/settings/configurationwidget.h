@@ -43,10 +43,10 @@ class __libgui ConfigurationWidget: public QWidget, public Ui::ConfigurationWidg
 		RelationshipConfigWidget *relationships_conf;
 		SnippetsConfigWidget *snippets_conf;
 		PluginsConfigWidget *plugins_conf;
-		
-		void hideEvent(QHideEvent *event);
-		void showEvent(QShowEvent *);
-		
+
+		void hideEvent(QHideEvent *event) override;
+		void showEvent(QShowEvent *) override;
+
 	public:
 		enum ConfWidgetsId {
 			GeneralConfWgt,
@@ -59,7 +59,7 @@ class __libgui ConfigurationWidget: public QWidget, public Ui::ConfigurationWidg
 
 		ConfigurationWidget(QWidget * parent = nullptr);
 
-		virtual ~ConfigurationWidget();
+		~ConfigurationWidget() override;
 
 		int checkChangedConfiguration();
 		

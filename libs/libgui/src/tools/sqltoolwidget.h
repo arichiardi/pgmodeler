@@ -54,17 +54,17 @@ class __libgui SQLToolWidget: public QWidget, public Ui::SQLToolWidget {
 		(see addSQLExecutionTab and closeSQLExecutionTab for deitails) */
 		QMap<QWidget *, QWidgetList> sql_exec_wgts;
 
-		bool eventFilter(QObject *object, QEvent *event);
+		bool eventFilter(QObject *object, QEvent *event) override;
 
 	protected:
-		void resizeEvent(QResizeEvent *);
+		void resizeEvent(QResizeEvent *) override;
 
 		void setCornerButtonPos();
 
 	public:
 		SQLToolWidget(QWidget * parent = nullptr);
 
-		virtual ~SQLToolWidget();
+		~SQLToolWidget() override;
 
 		//! \brief Force the update of the sql command input field and the syntax highligter attached to the opened tabs
 		void updateTabs();

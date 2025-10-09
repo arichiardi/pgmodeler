@@ -42,7 +42,7 @@ class __libgui FixToolsWidget: public QWidget, public Ui::FixToolsWidget {
 	public:
 		FixToolsWidget(QWidget * parent = nullptr);
 
-		virtual ~FixToolsWidget() = default;
+		~FixToolsWidget() override = default;
 
 		bool isToolRunning();
 

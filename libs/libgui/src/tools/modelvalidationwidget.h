@@ -71,8 +71,8 @@ class __libgui ModelValidationWidget: public QWidget, public Ui::ModelValidation
 		void generateOutputItemText(QTreeWidgetItem *item, QString &output, int level);
 
 	protected:
-		void resizeEvent(QResizeEvent *event);
-		bool eventFilter(QObject *object, QEvent *event);
+		void resizeEvent(QResizeEvent *event) override;
+		bool eventFilter(QObject *object, QEvent *event) override;
 
 	public:
 		ModelValidationWidget(QWidget * parent = nullptr);

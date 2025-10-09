@@ -106,7 +106,7 @@ class __libgui NumberedTextEditor : public QPlainTextEdit {
 
 	public:
 		NumberedTextEditor(QWidget * parent = nullptr, bool edit_btns_enabled = false, qreal custom_fnt_size = 0);
-		virtual ~NumberedTextEditor();
+		~NumberedTextEditor() override;
 
 		static void setDefaultFont(const QFont &font);
 		static void setLineNumbersVisible(bool value);

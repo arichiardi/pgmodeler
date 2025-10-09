@@ -46,7 +46,7 @@ class __libgui ProcedureWidget: public BaseFunctionWidget  {
 		void duplicateParameter(int curr_row, int new_row);
 
 	public slots:
-		virtual void applyConfiguration();
+		void applyConfiguration() override;
 };
 
 #endif

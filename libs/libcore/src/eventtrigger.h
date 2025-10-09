@@ -45,7 +45,7 @@ class __libcore EventTrigger: public BaseObject {
 
 	public:
 		EventTrigger();
-		~EventTrigger() = default;
+		~EventTrigger() override = default;
 
 		void setEvent(EventTriggerType evnt_type);
 		void setFunction(Function *func);
@@ -59,9 +59,9 @@ class __libcore EventTrigger: public BaseObject {
 		Function *getFunction();
 		QStringList getFilter(const QString &variable);
 
-		virtual QString getSourceCode(SchemaParser::CodeType def_type) final;
+		QString getSourceCode(SchemaParser::CodeType def_type) final;
 
-		virtual void updateDependencies() override;
+		void updateDependencies() override;
 };
 
 #endif
