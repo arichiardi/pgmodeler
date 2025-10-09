@@ -132,7 +132,7 @@ class __libcanvas AttributesTogglerItem: public QObject, public RoundedRectItem 
 
 		/*! \brief Defines the current values of the pagination (current page and maximum allowed pages)
 		 * Thes values are used to control the buttons fading when the page navigation reaches one of the limits (min/max) */
-		void setPaginationValues(BaseTable::TableSection page_id, unsigned curr_page, unsigned max_page);
+		void setPaginationValues(BaseTable::TableSection section_id, unsigned curr_page, unsigned max_page);
 
 		//! \brief Clears the selection status of the buttons
 		void clearButtonsSelection();

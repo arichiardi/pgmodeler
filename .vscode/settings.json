@@ -186,7 +186,31 @@
         "editor.tabSize": 2
     },
 
+    // clangd memory and performance optimizations
     "clangd.arguments": [
-         "--compile-commands-dir=${workspaceFolder}/cmake-build"
+         "--compile-commands-dir=${workspaceFolder}/cmake-build",
+         
+         // Limit memory usage to prevent system freezes
+         // Adjust based on your available RAM (in MB)
+         "--limit-results=50",
+         
+         // Reduce number of worker threads (default is number of cores)
+         // Lower values = less memory but slower indexing
+         "-j=4",
+         
+         // Disable expensive background indexing features
+         "--background-index=false",
+         
+         // Limit preamble size (parsed headers cache)
+         "--pch-storage=memory",
+         
+         // Enable more aggressive memory cleanup
+         "--malloc-trim",
+         
+         // Reduce completion cache
+         "--completion-style=detailed",
+         
+         // Log memory usage (helpful for debugging)
+         "--log=error"
     ]   
 }

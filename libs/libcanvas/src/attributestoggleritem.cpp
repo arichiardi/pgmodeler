@@ -57,22 +57,22 @@ AttributesTogglerItem::AttributesTogglerItem(QGraphicsItem *parent) : RoundedRec
 
 AttributesTogglerItem::~AttributesTogglerItem()
 {
-	for(unsigned arr_id = 0; arr_id < 7; arr_id++)
-		delete buttons[arr_id];
+	for(auto &button : buttons)
+		delete button;
 
 	delete sel_rect;
 }
 
 void AttributesTogglerItem::setButtonsBrush(const QBrush &brush)
 {
-	for(unsigned arr_id = 0; arr_id < 7; arr_id++)
-		buttons[arr_id]->setBrush(brush);
+	for(auto & button : buttons)
+		button->setBrush(brush);
 }
 
 void AttributesTogglerItem::setButtonsPen(const QPen &pen)
 {
-	for(unsigned arr_id = 0; arr_id < 7; arr_id++)
-		buttons[arr_id]->setPen(pen);
+	for(auto & button : buttons)
+		button->setPen(pen);
 }
 
 void AttributesTogglerItem::setCollapseMode(BaseTable::CollapseMode coll_mode)
@@ -245,8 +245,8 @@ void AttributesTogglerItem::setPaginationValues(BaseTable::TableSection section_
 
 void AttributesTogglerItem::clearButtonsSelection()
 {
-	for(unsigned arr_id = 0; arr_id < 7; arr_id++)
-		btns_selected[arr_id] = false;
+	for(bool & btn_sel : btns_selected)
+		btn_sel = false;
 
 	this->update();
 }
@@ -330,7 +330,7 @@ void AttributesTogglerItem::configureButtons(const QRectF &rect)
 
 	buttons[AttribsCollapseBtn]->setPos(px, (new_rect.height() -
 																																	buttons[AttribsCollapseBtn]->boundingRect().height())/2);
-	px += buttons[AttribsCollapseBtn]->boundingRect().width() + h_spacing * 0.80;
+	px += buttons[AttribsCollapseBtn]->boundingRect().width() + (h_spacing * 0.80);
 
 	buttons[AttribsExpandBtn]->setPos(px, (new_rect.height() -
 																																buttons[AttribsExpandBtn]->boundingRect().height())/2);

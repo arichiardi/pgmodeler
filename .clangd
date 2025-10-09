@@ -32,5 +32,7 @@ Completion:
   AllScopes: Yes
 
 Index:
+  # Background indexing mode: Build (index as you build) or Skip (no background indexing)
   Background: Build
+  
   StandardLibrary: Yes

@@ -124,7 +124,7 @@ class __libcanvas BaseTableView: public BaseObjectView {
 		 * the section (BaseTable::AttribsSection | ExtAttribsSection) and the total amount of attributes in the section.
 		 * The other paramenters start_attr and end_attr are reference parameters that will hold the indexes of items
 		 * to be displayed in the current page. See configureObject() on TableView and GraphicalView */
-		bool configurePaginationParams(BaseTable::TableSection page_id, unsigned total_attrs, unsigned &start_attr, unsigned &end_attr);
+		bool configurePaginationParams(BaseTable::TableSection section_id, unsigned total_attrs, unsigned &start_attr, unsigned &end_attr);
 
 	public:
 		enum ConnectionPoint: unsigned {

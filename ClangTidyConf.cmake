@@ -10,6 +10,6 @@ if(CLANG_TIDY_EXE)
 	# to ensure ONLY project files are analyzed (not Qt, system headers, etc)
 	set(CMAKE_CXX_CLANG_TIDY 
 		"${CLANG_TIDY_EXE}"
-		"--header-filter=.*/pgmodeler/(apps|libs|priv-plugins)/.*\\.(h|hpp|cpp)$"
+		# "--header-filter=.*/pgmodeler/(apps|libs|priv-plugins)/.*\\.(h|hpp|cpp)$"
 	)
 endif()

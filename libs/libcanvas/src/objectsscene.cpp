@@ -326,12 +326,12 @@ void ObjectsScene::setActiveLayers(QStringList act_layers)
 	setActiveLayers(layers_idxs);
 }
 
-void ObjectsScene::setActiveLayers(QList<unsigned> layers_idxs)
+void ObjectsScene::setActiveLayers(QList<unsigned> layer_ids)
 {
 	BaseObjectView *obj_view = nullptr;
 	active_layers.clear();
 
-	if(!layers_idxs.isEmpty())
+	if(!layer_ids.isEmpty())
 	{
 		bool is_in_layer = false;
 		unsigned layer_cnt = static_cast<unsigned>(layers.size());
@@ -346,7 +346,7 @@ void ObjectsScene::setActiveLayers(QList<unsigned> layers_idxs)
 				sch_view = dynamic_cast<SchemaView *>(obj_view);
 				is_in_layer = false;
 
-				for(auto &idx : layers_idxs)
+				for(auto &idx : layer_ids)
 				{
 					if(obj_view->isInLayer(idx))
 					{
@@ -366,7 +366,7 @@ void ObjectsScene::setActiveLayers(QList<unsigned> layers_idxs)
 			}
 		}
 
-		for(auto &idx : layers_idxs)
+		for(auto &idx : layer_ids)
 		{
 			if(idx < layer_cnt)
 				active_layers.push_back(layers[idx]);
@@ -662,10 +662,10 @@ void ObjectsScene::setGridPattern(GridPattern pattern)
 
 QPointF ObjectsScene::alignPointToGrid(const QPointF &pnt)
 {
-	int px = static_cast<int>(round(pnt.x()/static_cast<double>(grid_size))) * grid_size,
-			py = static_cast<int>(round(pnt.y()/static_cast<double>(grid_size))) * grid_size;
+	double px = static_cast<int>(round(pnt.x() / static_cast<double>(grid_size))) * grid_size,
+			   py = static_cast<int>(round(pnt.y()/static_cast<double>(grid_size))) * grid_size;
 
-	return QPointF(px,	py);
+	return { px,	py };
 }
 
 void ObjectsScene::setSceneRect(const QRectF &rect)
@@ -1205,36 +1205,36 @@ unsigned int ObjectsScene::getExpansionFactor()
 
 bool ObjectsScene::mouseIsAtCorner()
 {
-	QGraphicsView *view=getActiveViewport();
+	QGraphicsView *view =getActiveViewport();
 
 	if(view)
 	{
-		QPoint pos=view->mapFromGlobal(QCursor::pos());
-		QRect rect=view->rect();
+		QPoint pos = view->mapFromGlobal(QCursor::pos());
+		QRect rect = view->rect();
 
 		if(rect.contains(pos))
 		{
 			if(pos.x() <= SceneMoveThreshold)
-				scene_move_dx=-SceneMoveStep;
+				scene_move_dx = -SceneMoveStep;
 			else if(pos.x() >= (view->width() - view->verticalScrollBar()->width() - SceneMoveThreshold))
-				scene_move_dx=SceneMoveStep;
+				scene_move_dx = SceneMoveStep;
 			else
-				scene_move_dx=0;
+				scene_move_dx = 0;
 
 			if(pos.y() <= SceneMoveThreshold)
-				scene_move_dy=-SceneMoveStep;
+				scene_move_dy = -SceneMoveStep;
 			else if(pos.y() >= (view->height() - view->horizontalScrollBar()->height() - SceneMoveThreshold))
-				scene_move_dy=SceneMoveStep;
+				scene_move_dy = SceneMoveStep;
 			else
-				scene_move_dy=0;
+				scene_move_dy = 0;
 
-			return scene_move_dx!=0 || scene_move_dy!=0;
+			return scene_move_dx != 0 || scene_move_dy != 0;
 		}
-		else
-			return false;
-	}
-	else
+		
 		return false;
+	}
+	
+	return false;
 }
 
 QGraphicsView *ObjectsScene::getActiveViewport()

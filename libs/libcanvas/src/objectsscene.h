@@ -254,7 +254,7 @@ class __libcanvas ObjectsScene: public QGraphicsScene {
 		void setActiveLayers(QStringList act_layers);
 
 		//! \brief Set the layers with the provided indexes as active. Activating a layer causes objects attached to it to be visible
-		void setActiveLayers(QList<unsigned> ids);
+		void setActiveLayers(QList<unsigned> layer_ids);
 
 		//! \brief Returns true when the named layer is currenctly activated
 		bool isLayerActive(const QString &name);
