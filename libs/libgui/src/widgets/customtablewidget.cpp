@@ -242,10 +242,10 @@ void CustomTableWidget::setHeaderLabel(const QString &label, unsigned col_idx)
 
 void CustomTableWidget::setHeaderVisible(unsigned col_idx, bool visible)
 {
-  if(col_idx >= static_cast<unsigned>(table_tbw->columnCount()))
+	if(col_idx >= static_cast<unsigned>(table_tbw->columnCount()))
 		throw Exception(ErrorCode::RefColObjectTabInvalidIndex,PGM_FUNC,PGM_FILE,PGM_LINE);
 
-  table_tbw->horizontalHeader()->setSectionHidden(col_idx, !visible);
+	table_tbw->horizontalHeader()->setSectionHidden(col_idx, !visible);
 }
 
 void CustomTableWidget::setHeaderIcon(const QIcon &icon, unsigned col_idx)

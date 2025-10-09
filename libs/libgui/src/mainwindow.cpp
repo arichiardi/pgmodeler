@@ -1223,13 +1223,13 @@ void MainWindow::updateRecentModelsMenu()
 	while(recent_models.size() > GeneralConfigWidget::MaxRecentModels)
 		recent_models.pop_front();
 
-	for(int i = 0; i < recent_models.size(); i++)
+	for(auto &recent_mdl : recent_models)
 	{
-		fi.setFile(recent_models[i]);
+		fi.setFile(recent_mdl);
 
 		act=recent_models_menu->addAction(fi.fileName(),this, &MainWindow::loadModelFromAction);
-		act->setToolTip(recent_models[i]);
-		act->setData(recent_models[i]);
+		act->setToolTip(recent_mdl);
+		act->setData(recent_mdl);
 
 		if(fi.suffix() == dbm_ext)
 			act->setIcon(QIcon(GuiUtilsNs::getIconPath("dbmfile")));

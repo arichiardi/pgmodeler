@@ -185,8 +185,8 @@ void Type::setConfiguration(TypeConfig conf)
 	type_attribs.clear();
 	enumerations.clear();
 
-	for(unsigned idx=0; idx < sizeof(functions)/sizeof(Function *); idx++)
-		functions[idx]=nullptr;
+	for(auto &func : functions)
+		func = nullptr;
 
 	setCollation(nullptr);
 	subtype_opclass=nullptr;

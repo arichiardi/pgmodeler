@@ -47,7 +47,7 @@ class __libgui ModelFixWidget: public QWidget, public Ui::ModelFixWidget {
 
 		QStringList extra_cli_args;
 
-		void showEvent(QShowEvent *event) override;
+		void showEvent(QShowEvent *) override;
 		void enableFixOptions(bool enable);
 
 	public:

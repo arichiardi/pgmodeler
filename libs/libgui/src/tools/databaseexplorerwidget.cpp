@@ -747,18 +747,18 @@ void DatabaseExplorerWidget::formatOperatorClassAttribs(attribs_map &attribs)
 {
 	QStringList list, array_vals, elems;
 
-	attribs[Attributes::Family]=getObjectName(ObjectType::OpFamily, attribs[Attributes::Family]);
+	attribs[Attributes::Family] = getObjectName(ObjectType::OpFamily, attribs[Attributes::Family]);
 	formatBooleanAttribs(attribs, { Attributes::Default });
 	formatOidAttribs(attribs, { Attributes::Storage,
 								Attributes::Type }, ObjectType::Type, false);
 
-	array_vals=Catalog::parseArrayValues(attribs[Attributes::Function]);
+	array_vals = Catalog::parseArrayValues(attribs[Attributes::Function]);
 
 	if(!array_vals.isEmpty())
 	{
-		for(int i=0; i < array_vals.size(); i++)
+		for(auto &array_val : array_vals)
 		{
-			list=array_vals[i].split(':');
+			list = array_val.split(':');
 			elems.push_back(QString("[%1] %2").arg(list[0], getObjectName(ObjectType::Function, list[1])));
 		}
 
@@ -770,13 +770,13 @@ void DatabaseExplorerWidget::formatOperatorClassAttribs(attribs_map &attribs)
 
 	if(!array_vals.isEmpty())
 	{
-		for(int i=0; i < array_vals.size(); i++)
+		for(auto & array_val : array_vals)
 		{
-			list=array_vals[i].split(':');
+			list = array_val.split(':');
 			elems.push_back(QString("[%1] [%2] [%3]")
-							.arg(list[0],
-							getObjectName(ObjectType::Operator, list[1]),
-					getObjectName(ObjectType::Operator, list[2])));
+											.arg(list[0],
+													 getObjectName(ObjectType::Operator, list[1]),
+													 getObjectName(ObjectType::Operator, list[2])));
 		}
 
 		attribs[Attributes::Operator]=elems.join(UtilsNs::DataSeparator);
@@ -958,10 +958,10 @@ QString DatabaseExplorerWidget::formatObjectName(attribs_map &attribs)
 		{
 			QStringList names, arg_types=Catalog::parseArrayValues(attribs[Attributes::ArgTypes]);
 
-			for(int idx=0; idx < arg_types.size(); idx++)
+			for(auto & arg_type : arg_types)
 			{
-				names=getObjectName(ObjectType::Type, arg_types[idx]).split('.');
-				arg_types[idx]=names[names.size()-1];
+				names = getObjectName(ObjectType::Type, arg_type).split('.');
+				arg_type = names[names.size() - 1];
 			}
 
 			obj_name+=QString("(%1)").arg(arg_types.join(','));

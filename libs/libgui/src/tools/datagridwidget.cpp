@@ -1314,9 +1314,11 @@ void DataGridWidget::saveChanges()
 			conn_sql.connect();
 			conn_sql.executeDDLCommand("START TRANSACTION");
 
-			for(unsigned idx=0; idx < changed_rows.size(); idx++)
+			for(const auto &changed_row : changed_rows)
 			{
-				row = changed_rows[idx];
+				/* We make a copy of the row id so in case of exception (see in the catch block)
+				 * we can highlight the problematic row data */
+				row = changed_row;
 				cmd = getDMLCommand(row);
 				conn_sql.executeDDLCommand(cmd);
 			}

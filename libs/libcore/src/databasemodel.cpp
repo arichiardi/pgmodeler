@@ -8691,18 +8691,20 @@ void DatabaseModel::setObjectsModified(std::vector<ObjectType> types)
 void DatabaseModel::setCodesInvalidated(std::vector<ObjectType> types)
 {
 	std::vector<ObjectType> sel_types;
-	std::vector<BaseObject *> *list=nullptr;
+	std::vector<BaseObject *> *list = nullptr;
 
 	if(types.empty())
-		sel_types=BaseObject::getObjectTypes(false);
+		sel_types = BaseObject::getObjectTypes(false);
 	else
 	{
-		ObjectType tab_obj_types[]={ObjectType::Column, ObjectType::Constraint,
-									ObjectType::Trigger, ObjectType::Rule, ObjectType::Index, ObjectType::Policy};
-		for(unsigned i=0; i < 6; i++)
-			sel_types.erase(std::find(sel_types.begin(), sel_types.end(), tab_obj_types[i]));
+		ObjectType tab_obj_types[] { ObjectType::Column, ObjectType::Constraint,
+																 ObjectType::Trigger, ObjectType::Rule, ObjectType::Index,
+																 ObjectType::Policy };
 
-		sel_types=types;
+		for(auto tab_obj_type : tab_obj_types)
+			sel_types.erase(std::find(sel_types.begin(), sel_types.end(), tab_obj_type));
+
+		sel_types = types;
 	}
 
 	while(!sel_types.empty())
@@ -8798,10 +8800,10 @@ void DatabaseModel::createSystemObjects(bool create_public)
 	addSchema(pg_catalog);
 
 	//Creating default collations
-	for(unsigned i=0; i < 3; i++)
+	for(const auto & collname : collnames)
 	{
-		collation=new Collation;
-		collation->setName(collnames[i]);
+		collation = new Collation;
+		collation->setName(collname);
 		collation->setSchema(pg_catalog);
 		collation->setEncoding(EncodingType("UTF8"));
 		collation->setLocale("C");
@@ -10220,9 +10222,9 @@ void DatabaseModel::getDataDictionary(attribs_map &datadict, bool browsable, boo
 
 			aux_attribs[Attributes::Sequences] = "";
 
-			for(auto itr =  cols->begin(); itr != cols->end(); itr++)
+			for(auto & itr : *cols)
 			{
-				col = dynamic_cast<Column *>(*itr);
+				col = dynamic_cast<Column *>(itr);
 
 				if(col->getSequence())
 					col_seqs[dynamic_cast<Sequence *>(col->getSequence())].append(col->getName());
