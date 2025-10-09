@@ -95,7 +95,7 @@ class __libcore Column: public TableObject{
 		void setGenerated(bool value);
 
 		//! \brief Defines the column data type
-		void setType(PgSqlType type);
+		void setType(PgSqlType tp);
 
 		//! \brief Defines the identity mode of the column
 		void setIdentityType(IdentityType id_type);

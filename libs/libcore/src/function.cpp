@@ -18,7 +18,7 @@
 
 #include "function.h"
 
-Function::Function() : BaseFunction()
+Function::Function()
 {
 	return_type = PgSqlType("void");
 	returns_setof=false;

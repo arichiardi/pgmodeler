@@ -19,7 +19,7 @@
 #include "basetable.h"
 #include "utilsns.h"
 #include "coreutilsns.h"
-#include "column.h"
+#include "tableobject.h"
 
 BaseTable::BaseTable()
 {

@@ -142,7 +142,7 @@ class __libcore Constraint: public TableObject{
 		void setDeferrable(bool value);
 
 		//! \brief Defines the matching type used by the constraint (only for foreign key)
-		void setMatchType(MatchType constr_type);
+		void setMatchType(MatchType match_type);
 
 		//! \brief Defines the indexing type used by the constraint (only for exclude)
 		void setIndexType(IndexingType index_type);
@@ -151,7 +151,7 @@ class __libcore Constraint: public TableObject{
 		void setExpression(const QString &expr);
 
 		//! \brief Defines the referenced table (only for foreign key)
-		void setReferencedTable(BaseTable *tab_ref);
+		void setReferencedTable(BaseTable *ref_tab);
 
 		//! \brief Defines the tablespace used by the constraint (only for primary keys and unique)
 		void setTablespace(BaseObject *tabspc) override;

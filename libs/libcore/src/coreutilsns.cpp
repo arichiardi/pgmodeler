@@ -213,7 +213,7 @@ namespace CoreUtilsNs {
 
 	bool isReservedKeyword(const QString &word)
 	{
-		static QHash<QChar, QStringList> keywords={
+		static const QHash<QChar, QStringList> keywords {
 			{QChar('A'), {"ALL", "ANALYSE", "ANALYZE", "AND",
 										"ANY", "AS",      "ASC",     "AUTHORIZATION"}},
 
@@ -276,14 +276,12 @@ namespace CoreUtilsNs {
 
 		if(word.isEmpty())
 			return false;
-		else
-		{
-			QChar chr=word.at(0).toUpper();
+		
+		QChar chr = word.at(0).toUpper();
 
-			if(!keywords.contains(chr))
-				return false;
-			else
-				return keywords[chr].contains(word.toUpper());
-		}
+		if(!keywords.contains(chr))
+			return false;
+		
+		return keywords[chr].contains(word.toUpper());
 	}
 }

@@ -238,17 +238,17 @@ void Connection::connect()
 		thus an error is raised */
 	if(connection_str.isEmpty())
 		throw Exception(ErrorCode::ConnectionNotConfigured, PGM_FUNC, PGM_FILE, PGM_LINE);
-	else if(connection)
+
+	if(connection)
 	{
 		if(!silence_conn_err)
 			throw Exception(ErrorCode::ConnectionAlreadyStablished, PGM_FUNC, PGM_FILE, PGM_LINE);
-		else
-		{
-			QTextStream err(stderr);
-			err << QT_TR_NOOP("ERROR: trying to open an already established connection.") << Qt::endl
+
+		QTextStream err(stderr);
+		err << QT_TR_NOOP("ERROR: trying to open an already established connection.") << Qt::endl
 				<< "Conn. info: [ " << connection_str << "]" << Qt::endl;
-			this->close();
-		}
+		
+		this->close();
 	}
 
 	//Try to connect to the database

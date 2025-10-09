@@ -100,7 +100,7 @@ class __libcore BaseRelationship: public BaseGraphicObject  {
 			return "";
 		}
 
-		void setReferenceForeignKey(Constraint *reference_fk);
+		void setReferenceForeignKey(Constraint *ref_fk);
 
 		void configureSearchAttributes() override;
 
@@ -120,7 +120,7 @@ class __libcore BaseRelationship: public BaseGraphicObject  {
 
 		BaseRelationship(BaseRelationship *rel);
 
-		BaseRelationship(RelType rel_type, BaseTable *src_tab, BaseTable *dst_tab, bool dst_mandatory, bool src_mandatory);
+		BaseRelationship(RelType rel_type, BaseTable *src_tab, BaseTable *dst_tab, bool src_mandatory, bool dst_mandatory);
 
 		~BaseRelationship() override;
 

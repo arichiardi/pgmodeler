@@ -18,7 +18,7 @@
 
 #include "foreigntable.h"
 
-ForeignTable::ForeignTable() : PhysicalTable()
+ForeignTable::ForeignTable()
 {
 	obj_type = ObjectType::ForeignTable;
 	attributes[Attributes::Server] = "";

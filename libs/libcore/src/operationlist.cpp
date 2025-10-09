@@ -173,9 +173,9 @@ void OperationList::addToPool(BaseObject *object, Operation::OperType op_type)
 			//Raises an error if the copy fails (returning a null object)
 			if(!copy_obj)
 				throw Exception(ErrorCode::AsgNotAllocattedObject,PGM_FUNC,PGM_FILE,PGM_LINE);
-			else
-				//Inserts the copy on the pool
-				object_pool.push_back(copy_obj);
+			
+			//Inserts the copy on the pool
+			object_pool.push_back(copy_obj);
 		}
 		else
 			//Inserts the original object on the pool (in case of adition or deletion operations)
@@ -245,7 +245,7 @@ void OperationList::removeOperations()
 			}
 			else if(tab_obj && unallocated_objs.count(tab_obj)==0)
 			{
-				tab=dynamic_cast<BaseTable *>(tab_obj->getParentTable());
+				tab = tab_obj->getParentTable();
 
 				//Deletes the object if its not unallocated already or referenced by some table
 				if(!tab ||
@@ -352,15 +352,18 @@ int OperationList::registerObject(BaseObject *object, Operation::OperType op_typ
 			throw Exception(ErrorCode::AsgNotAllocattedObject,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 		obj_type=object->getObjectType();
+
 		if(tab_obj && !parent_obj)
 			throw Exception(ErrorCode::OprNotAllocatedObject,PGM_FUNC,PGM_FILE,PGM_LINE);
 
-		else if(parent_obj &&
+		if(parent_obj &&
 				(((obj_type==ObjectType::Column || obj_type==ObjectType::Constraint) &&
 					(parent_obj->getObjectType()!=ObjectType::Relationship && !PhysicalTable::isPhysicalTable(parent_obj->getObjectType()))) ||
 
 				 ((obj_type==ObjectType::Trigger || obj_type==ObjectType::Rule || obj_type==ObjectType::Index) && !dynamic_cast<BaseTable *>(parent_obj))))
+		{
 			throw Exception(ErrorCode::OprObjectInvalidType,PGM_FUNC,PGM_FILE,PGM_LINE);
+		}		
 
 		//If the operations list is full makes the automatic cleaning before inserting a new operation
 		if(current_index == static_cast<int>(max_size-1))
@@ -730,11 +733,11 @@ void OperationList::executeOperation(Operation *oper, bool redo)
 
 			//Gets the object in the current state from the parent object
 			if(parent_tab)
-				orig_obj=dynamic_cast<TableObject *>(parent_tab->getObject(obj_idx, obj_type));
+				orig_obj = dynamic_cast<TableObject *>(parent_tab->getObject(obj_idx, obj_type));
 			else if(parent_rel)
-				orig_obj=dynamic_cast<TableObject *>(parent_rel->getObject(obj_idx, obj_type));
+				orig_obj = parent_rel->getObject(obj_idx, obj_type);
 			else
-				orig_obj=model->getObject(obj_idx, obj_type);
+				orig_obj = model->getObject(obj_idx, obj_type);
 
 			if(aux_obj)
 				oper->setXMLDefinition(orig_obj->getSourceCode(SchemaParser::XmlCode));
@@ -753,17 +756,17 @@ void OperationList::executeOperation(Operation *oper, bool redo)
 			if(op_type == Operation::ObjModified)
 				orig_obj->clearDependencies();
 
-			CoreUtilsNs::copyObject(reinterpret_cast<BaseObject **>(&bkp_obj), orig_obj, obj_type);
-			CoreUtilsNs::copyObject(reinterpret_cast<BaseObject **>(&orig_obj), object, obj_type);
-			CoreUtilsNs::copyObject(reinterpret_cast<BaseObject **>(&object), bkp_obj, obj_type);
-			object=orig_obj;
+			CoreUtilsNs::copyObject((&bkp_obj), orig_obj, obj_type);
+			CoreUtilsNs::copyObject((&orig_obj), object, obj_type);
+			CoreUtilsNs::copyObject((&object), bkp_obj, obj_type);
+			object = orig_obj;
 
 			// Updating the original object dependencies after restoring the previous state
 			if(op_type != Operation::ObjMoved)
 				orig_obj->updateDependencies();
 
 			if(aux_obj)
-				CoreUtilsNs::copyObject(reinterpret_cast<BaseObject **>(&object), aux_obj, obj_type);
+				CoreUtilsNs::copyObject(&object, aux_obj, obj_type);
 
 			//For pk constraint, after restore the previous configuration, check the not-null flag of the new source columns
 			if(obj_type==ObjectType::Constraint)
@@ -778,7 +781,7 @@ void OperationList::executeOperation(Operation *oper, bool redo)
 						(op_type==Operation::ObjCreated && redo))
 		{
 			if(aux_obj)
-				CoreUtilsNs::copyObject(reinterpret_cast<BaseObject **>(&object), aux_obj, obj_type);
+				CoreUtilsNs::copyObject(&object, aux_obj, obj_type);
 
 			if(parent_tab)
 			{

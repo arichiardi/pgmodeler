@@ -356,8 +356,10 @@ Column *Constraint::getColumn(const QString &name, ColumnsId cols_id)
 		else break;
 	}
 
-	if(found) return *itr_col;
-	else return nullptr;
+	if(found)
+		return *itr_col;
+
+	return nullptr;
 }
 
 BaseTable *Constraint::getReferencedTable()
@@ -411,7 +413,8 @@ void Constraint::removeColumn(const QString &name, ColumnsId cols_id)
 			setCodeInvalidated(true);
 			break;
 		}
-		else itr++;
+		
+		itr++;
 	}
 }
 
@@ -754,7 +757,8 @@ bool Constraint::isCodeDiffersFrom(BaseObject *object, const QStringList &ignore
 {
 	if(!object)
 		throw Exception(ErrorCode::OprNotAllocatedObject,PGM_FUNC,PGM_FILE,PGM_LINE);
-	else if(object->getObjectType()!=this->getObjectType())
+	
+	if(object->getObjectType()!=this->getObjectType())
 		throw Exception(ErrorCode::OprObjectInvalidType,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	try

@@ -21,6 +21,12 @@
     "editor.suggestOnTriggerCharacters": false,  // Não mostrar sugestões ao digitar caracteres especiais
     "editor.acceptSuggestionOnCommitCharacter": false,  // Não aceitar sugestão ao digitar . ou (
     
+    // Desabilitar auto-completar chaves/colchetes/parênteses
+    "editor.autoClosingBrackets": "never",
+    "editor.autoClosingQuotes": "never",
+    "editor.autoClosingDelete": "never",
+    "editor.autoSurround": "never",
+    
     // GitHub Copilot - delays e controles
     "github.copilot.editor.enableAutoCompletions": true,
     "editor.inlineSuggest.enabled": true,
@@ -165,22 +171,22 @@
     // Clang-format file settings (see .clang-format in project's root)
     "C_Cpp.formatting": "clangFormat",
     "C_Cpp.clang_format_style": "file",
-    "editor.formatOnType": true,
-    "editor.autoIndent": "full",
+    "editor.formatOnType": false,
+    "editor.autoIndent": "none",
     "[cpp]": {
         "editor.defaultFormatter": "ms-vscode.cpptools",
-        "editor.formatOnType": true,
+        "editor.formatOnType": false,
         "editor.formatOnSave": false,
-        "editor.autoIndent": "full",
+        "editor.autoIndent": "none",
         "editor.insertSpaces": false,
         "editor.detectIndentation": false,
         "editor.tabSize": 2
     },
     "[c]": {
         "editor.defaultFormatter": "ms-vscode.cpptools",
-        "editor.formatOnType": true,
+        "editor.formatOnType": false,
         "editor.formatOnSave": false,
-        "editor.autoIndent": "full",
+        "editor.autoIndent": "none",
         "editor.insertSpaces": false,
         "editor.detectIndentation": false,
         "editor.tabSize": 2

@@ -489,72 +489,66 @@ void DatabaseModel::__removeObject(BaseObject *object, int obj_idx, bool check_r
 {
 	if(!object)
 		throw Exception(ErrorCode::RemNotAllocatedObject,PGM_FUNC,PGM_FILE,PGM_LINE);
-	else
+	
+	std::vector<BaseObject *> *obj_list = nullptr;
+	ObjectType obj_type;
+
+	obj_type=object->getObjectType();
+	obj_list=getObjectList(obj_type);
+
+	if(!obj_list)
+		throw Exception(ErrorCode::ObtObjectInvalidType,PGM_FUNC,PGM_FILE,PGM_LINE);
+
+	std::vector<BaseObject *> refs;
+
+	//Get the table references
+	if(check_refs)
+		refs = object->getReferences();
+
+	//If there are objects referencing the table
+	if(!refs.empty())
 	{
-		std::vector<BaseObject *> *obj_list=nullptr;
-		ObjectType obj_type;
+		ErrorCode err_code;
 
-		obj_type=object->getObjectType();
-		obj_list=getObjectList(obj_type);
-
-		if(!obj_list)
-			throw Exception(ErrorCode::ObtObjectInvalidType,PGM_FUNC,PGM_FILE,PGM_LINE);
-		else
+		//Raises an error indicating the object that is referencing the table
+		if(!dynamic_cast<TableObject *>(refs[0]))
 		{
-			std::vector<BaseObject *> refs;
-
-			//Get the table references
-			if(check_refs)
-				refs = object->getReferences();
-
-			//If there are objects referencing the table
-			if(!refs.empty())
-			{
-				ErrorCode err_code;
-
-				//Raises an error indicating the object that is referencing the table
-				if(!dynamic_cast<TableObject *>(refs[0]))
-				{
-					err_code=ErrorCode::RemDirectReference;
-					throw Exception(Exception::getErrorMessage(err_code)
-									.arg(object->getName(true))
-									.arg(object->getTypeName())
-									.arg(refs[0]->getName(true))
-							.arg(refs[0]->getTypeName()),
-							err_code,PGM_FUNC,PGM_FILE,PGM_LINE);
-				}
-				else
-				{
-					BaseObject *ref_obj_parent=dynamic_cast<TableObject *>(refs[0])->getParentTable();
-
-					err_code=ErrorCode::RemInderectReference;
-					throw Exception(Exception::getErrorMessage(err_code)
-									.arg(object->getName(true))
-									.arg(object->getTypeName())
-									.arg(refs[0]->getName(true))
-							.arg(refs[0]->getTypeName())
-							.arg(ref_obj_parent->getName(true))
-							.arg(ref_obj_parent->getTypeName()),
-							err_code,PGM_FUNC,PGM_FILE,PGM_LINE);
-				}
-			}
-
-			if(obj_idx < 0 || obj_idx >= static_cast<int>(obj_list->size()))
-				getObject(object->getSignature(), obj_type, obj_idx);
-
-			if(obj_idx >= 0)
-			{
-				if(Permission::acceptsPermission(obj_type))
-					removePermissions(object);
-
-				obj_list->erase(obj_list->begin() + obj_idx);
-			}
+			err_code = ErrorCode::RemDirectReference;
+			throw Exception(Exception::getErrorMessage(err_code)
+											.arg(object->getName(true))
+											.arg(object->getTypeName())
+											.arg(refs[0]->getName(true))
+											.arg(refs[0]->getTypeName()),
+											err_code, PGM_FUNC, PGM_FILE, PGM_LINE);
 		}
 
-		object->clearAllDepsRefs();
-		object->setDatabase(nullptr);
-		emit s_objectRemoved(object);
+		BaseObject *ref_obj_parent=dynamic_cast<TableObject *>(refs[0])->getParentTable();
+
+		err_code = ErrorCode::RemInderectReference;
+		throw Exception(Exception::getErrorMessage(err_code)
+										.arg(object->getName(true))
+										.arg(object->getTypeName())
+										.arg(refs[0]->getName(true))
+										.arg(refs[0]->getTypeName())
+										.arg(ref_obj_parent->getName(true))
+										.arg(ref_obj_parent->getTypeName()),
+										err_code, PGM_FUNC, PGM_FILE, PGM_LINE);
 	}
+
+	if(obj_idx < 0 || obj_idx >= static_cast<int>(obj_list->size()))
+		getObject(object->getSignature(), obj_type, obj_idx);
+
+	if(obj_idx >= 0)
+	{
+		if(Permission::acceptsPermission(obj_type))
+			removePermissions(object);
+
+		obj_list->erase(obj_list->begin() + obj_idx);
+	}
+
+	object->clearAllDepsRefs();
+	object->setDatabase(nullptr);
+	emit s_objectRemoved(object);
 }
 
 std::vector<BaseObject *> DatabaseModel::getObjects(ObjectType obj_type, BaseObject *schema)
@@ -607,40 +601,38 @@ std::vector<BaseObject *> DatabaseModel::getObjects(BaseObject *schema)
 
 BaseObject *DatabaseModel::getObject(const QString &name, ObjectType obj_type, int &obj_idx)
 {
-	BaseObject *object=nullptr;
+	BaseObject *object = nullptr;
 	std::vector<BaseObject *> *obj_list=nullptr;
 	std::vector<BaseObject *>::iterator itr, itr_end;
-	bool found=false;
+	bool found = false;
 	QString aux_name1;
 
-	obj_list=getObjectList(obj_type);
+	obj_list = getObjectList(obj_type);
 
 	if(!obj_list)
-		throw Exception(ErrorCode::ObtObjectInvalidType,PGM_FUNC,PGM_FILE,PGM_LINE);
-	else
+		throw Exception(ErrorCode::ObtObjectInvalidType, PGM_FUNC, PGM_FILE, PGM_LINE);
+	
+	itr = obj_list->begin();
+	itr_end = obj_list->end();
+	obj_idx = -1;
+	aux_name1 = QString(name).remove('"');
+
+	while(itr!=itr_end && !found)
 	{
-		itr=obj_list->begin();
-		itr_end=obj_list->end();
-		obj_idx=-1;
-		aux_name1=QString(name).remove('"');
-
-		while(itr!=itr_end && !found)
+		if((*itr)->getSignature().remove("\"") == aux_name1 ||
+				(*itr)->getName(false) == aux_name1)
 		{
-			if((*itr)->getSignature().remove("\"") == aux_name1 ||
-				 (*itr)->getName(false) == aux_name1)
-			{
-				found = true;
-				break;
-			}
-
-			itr++;
+			found = true;
+			break;
 		}
 
-		if(found)
-		{
-			object = (*itr);
-			obj_idx = (itr - obj_list->begin());
-		}
+		itr++;
+	}
+
+	if(found)
+	{
+		object = (*itr);
+		obj_idx = (itr - obj_list->begin());
 	}
 
 	return object;
@@ -682,9 +674,10 @@ BaseObject *DatabaseModel::getObject(unsigned obj_idx, ObjectType obj_type)
 	obj_list=getObjectList(obj_type);
 
 	if(!obj_list)
-		throw Exception(ErrorCode::ObtObjectInvalidType,PGM_FUNC,PGM_FILE,PGM_LINE);
-	else if(obj_idx >= obj_list->size())
-		throw Exception(ErrorCode::RefObjectInvalidIndex,PGM_FUNC,PGM_FILE,PGM_LINE);
+		throw Exception(ErrorCode::ObtObjectInvalidType, PGM_FUNC, PGM_FILE, PGM_LINE);
+
+	if(obj_idx >= obj_list->size())
+		throw Exception(ErrorCode::RefObjectInvalidIndex, PGM_FUNC, PGM_FILE, PGM_LINE);
 
 	return obj_list->at(obj_idx);
 }
@@ -3155,20 +3148,23 @@ void DatabaseModel::addPermission(Permission *perm)
 		if(getPermissionIndex(perm, false) >=0)
 		{
 			throw Exception(Exception::getErrorMessage(ErrorCode::AsgDuplicatedPermission)
-							.arg(perm->getObject()->getName())
-							.arg(perm->getObject()->getTypeName()),
-							ErrorCode::AsgDuplicatedPermission,PGM_FUNC,PGM_FILE,PGM_LINE);
+											.arg(perm->getObject()->getName())
+											.arg(perm->getObject()->getTypeName()),
+											ErrorCode::AsgDuplicatedPermission, PGM_FUNC, PGM_FILE, PGM_LINE);
 		}
+		
 		//Raises an error if the permission is referencing an object that does not exists on model
-		else if(perm->getObject()!=this &&
-				((tab_obj && (getObjectIndex(tab_obj->getParentTable()) < 0)) ||
-				 (!tab_obj && (getObjectIndex(perm->getObject()) < 0))))
+		if(perm->getObject() != this &&
+			((tab_obj && (getObjectIndex(tab_obj->getParentTable()) < 0)) ||
+	 		(!tab_obj && (getObjectIndex(perm->getObject()) < 0))))
+		{
 			throw Exception(Exception::getErrorMessage(ErrorCode::RefObjectInexistsModel)
-							.arg(perm->getName())
-							.arg(perm->getObject()->getTypeName())
-							.arg(perm->getObject()->getName())
-							.arg(perm->getObject()->getTypeName()),
-							ErrorCode::RefObjectInexistsModel,PGM_FUNC,PGM_FILE,PGM_LINE);
+											.arg(perm->getName())
+											.arg(perm->getObject()->getTypeName())
+											.arg(perm->getObject()->getName())
+											.arg(perm->getObject()->getTypeName()),
+											ErrorCode::RefObjectInexistsModel, PGM_FUNC, PGM_FILE, PGM_LINE);
+		}
 
 		permissions.push_back(perm);
 		perm->setDatabase(this);
@@ -3177,14 +3173,14 @@ void DatabaseModel::addPermission(Permission *perm)
 	catch(Exception &e)
 	{
 		if(e.getErrorCode()==ErrorCode::AsgDuplicatedObject)
-			throw
-			Exception(Exception::getErrorMessage(ErrorCode::AsgDuplicatedPermission)
-					  .arg(perm->getObject()->getName())
-					  .arg(perm->getObject()->getTypeName()),
-						ErrorCode::AsgDuplicatedPermission,PGM_FUNC,PGM_FILE,PGM_LINE,&e);
+		{
+			throw Exception(Exception::getErrorMessage(ErrorCode::AsgDuplicatedPermission)
+									  	.arg(perm->getObject()->getName())
+					  					.arg(perm->getObject()->getTypeName()),
+											ErrorCode::AsgDuplicatedPermission, PGM_FUNC, PGM_FILE, PGM_LINE, &e);
+		}
 
-		else
-			throw Exception(e.getErrorMessage(), e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE,&e);
+		throw Exception(e.getErrorMessage(), e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE,&e);
 	}
 }
 

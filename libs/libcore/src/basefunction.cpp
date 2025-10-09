@@ -189,8 +189,9 @@ void BaseFunction::setLanguage(BaseObject *lang)
 	//Raises an error if the language is not allocated
 	if(!lang)
 		throw Exception(ErrorCode::AsgNotAllocatedLanguage,PGM_FUNC,PGM_FILE,PGM_LINE);
+
 	//Raises an error if the language object is invalid
-	else if(lang->getObjectType()!=ObjectType::Language)
+	if(lang->getObjectType()!=ObjectType::Language)
 		throw Exception(ErrorCode::AsgInvalidLanguageObject,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	setCodeInvalidated(this->language != lang);

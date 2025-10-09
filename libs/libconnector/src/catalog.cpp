@@ -936,11 +936,11 @@ QString Catalog::createOidFilter(const std::vector<unsigned> &oids)
 {
 	QString filter;
 
-	for(unsigned i=0; i < oids.size(); i++)
-		filter+=QString("%1,").arg(oids.at(i));
+	for(auto &oid : oids)
+		filter += QString("%1,").arg(oid);
 
 	if(!filter.isEmpty())
-		filter.remove(filter.size()-1,1);
+		filter.remove(filter.size() - 1, 1);
 
 	return filter;
 }

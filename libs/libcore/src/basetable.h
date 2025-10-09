@@ -158,7 +158,7 @@ class __libcore BaseTable: public BaseGraphicObject {
 
 		std::vector<BaseObject *> getDependencies(bool inc_indirect_deps = false,
 																							const std::vector<ObjectType> &excl_types = {},
-																							bool rem_duplcates = false) override;
+																							bool rem_duplicates = false) override;
 
 		void updateDependencies(const std::vector<BaseObject *> &deps, const std::vector<BaseObject *> &old_deps = {});
 

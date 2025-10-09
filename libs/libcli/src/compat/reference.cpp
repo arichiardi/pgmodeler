@@ -34,12 +34,12 @@ Reference::Reference(PhysicalTable *table, Column *column, const QString &tab_al
 		throw Exception(ErrorCode::AsgNotAllocattedObject,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	//Raises an error if the table/column alias has an invalid name
-	else if((!tab_alias.isEmpty() && !BaseObject::isValidName(tab_alias)) ||
-					(!col_alias.isEmpty() && !BaseObject::isValidName(col_alias)))
+	if((!tab_alias.isEmpty() && !BaseObject::isValidName(tab_alias)) ||
+			(!col_alias.isEmpty() && !BaseObject::isValidName(col_alias)))
 		throw Exception(ErrorCode::AsgInvalidNameObject,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	//Raises an error if the column parent table differs from the passed table
-	else if(column && column->getParentTable()!=table)
+	if(column && column->getParentTable()!=table)
 		throw Exception(ErrorCode::AsgObjectBelongsAnotherTable ,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	this->table=table;
@@ -54,8 +54,9 @@ Reference::Reference(const QString &expression, const QString &expr_alias)
 	//Raises an error if the user try to create an reference using an empty expression
 	if(expression.isEmpty())
 		throw Exception(ErrorCode::AsgInvalidExpressionObject,PGM_FUNC,PGM_FILE,PGM_LINE);
+
 	//Raises an error if the expression alias has an invalid name
-	else if(!expr_alias.isEmpty() && !BaseObject::isValidName(expr_alias))
+	if(!expr_alias.isEmpty() && !BaseObject::isValidName(expr_alias))
 		throw Exception(ErrorCode::AsgInvalidNameObject,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	table=nullptr;
@@ -122,10 +123,11 @@ void Reference::addColumn(const QString &name, PgSqlType type, const QString &al
 	{
 		if(aux_name.isEmpty())
 			throw Exception(ErrorCode::AsgEmptyNameObject,PGM_FUNC,PGM_FILE,PGM_LINE);
-		else if(aux_name.size() > BaseObject::ObjectNameMaxLength)
+
+		if(aux_name.size() > BaseObject::ObjectNameMaxLength)
 			throw Exception(ErrorCode::AsgLongNameObject,PGM_FUNC,PGM_FILE,PGM_LINE);
-		else
-			throw Exception(ErrorCode::AsgInvalidNameObject,PGM_FUNC,PGM_FILE,PGM_LINE);
+
+		throw Exception(ErrorCode::AsgInvalidNameObject,PGM_FUNC,PGM_FILE,PGM_LINE);
 	}
 
 	// Checking if the column already exists
@@ -353,14 +355,13 @@ bool Reference::operator == (Reference &refer)
 							this->alias==refer.alias &&
 							this->column_alias==refer.column_alias);
 		}
-		else
-		{
-			return (this->expression==refer.expression &&
-							this->alias==refer.alias &&
-							this->is_def_expr==refer.is_def_expr);
-		}
+
+		return (this->expression == refer.expression &&
+						this->alias == refer.alias &&
+					  this->is_def_expr == refer.is_def_expr);
+	
 	}
-	else
+
 	return false;
 }
 

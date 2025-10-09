@@ -26,8 +26,8 @@ BaseRelationship::BaseRelationship(BaseRelationship *rel)
 	if(!rel)
 		throw Exception(ErrorCode::AsgNotAllocattedObject,PGM_FUNC,PGM_FILE,PGM_LINE);
 
-	for(unsigned i=0; i < 3; i++)
-		lables[i]=nullptr;
+	for(auto & lable : lables)
+		lable = nullptr;
 
 	src_table=dst_table=nullptr;
 
@@ -38,7 +38,6 @@ BaseRelationship::BaseRelationship(BaseRelationship *rel)
 }
 
 BaseRelationship::BaseRelationship(RelType rel_type, BaseTable *src_tab, BaseTable *dst_tab, bool src_mandatory, bool dst_mandatory)
-
 {
 	try
 	{
@@ -166,13 +165,10 @@ void BaseRelationship::configureRelationship()
 BaseRelationship::~BaseRelationship()
 {
 	//Deallocates the labels
-	for(unsigned i = 0; i < 3; i++)
+	for(auto & label : lables)
 	{
-		if(lables[i])
-		{
-			delete lables[i];
-			lables[i] = nullptr;
-		}
+		delete label;
+		label = nullptr;
 	}
 }
 
@@ -392,17 +388,15 @@ QString BaseRelationship::getCachedCode(unsigned def_type)
 	{
 		if(def_type==SchemaParser::XmlCode  && !cached_reduced_code.isEmpty())
 			return cached_reduced_code;
-		else
-			return cached_code[def_type];
+		
+		return cached_code[def_type];
 	}
-	else
-		return "";
+	
+	return "";
 }
 
 void BaseRelationship::setReferenceForeignKey(Constraint *ref_fk)
 {
-	//if(ref_fk && rel_type != RELATIONSHIP_FK)
-		//Throw error...
 	this->reference_fk = ref_fk;
 }
 
@@ -456,30 +450,28 @@ bool BaseRelationship::canSimulateRelationship11()
 QString BaseRelationship::getSourceCode(SchemaParser::CodeType def_type)
 {
 	QString code_def = getCachedCode(def_type);
-	if(!code_def.isEmpty()) return code_def;
+
+	if(!code_def.isEmpty()) 
+		return code_def;
 
 	if(def_type==SchemaParser::SqlCode)
 	{
 		if(rel_type!=RelationshipFk)
 			return "";
-		else
-		{
-			cached_code[def_type] = reference_fk->getSourceCode(SchemaParser::SqlCode);
-			return cached_code[def_type];
-		}
+		
+		cached_code[def_type] = reference_fk->getSourceCode(SchemaParser::SqlCode);
+		return cached_code[def_type];
 	}
-	else
-	{
-		bool reduced_form;
-		setRelationshipAttributes();
-		reduced_form=(attributes[Attributes::Points].isEmpty() &&
-								 attributes[Attributes::LabelsPos].isEmpty());
+	
+	bool reduced_form;
+	setRelationshipAttributes();
+	reduced_form=(attributes[Attributes::Points].isEmpty() &&
+								attributes[Attributes::LabelsPos].isEmpty());
 
-		if(!reduced_form)
-			cached_reduced_code.clear();
+	if(!reduced_form)
+		cached_reduced_code.clear();
 
-		return BaseObject::getSourceCode(SchemaParser::XmlCode,reduced_form);
-	}
+	return BaseObject::getSourceCode(SchemaParser::XmlCode,reduced_form);	
 }
 
 void BaseRelationship::setPoints(const std::vector<QPointF> &points)
@@ -570,8 +562,8 @@ QString BaseRelationship::getRelTypeAttribute()
 		{
 			if(src_table->getObjectType()==ObjectType::View)
 				return Attributes::RelationshipTabView;
-			else
-				return Attributes::RelationshipDep;
+			
+			return Attributes::RelationshipDep;
 		}
 	}
 }
@@ -590,8 +582,8 @@ QString BaseRelationship::getRelationshipTypeName(RelType rel_type, bool is_view
 		{
 			if(is_view)
 				return tr("Dependency");
-			else
-				return tr("Copy");
+			
+			return tr("Copy");
 		}
   }
 }

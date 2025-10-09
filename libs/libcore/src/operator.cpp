@@ -83,7 +83,8 @@ void Operator::setName(const QString &name)
 {
 	if(name.isEmpty())
 		throw Exception(ErrorCode::AsgEmptyNameObject,PGM_FUNC,PGM_FILE,PGM_LINE);
-	else	if(!isValidName(name))
+	
+	if(!isValidName(name))
 		throw Exception(ErrorCode::AsgInvalidNameObject,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	this->obj_name=name;
@@ -94,58 +95,66 @@ void Operator::setFunction(Function *func, FunctionId func_id)
 	//Raises an error if the function type is invalid
 	if(func_id > FuncRestrict)
 		throw Exception(ErrorCode::RefFunctionInvalidType,PGM_FUNC,PGM_FILE,PGM_LINE);
-	else if(func_id==FuncOperator)
+	
+	if(func_id==FuncOperator)
 	{
 		//Raises an error if the function is not allocated
 		if(!func)
+		{
 			throw Exception(Exception::getErrorMessage(ErrorCode::AsgNotAllocatedFunction)
-							.arg(this->getName(true))
-							.arg(BaseObject::getTypeName(ObjectType::Operator)),
-							ErrorCode::AsgNotAllocatedFunction,PGM_FUNC,PGM_FILE,PGM_LINE);
+											.arg(this->getName(true))
+											.arg(BaseObject::getTypeName(ObjectType::Operator)),
+											ErrorCode::AsgNotAllocatedFunction,PGM_FUNC,PGM_FILE,PGM_LINE);
+		}
+
 		/* Raises an error if the parameter count is invalid. To be used by the operator
 		 the function must own 1 or 2 parameters */
-		else if(func->getParameterCount()==0 || func->getParameterCount() > 2)
+		if(func->getParameterCount()==0 || func->getParameterCount() > 2)
+		{
 			throw Exception(Exception::getErrorMessage(ErrorCode::AsgFunctionInvalidParamCount)
 							.arg(this->getName())
 							.arg(BaseObject::getTypeName(ObjectType::Operator)),
 							ErrorCode::AsgFunctionInvalidParamCount,PGM_FUNC,PGM_FILE,PGM_LINE);
-		else
+		}
+
+		unsigned param_count=func->getParameterCount();
+		QString any_type = "\"any\"";
+		PgSqlType param_type1=PgSqlType(any_type),
+				param_type2=PgSqlType(any_type);
+
+		//Get the function parameter to make validations
+		param_type1=func->getParameter(0).getType();
+		
+		if(param_count==2)
+			 param_type2=func->getParameter(1).getType();
+
+		//Validates the function parameters according to the operator arguments
+
+		//ERROR 1: The function have parameters of the type 'any'
+		if((param_type1==any_type || (param_count==2 && param_type2==any_type)) ||
+
+				//ERROR 2: The function parameter count is 1 and the type of operator argument is not 'any'
+				(param_count==1 && argument_types[0]!=any_type && argument_types[1]!=any_type) ||
+
+				//ERROR 3: The function parameter count is 2 and the operator arguments is not 'any'
+				(param_count==2 && ((argument_types[0]==any_type && argument_types[1]!=any_type) ||
+									(argument_types[0]!=any_type && argument_types[1]==any_type))) ||
+
+				/* ERROR 4:  The function parameter count is 2 and the argument types differs from
+												parameters type */
+				(param_count==2 &&
+					((argument_types[0]==any_type || argument_types[1]==any_type) ||
+					(argument_types[0]!=param_type1 || argument_types[1]!=param_type2))) ||
+
+				//ERROR 5:  When the function has 1 parameter the type differ from the operator argument
+				(param_count==1 &&
+					((argument_types[0]!=any_type && argument_types[0]!=param_type1) ||
+					(argument_types[1]!=any_type && argument_types[1]!=param_type1))))
 		{
-			unsigned param_count=func->getParameterCount();
-			QString any_type = "\"any\"";
-			PgSqlType param_type1=PgSqlType(any_type),
-					param_type2=PgSqlType(any_type);
-
-			//Get the function parameter to make validations
-			param_type1=func->getParameter(0).getType();
-			if(param_count==2) param_type2=func->getParameter(1).getType();
-
-			//Validates the function parameters according to the operator arguments
-
-			//ERROR 1: The function have parameters of the type 'any'
-			if((param_type1==any_type || (param_count==2 && param_type2==any_type)) ||
-
-					//ERROR 2: The function parameter count is 1 and the type of operator argument is not 'any'
-					(param_count==1 && argument_types[0]!=any_type && argument_types[1]!=any_type) ||
-
-					//ERROR 3: The function parameter count is 2 and the operator arguments is not 'any'
-					(param_count==2 && ((argument_types[0]==any_type && argument_types[1]!=any_type) ||
-										(argument_types[0]!=any_type && argument_types[1]==any_type))) ||
-
-					/* ERROR 4:  The function parameter count is 2 and the argument types differs from
-													parameters type */
-					(param_count==2 &&
-					 ((argument_types[0]==any_type || argument_types[1]==any_type) ||
-					  (argument_types[0]!=param_type1 || argument_types[1]!=param_type2))) ||
-
-					//ERROR 5:  When the function has 1 parameter the type differ from the operator argument
-					(param_count==1 &&
-					 ((argument_types[0]!=any_type && argument_types[0]!=param_type1) ||
-						(argument_types[1]!=any_type && argument_types[1]!=param_type1))))
-				throw Exception(Exception::getErrorMessage(ErrorCode::AsgFunctionInvalidParameters)
-								.arg(this->getName())
-								.arg(BaseObject::getTypeName(ObjectType::Operator)),
-								ErrorCode::AsgFunctionInvalidParameters,PGM_FUNC,PGM_FILE,PGM_LINE);
+			throw Exception(Exception::getErrorMessage(ErrorCode::AsgFunctionInvalidParameters)
+							.arg(this->getName())
+							.arg(BaseObject::getTypeName(ObjectType::Operator)),
+							ErrorCode::AsgFunctionInvalidParameters,PGM_FUNC,PGM_FILE,PGM_LINE);
 		}
 	}
 
