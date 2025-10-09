@@ -520,7 +520,7 @@ void DataHandlingForm::openNewWindow(const attribs_map &conn_params, const QStri
 		data_hand->hide_views_chk->setChecked(obj_type != ObjectType::View);
 		data_hand->setAttributes(conn_params, schema, table, obj_type);
 
-		GuiUtilsNs::resizeDialog(data_hand);
+		GuiUtilsNs::resizeWidget(data_hand);
 		GeneralConfigWidget::restoreWidgetGeometry(data_hand);
 		data_hand->show();
 	}

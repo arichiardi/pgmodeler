@@ -89,13 +89,13 @@ QString ResultSet::getColumnName(int column_idx)
 		throw Exception(ErrorCode::RefTupleColumnInvalidIndex, PGM_FUNC, PGM_FILE, PGM_LINE);
 
 	//Returns the column name on the specified index
-	return QString(PQfname(sql_result, column_idx));
+	return { PQfname(sql_result, column_idx) };
 }
 
 QStringList ResultSet::getColumnNames()
 {
 	if(isEmpty() || !isValid())
-		return QStringList();
+		return {};
 
 	QStringList names;
 
@@ -139,7 +139,8 @@ int ResultSet::validateColumnName(const QString &column_name)
 		 that is, which command do not return lines but only do updates or removal */
 		if(getTupleCount() == 0 || empty_result)
 			throw Exception(ErrorCode::RefInvalidTuple, PGM_FUNC, PGM_FILE, PGM_LINE);
-		else if(current_tuple < 0 || current_tuple >= getTupleCount())
+
+		if(current_tuple < 0 || current_tuple >= getTupleCount())
 			throw Exception(ErrorCode::RefInvalidTupleColumn, PGM_FUNC, PGM_FILE, PGM_LINE);
 
 		//Get the column index through its name
@@ -207,7 +208,8 @@ int ResultSet::getColumnSize(int column_idx)
 	//Raise an error in case the column index is invalid
 	if(column_idx < 0 || column_idx >= getColumnCount())
 		throw Exception(ErrorCode::RefTupleColumnInvalidIndex, PGM_FUNC, PGM_FILE, PGM_LINE);
-	else if(current_tuple < 0 || current_tuple >= getTupleCount())
+
+	if(current_tuple < 0 || current_tuple >= getTupleCount())
 		throw Exception(ErrorCode::RefInvalidTupleColumn, PGM_FUNC, PGM_FILE, PGM_LINE);
 
 	//Retorns the column value length on the current tuple
@@ -233,10 +235,10 @@ int ResultSet::getTupleCount()
 	if(!empty_result)
 		//Returns the tuple count gathered after the SQL command
 		return PQntuples(sql_result);
-	else
-		/* Returns the line amount that were affected by the SQL command
-		 (only for INSERT, DELETE, UPDATE) */
-		return atoi(PQcmdTuples(sql_result));
+
+	/* Returns the line amount that were affected by the SQL command
+		(only for INSERT, DELETE, UPDATE) */
+	return atoi(PQcmdTuples(sql_result));
 }
 
 int ResultSet::getColumnCount()

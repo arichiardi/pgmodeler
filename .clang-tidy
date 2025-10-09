@@ -11,6 +11,7 @@ Checks: >
   -misc-*,
   -misc-header-include-cycle,
   -misc-include-cleaner,
+  -clang-analyzer-optin.cplusplus.VirtualCall
   clang-*,
   cplusplus.*,
   bugprone.*,
@@ -24,7 +25,7 @@ Checks: >
   misc-redundant-expression,
   misc-static-assert,
   misc-throw-by-value-catch-by-reference,
-  misc-unconventional-assign-operator,
+  # misc-unconventional-assign-operator,
   misc-uniqueptr-reset-release,
   misc-unused-alias-decls,
   misc-unused-parameters,
@@ -37,7 +38,7 @@ Checks: >
   modernize-use-bool-literals,
   modernize-use-equals-default,
   modernize-use-equals-delete,
-  modernize-use-nullptr,
+  # modernize-use-nullptr,
   modernize-use-override,
   modernize-use-using,
   readability-delete-null-pointer,
@@ -45,9 +46,9 @@ Checks: >
   readability-else-after-return,
   readability-enum-initial-value,
   readability-inconsistent-declaration-parameter-name,
-  readability-magic-numbers,
+  # readability-magic-numbers,
   readability-math-missing-parentheses,
-  readability-misleading-indentation,
+  # readability-misleading-indentation,
   readability-misplaced-array-index,
   readability-redundant-casting,
   readability-redundant-control-flow,
@@ -58,10 +59,9 @@ Checks: >
   readability-redundant-parentheses,
   readability-redundant-preprocessor,
   readability-reference-to-constructed-temporary,
-  readability-static-accessed-through-instance,
+  # readability-static-accessed-through-instance,
   readability-static-definition-in-anonymous-namespace,
   readability-use-concise-preprocessor-directives,
-  readability-use-std-min-max
 
 # Treat warnings as errors (empty = no errors)
 WarningsAsErrors: ''

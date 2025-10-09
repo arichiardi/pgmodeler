@@ -261,9 +261,7 @@ void ConnectionsConfigWidget::duplicateConnection()
 	}
 	catch(Exception &e)
 	{
-		if(new_conn)
-			delete new_conn;
-
+		delete new_conn;
 		throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 	}
 }

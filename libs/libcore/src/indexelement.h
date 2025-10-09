@@ -37,15 +37,15 @@ class __libcore IndexElement: public Element {
 		~IndexElement() = default;
 
 		//! \brief Defines the collation referenced by the element
-		virtual void setCollation(Collation *collation) override;
+		void setCollation(Collation *collation) override;
 
 		//! \brief Get the collation referenced by the element
-		virtual Collation *getCollation() override;
+		Collation *getCollation() override;
 
 		//! \brief Returns the SQL / XML code definition for the index element
-		virtual QString getSourceCode(SchemaParser::CodeType def_type) final;
+		QString getSourceCode(SchemaParser::CodeType def_type) final;
 
-		virtual std::vector<BaseObject *> getDependencies() override;
+		std::vector<BaseObject *> getDependencies() override;
 };
 
 /* Registering the IndexElement class as a Qt MetaType in order to make

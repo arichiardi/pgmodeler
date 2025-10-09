@@ -49,7 +49,7 @@ class __libcore Rule: public TableObject{
 
 	public:
 		Rule();
-		~Rule() = default;
+		~Rule() override = default;
 
 		//! \brief Adds the SQL command to be executed by the rule
 		void addCommand(const QString &cmd);
@@ -85,9 +85,9 @@ class __libcore Rule: public TableObject{
 		void removeCommands();
 
 		//! \brief Returns the SQL / XML definition for the rule
-		virtual QString getSourceCode(SchemaParser::CodeType def_type) final;
+		QString getSourceCode(SchemaParser::CodeType def_type) final;
 
-		virtual void generateHashCode() override;
+		void generateHashCode() override;
 };
 
 #endif

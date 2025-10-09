@@ -68,13 +68,11 @@ void Rule::addCommand(const QString &cmd)
 	//Raises an error if the command is empty
 	if(cmd.isEmpty())
 		throw Exception(ErrorCode::InsEmptyRuleCommand,PGM_FUNC,PGM_FILE,PGM_LINE);
-	else
-	{
-		QString cmd_aux=cmd;
-		cmd_aux.remove(';');
-		commands.push_back(cmd_aux);
-		setCodeInvalidated(true);
-	}
+
+	QString cmd_aux=cmd;
+	cmd_aux.remove(';');
+	commands.push_back(cmd_aux);
+	setCodeInvalidated(true);
 }
 
 EventType Rule::getEventType()

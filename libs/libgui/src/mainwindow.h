@@ -245,7 +245,7 @@ class __libgui MainWindow: public QMainWindow, public Ui::MainWindow {
 	public:
 		MainWindow(QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::Widget);
 
-		virtual ~MainWindow();
+		~MainWindow() override;
 
 		//! \brief Loads a set of models from string list
 		void loadModels(const QStringList &files);

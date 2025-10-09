@@ -499,12 +499,14 @@ QString BaseObjectWidget::generateVersionsInterval(unsigned ver_interv_id, const
 {
 	if(ver_interv_id==UntilVersion && !ini_ver.isEmpty())
 		return (UtilsNs::EntityLt + "= " + ini_ver);
-	else if(ver_interv_id==VersionsInterval && !ini_ver.isEmpty() && !end_ver.isEmpty())
+
+	if(ver_interv_id==VersionsInterval && !ini_ver.isEmpty() && !end_ver.isEmpty())
 		return (UtilsNs::EntityGt + "= " + ini_ver + UtilsNs::EntityAmp + UtilsNs::EntityLt + "= " + end_ver);
-	else if(ver_interv_id==AfterVersion &&  !ini_ver.isEmpty())
+
+	if(ver_interv_id==AfterVersion &&  !ini_ver.isEmpty())
 		return (UtilsNs::EntityGt + "= " + ini_ver);
-	else
-		return "";
+
+	return "";
 }
 
 QFrame *BaseObjectWidget::generateInformationFrame(const QString &msg)
@@ -859,14 +861,14 @@ void BaseObjectWidget::finishConfiguration()
 	}
 	catch(Exception &e)
 	{
-		//qApp->restoreOverrideCursor();
-
 		if(e.getErrorCode()==ErrorCode::AsgObjectInvalidDefinition)
+		{
 			throw Exception(Exception::getErrorMessage(ErrorCode::RequiredFieldsNotFilled)
-							.arg(this->object->getName()).arg(this->object->getTypeName()),
-							ErrorCode::RequiredFieldsNotFilled,PGM_FUNC,PGM_FILE,PGM_LINE,&e);
-		else
-			throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE,&e);
+											.arg(this->object->getName()).arg(this->object->getTypeName()),
+											ErrorCode::RequiredFieldsNotFilled,PGM_FUNC,PGM_FILE,PGM_LINE,&e);
+		}
+
+		throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE,&e);
 	}
 }
 

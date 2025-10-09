@@ -58,8 +58,7 @@ ElementsTableWidget::ElementsTableWidget(QWidget *parent) : QWidget(parent)
 
 ElementsTableWidget::~ElementsTableWidget()
 {
-	if(handled_elem)
-		delete handled_elem;
+	delete handled_elem;
 }
 
 void ElementsTableWidget::showElementData(Element *elem, int elem_idx)
@@ -127,7 +126,7 @@ QVariant ElementsTableWidget::copyElementData(Element *elem)
 	if(dynamic_cast<PartitionKey *>(elem))
 		return QVariant::fromValue<PartitionKey>(*dynamic_cast<PartitionKey *>(elem));
 
-	return QVariant();
+	return {};
 }
 
 int ElementsTableWidget::openElementForm(Element *elem)

@@ -18,7 +18,7 @@
 
 #include "usermapping.h"
 
-UserMapping::UserMapping() : BaseObject()
+UserMapping::UserMapping()
 {
 	obj_type = ObjectType::UserMapping;
 	foreign_server = nullptr;

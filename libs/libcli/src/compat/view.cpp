@@ -20,7 +20,7 @@
 
 using namespace CompatNs;
 
-View::View() : BaseTable()
+View::View()
 {
 	obj_type=ObjectType::View;
 	materialized=recursive=with_no_data=false;
@@ -80,7 +80,7 @@ SimpleColumn View::getColumn(const QString &name)
 			return col;
 	}
 
-	return SimpleColumn();
+	return { };
 }
 
 void View::setCommomTableExpression(const QString &expr)
@@ -239,15 +239,18 @@ void View::addReference(Reference &refer, Reference::SqlType sql_type, int expr_
 		//Raises an error if the expression is empty
 		if(refer.getExpression().isEmpty())
 			throw Exception(ErrorCode::AsgInvalidViewDefExpression,PGM_FUNC,PGM_FILE,PGM_LINE);
+
 		//Raises an error if already exists a definition expression
-		else if(hasDefinitionExpression())
+		if(hasDefinitionExpression())
 			throw Exception(ErrorCode::AsgSecondViewDefExpression,PGM_FUNC,PGM_FILE,PGM_LINE);
+
 		//Raises an error if the user try to add a definition expression when already exists another references
-		else if(!references.empty())
+		if(!references.empty())
 			throw Exception(ErrorCode::MixingViewDefExprsReferences,PGM_FUNC,PGM_FILE,PGM_LINE);
 	}
+
 	//Raises an error if the user try to add a ordinary reference when there is a reference used as definition expression
-	else if(hasDefinitionExpression())
+	if(hasDefinitionExpression())
 		throw Exception(ErrorCode::MixingViewDefExprsReferences,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	//Checks if the reference already exists
@@ -306,21 +309,19 @@ unsigned View::getReferenceCount(Reference::SqlType sql_type, int ref_type)
 
 		return 0;
 	}
-	else
+	
+	if(ref_type < 0)
+		return vect_idref->size();
+
+	unsigned count=0;
+
+	for(auto &ref : *vect_idref)
 	{
-		if(ref_type < 0)
-			return vect_idref->size();
-
-		unsigned count=0;
-
-		for(auto &ref : *vect_idref)
-		{
-			if(references[ref].getReferenceType()== static_cast<Reference::ReferType>(ref_type))
-				count++;
-		}
-
-		return count;
+		if(references[ref].getReferenceType()== static_cast<Reference::ReferType>(ref_type))
+			count++;
 	}
+
+	return count;
 }
 
 Reference View::getReference(unsigned ref_id)
@@ -342,8 +343,8 @@ Reference View::getReference(unsigned ref_id, Reference::SqlType sql_type)
 
 	if(sql_type==Reference::SqlViewDef || vect_idref)
 		return references[ref_id];
-	else
-		return references[vect_idref->at(ref_id)];
+
+	return references[vect_idref->at(ref_id)];
 }
 
 /* void View::removeReference(unsigned ref_id)
@@ -419,7 +420,8 @@ int View::getReferenceIndex(Reference &ref, Reference::SqlType sql_type)
 	if(sql_type==Reference::SqlViewDef &&
 			idx_ref >=0 && ref.isDefinitionExpression())
 		return idx_ref;
-	else if(sql_type!=Reference::SqlViewDef)
+
+	if(sql_type!=Reference::SqlViewDef)
 	{
 		itr=vet_idref->begin();
 		itr_end=vet_idref->end();
@@ -432,11 +434,11 @@ int View::getReferenceIndex(Reference &ref, Reference::SqlType sql_type)
 
 		if(!found)
 			return -1;
-		else
-			return (itr-vet_idref->begin());
+		
+		return (itr-vet_idref->begin());
 	}
-	else
-		return -1;
+	
+	return -1;
 }
 
 void View::setDefinitionAttribute()

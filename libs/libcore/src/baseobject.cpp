@@ -287,94 +287,92 @@ bool BaseObject::isValidName(const QString &name)
 	the name in order to validate the length. */
 	if(name.isEmpty() || aux_name.size() > ObjectNameMaxLength)
 		return false;
-	else
+
+	int i=0, len;
+	bool valid=true;
+	unsigned char chr='\0', chr1='\0', chr2='\0';
+	QByteArray raw_name;
+	bool is_sch_qualified = name.contains('.');
+
+	raw_name.append(name.toUtf8());
+	len=raw_name.size();
+
+	chr=raw_name[0];
+	if(len > 1)
+		chr1=raw_name[len-1];
+
+	//Checks if the name is enclosed in quotes
+	if(chr=='\"' && chr1=='\"')
 	{
-		int i=0, len;
-		bool valid=true;
-		unsigned char chr='\0', chr1='\0', chr2='\0';
-		QByteArray raw_name;
-		bool is_sch_qualified = name.contains('.');
-
-		raw_name.append(name.toUtf8());
-		len=raw_name.size();
-
-		chr=raw_name[0];
-		if(len > 1)
-			chr1=raw_name[len-1];
-
-		//Checks if the name is enclosed in quotes
-		if(chr=='\"' && chr1=='\"')
-		{
-			/* Validates the name but the validation will continue until the
-			end of string (or the last quote) */
-			valid=true; i++; len--;
-		}
-
-		while(valid && i < len)
-		{
-			chr = raw_name[i];
-
-			/* If the name is schema qulified [schema].[name] we just ignore the
-			 * double quotes if they appear because double quote between dot which
-			 * qualifies hierarchy is completely accepatable */
-			if(is_sch_qualified && chr == '"')
-			{
-				i++;
-				continue;
-			}
-
-			/* Validation of simple ASCI characters.
-				Checks if the name has the characters in the set [ a-z A-Z 0-9 _ . @ $ - : space () <>] */
-			if((chr >= 'a' && chr <='z') || (chr >= 'A' && chr <='Z') ||
-					(chr >= '0' && chr <='9') || special_chars.contains(chr))
-			{
-				valid=true;
-				i++;
-			}
-			else valid=false;
-
-			/* Validation of UTF8 charactes (2 and 3 bytes long).
-			Reference: http://www.fileformat.info/info/unicode/utf8.htm
-								 http://en.wikipedia.org/wiki/UTF-8
-
-			Snippet extracted from the above url:
-
-			The value of each individual byte indicates its UTF-8 function, as follows:
-			00 to 7F hex (0 to 127): first and only byte of a sequence.
-			80 to BF hex (128 to 191): continuing byte in a multi-byte sequence.
-			C2 to DF hex (194 to 223): first byte of a two-byte sequence.
-			E0 to EF hex (224 to 239): first byte of a three-byte sequence.  */
-			if(!valid && (i < len-1))
-			{
-				chr1=raw_name[i+1];
-
-				if((i + 2) <= (len-1))
-					chr2=raw_name[i+2];
-				else
-					chr2=0;
-
-				//UTF-8 character with 2 bytes length
-				if((chr  >= 0xC2 && chr <= 0xDF &&
-					chr1 >= 0x80 && chr1 <= 0xBF) ||
-
-						//UTF-8 character with 3 bytes length
-						(chr  >= 0xE0 && chr <= 0xEF &&
-						 chr1 >= 0x80 && chr1 <= 0xBF &&
-						 chr2 >= 0x80 && chr2 <= 0xBF))
-					valid=true;
-
-				//Increments the counter in the size of the validated char
-				if(chr >= 0xC2 && chr <= 0xDF)
-					//2 bytes char
-					i+=2;
-				else
-					//3 bytes char
-					i+=3;
-			}
-		}
-
-		return valid;
+		/* Validates the name but the validation will continue until the
+		end of string (or the last quote) */
+		valid=true; i++; len--;
 	}
+
+	while(valid && i < len)
+	{
+		chr = raw_name[i];
+
+		/* If the name is schema qulified [schema].[name] we just ignore the
+			* double quotes if they appear because double quote between dot which
+			* qualifies hierarchy is completely accepatable */
+		if(is_sch_qualified && chr == '"')
+		{
+			i++;
+			continue;
+		}
+
+		/* Validation of simple ASCI characters.
+			Checks if the name has the characters in the set [ a-z A-Z 0-9 _ . @ $ - : space () <>] */
+		if((chr >= 'a' && chr <='z') || (chr >= 'A' && chr <='Z') ||
+				(chr >= '0' && chr <='9') || special_chars.contains(chr))
+		{
+			valid=true;
+			i++;
+		}
+		else valid=false;
+
+		/* Validation of UTF8 charactes (2 and 3 bytes long).
+		Reference: http://www.fileformat.info/info/unicode/utf8.htm
+								http://en.wikipedia.org/wiki/UTF-8
+
+		Snippet extracted from the above url:
+
+		The value of each individual byte indicates its UTF-8 function, as follows:
+		00 to 7F hex (0 to 127): first and only byte of a sequence.
+		80 to BF hex (128 to 191): continuing byte in a multi-byte sequence.
+		C2 to DF hex (194 to 223): first byte of a two-byte sequence.
+		E0 to EF hex (224 to 239): first byte of a three-byte sequence.  */
+		if(!valid && (i < len-1))
+		{
+			chr1=raw_name[i+1];
+
+			if((i + 2) <= (len-1))
+				chr2=raw_name[i+2];
+			else
+				chr2=0;
+
+			//UTF-8 character with 2 bytes length
+			if((chr  >= 0xC2 && chr <= 0xDF &&
+				chr1 >= 0x80 && chr1 <= 0xBF) ||
+
+					//UTF-8 character with 3 bytes length
+					(chr  >= 0xE0 && chr <= 0xEF &&
+						chr1 >= 0x80 && chr1 <= 0xBF &&
+						chr2 >= 0x80 && chr2 <= 0xBF))
+				valid=true;
+
+			//Increments the counter in the size of the validated char
+			if(chr >= 0xC2 && chr <= 0xDF)
+				//2 bytes char
+				i+=2;
+			else
+				//3 bytes char
+				i+=3;
+		}
+	}
+
+	return valid;
 }
 
 void BaseObject::setDatabase(BaseObject *db)
@@ -404,11 +402,12 @@ void BaseObject::setName(const QString &name)
 	{
 		if(aux_name.isEmpty())
 			throw Exception(ErrorCode::AsgEmptyNameObject,PGM_FUNC,PGM_FILE,PGM_LINE);
+
 		//If the name is quoted we add 2 bytes to the maximum in order to check if it exceeds the limit
-		else if(aux_name.size() > (ObjectNameMaxLength + (is_quoted ? 2 : 0)))
+		if(aux_name.size() > (ObjectNameMaxLength + (is_quoted ? 2 : 0)))
 			throw Exception(ErrorCode::AsgLongNameObject,PGM_FUNC,PGM_FILE,PGM_LINE);
-		else
-			throw Exception(ErrorCode::AsgInvalidNameObject,PGM_FUNC,PGM_FILE,PGM_LINE);
+		
+		throw Exception(ErrorCode::AsgInvalidNameObject,PGM_FUNC,PGM_FILE,PGM_LINE);
 	}
 
 	aux_name.remove('"');
@@ -594,12 +593,16 @@ unsigned int BaseObject::getPgOid()
 void BaseObject::setSchema(BaseObject *schema)
 {
 	if(!schema)
+	{
 		throw Exception(Exception::getErrorMessage(ErrorCode::AsgNotAllocatedSchema)
-						.arg(this->obj_name, this->getTypeName()),
-						ErrorCode::AsgNotAllocatedSchema,PGM_FUNC,PGM_FILE,PGM_LINE);
-	else if(schema && schema->getObjectType()!=ObjectType::Schema)
+										.arg(this->obj_name, this->getTypeName()),
+						ErrorCode::AsgNotAllocatedSchema, PGM_FUNC, PGM_FILE, PGM_LINE);
+	}
+	
+	if(schema && schema->getObjectType()!=ObjectType::Schema)
 		throw Exception(ErrorCode::AsgInvalidSchemaObject,PGM_FUNC,PGM_FILE,PGM_LINE);
-	else if(!acceptsSchema())
+
+	if(!acceptsSchema())
 		throw Exception(ErrorCode::AsgInvalidSchemaObject,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	setCodeInvalidated(this->schema != schema);
@@ -610,7 +613,8 @@ void BaseObject::setOwner(BaseObject *owner)
 {
 	if(owner && owner->getObjectType()!=ObjectType::Role)
 		throw Exception(ErrorCode::AsgInvalidRoleObject,PGM_FUNC,PGM_FILE,PGM_LINE);
-	else if(!acceptsOwner())
+
+	if(!acceptsOwner())
 		throw Exception(ErrorCode::AsgRoleObjectInvalidType,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	setCodeInvalidated(this->owner != owner);
@@ -621,7 +625,8 @@ void BaseObject::setTablespace(BaseObject *tablespace)
 {
 	if(tablespace && tablespace->getObjectType()!=ObjectType::Tablespace)
 		throw Exception(ErrorCode::AsgInvalidTablespaceObject,PGM_FUNC,PGM_FILE,PGM_LINE);
-	else if(!acceptsTablespace())
+
+	if(!acceptsTablespace())
 		throw Exception(ErrorCode::AsgTablespaceInvalidObject,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	setCodeInvalidated(this->tablespace != tablespace);
@@ -991,13 +996,15 @@ QString BaseObject::getSourceCode(SchemaParser::CodeType def_type, bool reduced_
 			schparser.restartParser();
 			clearAttributes();
 
-			if(e.getErrorCode()==ErrorCode::UndefinedAttributeValue)
+			if(e.getErrorCode() == ErrorCode::UndefinedAttributeValue)
+			{
 				throw Exception(Exception::getErrorMessage(ErrorCode::AsgObjectInvalidDefinition)
-								.arg(this->getName(true))
-								.arg(this->getTypeName()),
-								ErrorCode::AsgObjectInvalidDefinition,PGM_FUNC,PGM_FILE,PGM_LINE,&e);
-			else
-				throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE,&e);
+												.arg(this->getName(true))
+												.arg(this->getTypeName()),
+												ErrorCode::AsgObjectInvalidDefinition, PGM_FUNC, PGM_FILE, PGM_LINE, &e);
+			}
+
+			throw Exception(e.getErrorMessage(), e.getErrorCode(), PGM_FUNC, PGM_FILE, PGM_LINE, &e);
 		}
 	}
 
@@ -1071,13 +1078,16 @@ void BaseObject::updateObjectId(BaseObject *obj)
 	//Raises an error if some of the objects aren't allocated
 	if(!obj)
 		throw Exception(ErrorCode::OprNotAllocatedObject,PGM_FUNC,PGM_FILE,PGM_LINE);
-	else  if(obj->isSystemObject())
+
+	if(obj->isSystemObject())
+	{
 		throw Exception(Exception::getErrorMessage(ErrorCode::OprReservedObject)
-						.arg(obj->getName())
-						.arg(obj->getTypeName()),
-						ErrorCode::OprReservedObject,PGM_FUNC,PGM_FILE,PGM_LINE);
-	else
-		obj->object_id=++global_id;
+										.arg(obj->getName())
+										.arg(obj->getTypeName()),
+										ErrorCode::OprReservedObject, PGM_FUNC, PGM_FILE, PGM_LINE);
+	}
+	
+	obj->object_id=++global_id;
 }
 
 std::vector<ObjectType> BaseObject::getObjectTypes(bool inc_table_objs, std::vector<ObjectType> exclude_types)
@@ -1306,9 +1316,10 @@ bool BaseObject::isCodeDiffersFrom(const QString &xml_def1, const QString &xml_d
 bool BaseObject::isCodeDiffersFrom(BaseObject *object, const QStringList &ignored_attribs, const QStringList &ignored_tags)
 {
 	if(!object)
-		throw Exception(ErrorCode::OprNotAllocatedObject,PGM_FUNC,PGM_FILE,PGM_LINE);
-	else if(object->getObjectType()!=this->getObjectType())
-		throw Exception(ErrorCode::OprObjectInvalidType,PGM_FUNC,PGM_FILE,PGM_LINE);
+		throw Exception(ErrorCode::OprNotAllocatedObject, PGM_FUNC, PGM_FILE, PGM_LINE);
+
+	if(object->getObjectType() != this->getObjectType())
+		throw Exception(ErrorCode::OprObjectInvalidType, PGM_FUNC, PGM_FILE, PGM_LINE);
 
 	try
 	{
@@ -1333,11 +1344,11 @@ QString BaseObject::getCachedCode(unsigned def_type, bool reduced_form)
 	{
 		if(def_type==SchemaParser::XmlCode  && reduced_form)
 			return cached_reduced_code;
-		else
-			return cached_code[def_type];
+		
+		return cached_code[def_type];
 	}
-	else
-		return "";
+
+	return "";
 }
 
 QString BaseObject::getDropCode(bool cascade)
@@ -1364,12 +1375,12 @@ QString BaseObject::getDropCode(bool cascade)
 
 			return schparser.getSourceCode(Attributes::Drop, attribs, SchemaParser::SqlCode);
 		}
-		else
-			return "";
+		
+		return "";
 	}
 	catch(Exception &e)
 	{
-		throw Exception(e.getErrorMessage(), e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
+		throw Exception(e.getErrorMessage(), e.getErrorCode(), PGM_FUNC, PGM_FILE, PGM_LINE, &e);
 	}
 }
 

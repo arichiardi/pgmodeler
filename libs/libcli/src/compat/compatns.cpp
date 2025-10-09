@@ -241,7 +241,7 @@ namespace CompatNs {
 		}
 		catch(Exception &e)
 		{
-			if(view) delete view;
+			delete view;
 			throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 		}
 
@@ -393,13 +393,13 @@ namespace CompatNs {
 													 .arg(BaseObject::getTypeName(obj_type)),
 											 ErrorCode::RefObjectInexistsModel,PGM_FUNC,PGM_FILE,PGM_LINE);
 		}
-		//Schema on extensions are optional
-		else if(!object->getSchema() && (BaseObject::acceptsSchema(obj_type_aux) && obj_type_aux != ObjectType::Extension))
+
+		if(!object->getSchema() && (BaseObject::acceptsSchema(obj_type_aux) && obj_type_aux != ObjectType::Extension))
 		{
 			throw Exception(Exception::getErrorMessage(ErrorCode::InvObjectAllocationNoSchema)
-													 .arg(object->getName())
-													 .arg(object->getTypeName()),
-											 ErrorCode::InvObjectAllocationNoSchema,PGM_FUNC,PGM_FILE,PGM_LINE);
+											.arg(object->getName())
+											.arg(object->getTypeName()),
+											ErrorCode::InvObjectAllocationNoSchema,PGM_FUNC,PGM_FILE,PGM_LINE);
 		}
 	}
 

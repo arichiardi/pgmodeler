@@ -98,8 +98,8 @@ attribs_map SnippetsConfigWidget::getSnippetById(const QString &snip_id)
 {
 	if(config_params.count(snip_id))
 		return config_params[snip_id];
-	else
-		return attribs_map();
+
+	return {};
 }
 
 QStringList SnippetsConfigWidget::getSnippetsIdsByObject(ObjectType obj_type)
@@ -252,8 +252,8 @@ bool SnippetsConfigWidget::isSnippetValid(attribs_map &attribs, const QString &o
 		Messagebox::error(err_msg);
 		return false;
 	}
-	else
-		return true;
+
+	return true;
 }
 
 void SnippetsConfigWidget::hideEvent(QHideEvent *)

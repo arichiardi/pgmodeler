@@ -82,7 +82,7 @@ ConfigurationWidget::~ConfigurationWidget()
 	connections_conf->destroyConnections();
 }
 
-void ConfigurationWidget::hideEvent(QHideEvent *event)
+void ConfigurationWidget::hideEvent(QHideEvent *)
 {
 	general_tb->setChecked(true);
 }

@@ -132,8 +132,8 @@ class __libgui DatabaseImportWidget: public QWidget, public Ui::DatabaseImportWi
 		
 		DatabaseImportWidget(QWidget * parent = nullptr);
 
-		virtual ~DatabaseImportWidget();
-		
+		~DatabaseImportWidget() override;
+
 		//! \brief Defines if all the output generated during the import process should be displayed
 		static void setLowVerbosity(bool value);
 		
@@ -163,7 +163,7 @@ class __libgui DatabaseImportWidget: public QWidget, public Ui::DatabaseImportWi
 		
 		/*! \brief Filters an tree widget using a pattern. The 'search_column' indicates in which column the pattern is applied.
 		The paramenter 'sel_single_leaf' indicates if the single leaf (resulting from filtering) must be selected. */
-		static void filterObjects(QTreeWidget *db_objects_tw, const QString &pattern, int search_column, bool sel_single_leaf);
+		static void filterObjects(QTreeWidget *tree_wgt, const QString &pattern, int search_column, bool sel_single_leaf);
 		
 		/*! \brief Retrieve the specified objects from the database and insert them onto the tree view.
 		The "root" parameter is used to associate the group of objects as child of it.

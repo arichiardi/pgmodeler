@@ -21,7 +21,7 @@
 #include "coreutilsns.h"
 #include "csvparser.h"
 
-PhysicalTable::PhysicalTable() : BaseTable()
+PhysicalTable::PhysicalTable()
 {
 	gen_alter_cmds=false;
 	attributes[Attributes::Columns]="";
@@ -81,12 +81,12 @@ void PhysicalTable::setCopyTable(PhysicalTable *tab)
 		copy_op = CopyOptions();
 }
 
-void PhysicalTable::setCopyTableOptions(CopyOptions like_op)
+void PhysicalTable::setCopyTableOptions(CopyOptions cpy_op)
 {
 	if(copy_table)
 	{
-		setCodeInvalidated(copy_op != like_op);
-		this->copy_op=like_op;
+		setCodeInvalidated(copy_op != cpy_op);
+		this->copy_op = cpy_op;
 	}
 }
 
@@ -373,112 +373,115 @@ void PhysicalTable::addObject(BaseObject *obj, int obj_idx)
 
 	if(!obj)
 		throw Exception(ErrorCode::AsgNotAllocattedObject,PGM_FUNC,PGM_FILE,PGM_LINE);
-	else
+
+	int idx;
+	obj_type=obj->getObjectType();
+
+	try
 	{
-		int idx;
-		obj_type=obj->getObjectType();
-
-		try
+		//Raises an error if already exists a object with the same name and type
+		if(getObject(obj->getName(),obj_type,idx))
 		{
-			//Raises an error if already exists a object with the same name and type
-			if(getObject(obj->getName(),obj_type,idx))
+			throw Exception(Exception::getErrorMessage(ErrorCode::AsgDuplicatedObject)
+											.arg(obj->getName(true))
+											.arg(obj->getTypeName())
+											.arg(this->getName(true))
+											.arg(this->getTypeName()),
+											ErrorCode::AsgDuplicatedObject,PGM_FUNC,PGM_FILE,PGM_LINE);
+		}
+
+		//Raises an error if the user try to set the table as ancestor/copy of itself
+		if((isPhysicalTable(obj_type) || obj_type==ObjectType::BaseTable) && obj==this)
+			throw Exception(ErrorCode::InvInheritCopyPartRelationship,PGM_FUNC,PGM_FILE,PGM_LINE);
+
+		if(!isPhysicalTable(obj_type))
+		{
+			TableObject *tab_obj;
+			std::vector<TableObject *> *obj_list;
+			Column *col;
+
+			tab_obj=dynamic_cast<TableObject *>(obj);
+			col=dynamic_cast<Column *>(tab_obj);
+
+			//Sets the object parent table if there isn't one
+			if(!tab_obj->getParentTable())
+				tab_obj->setParentTable(this);
+
+			//Raises an error if the parent table of the table object is different from table 'this'
+			if(tab_obj->getParentTable()!=this)
+				throw Exception(ErrorCode::AsgObjectBelongsAnotherTable,PGM_FUNC,PGM_FILE,PGM_LINE);
+
+			//Validates the object SQL code befor insert on table
+			obj->getSourceCode(SchemaParser::SqlCode);
+
+			if(col && col->getType()==this)
 			{
-				throw Exception(Exception::getErrorMessage(ErrorCode::AsgDuplicatedObject)
-												.arg(obj->getName(true))
-												.arg(obj->getTypeName())
-												.arg(this->getName(true))
-												.arg(this->getTypeName()),
-												ErrorCode::AsgDuplicatedObject,PGM_FUNC,PGM_FILE,PGM_LINE);
+				throw Exception(Exception::getErrorMessage(ErrorCode::InvColumnTableType)
+												.arg(col->getName())
+												.arg(this->getName()),
+												ErrorCode::InvColumnTableType,PGM_FUNC,PGM_FILE,PGM_LINE);
 			}
 
-			//Raises an error if the user try to set the table as ancestor/copy of itself
-			else if((isPhysicalTable(obj_type) || obj_type==ObjectType::BaseTable) && obj==this)
-				throw Exception(ErrorCode::InvInheritCopyPartRelationship,PGM_FUNC,PGM_FILE,PGM_LINE);
-
-			if(!isPhysicalTable(obj_type))
+			if(obj_type==ObjectType::Constraint)
 			{
-				TableObject *tab_obj;
-				std::vector<TableObject *> *obj_list;
-				Column *col;
+				//Raises a error if the user try to add a second primary key on the table
+				if(dynamic_cast<Constraint *>(tab_obj)->getConstraintType() == ConstraintType::PrimaryKey &&
+					 this->getPrimaryKey())
+					throw Exception(ErrorCode::AsgExistingPrimaryKeyTable,PGM_FUNC,PGM_FILE,PGM_LINE);
+			}
 
-				tab_obj=dynamic_cast<TableObject *>(obj);
-				col=dynamic_cast<Column *>(tab_obj);
+			if(obj_type==ObjectType::Trigger)
+				dynamic_cast<Trigger *>(tab_obj)->validateTrigger();
 
-				//Sets the object parent table if there isn't one
-				if(!tab_obj->getParentTable())
-					tab_obj->setParentTable(this);
-				//Raises an error if the parent table of the table object is different from table 'this'
-				else if(tab_obj->getParentTable()!=this)
-					throw Exception(ErrorCode::AsgObjectBelongsAnotherTable,PGM_FUNC,PGM_FILE,PGM_LINE);
+			obj_list=getObjectList(obj_type);
 
-				//Validates the object SQL code befor insert on table
-				obj->getSourceCode(SchemaParser::SqlCode);
-
-				if(col && col->getType()==this)
-				{
-					throw Exception(Exception::getErrorMessage(ErrorCode::InvColumnTableType)
-													.arg(col->getName())
-													.arg(this->getName()),
-													ErrorCode::InvColumnTableType,PGM_FUNC,PGM_FILE,PGM_LINE);
-				}
-				else if(obj_type==ObjectType::Constraint)
-				{
-					//Raises a error if the user try to add a second primary key on the table
-					if(dynamic_cast<Constraint *>(tab_obj)->getConstraintType()==ConstraintType::PrimaryKey &&
-						 this->getPrimaryKey())
-						throw Exception(ErrorCode::AsgExistingPrimaryKeyTable,PGM_FUNC,PGM_FILE,PGM_LINE);
-				}
-				else if(obj_type==ObjectType::Trigger)
-					dynamic_cast<Trigger *>(tab_obj)->validateTrigger();
-
-				obj_list=getObjectList(obj_type);
-
-				//Adds the object to the table
-				if(obj_idx < 0 || obj_idx >= static_cast<int>(obj_list->size()))
+			//Adds the object to the table
+			if(obj_idx < 0 || obj_idx >= static_cast<int>(obj_list->size()))
+				obj_list->push_back(tab_obj);
+			else
+			{
+				//If there is a object index specified inserts the object at the position
+				if(obj_list->size() > 0)
+					obj_list->insert((obj_list->begin() + obj_idx), tab_obj);
+				else
 					obj_list->push_back(tab_obj);
-				else
-				{
-					//If there is a object index specified inserts the object at the position
-					if(obj_list->size() > 0)
-						obj_list->insert((obj_list->begin() + obj_idx), tab_obj);
-					else
-						obj_list->push_back(tab_obj);
-				}
-
-				if(obj_type==ObjectType::Column || obj_type==ObjectType::Constraint)
-				{
-					updateAlterCmdsStatus();
-
-					if(obj_type==ObjectType::Constraint)
-						dynamic_cast<Constraint *>(tab_obj)->setColumnsNotNull(true);
-				}
-
-				tab_obj->updateDependencies();
 			}
-			else if(isPhysicalTable(obj_type))
+
+			if(obj_type==ObjectType::Column || obj_type==ObjectType::Constraint)
 			{
-				PhysicalTable *tab = nullptr;
-				tab = dynamic_cast<PhysicalTable *>(obj);
-				if(obj_idx < 0 || obj_idx >= static_cast<int>(ancestor_tables.size()))
-					ancestor_tables.push_back(tab);
-				else
-					ancestor_tables.insert((ancestor_tables.begin() + obj_idx), tab);
-			}
-			else
-				throw Exception(ErrorCode::AsgObjectInvalidType,PGM_FUNC,PGM_FILE,PGM_LINE);
+				updateAlterCmdsStatus();
 
-			setCodeInvalidated(true);
+				if(obj_type==ObjectType::Constraint)
+					dynamic_cast<Constraint *>(tab_obj)->setColumnsNotNull(true);
+			}
+
+			tab_obj->updateDependencies();
 		}
-		catch(Exception &e)
+		else if(isPhysicalTable(obj_type))
 		{
-			if(e.getErrorCode()==ErrorCode::UndefinedAttributeValue)
-				throw Exception(Exception::getErrorMessage(ErrorCode::AsgObjectInvalidDefinition)
-												.arg(obj->getName())
-												.arg(obj->getTypeName()),
-												ErrorCode::AsgObjectInvalidDefinition,PGM_FUNC,PGM_FILE,PGM_LINE, &e);
+			PhysicalTable *tab = dynamic_cast<PhysicalTable *>(obj);
+
+			if(obj_idx < 0 || obj_idx >= static_cast<int>(ancestor_tables.size()))
+				ancestor_tables.push_back(tab);
 			else
-				throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
+				ancestor_tables.insert((ancestor_tables.begin() + obj_idx), tab);
 		}
+		else
+			throw Exception(ErrorCode::AsgObjectInvalidType,PGM_FUNC,PGM_FILE,PGM_LINE);
+
+		setCodeInvalidated(true);
+	}
+	catch(Exception &e)
+	{
+		if(e.getErrorCode() == ErrorCode::UndefinedAttributeValue)
+		{
+			throw Exception(Exception::getErrorMessage(ErrorCode::AsgObjectInvalidDefinition)
+											.arg(obj->getName())
+											.arg(obj->getTypeName()),
+											ErrorCode::AsgObjectInvalidDefinition,PGM_FUNC,PGM_FILE,PGM_LINE, &e);
+		}
+
+		throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 	}
 }
 
@@ -683,10 +686,10 @@ void PhysicalTable::removeObject(const QString &name, ObjectType obj_type)
 void PhysicalTable::removeObject(unsigned obj_idx, ObjectType obj_type)
 {
 	//Raises an error if the user try to remove a object with invalid type
-	if(!TableObject::isTableObject(obj_type) && obj_type!=ObjectType::Table)
-		throw Exception(ErrorCode::RemObjectInvalidType,PGM_FUNC,PGM_FILE,PGM_LINE);
+	if(!TableObject::isTableObject(obj_type) && obj_type != ObjectType::Table)
+		throw Exception(ErrorCode::RemObjectInvalidType, PGM_FUNC, PGM_FILE, PGM_LINE);
 
-	else if(PhysicalTable::isPhysicalTable(obj_type) && obj_idx < ancestor_tables.size())
+	if(PhysicalTable::isPhysicalTable(obj_type) && obj_idx < ancestor_tables.size())
 	{
 		std::vector<PhysicalTable *>::iterator itr;
 		itr=ancestor_tables.begin() + obj_idx;
@@ -880,14 +883,16 @@ int PhysicalTable::getObjectIndex(BaseObject *obj)
 	while(itr!=itr_end && !found)
 	{
 		found=((tab_obj->getParentTable()==this && (*itr)==tab_obj) ||
-				 (tab_obj->getName()==(*itr)->getName()));
-		if(!found) itr++;
+					 (tab_obj->getName()==(*itr)->getName()));
+
+		if(!found)
+			itr++;
 	}
 
 	if(found)
 		return (itr-obj_list->begin());
-	else
-		return -1;
+
+	return -1;
 }
 
 BaseObject *PhysicalTable::getObject(const QString &name, ObjectType obj_type)
@@ -972,19 +977,17 @@ BaseObject *PhysicalTable::getObject(unsigned obj_idx, ObjectType obj_type)
 
 		return ancestor_tables[obj_idx];
 	}
-	else
-	{
-		obj_list = getObjectList(obj_type);
 
-		if(!obj_list)
-			return nullptr;
+	obj_list = getObjectList(obj_type);
 
-		if(obj_idx < obj_list->size())
-			return obj_list->at(obj_idx);
+	if(!obj_list)
+		return nullptr;
 
-		//Raises an error if the object index is out of bound
+	//Raises an error if the object index is out of bound
+	if(obj_idx >= obj_list->size())
 		throw Exception(ErrorCode::RefObjectInvalidIndex,PGM_FUNC,PGM_FILE,PGM_LINE);
-	}
+
+	return obj_list->at(obj_idx);
 }
 
 PhysicalTable *PhysicalTable::getAncestorTable(const QString &name)
@@ -1020,27 +1023,28 @@ Column *PhysicalTable::getColumn(const QString &name, bool ref_old_name)
 		int idx;
 		return dynamic_cast<Column *>(getObject(name, ObjectType::Column, idx));
 	}
-	else
+
+	Column *column = nullptr;
+	std::vector<TableObject *>::iterator itr, itr_end;
+	bool found = false, format = false;
+
+	format = name.contains('"');
+	itr = columns.begin();
+	itr_end=columns.end();
+
+	//Search the column referencing the old name
+	while(itr != itr_end && !found)
 	{
-		Column *column=nullptr;
-		std::vector<TableObject *>::iterator itr, itr_end;
-		bool found=false, format=false;
-
-		format=name.contains('"');
-		itr=columns.begin();
-		itr_end=columns.end();
-
-		//Search the column referencing the old name
-		while(itr!=itr_end && !found)
-		{
-			column=dynamic_cast<Column *>(*itr);
-			itr++;
-			found=(!name.isEmpty() && column->getOldName(format)==name);
-		}
-
-		if(!found) column=nullptr;
-		return column;
+		column = dynamic_cast<Column *>(*itr);
+		itr++;
+		found = (!name.isEmpty() &&
+						 column->getOldName(format) == name);
 	}
+
+	if(!found)
+		column = nullptr;
+
+	return column;
 }
 
 Column *PhysicalTable::getColumn(unsigned idx)
@@ -1097,31 +1101,33 @@ unsigned PhysicalTable::getObjectCount(ObjectType obj_type, bool inc_added_by_re
 
 	if(isPhysicalTable(obj_type))
 		return ancestor_tables.size();
-	else
+
+	std::vector<TableObject *> *list=nullptr;
+	list = getObjectList(obj_type);
+
+	if(!list)
+		return 0;
+
+	if(!inc_added_by_rel)
 	{
-		std::vector<TableObject *> *list=nullptr;
-		list = getObjectList(obj_type);
+		std::vector<TableObject *>::iterator itr, itr_end;
+		unsigned count = 0;
 
-		if(!list) return 0;
+		itr = list->begin();
+		itr_end = list->end();
 
-		if(!inc_added_by_rel)
+		while(itr!=itr_end)
 		{
-			std::vector<TableObject *>::iterator itr, itr_end;
-			unsigned count=0;
+			if(!(*itr)->isAddedByRelationship())
+				count++;
 
-			itr=list->begin();
-			itr_end=list->end();
-			while(itr!=itr_end)
-			{
-				if(!(*itr)->isAddedByRelationship()) count++;
-				itr++;
-			}
-
-			return count;
+			itr++;
 		}
-		else
-			return list->size();
+
+		return count;
 	}
+
+	return list->size();
 }
 
 void PhysicalTable::setRelObjectsIndexes(const std::vector<QString> &obj_names, const std::vector<unsigned> &idxs, ObjectType obj_type)
@@ -1483,8 +1489,9 @@ void PhysicalTable::swapObjectsIndexes(ObjectType obj_type, unsigned idx1, unsig
 			//Raises an error if both index is out of list bounds
 			if(idx1 >= obj_list->size() && idx2 >= obj_list->size())
 				throw Exception(ErrorCode::RefObjectInvalidIndex,PGM_FUNC,PGM_FILE,PGM_LINE);
+
 			//If the idx1 is out of bound inserts the element idx2 at the list's begin
-			else if(idx1 >= obj_list->size())
+			if(idx1 >= obj_list->size())
 			{
 				aux_obj1=obj_list->front();
 				itr2=obj_list->begin() + idx2;

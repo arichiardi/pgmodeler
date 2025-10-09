@@ -135,24 +135,19 @@ PgSqlType PgSqlType::parseString(const QString &str)
 	unsigned dim=0, srid=0;
 	int prec=-1, len = -1;
 	int start=-1, end=-1;
-	QStringList value, intervals;
+	QStringList value;
 	PgSqlType type;
 
 	//Checking if the string contains one of interval types
-	intervals = IntervalType::getTypes();
-	while(!intervals.isEmpty())
+	for(auto &interv : IntervalType::getTypes())
 	{
-		interv=intervals.back();
-		intervals.pop_back();
+		start = type_str.indexOf(QRegularExpression("( )" + interv.toLower()));
 
-		start=type_str.indexOf(QRegularExpression("( )" + interv.toLower()));
-		if(start>=0)
+		if(start >= 0)
 		{
 			type_str.remove(start, interv.size()+1);
 			break;
 		}
-		else
-			interv.clear();
 	}
 
 	//Check if the type contains "with time zone" descriptor
@@ -540,16 +535,16 @@ void PgSqlType::setWithTimezone(bool with_tz)
 unsigned PgSqlType::setUserType(unsigned type_id)
 {
 	unsigned lim1 = PseudoEnd + 1,
-			lim2 = lim1 + PgSqlType::user_types.size();
+					 lim2 = lim1 + PgSqlType::user_types.size();
 
 	if(user_types.size() > 0 &&
-		(type_id >= lim1 && type_id < lim2))
+		 (type_id >= lim1 && type_id < lim2))
 	{
 		type_idx = type_id;
 		return type_idx;
 	}
-	else
-		throw Exception(ErrorCode::AsgInvalidTypeObject,PGM_FUNC,PGM_FILE,PGM_LINE);
+
+	throw Exception(ErrorCode::AsgInvalidTypeObject,PGM_FUNC,PGM_FILE,PGM_LINE);
 }
 
 unsigned PgSqlType::setUserType(BaseObject *ptype)
@@ -592,8 +587,10 @@ void PgSqlType::removeUserType(const QString &type_name, BaseObject *ptype)
 
 		while(itr!=itr_end)
 		{
-			if(itr->name==type_name && itr->ptype==ptype) break;
-			else itr++;
+			if(itr->name==type_name && itr->ptype==ptype)
+				break;
+
+			itr++;
 		}
 
 		if(itr!=itr_end)
@@ -727,15 +724,13 @@ QString PgSqlType::operator ~ ()
 {
 	if(type_idx >= PseudoEnd + 1)
 		return (user_types[type_idx - (PseudoEnd + 1)].name);
-	else
-	{
-		QString name = type_names[type_idx];
 
-		if(with_timezone && (name=="time" || name=="timestamp"))
-			 name+=" with time zone";
+	QString name = type_names[type_idx];
 
-		return name;
-	}
+	if(with_timezone && (name=="time" || name=="timestamp"))
+		 name+=" with time zone";
+
+	return name;
 }
 
 bool PgSqlType::isArrayType()
@@ -1080,18 +1075,18 @@ PgSqlType PgSqlType::getAliasType()
 	if(!isUserType())
 	{
 		if(type_names[this->type_idx]=="serial")
-			return (PgSqlType("integer"));
+			return { "integer" };
 
 		if(type_names[this->type_idx]=="smallserial")
-			return (PgSqlType("smallint"));
+			return { "smallint" };
 
 		if(type_names[this->type_idx]=="bigserial")
-			return (PgSqlType("bigint"));
+			return { "bigint" };
 
-		return (PgSqlType(type_names[this->type_idx]));
+		return { type_names[this->type_idx] };
 	}
-	else
-		return *this;
+
+	return *this;
 }
 
 void PgSqlType::setDimension(unsigned dim)

@@ -18,7 +18,7 @@
 #include "policy.h"
 #include "utilsns.h"
 
-Policy::Policy() : TableObject()
+Policy::Policy()
 {
 	obj_type=ObjectType::Policy;
 	permissive = false;

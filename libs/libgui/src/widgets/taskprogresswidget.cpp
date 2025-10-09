@@ -46,7 +46,7 @@ void TaskProgressWidget::show()
 	 isn't used the task is not shown properly and sometimes stay only on taskbar not poping up
 	 to the user. */
 	QEventLoop eventLoop;
-	GuiUtilsNs::resizeDialog(this);
+	GuiUtilsNs::resizeWidget(this);
 	QDialog::show();
 	QTimer t;
 

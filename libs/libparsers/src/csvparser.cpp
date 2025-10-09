@@ -23,8 +23,8 @@
 CsvParser::CsvParser()
 {
 	setSpecialChars(CsvDocument::Separator,
-						 CsvDocument::TextDelimiter,
-						 CsvDocument::LineBreak);
+									CsvDocument::TextDelimiter,
+									CsvDocument::LineBreak);
 	cols_in_first_row = false;
 	curr_pos = curr_row = 0;
 }
@@ -56,7 +56,7 @@ CsvDocument CsvParser::parseFile(const QString &filename)
 CsvDocument CsvParser::parseBuffer(const QString &csv_buf)
 {
 	if(csv_buf.isEmpty())
-		return CsvDocument();
+		return {};
 
 	try
 	{
@@ -161,16 +161,14 @@ QString CsvParser::extractValue()
 
 				return value;
 			}
-			else
-			{
-				value.append(chr);
-				curr_pos++;
 
-				/* If the current position reaches the end of the buffer without finding a
-				 * line break we force the return of the value and increment the current row value */
-				if(curr_pos >= buffer.length())
-					curr_row++;
-			}
+			value.append(chr);
+			curr_pos++;
+
+			/* If the current position reaches the end of the buffer without finding a
+			 * line break we force the return of the value and increment the current row value */
+			if(curr_pos >= buffer.length())
+				curr_row++;
 		}
 	}
 

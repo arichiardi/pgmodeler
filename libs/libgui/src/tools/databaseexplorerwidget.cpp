@@ -331,10 +331,11 @@ bool DatabaseExplorerWidget::eventFilter(QObject *object, QEvent *event)
 				finishObjectRename();
 			else
 				dropObject(objects_trw->currentItem(), k_event->modifiers()==Qt::ShiftModifier);
+
 			return true;
 		}
-		else
-			return false;
+
+		return false;
 	}
 
 	return QWidget::eventFilter(object, event);
@@ -746,18 +747,18 @@ void DatabaseExplorerWidget::formatOperatorClassAttribs(attribs_map &attribs)
 {
 	QStringList list, array_vals, elems;
 
-	attribs[Attributes::Family]=getObjectName(ObjectType::OpFamily, attribs[Attributes::Family]);
+	attribs[Attributes::Family] = getObjectName(ObjectType::OpFamily, attribs[Attributes::Family]);
 	formatBooleanAttribs(attribs, { Attributes::Default });
 	formatOidAttribs(attribs, { Attributes::Storage,
 								Attributes::Type }, ObjectType::Type, false);
 
-	array_vals=Catalog::parseArrayValues(attribs[Attributes::Function]);
+	array_vals = Catalog::parseArrayValues(attribs[Attributes::Function]);
 
 	if(!array_vals.isEmpty())
 	{
-		for(int i=0; i < array_vals.size(); i++)
+		for(auto &array_val : array_vals)
 		{
-			list=array_vals[i].split(':');
+			list = array_val.split(':');
 			elems.push_back(QString("[%1] %2").arg(list[0], getObjectName(ObjectType::Function, list[1])));
 		}
 
@@ -769,13 +770,13 @@ void DatabaseExplorerWidget::formatOperatorClassAttribs(attribs_map &attribs)
 
 	if(!array_vals.isEmpty())
 	{
-		for(int i=0; i < array_vals.size(); i++)
+		for(auto & array_val : array_vals)
 		{
-			list=array_vals[i].split(':');
+			list = array_val.split(':');
 			elems.push_back(QString("[%1] [%2] [%3]")
-							.arg(list[0],
-							getObjectName(ObjectType::Operator, list[1]),
-					getObjectName(ObjectType::Operator, list[2])));
+											.arg(list[0],
+													 getObjectName(ObjectType::Operator, list[1]),
+													 getObjectName(ObjectType::Operator, list[2])));
 		}
 
 		attribs[Attributes::Operator]=elems.join(UtilsNs::DataSeparator);
@@ -930,63 +931,61 @@ QString DatabaseExplorerWidget::formatObjectName(attribs_map &attribs)
 				attribs[Attributes::Oid]=="0" ||
 				attribs[Attributes::Name].isEmpty())
 			return DepNotDefined;
+
+		ObjectType obj_type=static_cast<ObjectType>(attribs[Attributes::ObjectType].toUInt());
+		attribs_map aux_attribs;
+		QString oid=attribs[Attributes::Oid],
+				obj_name=DepNotFound.arg(oid), sch_name;
+
+		if(obj_type!=ObjectType::Type)
+			obj_name=BaseObject::formatName(attribs[Attributes::Name], obj_type==ObjectType::Operator);
 		else
+			obj_name=attribs[Attributes::Name];
+
+		//Retrieving the schema name
+		if(!attribs[Attributes::Schema].isEmpty() &&
+				attribs[Attributes::Schema]!="0")
 		{
-			ObjectType obj_type=static_cast<ObjectType>(attribs[Attributes::ObjectType].toUInt());
-			attribs_map aux_attribs;
-			QString oid=attribs[Attributes::Oid],
-					obj_name=DepNotFound.arg(oid), sch_name;
+			aux_attribs=catalog.getObjectAttributes(ObjectType::Schema, attribs[Attributes::Schema].toUInt());
+			sch_name=BaseObject::formatName(aux_attribs[Attributes::Name], false);
 
-			if(obj_type!=ObjectType::Type)
-				obj_name=BaseObject::formatName(attribs[Attributes::Name], obj_type==ObjectType::Operator);
-			else
-				obj_name=attribs[Attributes::Name];
-
-			//Retrieving the schema name
-			if(!attribs[Attributes::Schema].isEmpty() &&
-					attribs[Attributes::Schema]!="0")
-			{
-				aux_attribs=catalog.getObjectAttributes(ObjectType::Schema, attribs[Attributes::Schema].toUInt());
-				sch_name=BaseObject::formatName(aux_attribs[Attributes::Name], false);
-
-				if(!sch_name.isEmpty())
-					obj_name=sch_name + "." + obj_name;
-			}
-
-			//Formatting paramenter types for function
-			if(obj_type==ObjectType::Function)
-			{
-				QStringList names, arg_types=Catalog::parseArrayValues(attribs[Attributes::ArgTypes]);
-
-				for(int idx=0; idx < arg_types.size(); idx++)
-				{
-					names=getObjectName(ObjectType::Type, arg_types[idx]).split('.');
-					arg_types[idx]=names[names.size()-1];
-				}
-
-				obj_name+=QString("(%1)").arg(arg_types.join(','));
-			}
-			//Formatting paramenter types for operator
-			else if(obj_type==ObjectType::Operator)
-			{
-				QStringList arg_types, names;
-				QString type_name;
-				std::vector<QString> attrib_ids={ Attributes::LeftType, Attributes::RightType };
-
-				for(auto &attr : attrib_ids)
-				{
-					names=getObjectName(ObjectType::Type, attribs[attr]).split('.');
-					type_name=names[names.size()-1];
-
-					if(type_name.isEmpty()) type_name="-";
-					arg_types.push_back(type_name);
-				}
-
-				obj_name+=QString("(%1)").arg(arg_types.join(','));
-			}
-
-			return obj_name;
+			if(!sch_name.isEmpty())
+				obj_name=sch_name + "." + obj_name;
 		}
+
+		//Formatting paramenter types for function
+		if(obj_type==ObjectType::Function)
+		{
+			QStringList names, arg_types=Catalog::parseArrayValues(attribs[Attributes::ArgTypes]);
+
+			for(auto & arg_type : arg_types)
+			{
+				names = getObjectName(ObjectType::Type, arg_type).split('.');
+				arg_type = names[names.size() - 1];
+			}
+
+			obj_name+=QString("(%1)").arg(arg_types.join(','));
+		}
+		//Formatting paramenter types for operator
+		else if(obj_type==ObjectType::Operator)
+		{
+			QStringList arg_types, names;
+			QString type_name;
+			std::vector<QString> attrib_ids={ Attributes::LeftType, Attributes::RightType };
+
+			for(auto &attr : attrib_ids)
+			{
+				names=getObjectName(ObjectType::Type, attribs[attr]).split('.');
+				type_name=names[names.size()-1];
+
+				if(type_name.isEmpty()) type_name="-";
+				arg_types.push_back(type_name);
+			}
+
+			obj_name+=QString("(%1)").arg(arg_types.join(','));
+		}
+
+		return obj_name;
 	}
 	catch(Exception &e)
 	{
@@ -1012,32 +1011,30 @@ QStringList DatabaseExplorerWidget::getObjectsNames(const std::vector<ObjectType
 	{
 		if(oids.isEmpty())
 			return QStringList{ DepNotDefined };
-		else
+
+		std::vector<attribs_map> attribs_vect;
+		std::vector<unsigned> oids_vect;
+		std::map<QString, attribs_map> attrs_map;
+		QStringList names;
+
+		//Converting the oids to unsigned in order to filter them on Catalog
+		for(auto &oid : oids)
+			oids_vect.push_back(oid.toUInt());
+
+		//Retrieve all the objects by their oids and put them on a auxiliary map in which key is their oids
+		for(auto &type : types)
 		{
-			std::vector<attribs_map> attribs_vect;
-			std::vector<unsigned> oids_vect;
-			std::map<QString, attribs_map> attrs_map;
-			QStringList names;
+			attribs_vect = catalog.getObjectsAttributes(type, sch_name, tab_name, oids_vect);
 
-			//Converting the oids to unsigned in order to filter them on Catalog
-			for(auto &oid : oids)
-				oids_vect.push_back(oid.toUInt());
-
-			//Retrieve all the objects by their oids and put them on a auxiliary map in which key is their oids
-			for(auto &type : types)
-			{
-				attribs_vect = catalog.getObjectsAttributes(type, sch_name, tab_name, oids_vect);
-
-				for(auto & attr : attribs_vect)
-					attrs_map[attr[Attributes::Oid]] = attr;
-			}
-
-			//Retreving the names from the auxiliary map using the provided oids
-			for(auto &oid : oids)
-				names.push_back(formatObjectName(attrs_map[oid]));
-
-			return names;
+			for(auto & attr : attribs_vect)
+				attrs_map[attr[Attributes::Oid]] = attr;
 		}
+
+		//Retreving the names from the auxiliary map using the provided oids
+		for(auto &oid : oids)
+			names.push_back(formatObjectName(attrs_map[oid]));
+
+		return names;
 	}
 	catch(Exception &e)
 	{
@@ -1063,22 +1060,20 @@ QString DatabaseExplorerWidget::getObjectName(const std::vector<ObjectType> &typ
 	{
 		if(oid=="0" || oid.isEmpty())
 			return DepNotDefined;
-		else
+
+		attribs_map attribs;
+		QString name;
+
+		for(auto &type : types)
 		{
-			attribs_map attribs;
-			QString name;
+			attribs = catalog.getObjectAttributes(type, oid.toUInt(), sch_name, tab_name);
+			name = formatObjectName(attribs);
 
-			for(auto &type : types)
-			{
-				attribs = catalog.getObjectAttributes(type, oid.toUInt(), sch_name, tab_name);
-				name = formatObjectName(attribs);
-
-				if(!name.isEmpty())
-					return name;
-			}
-
-			return DepNotDefined;
+			if(!name.isEmpty())
+				return name;
 		}
+
+		return DepNotDefined;
 	}
 	catch(Exception &e)
 	{

@@ -139,7 +139,7 @@ void ModelFixWidget::enableFixOptions(bool enable)
 	load_model_chk->setEnabled(enable);
 }
 
-void ModelFixWidget::showEvent(QShowEvent *event)
+void ModelFixWidget::showEvent(QShowEvent *)
 {
 	pgmodeler_cli_sel->setSelectedFile(GlobalAttributes::getPgModelerCLIPath());
 }

@@ -75,28 +75,28 @@ bool Sequence::isValidValue(const QString &value)
 		it's length must not exceed the MAX_POSITIVE_VALUE length */
 	if(value.size() > MaxBigPositiveValue.size())
 		return false;
-	else
+
+	unsigned i = 0, count = 0;
+	bool is_oper=false, is_num=false, is_valid=true;
+
+	count = value.size();
+	for(i=0; i < count && is_valid; i++)
 	{
-		unsigned i, count;
-		bool is_oper=false, is_num=false, is_valid=true;
-
-		count=value.size();
-		for(i=0; i < count && is_valid; i++)
+		if((value[i]=='-' || value[i]=='+') && !is_num)
 		{
-			if((value[i]=='-' || value[i]=='+') && !is_num)
-			{
-				if(!is_oper) is_oper=true;
-			}
-			else if((value[i]>='0' && value[i]<='9'))
-			{
-				if(!is_num) is_num=true;
-			}
-			else is_valid=false;
+			if(!is_oper) is_oper=true;
 		}
-
-		if(!is_num) is_valid=false;
-		return is_valid;
+		else if((value[i]>='0' && value[i]<='9'))
+		{
+			if(!is_num) is_num=true;
+		}
+		else is_valid=false;
 	}
+
+	if(!is_num)
+		is_valid = false;
+
+	return is_valid;
 }
 
 QString Sequence::formatValue(const QString &value)
@@ -133,50 +133,50 @@ int Sequence::compareValues(QString value1, QString value2)
 {
 	if(value1==value2 || value1.isEmpty() || value2.isEmpty())
 		return 0;
-	else
+
+	char ops[2]={'\0','\0'};
+	unsigned i, idx, count;
+	QString *vet_values[2]={&value1, &value2}, aux_value;
+
+	if(value1.size() < value2.size())
+		value1=value1.rightJustified(value1.size() + (value2.size()-value1.size()),'0');
+	else if(value1.size() > value2.size())
+		value2=value2.rightJustified(value2.size() + (value1.size()-value2.size()),'0');
+
+	for(i=0; i < 2; i++)
 	{
-		char ops[2]={'\0','\0'};
-		unsigned i, idx, count;
-		QString *vet_values[2]={&value1, &value2}, aux_value;
+		//Gets the value signal
+		ops[i]=vet_values[i]->at(0).toLatin1();
 
-		if(value1.size() < value2.size())
-			value1=value1.rightJustified(value1.size() + (value2.size()-value1.size()),'0');
-		else if(value1.size() > value2.size())
-			value2=value2.rightJustified(value2.size() + (value1.size()-value2.size()),'0');
+		//Case the value doesn't has a + it will be append
+		if(ops[i]!='-' && ops[i]!='+') ops[i]='+';
 
-		for(i=0; i < 2; i++)
+		idx=0;
+		count=vet_values[i]->size();
+		while(idx < count)
 		{
-			//Gets the value signal
-			ops[i]=vet_values[i]->at(0).toLatin1();
+			if(vet_values[i]->at(idx)!='+' &&
+					vet_values[i]->at(idx)!='-')
+				aux_value+=vet_values[i]->at(idx);
+			else
+				aux_value+='0';
 
-			//Case the value doesn't has a + it will be append
-			if(ops[i]!='-' && ops[i]!='+') ops[i]='+';
-
-			idx=0;
-			count=vet_values[i]->size();
-			while(idx < count)
-			{
-				if(vet_values[i]->at(idx)!='+' &&
-						vet_values[i]->at(idx)!='-')
-					aux_value+=vet_values[i]->at(idx);
-				else
-					aux_value+='0';
-
-				idx++;
-			}
-			(*vet_values[i])=aux_value;
-			aux_value="";
+			idx++;
 		}
 
-		if(ops[0]==ops[1] && value1==value2)
-			return 0;
-		else if((ops[0]=='-' && ops[1]=='-' && value1 > value2) ||
-				(ops[0]=='+' && ops[1]=='+' && value1 < value2) ||
-				(ops[0]=='-' && ops[1]=='+'))
-			return -1;
-		else
-			return 1;
+		(*vet_values[i])=aux_value;
+		aux_value="";
 	}
+
+	if(ops[0]==ops[1] && value1==value2)
+		return 0;
+
+	if((ops[0]=='-' && ops[1]=='-' && value1 > value2) ||
+			(ops[0]=='+' && ops[1]=='+' && value1 < value2) ||
+			(ops[0]=='-' && ops[1]=='+'))
+		return -1;
+
+	return 1;
 }
 
 void Sequence::setDefaultValues(PgSqlType serial_type)
@@ -248,14 +248,17 @@ void Sequence::setValues(QString minv, QString maxv, QString inc, QString start,
 
 	if(compareValues(minv,maxv) > 0)
 		throw Exception(ErrorCode::AsgInvalidSequenceMinValue,PGM_FUNC,PGM_FILE,PGM_LINE);
+
 	//Raises an error when the start value is less that min value or grater than max value
-	else if(compareValues(start, minv) < 0 ||	compareValues(start, maxv) > 0)
+	if(compareValues(start, minv) < 0 ||	compareValues(start, maxv) > 0)
 		throw Exception(ErrorCode::AsgInvalidSequenceStartValue,PGM_FUNC,PGM_FILE,PGM_LINE);
+
 	//Raises an error when the increment value is null (0)
-	else if(isZeroValue(inc))
+	if(isZeroValue(inc))
 		throw Exception(ErrorCode::AsgInvalidSequenceIncrementValue,PGM_FUNC,PGM_FILE,PGM_LINE);
+
 	//Raises an error when the cache value is null (0)
-	else if(isZeroValue(cache))
+	if(isZeroValue(cache))
 		throw Exception(ErrorCode::AsgInvalidSequenceCacheValue,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	this->min_value=minv;

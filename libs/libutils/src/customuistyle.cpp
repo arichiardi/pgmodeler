@@ -40,8 +40,6 @@
 
 QMap<QStyle::PixelMetric, int> CustomUiStyle::pixel_metrics;
 
-CustomUiStyle::CustomUiStyle() : QProxyStyle() {}
-
 CustomUiStyle::CustomUiStyle(const QString &key) : QProxyStyle(key) {}
 
 void CustomUiStyle::addEdgeWithCorner(QPainterPath &path, const QRectF &rect, OpenEdge side, int radius) const
@@ -361,8 +359,7 @@ void CustomUiStyle::drawCETabBar(ControlElement element, const QStyleOption *opt
 		return;
 
 	QColor bg_color = getAdjustedColor(getStateColor(QPalette::Dark, option), MinFactor, MinFactor + 5),
-		   border_color = getAdjustedColor(getStateColor(QPalette::Mid, option), MinFactor, -XMinFactor),
-		   text_color = getStateColor(QPalette::ButtonText, tab_opt);
+				 border_color = getAdjustedColor(getStateColor(QPalette::Mid, option), MinFactor, -XMinFactor);
 
 	WidgetState wgt_st(tab_opt, widget);
 	QRect tab_rect = tab_opt->rect;
@@ -481,8 +478,6 @@ void CustomUiStyle::drawCETabBar(ControlElement element, const QStyleOption *opt
 
 	// Draw the tab text with proper contrast
 	QProxyStyle::drawControl(CE_TabBarTabLabel, tab_opt, painter, widget);
-
-	return;
 }
 
 void CustomUiStyle::drawComplexControl(ComplexControl control, const QStyleOptionComplex *option, QPainter *painter, const QWidget *widget) const
@@ -742,8 +737,8 @@ void CustomUiStyle::drawButtonMenuArrow(const QStyleOption *option, QPainter *pa
 	painter->restore();
 }
 
-void CustomUiStyle::drawControlArrow(const QStyleOption *option, QPainter *painter, const QWidget *widget,
-				ArrowType arr_type, bool small_sz) const
+void CustomUiStyle::drawControlArrow(const QStyleOption *option, QPainter *painter, const QWidget *,
+																		 ArrowType arr_type, bool small_sz) const
 {
 	if(!option || !painter)
 		return;
@@ -1216,7 +1211,8 @@ void CustomUiStyle::drawPELineEditPanel(PrimitiveElement element, const QStyleOp
 	painter->restore();
 }
 
-void CustomUiStyle::drawPEMenuPanel(PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const
+void CustomUiStyle::drawPEMenuPanel(PrimitiveElement element, const QStyleOption *option,
+																		QPainter *painter, const QWidget *) const
 {
 	if(element != PE_PanelMenu || !option || !painter)
 		return;
@@ -1279,15 +1275,14 @@ void CustomUiStyle::drawCEMenuItem(ControlElement element, const QStyleOption *o
 		QProxyStyle::drawControl(element, option, painter, widget);
 }
 
-void CustomUiStyle::drawPEToolTip(PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const
+void CustomUiStyle::drawPEToolTip(PrimitiveElement element, const QStyleOption *option,
+																	QPainter *painter, const QWidget *) const
 {
 	if(element != PE_PanelTipLabel || !option || !painter)
 		return;
 
-	QPalette pal = option->palette;
 	QColor bg_color = getStateColor(QPalette::ToolTipBase, option),
-		   text_color = getStateColor(QPalette::ToolTipText, option),
-		   border_color = getAdjustedColor(bg_color, MidFactor, -MinFactor);
+				 border_color = getAdjustedColor(bg_color, MidFactor, -MinFactor);
 
 	painter->save();
 	painter->setRenderHint(QPainter::Antialiasing, true);
@@ -1449,8 +1444,7 @@ void CustomUiStyle::drawCEHeaderSection(ControlElement element, const QStyleOpti
 	}
 
 	// Try to determine column information from the header widget
-	int section_cnt = 1,			 // Default to 1 if we can't determine
-					section_idx = 0; // Default to 0 (first) if we can't determine
+	int section_idx = 0; // Default to 0 (first) if we can't determine
 
 	// Try to get section information from QHeaderView
 	const QHeaderView *header_view =
@@ -1460,7 +1454,6 @@ void CustomUiStyle::drawCEHeaderSection(ControlElement element, const QStyleOpti
 	{
 		/* For section index, we need to find which section this rect corresponds to
 		 * We'll approximate by finding the section at the center of our rect */
-		section_cnt = header_view->count();
 		section_idx = header_view->logicalIndexAt(header_opt->rect.center());
 
 		if(section_idx < 0)
@@ -2007,14 +2000,16 @@ QColor CustomUiStyle::getAdjustedColor(const QColor &color, int dark_ui_factor, 
 	{
 		if(light_ui_factor > 0)
 			return color.lighter(light_ui_factor);
-		else if(light_ui_factor < 0)
+
+		if(light_ui_factor < 0)
 			return color.darker(-light_ui_factor);
 	}
 	else
 	{
 		if(dark_ui_factor > 0)
 			return color.lighter(dark_ui_factor);
-		else if(dark_ui_factor < 0)
+
+		if(dark_ui_factor < 0)
 			return color.darker(-dark_ui_factor);
 	}
 

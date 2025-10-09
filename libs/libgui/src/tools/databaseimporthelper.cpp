@@ -449,11 +449,14 @@ void DatabaseImportHelper::createObjects()
 				if(!import_canceled)
 				{
 					/* If the previous list size is the same as the not_created_object list means
-				 that no object was created in this interaction which means error */
+					 * that no object was created in this interaction which means error */
 					if(prev_size==not_created_objs.size() && !ignore_errors)
+					{
 						throw Exception(aux_errors.back().getErrorMessage(), aux_errors.back().getErrorCode(),
-										PGM_FUNC,PGM_FILE,PGM_LINE, aux_errors);
-					else if(ignore_errors)
+														PGM_FUNC,PGM_FILE,PGM_LINE, aux_errors);
+					}
+
+					if(ignore_errors)
 						errors.insert(errors.end(), aux_errors.begin(), aux_errors.end());
 
 					aux_errors.clear();
@@ -679,26 +682,18 @@ void DatabaseImportHelper::importDatabase()
 			//Generating random colors for relationships
 			if(rand_rel_colors)
 			{
-				std::vector<BaseObject *> *rels=nullptr;
-				std::vector<BaseObject *>::iterator itr, itr_end;
 				std::uniform_int_distribution<unsigned> dist(0,255);
-				ObjectType rel_type[]={ ObjectType::Relationship, ObjectType::BaseRelationship };
+				ObjectType rel_types[] { ObjectType::Relationship, ObjectType::BaseRelationship };
 				BaseRelationship *rel=nullptr;
 
-				for(unsigned i=0; i < 2; i++)
+				for(auto & rel_tp : rel_types)
 				{
-					rels=dbmodel->getObjectList(rel_type[i]);
-					itr=rels->begin();
-					itr_end=rels->end();
-
-					while(itr!=itr_end)
+					for(auto &obj : *dbmodel->getObjectList(rel_tp))
 					{
-						rel=dynamic_cast<BaseRelationship *>(*itr);
-
+						rel = dynamic_cast<BaseRelationship *>(obj);
 						rel->setCustomColor(QColor(dist(rand_num_engine),
 																			 dist(rand_num_engine),
 																			 dist(rand_num_engine)));
-						itr++;
 					}
 				}
 			}
@@ -770,9 +765,10 @@ void DatabaseImportHelper::createObject(attribs_map &attribs)
 		created_objs.push_back(oid);
 		return;
 	}
+
 	/* If we are importing to the working model and the object already exists
 	 * we just mark it as created */
-	else if(is_working_model && obj_type != ObjectType::Database)
+	if(is_working_model && obj_type != ObjectType::Database)
 	{
 		bool obj_exists = false;
 
@@ -897,7 +893,8 @@ QString DatabaseImportHelper::getComment(attribs_map &attribs)
 	}
 }
 
-QString DatabaseImportHelper::getDependencyObject(const QString &oid, ObjectType obj_type, bool use_signature, bool recursive_dep_res, bool generate_xml, attribs_map extra_attribs)
+QString DatabaseImportHelper::getDependencyObject(const QString &oid, ObjectType obj_type, bool use_signature,
+																									bool recursive_dep_res, bool generate_xml, attribs_map extra_attribs)
 {
 	try
 	{
@@ -1068,7 +1065,7 @@ Tablespace *DatabaseImportHelper::createTablespace(attribs_map &attribs)
 	}
 	catch(Exception &e)
 	{
-		if(tabspc) delete tabspc;
+		delete tabspc;
 		throw Exception(e.getErrorMessage(), e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 	}
 }
@@ -1100,9 +1097,9 @@ Schema *DatabaseImportHelper::createSchema(attribs_map &attribs)
 	}
 	catch(Exception &e)
 	{
-		if(schema) delete schema;
+		delete schema;
 		throw Exception(e.getErrorMessage(), e.getErrorCode(),
-						PGM_FUNC,PGM_FILE,PGM_LINE, &e, xmlparser->getXMLBuffer());
+										PGM_FUNC,PGM_FILE,PGM_LINE, &e, xmlparser->getXMLBuffer());
 	}
 }
 
@@ -1134,9 +1131,9 @@ Role *DatabaseImportHelper::createRole(attribs_map &attribs)
 	}
 	catch(Exception &e)
 	{
-		if(role) delete role;
+		delete role;
 		throw Exception(e.getErrorMessage(), e.getErrorCode(),
-						PGM_FUNC,PGM_FILE,PGM_LINE, &e, xmlparser->getXMLBuffer());
+										PGM_FUNC,PGM_FILE,PGM_LINE, &e, xmlparser->getXMLBuffer());
 	}
 }
 
@@ -1173,9 +1170,9 @@ Domain *DatabaseImportHelper::createDomain(attribs_map &attribs)
 	}
 	catch(Exception &e)
 	{
-		if(dom) delete dom;
+		delete dom;
 		throw Exception(e.getErrorMessage(), e.getErrorCode(),
-						PGM_FUNC,PGM_FILE,PGM_LINE, &e, xmlparser->getXMLBuffer());
+										PGM_FUNC,PGM_FILE,PGM_LINE, &e, xmlparser->getXMLBuffer());
 	}
 }
 
@@ -1239,9 +1236,9 @@ Extension *DatabaseImportHelper::createExtension(attribs_map &attribs)
 	}
 	catch(Exception &e)
 	{
-		if(ext) delete ext;
+		delete ext;
 		throw Exception(e.getErrorMessage(), e.getErrorCode(),
-						PGM_FUNC,PGM_FILE,PGM_LINE, &e, xmlparser->getXMLBuffer());
+										PGM_FUNC,PGM_FILE,PGM_LINE, &e, xmlparser->getXMLBuffer());
 	}
 }
 
@@ -1413,7 +1410,7 @@ Function *DatabaseImportHelper::createFunction(attribs_map &attribs)
 	}
 	catch(Exception &e)
 	{
-		if(func) delete func;
+		delete func;
 		throw Exception(e.getErrorMessage(), e.getErrorCode(),
 										PGM_FUNC,PGM_FILE,PGM_LINE, &e, xmlparser->getXMLBuffer());
 	}
@@ -1434,7 +1431,7 @@ Procedure *DatabaseImportHelper::createProcedure(attribs_map &attribs)
 	}
 	catch(Exception &e)
 	{
-		if(proc) delete proc;
+		delete proc;
 		throw Exception(e.getErrorMessage(), e.getErrorCode(),
 										PGM_FUNC,PGM_FILE,PGM_LINE, &e, xmlparser->getXMLBuffer());
 	}
@@ -1447,22 +1444,23 @@ Language *DatabaseImportHelper::createLanguage(attribs_map &attribs)
 	try
 	{
 		unsigned lang_oid, func_oid;
-		QString func_types[]={ Attributes::ValidatorFunc,
-							   Attributes::HandlerFunc,
-							   Attributes::InlineFunc };
+		QString func_types[] { Attributes::ValidatorFunc,
+													 Attributes::HandlerFunc,
+													 Attributes::InlineFunc };
 
-		lang_oid=attribs[Attributes::Oid].toUInt();
-		for(unsigned i=0; i < 3; i++)
+		lang_oid = attribs[Attributes::Oid].toUInt();
+
+		for(auto &func_type : func_types)
 		{
-			func_oid=attribs[func_types[i]].toUInt();
+			func_oid = attribs[func_type].toUInt();
 
 			/* Workaround: in case of importing system languages like "internal" where the validator/handler
 				 function is defined after the language pgModeler will raise errors so in order to continue
 				 the import these fuctions are simply ignored */
 			if(func_oid < lang_oid)
-				attribs[func_types[i]]=getDependencyObject(attribs[func_types[i]], ObjectType::Function, true , true, true, {{Attributes::RefType, func_types[i]}});
+				attribs[func_type]=getDependencyObject(attribs[func_type], ObjectType::Function, true , true, true, {{Attributes::RefType, func_type}});
 			else
-				attribs[func_types[i]]="";
+				attribs[func_type]="";
 		}
 
 		loadObjectXML(ObjectType::Language, attribs);
@@ -1473,9 +1471,9 @@ Language *DatabaseImportHelper::createLanguage(attribs_map &attribs)
 	}
 	catch(Exception &e)
 	{
-		if(lang) delete lang;
+		delete lang;
 		throw Exception(e.getErrorMessage(), e.getErrorCode(),
-						PGM_FUNC,PGM_FILE,PGM_LINE, &e, xmlparser->getXMLBuffer());
+										PGM_FUNC,PGM_FILE,PGM_LINE, &e, xmlparser->getXMLBuffer());
 	}
 }
 
@@ -1493,9 +1491,9 @@ OperatorFamily *DatabaseImportHelper::createOperatorFamily(attribs_map &attribs)
 	}
 	catch(Exception &e)
 	{
-		if(opfam) delete opfam;
+		delete opfam;
 		throw Exception(e.getErrorMessage(), e.getErrorCode(),
-						PGM_FUNC,PGM_FILE,PGM_LINE, &e, xmlparser->getXMLBuffer());
+										PGM_FUNC,PGM_FILE,PGM_LINE, &e, xmlparser->getXMLBuffer());
 	}
 }
 
@@ -1534,11 +1532,11 @@ OperatorClass *DatabaseImportHelper::createOperatorClass(attribs_map &attribs)
 			elem_attr[Attributes::Function]=Attributes::True;
 			array_vals=Catalog::parseArrayValues(attribs[Attributes::Function]);
 
-			for(int i=0; i < array_vals.size(); i++)
+			for(const auto & array_val : array_vals)
 			{
-				list=array_vals[i].split(':');
-				elem_attr[Attributes::StrategyNum]=list[0];
-				elem_attr[Attributes::Definition]=getDependencyObject(list[1], ObjectType::Function, true);
+				list = array_val.split(':');
+				elem_attr[Attributes::StrategyNum] = list[0];
+				elem_attr[Attributes::Definition] = getDependencyObject(list[1], ObjectType::Function, true);
 				elems.push_back(elem_attr);
 			}
 		}
@@ -1547,25 +1545,25 @@ OperatorClass *DatabaseImportHelper::createOperatorClass(attribs_map &attribs)
 		if(!attribs[Attributes::Operator].isEmpty())
 		{
 			elem_attr.clear();
-			elem_attr[Attributes::Operator]=Attributes::True;
-			array_vals=Catalog::parseArrayValues(attribs[Attributes::Operator]);
+			elem_attr[Attributes::Operator] = Attributes::True;
+			array_vals = Catalog::parseArrayValues(attribs[Attributes::Operator]);
 
-			for(int i=0; i < array_vals.size(); i++)
+			for(auto &array_val : array_vals)
 			{
-				list=array_vals[i].split(':');
-				elem_attr[Attributes::Definition]="";
-				elem_attr[Attributes::StrategyNum]=list[0];
-				elem_attr[Attributes::Definition]+=getDependencyObject(list[1], ObjectType::Operator, true);
-				elem_attr[Attributes::Definition]+=getDependencyObject(list[2], ObjectType::OpFamily, true);
+				list = array_val.split(':');
+				elem_attr[Attributes::Definition] = "";
+				elem_attr[Attributes::StrategyNum] = list[0];
+				elem_attr[Attributes::Definition] += getDependencyObject(list[1], ObjectType::Operator, true);
+				elem_attr[Attributes::Definition] += getDependencyObject(list[2], ObjectType::OpFamily, true);
 				elems.push_back(elem_attr);
 			}
 		}
 
 		//Generating the complete XML code for operator class elements
-		for(unsigned i=0; i < elems.size(); i++)
+		for(auto &elem : elems)
 		{
 			schparser.ignoreUnkownAttributes(true);
-			attribs[Attributes::Elements]+=schparser.getSourceCode(Attributes::Element, elems[i], SchemaParser::XmlCode);
+			attribs[Attributes::Elements] += schparser.getSourceCode(Attributes::Element, elem, SchemaParser::XmlCode);
 			schparser.ignoreUnkownAttributes(false);
 		}
 
@@ -1577,9 +1575,9 @@ OperatorClass *DatabaseImportHelper::createOperatorClass(attribs_map &attribs)
 	}
 	catch(Exception &e)
 	{
-		if(opclass) delete opclass;
+		delete opclass;
 		throw Exception(e.getErrorMessage(), e.getErrorCode(),
-						PGM_FUNC,PGM_FILE,PGM_LINE, &e, xmlparser->getXMLBuffer());
+										PGM_FUNC,PGM_FILE,PGM_LINE, &e, xmlparser->getXMLBuffer());
 	}
 }
 
@@ -1595,40 +1593,40 @@ Operator *DatabaseImportHelper::createOperator(attribs_map &attribs)
 		QString op_signature,
 
 				func_types[]={ Attributes::OperatorFunc,
-							   Attributes::RestrictionFunc,
-							   Attributes::JoinFunc },
+											 Attributes::RestrictionFunc,
+											 Attributes::JoinFunc },
 
 				arg_types[]= { Attributes::LeftType,
-							   Attributes::RightType },
+											 Attributes::RightType },
 
-				op_types[]=  { Attributes::CommutatorOp,
-							   Attributes::NegatorOp };
+				op_types[]= { Attributes::CommutatorOp,
+											Attributes::NegatorOp };
 
-		for(unsigned i=0; i < 3; i++)
-			attribs[func_types[i]]=getDependencyObject(attribs[func_types[i]], ObjectType::Function, true, true, true, {{Attributes::RefType, func_types[i]}});
+		for(auto &func_type : func_types)
+			attribs[func_type]= getDependencyObject(attribs[func_type], ObjectType::Function, true, true, true, {{Attributes::RefType, func_type}});
 
-		for(unsigned i=0; i < 2; i++)
-			attribs[arg_types[i]]=getType(attribs[arg_types[i]], true, {{Attributes::RefType, arg_types[i]}});
+		for(auto &arg_type : arg_types)
+			attribs[arg_type] = getType(attribs[arg_type], true, {{Attributes::RefType, arg_type}});
 
 		regexp.setPattern(Attributes::Signature + "(=)(\")");
-		for(unsigned i=0; i < 2; i++)
+		for(auto & op_type : op_types)
 		{
-			attribs[op_types[i]]=getDependencyObject(attribs[op_types[i]], ObjectType::Operator, true, false, true, {{Attributes::RefType, op_types[i]}});
+			attribs[op_type] = getDependencyObject(attribs[op_type], ObjectType::Operator, true, false, true, {{Attributes::RefType, op_type}});
 
-			if(!attribs[op_types[i]].isEmpty())
+			if(!attribs[op_type].isEmpty())
 			{
 				/* Extracting the operator's signature to check if it was previouly created:
 					Defining a operator as ++(A,B) and it's commutator as *++(B,A) PostgreSQL will automatically
 					create on the second operator a commutator reference to ++(A,B). But to pgModeler only the first
 					reference is valid, so the extracted signature is used to check if the commutator was previously
 					created in order to avoid reference errors */
-				match = regexp.match(attribs[op_types[i]]);
+				match = regexp.match(attribs[op_type]);
 				pos = match.capturedStart() + match.capturedLength();
-				op_signature = attribs[op_types[i]].mid(pos, (attribs[op_types[i]].indexOf('"',pos) - pos));
+				op_signature = attribs[op_type].mid(pos, (attribs[op_type].indexOf('"',pos) - pos));
 
 				//If the operator is not defined clear up the reference to it
 				if(dbmodel->getObjectIndex(op_signature, ObjectType::Operator) < 0)
-					attribs[op_types[i]].clear();
+					attribs[op_type].clear();
 			}
 		}
 
@@ -1640,9 +1638,9 @@ Operator *DatabaseImportHelper::createOperator(attribs_map &attribs)
 	}
 	catch(Exception &e)
 	{
-		if(oper) delete oper;
+		delete oper;
 		throw Exception(e.getErrorMessage(), e.getErrorCode(),
-						PGM_FUNC,PGM_FILE,PGM_LINE, &e, xmlparser->getXMLBuffer());
+										PGM_FUNC,PGM_FILE,PGM_LINE, &e, xmlparser->getXMLBuffer());
 	}
 }
 
@@ -1660,9 +1658,9 @@ Collation *DatabaseImportHelper::createCollation(attribs_map &attribs)
 	}
 	catch(Exception &e)
 	{
-		if(coll) delete coll;
+		delete coll;
 		throw Exception(e.getErrorMessage(), e.getErrorCode(),
-						PGM_FUNC,PGM_FILE,PGM_LINE, &e, xmlparser->getXMLBuffer());
+										PGM_FUNC,PGM_FILE,PGM_LINE, &e, xmlparser->getXMLBuffer());
 	}
 }
 
@@ -1683,9 +1681,9 @@ Cast *DatabaseImportHelper::createCast(attribs_map &attribs)
 	}
 	catch(Exception &e)
 	{
-		if(cast) delete cast;
+		delete cast;
 		throw Exception(e.getErrorMessage(), e.getErrorCode(),
-						PGM_FUNC,PGM_FILE,PGM_LINE, &e, xmlparser->getXMLBuffer());
+										PGM_FUNC,PGM_FILE,PGM_LINE, &e, xmlparser->getXMLBuffer());
 	}
 }
 
@@ -1704,9 +1702,9 @@ Conversion *DatabaseImportHelper::createConversion(attribs_map &attribs)
 	}
 	catch(Exception &e)
 	{
-		if(conv) delete conv;
+		delete conv;
 		throw Exception(e.getErrorMessage(), e.getErrorCode(),
-						PGM_FUNC,PGM_FILE,PGM_LINE, &e, xmlparser->getXMLBuffer());
+										PGM_FUNC,PGM_FILE,PGM_LINE, &e, xmlparser->getXMLBuffer());
 	}
 }
 
@@ -1777,9 +1775,9 @@ Sequence *DatabaseImportHelper::createSequence(attribs_map &attribs)
 	}
 	catch(Exception &e)
 	{
-		if(seq) delete seq;
+		delete seq;
 		throw Exception(e.getErrorMessage(), e.getErrorCode(),
-						PGM_FUNC,PGM_FILE,PGM_LINE, &e, xmlparser->getXMLBuffer());
+										PGM_FUNC,PGM_FILE,PGM_LINE, &e, xmlparser->getXMLBuffer());
 	}
 }
 
@@ -1794,17 +1792,14 @@ Aggregate *DatabaseImportHelper::createAggregate(attribs_map &attribs)
 													 Attributes::FinalFunc },
 				sch_name;
 
-		for(unsigned i=0; i < 2; i++)
-			attribs[func_types[i]]=getDependencyObject(attribs[func_types[i]], ObjectType::Function, true, auto_resolve_deps, true, {{Attributes::RefType, func_types[i]}});
+		for(auto & func_type : func_types)
+			attribs[func_type] = getDependencyObject(attribs[func_type], ObjectType::Function, true, auto_resolve_deps, true, {{Attributes::RefType, func_type}});
 
 		types=getTypes(attribs[Attributes::Types], true);
 		attribs[Attributes::Types]="";
 
-		if(!types.isEmpty())
-		{
-			for(int i=0; i < types.size(); i++)
-				attribs[Attributes::Types]+=types[i];
-		}
+		for(const auto & type : types)
+			attribs[Attributes::Types] += type;
 
 		attribs[Attributes::StateType]=getType(attribs[Attributes::StateType], true,
 		{{Attributes::RefType, Attributes::StateType}});
@@ -1827,9 +1822,9 @@ Aggregate *DatabaseImportHelper::createAggregate(attribs_map &attribs)
 	}
 	catch(Exception &e)
 	{
-		if(agg) delete agg;
+		delete agg;
 		throw Exception(e.getErrorMessage(), e.getErrorCode(),
-						PGM_FUNC,PGM_FILE,PGM_LINE, &e, xmlparser->getXMLBuffer());
+										PGM_FUNC,PGM_FILE,PGM_LINE, &e, xmlparser->getXMLBuffer());
 	}
 }
 
@@ -1923,9 +1918,9 @@ Type *DatabaseImportHelper::createType(attribs_map &attribs)
 	}
 	catch(Exception &e)
 	{
-		if(type) delete type;
+		delete type;
 		throw Exception(e.getErrorMessage(), e.getErrorCode(),
-						PGM_FUNC,PGM_FILE,PGM_LINE, &e, xmlparser->getXMLBuffer());
+										PGM_FUNC,PGM_FILE,PGM_LINE, &e, xmlparser->getXMLBuffer());
 	}
 }
 
@@ -2164,9 +2159,9 @@ View *DatabaseImportHelper::createView(attribs_map &attribs)
 	}
 	catch(Exception &e)
 	{
-		if(view) delete view;
+		delete view;
 		throw Exception(e.getErrorMessage(), e.getErrorCode(),
-						PGM_FUNC,PGM_FILE,PGM_LINE, &e, xmlparser->getXMLBuffer());
+										PGM_FUNC,PGM_FILE,PGM_LINE, &e, xmlparser->getXMLBuffer());
 	}
 }
 
@@ -2553,7 +2548,7 @@ ForeignDataWrapper *DatabaseImportHelper::createForeignDataWrapper(attribs_map &
 	}
 	catch(Exception &e)
 	{
-		if(fdw) delete fdw;
+		delete fdw;
 		throw Exception(e.getErrorMessage(), e.getErrorCode(),
 										PGM_FUNC,PGM_FILE,PGM_LINE, &e, xmlparser->getXMLBuffer());
 	}
@@ -2576,7 +2571,7 @@ ForeignServer *DatabaseImportHelper::createForeignServer(attribs_map &attribs)
 	}
 	catch(Exception &e)
 	{
-		if(server) delete server;
+		delete server;
 		throw Exception(e.getErrorMessage(), e.getErrorCode(),
 										PGM_FUNC,PGM_FILE,PGM_LINE, &e, xmlparser->getXMLBuffer());
 	}
@@ -2599,7 +2594,7 @@ UserMapping *DatabaseImportHelper::createUserMapping(attribs_map &attribs)
 	}
 	catch(Exception &e)
 	{
-		if(usr_map) delete usr_map;
+		delete usr_map;
 		throw Exception(e.getErrorMessage(), e.getErrorCode(),
 										PGM_FUNC,PGM_FILE,PGM_LINE, &e, xmlparser->getXMLBuffer());
 	}
@@ -2685,7 +2680,7 @@ Transform *DatabaseImportHelper::createTransform(attribs_map &attribs)
 	}
 	catch(Exception &e)
 	{
-		if(transf) delete transf;
+		delete transf;
 		throw Exception(e.getErrorMessage(), e.getErrorCode(),
 										PGM_FUNC,PGM_FILE,PGM_LINE, &e, xmlparser->getXMLBuffer());
 	}
@@ -2773,50 +2768,48 @@ void DatabaseImportHelper::createPermission(attribs_map &attribs)
 			/* If the role doesn't exists and there is a name defined, throws an error because
 			the roles wasn't found on the model */
 			if(!role && !role_name.isEmpty())
-				throw Exception(Exception::getErrorMessage(ErrorCode::RefObjectInexistsModel)
-								.arg(QString("%1").arg(perm_str)).arg(BaseObject::getTypeName(ObjectType::Permission))
-								.arg(role_name).arg(BaseObject::getTypeName(ObjectType::Role))
-								,PGM_FUNC,PGM_FILE,PGM_LINE);
-			else
 			{
-				try
+				throw Exception(Exception::getErrorMessage(ErrorCode::RefObjectInexistsModel)
+												.arg(perm_str).arg(BaseObject::getTypeName(ObjectType::Permission))
+												.arg(role_name).arg(BaseObject::getTypeName(ObjectType::Role)), PGM_FUNC, PGM_FILE, PGM_LINE);
+			}
+
+			try
+			{
+				//Configuring the permisison
+				permission = new Permission(object);
+
+				if(role)
+					permission->addRole(role);
+
+				//Setting the ordinary privileges
+				while(!privs.empty())
 				{
-					//Configuring the permisison
-					permission = new Permission(object);
-
-					if(role)
-						permission->addRole(role);
-
-					//Setting the ordinary privileges
-					while(!privs.empty())
-					{
-						permission->setPrivilege(privs.back(), true, false);
-						privs.pop_back();
-					}
-
-					//Setting the grant option privileges
-					while(!gop_privs.empty())
-					{
-						permission->setPrivilege(gop_privs.back(), true, true);
-						gop_privs.pop_back();
-					}
-
-					dbmodel->addPermission(permission);
+					permission->setPrivilege(privs.back(), true, false);
+					privs.pop_back();
 				}
-				catch(Exception &e)
+
+				//Setting the grant option privileges
+				while(!gop_privs.empty())
 				{
-					if(permission)
-						delete permission;
-
-					if(ignore_errors)
-						errors.push_back(Exception(e.getErrorMessage(), e.getErrorCode(), PGM_FUNC,PGM_FILE,PGM_LINE, &e, dumpObjectAttributes(attribs)));
-					else
-						throw Exception(e.getErrorMessage(), e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
+					permission->setPrivilege(gop_privs.back(), true, true);
+					gop_privs.pop_back();
 				}
+
+				dbmodel->addPermission(permission);
+			}
+			catch(Exception &e)
+			{
+				delete permission;
+
+				if(!ignore_errors)
+					throw Exception(e.getErrorMessage(), e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
+
+				errors.push_back(Exception(e.getErrorMessage(), e.getErrorCode(),
+												 PGM_FUNC,PGM_FILE,PGM_LINE, &e, dumpObjectAttributes(attribs)));
 			}
 		}
 	}
-
 }
 
 void DatabaseImportHelper::createTableInheritances()
@@ -2993,9 +2986,7 @@ void DatabaseImportHelper::createColumns()
 				}
 				catch(Exception &e)
 				{
-					if(col)
-						delete col;
-
+					delete col;
 					throw Exception(e.getErrorMessage(), e.getErrorCode(), PGM_FUNC, PGM_FILE, PGM_LINE, &e);
 				}
 			}
@@ -3309,7 +3300,7 @@ void DatabaseImportHelper::__createTableInheritances()
 				{
 					dbmodel->removeRelationship(rel);
 
-					if(rel) delete rel;
+					delete rel;
 
 					if(ignore_errors)
 						errors.push_back(e);
@@ -3444,20 +3435,18 @@ attribs_map DatabaseImportHelper::getObjectAttributes(unsigned oid)
 	if(system_objs.count(oid))
 		return system_objs[oid];
 
-	return attribs_map();
+	return {};
 }
 
 QStringList DatabaseImportHelper::getObjectNames(const QString &oid_vect, bool signature_form)
 {
-	QStringList list=Catalog::parseArrayValues(oid_vect);
+	QStringList oids = Catalog::parseArrayValues(oid_vect),
+			obj_names;
 
-	if(!list.isEmpty())
-	{
-		for(int i=0; i < list.size(); i++)
-			list[i]=getObjectName(list[i], signature_form);
-	}
+	for(auto &oid : oids)
+		obj_names.append(getObjectName(oid, signature_form));
 
-	return list;
+	return obj_names;
 }
 
 QString DatabaseImportHelper::getColumnName(const QString &tab_oid_str, const QString &col_id_str, bool prepend_tab_name)
@@ -3683,10 +3672,11 @@ QString DatabaseImportHelper::getType(const QString &oid_str, bool generate_xml,
 
 QStringList DatabaseImportHelper::getTypes(const QString &oid_vect, bool generate_xml)
 {
-	QStringList list=Catalog::parseArrayValues(oid_vect);
+	QStringList oids = Catalog::parseArrayValues(oid_vect),
+			types;
 
-	for(int i=0; i < list.size(); i++)
-		list[i]=getType(list[i], generate_xml);
+	for(auto &oid : oids)
+		types.append(getType(oid, generate_xml));
 
-	return list;
+	return types;
 }

@@ -58,8 +58,8 @@ QString ModelNavigationWidget::getText(int idx)
 {
 	if(idx < 0 || idx >= models_cmb->count())
 		return "";
-	else
-		return models_cmb->itemText(idx);
+
+	return models_cmb->itemText(idx);
 }
 
 QList<ModelWidget *> ModelNavigationWidget::getModelWidgets()

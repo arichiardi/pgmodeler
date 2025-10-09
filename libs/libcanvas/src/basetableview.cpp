@@ -289,7 +289,7 @@ void BaseTableView::hoverMoveEvent(QGraphicsSceneHoverEvent *event)
 			//Sets the selection position as same as item's position
 			rect1=this->mapRectToItem(item, item->boundingRect());
 			obj_selection->setVisible(true);
-			obj_selection->setPos(QPointF(title->pos().x() + HorizSpacing, -rect1.top() + VertSpacing/2));
+			obj_selection->setPos(QPointF(title->pos().x() + HorizSpacing, -rect1.top() + (VertSpacing/2)));
 
 			//Stores the selected child object
 			sel_child_obj_view = item;
@@ -596,11 +596,9 @@ bool BaseTableView::configurePaginationParams(BaseTable::TableSection section_id
 		attribs_toggler->setPaginationValues(section_id, curr_page, max_pages);
 		return true;
 	}
-	else
-	{
-		attribs_toggler->setPaginationValues(section_id, 0, 0);
-		return false;
-	}
+
+	attribs_toggler->setPaginationValues(section_id, 0, 0);
+	return false;
 }
 
 void BaseTableView::configureCollapsedSections(BaseTable::CollapseMode coll_mode)

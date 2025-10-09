@@ -139,13 +139,14 @@ bool SQLToolWidget::eventFilter(QObject *object, QEvent *event)
 
 		return true;
 	}
-	else if(event->type() == QEvent::MouseButtonPress &&
-					dynamic_cast<QMouseEvent *>(event)->button()==Qt::MiddleButton &&
-					object == sourcecode_txt &&
-					sourcecode_txt->textCursor().hasSelection())
+
+	if(event->type() == QEvent::MouseButtonPress &&
+		 dynamic_cast<QMouseEvent *>(event)->button()==Qt::MiddleButton &&
+		 object == sourcecode_txt &&
+		 sourcecode_txt->textCursor().hasSelection())
 	{
-			showSnippet(sourcecode_txt->textCursor().selectedText());
-			return true;
+		showSnippet(sourcecode_txt->textCursor().selectedText());
+		return true;
 	}
 
 	return QWidget::eventFilter(object, event);
@@ -445,8 +446,7 @@ void SQLToolWidget::closeDatabaseExplorer(int idx, bool confirm_close)
 	sql_exec_wgts.remove(db_explorer);
 	databases_tbw->removeTab(idx);
 
-	if(db_explorer)
-		delete db_explorer;
+	delete db_explorer;
 }
 
 void SQLToolWidget::ignoreAutoBrowseFlag(bool value)
@@ -490,9 +490,7 @@ void SQLToolWidget::closeSQLExecutionTab(int idx, bool confirm_close)
 
 	sql_exec_tbw->removeTab(idx);
 	setCornerButtonPos();
-
-	if(sql_exec_wgt)
-		delete sql_exec_wgt;
+	delete sql_exec_wgt;
 }
 
 void SQLToolWidget::showSnippet(const QString &snip)
@@ -637,7 +635,7 @@ void SQLToolWidget::dropDatabase(const QString &dbname)
 QWidgetList SQLToolWidget::getExecutionTabs(DatabaseExplorerWidget *db_expl_wgt)
 {
 	if(!db_expl_wgt || !sql_exec_wgts.contains(db_expl_wgt))
-		return QWidgetList();
+		return {};
 
 	return sql_exec_wgts.value(db_expl_wgt);
 }

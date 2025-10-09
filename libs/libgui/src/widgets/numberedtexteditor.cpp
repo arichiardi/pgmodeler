@@ -466,18 +466,18 @@ void NumberedTextEditor::identSelection(bool ident_right)
 		cursor.setPosition(end, QTextCursor::KeepAnchor);
 		lines = cursor.selectedText().split(QChar(QChar::ParagraphSeparator));
 
-		for(int i=0; i < lines.size(); i++)
+		for(auto &line : lines)
 		{
-			if(!lines[i].isEmpty())
+			if(!line.isEmpty())
 			{
 				if(ident_right)
 				{
-					lines[i].prepend(QChar('\t'));
+					line.prepend(QChar('\t'));
 					count++;
 				}
-				else if(lines[i].at(0)==QChar('\t'))
+				else if(line.at(0) == QChar('\t'))
 				{
-					lines[i].remove(0,1);
+					line.remove(0,1);
 					count++;
 				}
 			}

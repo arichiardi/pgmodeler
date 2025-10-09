@@ -163,8 +163,8 @@ void Index::addIndexElements(std::vector<IndexElement> &elems)
 	{
 		idx_elements.clear();
 
-		for(unsigned i=0; i < elems.size(); i++)
-			addIndexElement(elems[i]);
+		for(const auto & elem : elems)
+			addIndexElement(elem);
 	}
 	catch(Exception &e)
 	{
@@ -513,11 +513,11 @@ void Index::validateElements()
 {
 	if(indexing_type!=IndexingType::Btree)
 	{
-		for(unsigned i=0; i < idx_elements.size(); i++)
+		for(auto & idx_element : idx_elements)
 		{
-			if(idx_elements[i].isSortingEnabled())
+			if(idx_element.isSortingEnabled())
 			{
-				idx_elements[i].setSortingEnabled(false);
+				idx_element.setSortingEnabled(false);
 				setCodeInvalidated(true);
 			}
 		}

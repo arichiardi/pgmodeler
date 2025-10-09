@@ -28,8 +28,9 @@ ValidationInfo::ValidationInfo(ValType val_type, BaseObject *object, std::vector
 {
 	if(val_type >= SqlValidationError)
 		throw Exception(ErrorCode::AsgInvalidTypeObject,PGM_FUNC,PGM_FILE,PGM_LINE);
-	else if((val_type==NoUniqueName || val_type==BrokenReference) &&
-			(!object || references.empty()))
+
+	if((val_type==NoUniqueName || val_type==BrokenReference) &&
+		 (!object || references.empty()))
 		throw Exception(ErrorCode::AsgNotAllocattedObject,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	this->val_type=val_type;

@@ -18,7 +18,7 @@
 
 #include "procedure.h"
 
-Procedure::Procedure() : BaseFunction()
+Procedure::Procedure()
 {
 	obj_type = ObjectType::Procedure;
 }

@@ -83,7 +83,7 @@ void ModelDbSelectorWidget::setSelectedDatabase(const QString &db_name)
 Connection ModelDbSelectorWidget::getSelectedConnection()
 {
 	if(database_cmb->currentIndex() <= 0)
-		return Connection();
+		return {};
 
 	return *(reinterpret_cast<Connection *>(connections_cmb->currentData().value<void *>()));
 }

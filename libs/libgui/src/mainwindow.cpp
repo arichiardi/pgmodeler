@@ -795,7 +795,7 @@ void MainWindow::restoreTemporaryModels()
 	for(int idx = 0; idx < models_tbw->count(); idx++)
 		ignored_files += QFileInfo(dynamic_cast<ModelWidget *>(models_tbw->widget(idx))->getTempFilename()).fileName();
 
-	GuiUtilsNs::resizeDialog(restoration_form);
+	GuiUtilsNs::resizeWidget(restoration_form);
 	restoration_form->setIgnoredFiles(ignored_files);
 
 	//Restore temporary models (if exists)
@@ -1223,13 +1223,13 @@ void MainWindow::updateRecentModelsMenu()
 	while(recent_models.size() > GeneralConfigWidget::MaxRecentModels)
 		recent_models.pop_front();
 
-	for(int i = 0; i < recent_models.size(); i++)
+	for(auto &recent_mdl : recent_models)
 	{
-		fi.setFile(recent_models[i]);
+		fi.setFile(recent_mdl);
 
 		act=recent_models_menu->addAction(fi.fileName(),this, &MainWindow::loadModelFromAction);
-		act->setToolTip(recent_models[i]);
-		act->setData(recent_models[i]);
+		act->setToolTip(recent_mdl);
+		act->setData(recent_mdl);
 
 		if(fi.suffix() == dbm_ext)
 			act->setIcon(QIcon(GuiUtilsNs::getIconPath("dbmfile")));
@@ -1398,7 +1398,8 @@ void MainWindow::addModel(ModelWidget *model_wgt)
 	{
 		if(!model_wgt)
 			throw Exception(ErrorCode::AsgNotAllocattedObject,PGM_FUNC,PGM_FILE,PGM_LINE);
-		else if(model_wgt->parent())
+
+		if(model_wgt->parent())
 			throw Exception(ErrorCode::AsgWidgetAlreadyHasParent,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 		model_nav_wgt->addModel(model_wgt);
@@ -2514,7 +2515,7 @@ void MainWindow::changeCurrentView(bool checked)
 void MainWindow::reportBug()
 {
 	BugReportForm bugrep_frm;
-	GuiUtilsNs::resizeDialog(&bugrep_frm);
+	GuiUtilsNs::resizeWidget(&bugrep_frm);
 	GeneralConfigWidget::restoreWidgetGeometry(&bugrep_frm);
 	bugrep_frm.exec();
 	GeneralConfigWidget::saveWidgetGeometry(&bugrep_frm);

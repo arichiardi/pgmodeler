@@ -71,14 +71,15 @@ void Column::setType(PgSqlType tp)
 	//An error is raised if the column receive a pseudo-type as data type.
 	if(tp.isPseudoType())
 		throw Exception(ErrorCode::AsgPseudoTypeColumn,PGM_FUNC,PGM_FILE,PGM_LINE);
-	else if(this->identity_type != IdentityType::Null && !tp.isIntegerType())
+
+	if(this->identity_type != IdentityType::Null && !tp.isIntegerType())
 	{
 		throw Exception(Exception::getErrorMessage(ErrorCode::InvalidIdentityColumn).arg(getSignature()),
 										ErrorCode::InvalidIdentityColumn, PGM_FUNC, PGM_FILE, PGM_LINE);
 	}
 
 	setCodeInvalidated(this->type != tp);
-	this->type=tp;
+	this->type = tp;
 }
 
 void Column::setIdentityType(IdentityType id_type)
@@ -151,8 +152,8 @@ QString Column::getTypeReference()
 {
 	if(getParentTable())
 		return getParentTable()->getName(true) + QString(".") + this->getName(true) + QString("%TYPE");
-	else
-		return "";
+	
+	return "";
 }
 
 QString Column::getDefaultValue()
@@ -164,25 +165,30 @@ QString Column::getOldName(bool format)
 {
 	if(format)
 		return BaseObject::formatName(old_name);
-	else
-		return old_name;
+	
+	return old_name;
 }
 
 void Column::setSequence(BaseObject *seq)
 {
 	if(seq)
 	{
-		if(seq->getObjectType()!=ObjectType::Sequence)
+		if(seq->getObjectType() != ObjectType::Sequence)
+		{
 			throw Exception(Exception::getErrorMessage(ErrorCode::AsgInvalidObjectType)
-							.arg(this->obj_name)
-							.arg(this->getTypeName())
-							.arg(BaseObject::getTypeName(ObjectType::Sequence)),
-							ErrorCode::AsgInvalidObjectType,PGM_FUNC,PGM_FILE,PGM_LINE);
-		else if(!type.isIntegerType() && !type.isNumericType())
+											.arg(this->obj_name)
+											.arg(this->getTypeName())
+											.arg(BaseObject::getTypeName(ObjectType::Sequence)),
+											ErrorCode::AsgInvalidObjectType, PGM_FUNC, PGM_FILE, PGM_LINE);
+		}
+
+		if(!type.isIntegerType() && !type.isNumericType())
+		{
 			throw Exception(Exception::getErrorMessage(ErrorCode::IncompColumnTypeForSequence)
-							.arg(seq->getName(true))
-							.arg(this->obj_name),
-							ErrorCode::IncompColumnTypeForSequence,PGM_FUNC,PGM_FILE,PGM_LINE);
+											.arg(seq->getName(true))
+											.arg(this->obj_name),
+											ErrorCode::IncompColumnTypeForSequence, PGM_FUNC, PGM_FILE, PGM_LINE);
+		}
 
 		default_value="";
 		identity_type=IdentityType::Null;

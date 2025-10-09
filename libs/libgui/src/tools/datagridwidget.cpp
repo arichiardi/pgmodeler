@@ -1314,9 +1314,11 @@ void DataGridWidget::saveChanges()
 			conn_sql.connect();
 			conn_sql.executeDDLCommand("START TRANSACTION");
 
-			for(unsigned idx=0; idx < changed_rows.size(); idx++)
+			for(const auto &changed_row : changed_rows)
 			{
-				row = changed_rows[idx];
+				/* We make a copy of the row id so in case of exception (see in the catch block)
+				 * we can highlight the problematic row data */
+				row = changed_row;
 				cmd = getDMLCommand(row);
 				conn_sql.executeDDLCommand(cmd);
 			}
@@ -1451,13 +1453,11 @@ QString DataGridWidget::getDMLCommand(int row)
 
 		if(col_list.isEmpty())
 			return "";
+
+		if(op_type == OpUpdate)
+			fmt_cmd = fmt_cmd.arg(fmt_tb_name).arg(val_list.join(", ")).arg(flt_list.join(" AND "));
 		else
-		{
-			if(op_type == OpUpdate)
-				fmt_cmd = fmt_cmd.arg(fmt_tb_name).arg(val_list.join(", ")).arg(flt_list.join(" AND "));
-			else
-				fmt_cmd = fmt_cmd.arg(fmt_tb_name).arg(col_list.join(", ")).arg(val_list.join(", "));
-		}
+			fmt_cmd = fmt_cmd.arg(fmt_tb_name).arg(col_list.join(", ")).arg(val_list.join(", "));
 	}
 
 	return fmt_cmd;

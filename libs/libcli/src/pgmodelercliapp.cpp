@@ -17,11 +17,11 @@
 */
 
 #include "pgmodelercliapp.h"
+#include "modelwidget.h"
 #include "utilsns.h"
 #include "settings/appearanceconfigwidget.h"
 #include "tableview.h"
 #include "graphicalview.h"
-#include "tableview.h"
 #include "schemaview.h"
 #include "styledtextboxview.h"
 #include "relationshipview.h"
@@ -346,28 +346,14 @@ PgModelerCliApp::~PgModelerCliApp()
 	if(show_flush_msg)
 		printMessage(tr("Flushing used memory..."));
 
-	if(scene)
-		delete scene;
-
+	delete scene;
 	delete input_model;
-
-	if(export_hlp)
-		delete export_hlp;
-
-	if(import_hlp)
-		delete import_hlp;
-
-	if(diff_hlp)
-		delete diff_hlp;
-
-	if(conn_conf)
-		delete conn_conf;
-
-	if(rel_conf)
-		delete rel_conf;
-
-	if(general_conf)
-		delete general_conf;
+	delete export_hlp;
+	delete import_hlp;
+	delete diff_hlp;
+	delete conn_conf;
+	delete rel_conf;
+	delete general_conf;
 
 	while(!plugins.empty())
 	{
@@ -874,7 +860,8 @@ void PgModelerCliApp::parseOptions(attribs_map &opts)
 
 			if(!export_file || (export_file && !opts.count(Split)))
 				throw Exception(tr("The options `%1', `%2', and `%3' must be used together with the split mode option `%4'!").arg(DependenciesSql, ChildrenSql, GroupByType, Split), ErrorCode::Custom,PGM_FUNC,PGM_FILE,PGM_LINE);
-			else if(num_opts > 1)
+
+			if(num_opts > 1)
 				throw Exception(tr("The options `%1', `%2', and `%3' cannot be used simultaneously!").arg(DependenciesSql, ChildrenSql, GroupByType), ErrorCode::Custom,PGM_FUNC,PGM_FILE,PGM_LINE);
 		}
 
@@ -1533,15 +1520,13 @@ void PgModelerCliApp::recreateObjects()
 
 				break;
 			}
-			else
-			{
-				printMessage(tr("** WARNING: Some objects may not be fixable. Retrying... (attempt %1/%2)").arg(tries, max_tries));
-				input_model->validateRelationships();
-				objs_xml = fail_objs;
-				objs_xml.append(constr);
-				fail_objs.clear();
-				constr.clear();
-			}
+			
+			printMessage(tr("** WARNING: Some objects may not be fixable. Retrying... (attempt %1/%2)").arg(tries, max_tries));
+			input_model->validateRelationships();
+			objs_xml = fail_objs;
+			objs_xml.append(constr);
+			fail_objs.clear();
+			constr.clear();
 		}
 	}
 
@@ -1635,10 +1620,10 @@ void PgModelerCliApp::fixObjectAttributes(QString &obj_xml)
 		//Configuring the table=[name] attribute to be included on rule objects
 		tab_name=QString("table=\"%1.%2\"").arg(sch_name, tab_name);
 
-		for(unsigned idx=0; idx < 3; idx++)
+		for(auto & obj_type : obj_types)
 		{
-			curr_tag=TagExpr.arg(BaseObject::getSchemaName(obj_types[idx]));
-			curr_end_tag=EndTagExpr.arg(BaseObject::getSchemaName(obj_types[idx])) + ">";
+			curr_tag=TagExpr.arg(BaseObject::getSchemaName(obj_type));
+			curr_end_tag=EndTagExpr.arg(BaseObject::getSchemaName(obj_type)) + ">";
 			start_idx=obj_xml.indexOf(curr_tag);
 
 			while(start_idx >=0)
@@ -2260,8 +2245,8 @@ void PgModelerCliApp::diffModels()
 						printMessage(tr("The diff operation will not continue!\n"));
 						return;
 					}
-					else
-						printMessage(tr("Switching to full diff operation..."));
+					
+					printMessage(tr("Switching to full diff operation..."));
 				}
 				else
 				{
@@ -2403,9 +2388,7 @@ void PgModelerCliApp::diffModels()
 	}
 	catch(Exception &e)
 	{
-		if(compared_model)
-			delete compared_model;
-
+		delete compared_model;
 		throw Exception(e.getErrorMessage(), e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
 	}
 }

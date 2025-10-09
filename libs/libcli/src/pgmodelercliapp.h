@@ -33,7 +33,6 @@
 #include "settings/generalconfigwidget.h"
 #include "settings/connectionsconfigwidget.h"
 #include "settings/relationshipconfigwidget.h"
-#include "settings/generalconfigwidget.h"
 #include "tools/databaseimporthelper.h"
 #include "tools/modelsdiffhelper.h"
 #include "pgmodelercliplugin.h"
@@ -284,7 +283,7 @@ class __libcli PgModelerCliApp: public Application {
 		MsgNoFileAssociation;
 
 		PgModelerCliApp(int argc, char **argv);
-		virtual ~PgModelerCliApp();
+		~PgModelerCliApp() override;
 
 		//! \brief Shows the options menu
 		void showMenu();

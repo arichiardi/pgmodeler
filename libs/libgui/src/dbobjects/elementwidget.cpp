@@ -126,9 +126,10 @@ void ElementWidget::setAttributes(DatabaseModel *model, BaseObject *parent_obj)
 		this->setEnabled(false);
 		throw Exception(ErrorCode::AsgNotAllocattedObject,PGM_FUNC,PGM_FILE,PGM_LINE);
 	}
-	else if(parent_obj->getObjectType()!=ObjectType::Table &&
-					parent_obj->getObjectType()!=ObjectType::View &&
-					parent_obj->getObjectType()!=ObjectType::Relationship)
+
+	if(parent_obj->getObjectType()!=ObjectType::Table &&
+		 parent_obj->getObjectType()!=ObjectType::View &&
+		 parent_obj->getObjectType()!=ObjectType::Relationship)
 		throw Exception(ErrorCode::OprObjectInvalidType,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	this->setEnabled(true);

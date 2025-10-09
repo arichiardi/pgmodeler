@@ -23,7 +23,6 @@
 #include "messagebox.h"
 #include "settings/appearanceconfigwidget.h"
 #include "settings/generalconfigwidget.h"
-#include "guiutilsns.h"
 #include "sourceeditorwidget.h"
 #include "aboutsewidget.h"
 #include "baseform.h"

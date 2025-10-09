@@ -31,7 +31,7 @@ int main(int argc, char **argv)
 		app.loadTranslations(QLocale::system().name(), false);
 
 		CrashHandlerForm crashhandler(args.size() > 1 && args[1]==CrashHandlerForm::AnalysisMode);
-		GuiUtilsNs::resizeDialog(&crashhandler);
+		GuiUtilsNs::resizeWidget(&crashhandler);
 		crashhandler.show();
 		app.exec();
 

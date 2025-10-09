@@ -364,7 +364,8 @@ void ModelExportHelper::exportToDBMS(DatabaseModel *db_model, Connection conn, c
 		undo column addition (this can be changed in the future) */
 		if(simulate && (ignore_dup || drop_db || drop_objs || transactional))
 			throw Exception(ErrorCode::MixingIncompExportOptions,PGM_FUNC,PGM_FILE,PGM_LINE);
-		else if(drop_db && drop_objs)
+
+		if(drop_db && drop_objs)
 			throw Exception(ErrorCode::MixingIncompDropOptions,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 		connect(db_model, &DatabaseModel::s_objectLoaded, this, &ModelExportHelper::updateProgress, Qt::DirectConnection);
@@ -606,14 +607,11 @@ void ModelExportHelper::exportToDBMS(DatabaseModel *db_model, Connection conn, c
 		}
 		else
 		{
-			//Redirects any error to terrorsr
 			if(errors.empty())
 				throw Exception(e.getErrorMessage(),e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
-			else
-			{
-				errors.push_back(e);
-				throw Exception(e.getErrorMessage(),PGM_FUNC,PGM_FILE,PGM_LINE, errors);
-			}
+
+			errors.push_back(e);
+			throw Exception(e.getErrorMessage(),PGM_FUNC,PGM_FILE,PGM_LINE, errors);
 		}
 	}
 }
@@ -1173,7 +1171,9 @@ void ModelExportHelper::updateProgress(int prog, QString object_id, unsigned obj
 	emit s_progressUpdated(aux_prog, object_id, static_cast<ObjectType>(obj_type), "", sender() == db_model);
 }
 
-void ModelExportHelper::setExportToDBMSParams(DatabaseModel *db_model, Connection *conn, const QString &pgsql_ver, bool ignore_dup, bool drop_db, bool drop_objs, bool simulate, bool use_rand_names, bool force_db_drop, bool transactional)
+void ModelExportHelper::setExportToDBMSParams(DatabaseModel *db_model, Connection *conn, const QString &pgsql_ver,
+																							bool ignore_dup, bool drop_db, bool drop_objs, bool simulate, bool use_rand_names,
+																							bool force_db_drop, bool transactional)
 {
 	this->db_model = db_model;
 	this->connection = conn;
@@ -1213,7 +1213,9 @@ void ModelExportHelper::setExportToSQLParams(DatabaseModel *db_model, const QStr
 	this->gen_drop_file = gen_drop_file;
 }
 
-void ModelExportHelper::setExportToPNGParams(ObjectsScene *scene, QGraphicsView *viewp, const QString &filename, double zoom, bool show_grid, bool show_delim, bool page_by_page, bool override_bg_color)
+void ModelExportHelper::setExportToPNGParams(ObjectsScene *scene, QGraphicsView *viewp, const QString &filename,
+																						 double zoom, bool show_grid, bool show_delim, bool page_by_page,
+																						 bool override_bg_color)
 {
 	this->scene = scene;
 	this->viewp = viewp;

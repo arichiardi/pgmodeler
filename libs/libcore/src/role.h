@@ -77,7 +77,7 @@ class __libcore Role: public BaseObject {
 		};
 
 		Role();
-		~Role() = default;
+		~Role() override = default;
 
 		//! \brief Sets one option for the role (Via OP_??? constants)
 		void setOption(RoleOpts op_type, bool value);
@@ -126,12 +126,12 @@ class __libcore Role: public BaseObject {
 		QString getPassword();
 
 		//! \brief Returns the SQL / XML definition for the role
-		virtual QString getSourceCode(SchemaParser::CodeType def_type) final;
-		virtual QString getSourceCode(SchemaParser::CodeType def_type, bool reduced_form) final;
+		QString getSourceCode(SchemaParser::CodeType def_type) final;
+		QString getSourceCode(SchemaParser::CodeType def_type, bool reduced_form) final;
 
-		virtual QString getAlterCode(BaseObject *object) final;
+		QString getAlterCode(BaseObject *object) final;
 
-		virtual void updateDependencies() override;
+		void updateDependencies() override;
 };
 
 #endif

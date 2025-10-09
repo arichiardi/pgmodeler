@@ -370,7 +370,8 @@ class __libutils Exception {
 		Exception(ErrorCode error_code, const QString &method, const QString &file, int line, Exception *exception=nullptr, const QString &extra_info="");
 		Exception(ErrorCode error_code, const QString &method, const QString &file, int line, std::vector<Exception> &exceptions, const QString &extra_info="");
 
-		~Exception(void){}
+		~Exception() = default;
+
 		QString getErrorMessage();
 		static QString getErrorMessage(ErrorCode error_code);
 		static QString getErrorCode(ErrorCode error_code);

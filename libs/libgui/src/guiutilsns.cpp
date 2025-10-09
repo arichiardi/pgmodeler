@@ -30,7 +30,6 @@
 #include "objectslistmodel.h"
 #include "customsortproxymodel.h"
 #include <unordered_map>
-#include "customuistyle.h"
 
 namespace GuiUtilsNs {
 	NumberedTextEditor *createNumberedTextEditor(QWidget *parent, bool act_btns_enabled, qreal custom_fnt_size)
@@ -348,7 +347,7 @@ namespace GuiUtilsNs {
 		return getIconPath(BaseObject::getSchemaName(obj_type) + suffix);
 	}
 
-	void resizeDialog(QWidget *widget)
+	void resizeWidget(QWidget *widget)
 	{
 		if(!widget)
 			return;
@@ -586,7 +585,7 @@ namespace GuiUtilsNs {
 		if(file_dlg.result() == QDialog::Accepted)
 			return file_dlg.selectedFiles();
 
-		return QStringList();
+		return {};
 	}
 
 	void populateTable(QTableWidget *tab_wgt, const CsvDocument &csv_doc)

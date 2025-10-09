@@ -41,7 +41,7 @@ class ModelDbSelectorWidget : public QWidget, public Ui::ModelDbSelectorWidget {
 
 		explicit ModelDbSelectorWidget(QWidget *parent = nullptr);
 
-		~ModelDbSelectorWidget() = default;
+		~ModelDbSelectorWidget() override = default;
 
 		void setSelectMode(SelectMode sel_mode);
 		void setSelectedDatabase(const QString &db_name);

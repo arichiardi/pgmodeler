@@ -17,6 +17,7 @@
 */
 
 #include "modelvalidationhelper.h"
+#include "messagebox.h"
 #include <QThread>
 
 const QString ModelValidationHelper::SignalMsg { "`%1' (%2)" };
