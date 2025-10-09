@@ -988,7 +988,7 @@ void CodeCompletionWidget::extractTableNames()
 QStringList CodeCompletionWidget::getTableNames(int start_pos, int stop_pos)
 {
 	if(start_pos < 0)
-		return QStringList();
+		return {};
 
 	QStringList names;
 

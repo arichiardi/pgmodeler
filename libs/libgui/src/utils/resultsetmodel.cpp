@@ -99,7 +99,7 @@ QModelIndex ResultSetModel::index(int row, int column, const QModelIndex &parent
 
 QModelIndex ResultSetModel::parent(const QModelIndex &) const
 {
-	return QModelIndex();
+	return {};
 }
 
 QVariant ResultSetModel::data(const QModelIndex &index, int role) const
@@ -110,10 +110,10 @@ QVariant ResultSetModel::data(const QModelIndex &index, int role) const
 			return (item_data.at(index.row() * col_count + index.column()));
 
 		if(role == Qt::TextAlignmentRole)
-			return QVariant(Qt::AlignLeft | Qt::AlignVCenter);
+			return { Qt::AlignLeft | Qt::AlignVCenter };
 	}
 
-	return QVariant();
+	return {};
 }
 
 QVariant ResultSetModel::headerData(int section, Qt::Orientation orientation, int role) const
@@ -121,7 +121,7 @@ QVariant ResultSetModel::headerData(int section, Qt::Orientation orientation, in
 	if(orientation == Qt::Horizontal)
 	{
 		if(section >= col_count)
-			return QVariant();
+			return {};
 
 		if(role == Qt::DisplayRole)
 			return header_data.at(section);
@@ -133,7 +133,7 @@ QVariant ResultSetModel::headerData(int section, Qt::Orientation orientation, in
 			return tooltip_data.at(section);
 
 		if(role == Qt::TextAlignmentRole)
-			return QVariant(Qt::AlignLeft | Qt::AlignVCenter);
+			return { Qt::AlignLeft | Qt::AlignVCenter };
 	}
 
 	return QAbstractTableModel::headerData(section, orientation, role);

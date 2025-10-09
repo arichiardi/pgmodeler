@@ -982,7 +982,7 @@ void ObjectsScene::handleChildrenSelectionChanged()
 	if(!tab_view)
 		return;
 
-	if(tab_view->getSelectedChidren().empty())
+	if(tab_view->getSelectedChidren().empty())		
 		tabs_sel_children.removeAll(tab_view);
 	else if(!tabs_sel_children.contains(tab_view))
 		tabs_sel_children.append(tab_view);

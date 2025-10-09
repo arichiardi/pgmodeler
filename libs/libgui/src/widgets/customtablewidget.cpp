@@ -102,7 +102,7 @@ void CustomTableWidget::setTableItemColor(TableItemColor color_idx, const QColor
 QColor CustomTableWidget::getTableItemColor(TableItemColor color_idx)
 {
 	if(color_idx > RelAddedItemAltFgColor)
-		return QColor();
+		return {};
 
 	return item_colors[color_idx];
 }

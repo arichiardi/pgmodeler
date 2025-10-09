@@ -21,7 +21,7 @@
 
 const QString View::ExtraSCRegExp {"((\\;)+(\\s|\\t)*)+$"};
 
-View::View() : BaseTable()
+View::View()
 {
 	obj_type = ObjectType::View;
 	materialized = recursive = with_no_data = false;
@@ -191,7 +191,7 @@ SimpleColumn View::getColumn(const QString &name)
 			return col;
 	}
 
-	return SimpleColumn();
+	return {};
 }
 
 void View::generateColumns()

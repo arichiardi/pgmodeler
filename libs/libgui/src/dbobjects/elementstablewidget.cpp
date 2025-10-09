@@ -126,7 +126,7 @@ QVariant ElementsTableWidget::copyElementData(Element *elem)
 	if(dynamic_cast<PartitionKey *>(elem))
 		return QVariant::fromValue<PartitionKey>(*dynamic_cast<PartitionKey *>(elem));
 
-	return QVariant();
+	return {};
 }
 
 int ElementsTableWidget::openElementForm(Element *elem)

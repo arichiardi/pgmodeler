@@ -21,7 +21,7 @@
 #include "coreutilsns.h"
 #include "csvparser.h"
 
-PhysicalTable::PhysicalTable() : BaseTable()
+PhysicalTable::PhysicalTable()
 {
 	gen_alter_cmds=false;
 	attributes[Attributes::Columns]="";

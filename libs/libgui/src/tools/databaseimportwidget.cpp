@@ -19,7 +19,6 @@
 #include "databaseimportwidget.h"
 #include "customuistyle.h"
 #include "widgets/taskprogresswidget.h"
-#include "widgets/taskprogresswidget.h"
 #include "guiutilsns.h"
 #include "utilsns.h"
 #include "defaultlanguages.h"
@@ -1085,7 +1084,7 @@ std::vector<QTreeWidgetItem *> DatabaseImportWidget::updateObjectsTree(DatabaseI
 																																			 ObjGroupsFlag group_flags, QTreeWidgetItem *root, const QString &schema, const QString &table)
 {
 	if(!tree_wgt)
-		return std::vector<QTreeWidgetItem *>();
+		return {};
 
 	std::vector<QTreeWidgetItem *> items_vect;
 	QTreeWidgetItem *group = nullptr, *item = nullptr;

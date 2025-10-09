@@ -4485,14 +4485,17 @@ PgSqlType DatabaseModel::createPgSQLType()
 	type_idx = PgSqlType::getBaseTypeIndex(name);
 
 	if(type_idx != PgSqlType::Null)
-		return PgSqlType(name, dimension, length, precision, with_timezone, interv_type, spatial_type);
+		return { name, dimension, length, precision,
+						 with_timezone, interv_type, spatial_type };
 
 	//Raises an error if the referenced type name doesn't exists
 	if(PgSqlType::getUserTypeIndex(name, nullptr, this) == PgSqlType::Null)
 		throw Exception(ErrorCode::RefUserTypeInexistsModel,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	type_idx = PgSqlType::getUserTypeIndex(name, ptype, this);
-	return PgSqlType(type_idx, dimension, length, precision, with_timezone, interv_type, spatial_type);
+
+	return { type_idx, dimension, length, precision,
+					 with_timezone, interv_type, spatial_type };
 }
 
 Type *DatabaseModel::createType()
@@ -8122,7 +8125,7 @@ std::map<unsigned, BaseObject *> DatabaseModel::getCreationOrder(SchemaParser::C
 std::vector<BaseObject *> DatabaseModel::getCreationOrder(BaseObject *object, bool only_children)
 {
 	if(!object)
-		return std::vector<BaseObject *>();
+		return {};
 
 	std::map<unsigned, BaseObject *> objs_map;
 	std::vector<BaseObject *> created_objs, children;

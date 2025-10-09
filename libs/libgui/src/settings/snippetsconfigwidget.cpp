@@ -99,7 +99,7 @@ attribs_map SnippetsConfigWidget::getSnippetById(const QString &snip_id)
 	if(config_params.count(snip_id))
 		return config_params[snip_id];
 
-	return attribs_map();
+	return {};
 }
 
 QStringList SnippetsConfigWidget::getSnippetsIdsByObject(ObjectType obj_type)

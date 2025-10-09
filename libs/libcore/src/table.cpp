@@ -18,7 +18,7 @@
 
 #include "table.h"
 
-Table::Table() : PhysicalTable()
+Table::Table()
 {
 	obj_type = ObjectType::Table;
 	with_oid=unlogged=rls_enabled=rls_forced=false;

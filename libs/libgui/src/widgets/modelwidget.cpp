@@ -5622,7 +5622,7 @@ QRectF ModelWidget::rearrangeTablesHierarchically(BaseTableView *root, std::vect
 		}
 	}
 
-	return QRectF(root->pos(), QPointF(px1, py1));
+	return { root->pos(), QPointF(px1, py1) };
 }
 
 void ModelWidget::rearrangeTablesInSchema(Schema *schema, QPointF start)

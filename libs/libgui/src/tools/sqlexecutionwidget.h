@@ -33,7 +33,6 @@
 #include "widgets/searchreplacewidget.h"
 #include "widgets/codecompletionwidget.h"
 #include "widgets/numberedtexteditor.h"
-#include "widgets/searchreplacewidget.h"
 #include "sqlexecutionhelper.h"
 
 class __libgui SQLExecutionWidget: public QWidget, public Ui::SQLExecutionWidget {

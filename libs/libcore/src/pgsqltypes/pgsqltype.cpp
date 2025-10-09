@@ -1075,15 +1075,15 @@ PgSqlType PgSqlType::getAliasType()
 	if(!isUserType())
 	{
 		if(type_names[this->type_idx]=="serial")
-			return (PgSqlType("integer"));
+			return { "integer" };
 
 		if(type_names[this->type_idx]=="smallserial")
-			return (PgSqlType("smallint"));
+			return { "smallint" };
 
 		if(type_names[this->type_idx]=="bigserial")
-			return (PgSqlType("bigint"));
+			return { "bigint" };
 
-		return (PgSqlType(type_names[this->type_idx]));
+		return { type_names[this->type_idx] };
 	}
 
 	return *this;

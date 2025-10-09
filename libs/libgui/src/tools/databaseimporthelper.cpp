@@ -3445,7 +3445,7 @@ attribs_map DatabaseImportHelper::getObjectAttributes(unsigned oid)
 	if(system_objs.count(oid))
 		return system_objs[oid];
 
-	return attribs_map();
+	return {};
 }
 
 QStringList DatabaseImportHelper::getObjectNames(const QString &oid_vect, bool signature_form)

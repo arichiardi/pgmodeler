@@ -878,7 +878,7 @@ QByteArray SQLExecutionWidget::generateBuffer(QTableView *results_tbw, QChar sep
 
 	if((results_tbw->model() && results_tbw->model()->rowCount() == 0) ||
 		 !results_tbw->selectionModel())
-		return QByteArray();
+		return {};
 
 	QAbstractItemModel *model = results_tbw->model();
 	QModelIndexList sel_indexes;

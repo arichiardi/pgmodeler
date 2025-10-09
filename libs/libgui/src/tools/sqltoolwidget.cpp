@@ -635,7 +635,7 @@ void SQLToolWidget::dropDatabase(const QString &dbname)
 QWidgetList SQLToolWidget::getExecutionTabs(DatabaseExplorerWidget *db_expl_wgt)
 {
 	if(!db_expl_wgt || !sql_exec_wgts.contains(db_expl_wgt))
-		return QWidgetList();
+		return {};
 
 	return sql_exec_wgts.value(db_expl_wgt);
 }

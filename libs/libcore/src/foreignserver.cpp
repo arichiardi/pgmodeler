@@ -18,7 +18,7 @@
 
 #include "foreignserver.h"
 
-ForeignServer::ForeignServer() : BaseObject()
+ForeignServer::ForeignServer()
 {
 	obj_type = ObjectType::ForeignServer;
 	fdata_wrapper = nullptr;
