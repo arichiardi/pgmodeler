@@ -100,25 +100,30 @@ void Trigger::setFunction(Function *func)
 {
 	//Case the function is null an error is raised
 	if(!func)
-		throw Exception(Exception::getErrorMessage(ErrorCode::AsgNotAllocatedFunction)
-						.arg(this->getName())
-						.arg(BaseObject::getTypeName(ObjectType::Trigger)),
-						ErrorCode::AsgNotAllocatedFunction,PGM_FUNC,PGM_FILE,PGM_LINE);
-	else
 	{
-		//Case the function doesn't returns 'trigger' it cannot be used with the trigger thus raise an error
-		if(func->getReturnType()!="trigger")
-			throw Exception(Exception::getErrorMessage(ErrorCode::AsgInvalidTriggerFunction).arg("trigger"),PGM_FUNC,PGM_FILE,PGM_LINE);
-		//Case the function has some parameters raise an error
-		else if(func->getParameterCount()!=0)
-			throw Exception(Exception::getErrorMessage(ErrorCode::AsgFunctionInvalidParamCount)
-							.arg(this->getName())
-							.arg(BaseObject::getTypeName(ObjectType::Trigger)),
-							ErrorCode::AsgFunctionInvalidParamCount,PGM_FUNC,PGM_FILE,PGM_LINE);
-
-		setCodeInvalidated(function != func);
-		this->function=func;
+		throw Exception(Exception::getErrorMessage(ErrorCode::AsgNotAllocatedFunction)
+										.arg(this->getName())
+										.arg(BaseObject::getTypeName(ObjectType::Trigger)),
+										ErrorCode::AsgNotAllocatedFunction,PGM_FUNC,PGM_FILE,PGM_LINE);
 	}
+
+
+	//Case the function doesn't returns 'trigger' it cannot be used with the trigger thus raise an error
+	if(func->getReturnType()!="trigger")
+		throw Exception(Exception::getErrorMessage(ErrorCode::AsgInvalidTriggerFunction)
+										.arg("trigger"),PGM_FUNC,PGM_FILE,PGM_LINE);
+
+	//Case the function has some parameters raise an error
+	if(func->getParameterCount()!=0)
+	{
+		throw Exception(Exception::getErrorMessage(ErrorCode::AsgFunctionInvalidParamCount)
+										.arg(this->getName())
+										.arg(BaseObject::getTypeName(ObjectType::Trigger)),
+										ErrorCode::AsgFunctionInvalidParamCount,PGM_FUNC,PGM_FILE,PGM_LINE);
+	}
+
+	setCodeInvalidated(function != func);
+	this->function=func;
 }
 
 void Trigger::setCondition(const QString &cond)
@@ -130,21 +135,29 @@ void Trigger::setCondition(const QString &cond)
 void Trigger::addColumn(Column *column)
 {
 	if(!column)
+	{
 		throw Exception(Exception::getErrorMessage(ErrorCode::AsgNotAllocatedColumn)
-						.arg(this->getName(true))
-						.arg(this->getTypeName()),
-						ErrorCode::AsgNotAllocatedColumn,PGM_FUNC,PGM_FILE,PGM_LINE);
-	else if(!column->getParentTable())
+										.arg(this->getName(true))
+										.arg(this->getTypeName()),
+										ErrorCode::AsgNotAllocatedColumn,PGM_FUNC,PGM_FILE,PGM_LINE);
+	}
+
+	if(!column->getParentTable())
+	{
 		throw Exception(Exception::getErrorMessage(ErrorCode::AsgColumnNoParent)
-						.arg(this->getName(true))
-						.arg(this->getTypeName()),
-						ErrorCode::AsgNotAllocatedColumn,PGM_FUNC,PGM_FILE,PGM_LINE);
-	else if(this->getParentTable() &&
-			column->getParentTable() != this->getParentTable())
+										.arg(this->getName(true))
+										.arg(this->getTypeName()),
+										ErrorCode::AsgNotAllocatedColumn,PGM_FUNC,PGM_FILE,PGM_LINE);
+	}
+
+	if(this->getParentTable() &&
+		 column->getParentTable() != this->getParentTable())
+	{
 		throw Exception(Exception::getErrorMessage(ErrorCode::AsgInvalidColumnTrigger)
-						.arg(column->getName(true))
-						.arg(this->getName(true)),
-						ErrorCode::AsgInvalidColumnTrigger,PGM_FUNC,PGM_FILE,PGM_LINE);
+										.arg(column->getName(true))
+										.arg(this->getName(true)),
+										ErrorCode::AsgInvalidColumnTrigger,PGM_FUNC,PGM_FILE,PGM_LINE);
+	}
 
 	upd_columns.push_back(column);
 	setCodeInvalidated(true);
@@ -464,23 +477,23 @@ void Trigger::validateTrigger()
 				throw Exception(ErrorCode::InvTableTriggerInsteadOfFiring,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 			//The INSTEAD OF mode cannot be used on view triggers that executes for each statement
-			else if(firing_type==FiringType::InsteadOf && parent_type==ObjectType::View && !is_exec_per_row)
+			if(firing_type==FiringType::InsteadOf && parent_type==ObjectType::View && !is_exec_per_row)
 				throw Exception(ErrorCode::InvUsageInsteadOfOnTrigger,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 			//A trigger cannot make reference to columns when using INSTEAD OF mode and UPDATE event
-			else if(firing_type==FiringType::InsteadOf && events[EventType::OnUpdate] && !upd_columns.empty())
+			if(firing_type==FiringType::InsteadOf && events[EventType::OnUpdate] && !upd_columns.empty())
 				throw Exception(ErrorCode::InvUsageInsteadOfUpdateTrigger,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 			//The TRUNCATE event can only be used when the trigger executes for each statement and belongs to a table
-			else if(events[EventType::OnTruncate] && (is_exec_per_row || parent_type==ObjectType::View))
+			if(events[EventType::OnTruncate] && (is_exec_per_row || parent_type==ObjectType::View))
 				throw Exception(ErrorCode::InvUsageTruncateOnTrigger,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 			//A view trigger cannot be AFTER/BEFORE when it executes for each row
-			else if(parent_type==ObjectType::View && is_exec_per_row && (firing_type==FiringType::After || firing_type==FiringType::Before))
+			if(parent_type==ObjectType::View && is_exec_per_row && (firing_type==FiringType::After || firing_type==FiringType::Before))
 				throw Exception(ErrorCode::InvUsageAfterBeforeViewTrigger,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 			//Only constraint triggers can be deferrable or reference another table
-			else if(referenced_table || is_deferrable)
+			if(referenced_table || is_deferrable)
 				throw Exception(ErrorCode::InvUseConstraintTriggerAttribs,PGM_FUNC,PGM_FILE,PGM_LINE);
 		}
 		//Constraint triggers can only be executed on AFTER events and for each row

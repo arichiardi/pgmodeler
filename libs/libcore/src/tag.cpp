@@ -39,7 +39,8 @@ void Tag::setName(const QString &name)
 {
 	if(name.isEmpty())
 		throw Exception(ErrorCode::AsgEmptyNameObject,PGM_FUNC,PGM_FILE,PGM_LINE);
-	else if(name.size() > BaseObject::ObjectNameMaxLength)
+
+	if(name.size() > BaseObject::ObjectNameMaxLength)
 		throw Exception(ErrorCode::AsgLongNameObject ,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	this->obj_name=name;
@@ -102,13 +103,18 @@ QColor Tag::getElementColor(const QString &elem_id, ColorId color_id)
 void Tag::validateElementId(const QString &id, ColorId color_id)
 {
 	if(color_config.count(id) == 0)
+	{
 		throw Exception(Exception::getErrorMessage(ErrorCode::OprInvalidElementId).arg(id),
 										ErrorCode::OprInvalidElementId ,PGM_FUNC,PGM_FILE,PGM_LINE);
-	else if((color_id > ColorId::BorderColor) ||
-					(color_id > ColorId::FillColor1 &&
-					 (id==Attributes::TableName || id==Attributes::TableSchemaName)))
+	}
+
+	if((color_id > ColorId::BorderColor) ||
+		 (color_id > ColorId::FillColor1 &&
+		 (id==Attributes::TableName || id==Attributes::TableSchemaName)))
+	{
 		throw Exception(Exception::getErrorMessage(ErrorCode::RefInvalidElementColorId).arg(id).arg(enum_t(color_id)),
 										ErrorCode::RefInvalidElementColorId ,PGM_FUNC,PGM_FILE,PGM_LINE);
+	}
 }
 
 QLinearGradient Tag::getFillStyle(const QString &elem_id)
@@ -137,39 +143,39 @@ QString Tag::getSourceCode(SchemaParser::CodeType def_type)
 
 QString Tag::getSourceCode(SchemaParser::CodeType def_type, bool reduced_form)
 {
-	if(def_type==SchemaParser::SqlCode)
+	if(def_type == SchemaParser::SqlCode)
 		return "";
-	else
+
+	QString code_def = getCachedCode(def_type, reduced_form);
+
+	if(!code_def.isEmpty())
+		return code_def;
+
+	try
 	{
-		QString code_def=getCachedCode(def_type, reduced_form);
-		if(!code_def.isEmpty()) return code_def;
+		attribs_map attribs;
 
-		try
+		for(auto &itr : color_config)
 		{
-			attribs_map attribs;
+			attribs[Attributes::Id]=itr.first;
+			attribs[Attributes::Colors]="";
 
-			for(auto &itr : color_config)
-			{
-				attribs[Attributes::Id]=itr.first;
-				attribs[Attributes::Colors]="";
+			if(itr.first==Attributes::TableName || itr.first==Attributes::TableSchemaName)
+				attribs[Attributes::Colors]=itr.second[enum_t(ColorId::FillColor1)].name();
+			else
+				attribs[Attributes::Colors]=itr.second[enum_t(ColorId::FillColor1)].name() + "," +
+																		itr.second[enum_t(ColorId::FillColor2)].name() + "," +
+																		itr.second[enum_t(ColorId::BorderColor)].name();
 
-				if(itr.first==Attributes::TableName || itr.first==Attributes::TableSchemaName)
-					attribs[Attributes::Colors]=itr.second[enum_t(ColorId::FillColor1)].name();
-				else
-					attribs[Attributes::Colors]=itr.second[enum_t(ColorId::FillColor1)].name() + "," +
-							itr.second[enum_t(ColorId::FillColor2)].name() + "," +
-							itr.second[enum_t(ColorId::BorderColor)].name();
-
-				attributes[Attributes::Styles]+=schparser.getSourceCode(Attributes::Style, attribs, SchemaParser::XmlCode);
-			}
+			attributes[Attributes::Styles]+=schparser.getSourceCode(Attributes::Style, attribs, SchemaParser::XmlCode);
 		}
-		catch(Exception &e)
-		{
-			throw Exception(e.getErrorMessage(), e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
-		}
-
-		return BaseObject::getSourceCode(def_type, reduced_form);
 	}
+	catch(Exception &e)
+	{
+		throw Exception(e.getErrorMessage(), e.getErrorCode(),PGM_FUNC,PGM_FILE,PGM_LINE, &e);
+	}
+
+	return BaseObject::getSourceCode(def_type, reduced_form);
 }
 
 QStringList Tag::getColorAttributes()

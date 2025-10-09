@@ -108,12 +108,16 @@ void Type::addAttribute(TypeAttribute attrib)
 	//Raises an error if the attribute has an empty name or null type
 	if(attrib.getName().isEmpty() || attrib.getType()==PgSqlType::Null)
 		throw Exception(ErrorCode::InsInvalidTypeAttribute,PGM_FUNC,PGM_FILE,PGM_LINE);
+
 	//Raises an error if the passed attribute has the same type as the defining type (this)
-	else if(PgSqlType::getUserTypeIndex(this->getName(true), this) == !attrib.getType())
+	if(PgSqlType::getUserTypeIndex(this->getName(true), this) == !attrib.getType())
+	{
 		throw Exception(Exception::getErrorMessage(ErrorCode::InvUserTypeSelfReference).arg(this->getName(true)),
-						ErrorCode::InvUserTypeSelfReference,PGM_FUNC,PGM_FILE,PGM_LINE);
+										ErrorCode::InvUserTypeSelfReference,PGM_FUNC,PGM_FILE,PGM_LINE);
+	}
+
 	//Raises an error when the attribute already exists
-	else if(getAttributeIndex(attrib.getName()) >= 0)
+	if(getAttributeIndex(attrib.getName()) >= 0)
 		throw Exception(ErrorCode::InsDuplicatedItems,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	type_attribs.push_back(attrib);
@@ -141,12 +145,16 @@ void Type::addEnumeration(const QString &enum_name)
 	//Raises an error if the enumaration name is empty
 	if(enum_name.isEmpty())
 		throw Exception(ErrorCode::InsInvalidEnumerationItem,PGM_FUNC,PGM_FILE,PGM_LINE);
+
 	//Raises an error if the enumeration name is invalid (exceeds the maximum length)
-	else if(enum_name.size() > BaseObject::ObjectNameMaxLength)
+	if(enum_name.size() > BaseObject::ObjectNameMaxLength)
+	{
 		throw Exception(Exception::getErrorMessage(ErrorCode::AsgEnumLongName).arg(enum_name).arg(this->getName(true)),
-						ErrorCode::AsgEnumLongName,PGM_FUNC,PGM_FILE,PGM_LINE);
+										ErrorCode::AsgEnumLongName,PGM_FUNC,PGM_FILE,PGM_LINE);
+	}
+
 	//Raises an error if the enumeration already exists
-	else if(enumerations.contains(enum_name))
+	if(enumerations.contains(enum_name))
 		throw Exception(ErrorCode::InsDuplicatedEnumerationItem,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 	enumerations.append(enum_name);
@@ -255,7 +263,7 @@ void Type::setFunction(FunctionId func_id, Function *func)
 		 OUTPUT and TPMOD_OUT should return cstring.
 		 The other functions SEND, TPMOD_IN and ANALYZE should return bytea, integer and boolean,
 		 respectively. Raises an error if some of conditions above is not satisfied. */
-		else if((func_id==InputFunc && func->getReturnType()!="\"any\"") ||
+		if((func_id==InputFunc && func->getReturnType()!="\"any\"") ||
 				(func_id==OutputFunc && func->getReturnType()!="cstring") ||
 				(func_id==RecvFunc && func->getReturnType()!="\"any\"") ||
 				(func_id==SendFunc && func->getReturnType()!="bytea") ||
@@ -280,7 +288,7 @@ void Type::setFunction(FunctionId func_id, Function *func)
 		 TPMOD_OUT function must have a parameter of type (integer).
 		 The ANALYZE function must have a parameter of type (internal).
 		 Raises an error if some of above conditions is not satisfied.*/
-		else if((func_id==InputFunc &&
+		if((func_id==InputFunc &&
 				 (func->getParameter(0).getType()!="cstring" ||
 				  (param_count==3 &&
 					 (func->getParameter(1).getType()!="oid" ||

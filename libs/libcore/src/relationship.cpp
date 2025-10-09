@@ -2899,133 +2899,140 @@ bool Relationship::isInvalidated()
 QString Relationship::getSourceCode(SchemaParser::CodeType def_type)
 {
 	QString code_def = getCachedCode(def_type);
-	if(!code_def.isEmpty()) return code_def;
+
+	if(!code_def.isEmpty())
+		return code_def;
 
 	if(def_type == SchemaParser::SqlCode)
+		return getSqlCode();
+
+	return getXmlCode();
+}
+
+QString Relationship::getSqlCode()
+{
+	if(fk_index)
+		attributes[Attributes::Index] = fk_index->getSourceCode(SchemaParser::SqlCode);
+
+	if(fk_rel1n && (rel_type == Relationship11 || rel_type == Relationship1n))
 	{
-		if(fk_index)
-			attributes[Attributes::Index] = fk_index->getSourceCode(def_type);
+		attributes[Attributes::Relationship1n] = Attributes::True;
+		attributes[Attributes::Constraints] = fk_rel1n->getSourceCode(SchemaParser::SqlCode);
 
-		if(fk_rel1n && (rel_type == Relationship11 || rel_type == Relationship1n))
+		if(uq_rel11)
+			attributes[Attributes::Constraints] += uq_rel11->getSourceCode(SchemaParser::SqlCode);
+
+		for(auto &constr : rel_constraints)
 		{
-			attributes[Attributes::Relationship1n] = Attributes::True;
-			attributes[Attributes::Constraints] = fk_rel1n->getSourceCode(def_type);
-
-			if(uq_rel11)
-				attributes[Attributes::Constraints] += uq_rel11->getSourceCode(def_type);
-
-			for(auto &constr : rel_constraints)
+			if(dynamic_cast<Constraint *>(constr)->getConstraintType() != ConstraintType::PrimaryKey)
 			{
-				if(dynamic_cast<Constraint *>(constr)->getConstraintType() != ConstraintType::PrimaryKey)
-				{
-					attributes[Attributes::Constraints] +=
-							dynamic_cast<Constraint *>(constr)->getSourceCode(def_type, false);
-				}
-			}
-
-			attributes[Attributes::Table] = getReceiverTable()->getName(true);
-		}
-		else if(table_relnn && rel_type == RelationshipNn)
-		{
-			Constraint *constr = nullptr;
-
-			attributes[Attributes::RelationshipNn] = Attributes::True;
-			attributes[Attributes::Table] = table_relnn->getSourceCode(def_type);
-
-			for(auto &obj : *table_relnn->getObjectList(ObjectType::Constraint))
-			{
-				constr = dynamic_cast<Constraint *>(obj);
-
-				if(constr->getConstraintType() != ConstraintType::PrimaryKey &&
-						constr->getConstraintType()!= ConstraintType::Check)
-					attributes[Attributes::Constraints] += constr->getSourceCode(def_type, true);
+				attributes[Attributes::Constraints] +=
+						dynamic_cast<Constraint *>(constr)->getSourceCode(SchemaParser::SqlCode, false);
 			}
 		}
-		else if(rel_type == RelationshipGen)
-		{
-			attributes[Attributes::RelationshipGen] = Attributes::True;
-			attributes[Attributes::Table] = getReceiverTable()->getName(true);
-		}
 
-		return this->BaseObject::__getSourceCode(SchemaParser::SqlCode);
+		attributes[Attributes::Table] = getReceiverTable()->getName(true);
 	}
-	else
+	else if(table_relnn && rel_type == RelationshipNn)
 	{
-		bool reduced_form = false;
-		QStringList sp_pk_cols;
+		Constraint *constr = nullptr;
 
-		setRelationshipAttributes();
-		attributes[Attributes::Identifier] = (identifier ? Attributes::True : "");
-		attributes[Attributes::SinglePkColumn] = (single_pk_column ? Attributes::True : "");
-		attributes[Attributes::Deferrable] = (deferrable ? Attributes::True : "");
-		attributes[Attributes::DeferType] = ~deferral_type;
-		attributes[Attributes::UpdAction] = ~upd_action;
-		attributes[Attributes::DelAction] = ~del_action;
-		attributes[Attributes::FkIdxType] = ~fk_idx_type;
+		attributes[Attributes::RelationshipNn] = Attributes::True;
+		attributes[Attributes::Table] = table_relnn->getSourceCode(SchemaParser::SqlCode);
 
-		attributes[Attributes::TableName] = tab_name_relnn;
-		attributes[Attributes::RelationshipGen] = (rel_type==RelationshipGen ? Attributes::True : "");
-		attributes[Attributes::RelationshipDep] = (rel_type==RelationshipDep ? Attributes::True : "");
-		attributes[Attributes::RelationshipPart] = (rel_type==RelationshipPart ? Attributes::True : "");
-
-		attributes[Attributes::SrcColPattern] = name_patterns[SrcColPattern];
-		attributes[Attributes::DstColPattern] = name_patterns[DstColPattern];
-		attributes[Attributes::PkPattern] = name_patterns[PkPattern];
-		attributes[Attributes::UqPattern] = name_patterns[UqPattern];
-		attributes[Attributes::SrcFkPattern] = name_patterns[SrcFkPattern];
-		attributes[Attributes::DstFkPattern] = name_patterns[DstFkPattern];
-		attributes[Attributes::PkColPattern] = name_patterns[PkColPattern];
-		attributes[Attributes::FkIdxPattern] = name_patterns[FkIdxPattern];
-
-		attributes[Attributes::PartitionBoundExpr] = part_bounding_expr;
-		attributes[Attributes::Columns] = "";
-		attributes[Attributes::Constraints] = "";
-
-		for(auto &rel_attr : rel_attributes)
+		for(auto &obj : *table_relnn->getObjectList(ObjectType::Constraint))
 		{
-			attributes[Attributes::Columns] += dynamic_cast<Column *>(rel_attr)->
-																				 getSourceCode(SchemaParser::XmlCode);
+			constr = dynamic_cast<Constraint *>(obj);
+
+			if(constr->getConstraintType() != ConstraintType::PrimaryKey &&
+					constr->getConstraintType()!= ConstraintType::Check)
+				attributes[Attributes::Constraints] += constr->getSourceCode(SchemaParser::SqlCode, true);
 		}
-
-		for(auto &rel_constr : rel_constraints)
-		{
-			if(!rel_constr->isProtected())
-				attributes[Attributes::Constraints] += dynamic_cast<Constraint *>(rel_constr)->
-																							 getSourceCode(SchemaParser::XmlCode, true);
-		}
-
-		if(pk_original)
-		{
-			pk_original->setParentTable(getReceiverTable());
-			attributes[Attributes::OriginalPk]=pk_original->getSourceCode(SchemaParser::XmlCode);
-			pk_original->setParentTable(nullptr);
-		}
-
-		for(auto &id : column_ids_pk_rel)
-			sp_pk_cols.append(QString::number(id));
-
-		attributes[Attributes::SpecialPkCols] = sp_pk_cols.join(',');
-
-		if(copy_options.getCopyMode() != CopyOptions::NoMode)
-		{
-			attributes[Attributes::CopyOptions]=QString("%1").arg(copy_options.getCopyOptions());
-			attributes[Attributes::CopyMode]=QString("%1").arg(copy_options.getCopyMode());
-		}
-
-		reduced_form=(attributes[Attributes::Columns].isEmpty() &&
-					 attributes[Attributes::Constraints].isEmpty() &&
-					 attributes[Attributes::Points].isEmpty() &&
-					 attributes[Attributes::SpecialPkCols].isEmpty() &&
-					 attributes[Attributes::Points].isEmpty() &&
-					 attributes[Attributes::LabelsPos].isEmpty() &&
-					 attributes[Attributes::PartitionBoundExpr].isEmpty());
-
-		if(!reduced_form)
-			cached_reduced_code.clear();
-
-		return this->BaseObject::getSourceCode(SchemaParser::XmlCode, reduced_form);
+	}
+	else if(rel_type == RelationshipGen)
+	{
+		attributes[Attributes::RelationshipGen] = Attributes::True;
+		attributes[Attributes::Table] = getReceiverTable()->getName(true);
 	}
 
+	return this->BaseObject::__getSourceCode(SchemaParser::SqlCode);
+}
+
+QString Relationship::getXmlCode()
+{
+	bool reduced_form = false;
+	QStringList sp_pk_cols;
+
+	setRelationshipAttributes();
+	attributes[Attributes::Identifier] = (identifier ? Attributes::True : "");
+	attributes[Attributes::SinglePkColumn] = (single_pk_column ? Attributes::True : "");
+	attributes[Attributes::Deferrable] = (deferrable ? Attributes::True : "");
+	attributes[Attributes::DeferType] = ~deferral_type;
+	attributes[Attributes::UpdAction] = ~upd_action;
+	attributes[Attributes::DelAction] = ~del_action;
+	attributes[Attributes::FkIdxType] = ~fk_idx_type;
+
+	attributes[Attributes::TableName] = tab_name_relnn;
+	attributes[Attributes::RelationshipGen] = (rel_type==RelationshipGen ? Attributes::True : "");
+	attributes[Attributes::RelationshipDep] = (rel_type==RelationshipDep ? Attributes::True : "");
+	attributes[Attributes::RelationshipPart] = (rel_type==RelationshipPart ? Attributes::True : "");
+
+	attributes[Attributes::SrcColPattern] = name_patterns[SrcColPattern];
+	attributes[Attributes::DstColPattern] = name_patterns[DstColPattern];
+	attributes[Attributes::PkPattern] = name_patterns[PkPattern];
+	attributes[Attributes::UqPattern] = name_patterns[UqPattern];
+	attributes[Attributes::SrcFkPattern] = name_patterns[SrcFkPattern];
+	attributes[Attributes::DstFkPattern] = name_patterns[DstFkPattern];
+	attributes[Attributes::PkColPattern] = name_patterns[PkColPattern];
+	attributes[Attributes::FkIdxPattern] = name_patterns[FkIdxPattern];
+
+	attributes[Attributes::PartitionBoundExpr] = part_bounding_expr;
+	attributes[Attributes::Columns] = "";
+	attributes[Attributes::Constraints] = "";
+
+	for(auto &rel_attr : rel_attributes)
+	{
+		attributes[Attributes::Columns] += dynamic_cast<Column *>(rel_attr)->
+																			 getSourceCode(SchemaParser::XmlCode);
+	}
+
+	for(auto &rel_constr : rel_constraints)
+	{
+		if(!rel_constr->isProtected())
+			attributes[Attributes::Constraints] += dynamic_cast<Constraint *>(rel_constr)->
+																						 getSourceCode(SchemaParser::XmlCode, true);
+	}
+
+	if(pk_original)
+	{
+		pk_original->setParentTable(getReceiverTable());
+		attributes[Attributes::OriginalPk]=pk_original->getSourceCode(SchemaParser::XmlCode);
+		pk_original->setParentTable(nullptr);
+	}
+
+	for(auto &id : column_ids_pk_rel)
+		sp_pk_cols.append(QString::number(id));
+
+	attributes[Attributes::SpecialPkCols] = sp_pk_cols.join(',');
+
+	if(copy_options.getCopyMode() != CopyOptions::NoMode)
+	{
+		attributes[Attributes::CopyOptions]=QString("%1").arg(copy_options.getCopyOptions());
+		attributes[Attributes::CopyMode]=QString("%1").arg(copy_options.getCopyMode());
+	}
+
+	reduced_form=(attributes[Attributes::Columns].isEmpty() &&
+								attributes[Attributes::Constraints].isEmpty() &&
+								attributes[Attributes::Points].isEmpty() &&
+								attributes[Attributes::SpecialPkCols].isEmpty() &&
+								attributes[Attributes::Points].isEmpty() &&
+								attributes[Attributes::LabelsPos].isEmpty() &&
+								attributes[Attributes::PartitionBoundExpr].isEmpty());
+
+	if(!reduced_form)
+		cached_reduced_code.clear();
+
+	return this->BaseObject::getSourceCode(SchemaParser::XmlCode, reduced_form);
 }
 
 void Relationship::operator = (Relationship &rel)
@@ -3084,20 +3091,22 @@ QString Relationship::getAlterRelationshipDefinition(bool undo_inh_part)
 
 bool Relationship::isReferenceTableMandatory()
 {
-	if(rel_type == BaseRelationship::Relationship11 && getReferenceTable() == dst_table && !src_mandatory)
+	if(rel_type == BaseRelationship::Relationship11 &&
+		 getReferenceTable() == dst_table && !src_mandatory)
 		return dst_mandatory;
-	else
-		return ((getReferenceTable() == src_table && isTableMandatory(SrcTable)) ||
-						(getReferenceTable() == dst_table && isTableMandatory(DstTable)));
+
+	return ((getReferenceTable() == src_table && isTableMandatory(SrcTable)) ||
+					(getReferenceTable() == dst_table && isTableMandatory(DstTable)));
 }
 
 bool Relationship::isReceiverTableMandatory()
 {
-	if(rel_type == BaseRelationship::Relationship11 && getReferenceTable() == dst_table && !src_mandatory)
+	if(rel_type == BaseRelationship::Relationship11 &&
+		 getReferenceTable() == dst_table && !src_mandatory)
 		return false;
-	else
-		return ((getReceiverTable() == src_table && isTableMandatory(SrcTable)) ||
-						(getReceiverTable() == dst_table && isTableMandatory(DstTable)));
+
+	return ((getReceiverTable() == src_table && isTableMandatory(SrcTable)) ||
+					(getReceiverTable() == dst_table && isTableMandatory(DstTable)));
 }
 
 IndexingType Relationship::getFKIndexType()
