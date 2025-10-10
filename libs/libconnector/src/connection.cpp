@@ -431,8 +431,7 @@ QStringList Connection::getNotices()
 
 void Connection::executeDMLCommand(const QString &sql, ResultSet &result)
 {
-	ResultSet *new_res=nullptr;
-	PGresult *sql_res=nullptr;
+    PGresult *sql_res = nullptr;
 
 	//Raise an error in case the user try to close a not opened connection
 	if(!connection)
@@ -442,13 +441,11 @@ void Connection::executeDMLCommand(const QString &sql, ResultSet &result)
 	notices.clear();
 
 	//Alocates a new result to receive the resultset returned by the sql command
-	sql_res=PQexec(connection, sql.toStdString().c_str());
+    sql_res = PQexec(connection, sql.toStdString().c_str());
 
 	//Prints the SQL to stdout when the flag is active
 	if(print_sql)
-	{
-		qDebug().noquote() << "\n---\n" << sql;
-	}
+        qDebug().noquote() << "\n---\n" << sql;
 
 	//Raise an error in case the command sql execution is not sucessful
 	if(strlen(PQerrorMessage(connection))>0)
@@ -459,15 +456,8 @@ void Connection::executeDMLCommand(const QString &sql, ResultSet &result)
 						QString(PQresultErrorField(sql_res, PG_DIAG_SQLSTATE)));
 	}
 
-	//Generates the resultset based on the sql result descriptor
-	new_res=new ResultSet(sql_res);
-
-	//Copy the new resultset to the parameter resultset
-	result=*(new_res);
-
-	//Deallocate the new resultset
-	delete new_res;
-	PQclear(sql_res);
+    // Initializes the result set with the PG result instance.
+    result.initResultSet(sql_res);
 }
 
 void Connection::executeDDLCommand(const QString &sql)
