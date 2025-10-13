@@ -127,21 +127,19 @@ void XmlParser::setDTDFile(const QString &dtd_file, const QString &dtd_name)
 		throw Exception(ErrorCode::AsgEmptyDTDName,PGM_FUNC,PGM_FILE,PGM_LINE);
 
 #ifndef Q_OS_WIN
-	fmt_dtd_file="file://";
+	fmt_dtd_file = "file://";
 #else
-	fmt_dtd_file="file:///";
+	fmt_dtd_file = "file:///";
 #endif
 
 	//Formats the dtd file path to URL style (converting to percentage format the non reserved chars)
-	fmt_dtd_file=QUrl::toPercentEncoding(QFileInfo(dtd_file).absoluteFilePath(), "/:");
-	dtd_decl="<!DOCTYPE " + dtd_name +
-			" SYSTEM " + "\"" + fmt_dtd_file + "\">\n";
+	fmt_dtd_file += QUrl::toPercentEncoding(QFileInfo(dtd_file).absoluteFilePath(), "/:");
+	dtd_decl = "<!DOCTYPE " + dtd_name + " SYSTEM " + "\"" + fmt_dtd_file + "\">\n";
 }
 
 void XmlParser::readBuffer()
 {
 	QByteArray buffer;
-	QString msg, file;
 	int parser_opt;
 
 	if(!xml_buffer.isEmpty())
@@ -173,19 +171,28 @@ void XmlParser::readBuffer()
 		//If some error is set
 		if(xml_error)
 		{
+			QString msg, file, extra_info {
+								QString(QT_TR_NOOP("XML file: %1")).arg(xml_doc_filename) + "\n" +
+								QString(QT_TR_NOOP("DTD decl: %1")).arg(dtd_decl) };
+
 			//Formats the error
-			msg=xml_error->message;
-			file=xml_error->file;
-			if(!file.isEmpty()) file=QString("(%1)").arg(file);
+			msg = xml_error->message;
+			file = xml_error->file;
+
+			if(!file.isEmpty())
+				file = QString("(%1)").arg(file);
+
 			msg.replace("\n"," ");
 
 			//Restarts the parser
-			if(xml_doc) restartParser();
+			if(xml_doc)
+				restartParser();
 
 			//Raise an exception with the error massege from the parser xml
 			throw Exception(Exception::getErrorMessage(ErrorCode::LibXMLError)
 							.arg(xml_error->line).arg(xml_error->int2).arg(msg).arg(file),
-							ErrorCode::LibXMLError,PGM_FUNC,PGM_FILE,PGM_LINE,nullptr, xml_doc_filename);
+							ErrorCode::LibXMLError, PGM_FUNC, PGM_FILE, PGM_LINE, nullptr,
+							extra_info);
 		}
 
 		//Gets the referênce to the root element on the document
@@ -248,12 +255,13 @@ void XmlParser::restartParser()
 		xmlFreeDoc(xml_doc);
 		xml_doc=nullptr;
 	}
-	dtd_decl=xml_buffer=xml_decl="";
+
+	dtd_decl = xml_buffer = xml_decl= "";
+	xml_doc_filename = "";
 
 	while(!elems_stack.empty())
 		elems_stack.pop();
 
-	xml_doc_filename="";
 	xmlResetLastError();
 }
 

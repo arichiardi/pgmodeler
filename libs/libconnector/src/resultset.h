@@ -131,8 +131,8 @@ class __libconnector ResultSet {
 		//! \brief Returns if the result set is valid (created from a valid result set)
 		bool isValid();
 
-        ResultSet &operator = (const PGresult *) = delete;
-        ResultSet &operator = (const ResultSet &) = delete;
+		ResultSet &operator = (const PGresult *) = delete;
+		ResultSet &operator = (const ResultSet &) = delete;
 
 		friend class Connection;
 };

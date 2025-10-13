@@ -671,7 +671,7 @@ void DatabaseImportHelper::importDatabase()
 				import_log.close();
 
 				emit s_importFinished(Exception(tr("The database import ended but some errors were generated and saved into the log file `%1'. This file will last until pgModeler quit.").arg(log_name),
-												PGM_FUNC,PGM_FILE,PGM_LINE));
+															PGM_FUNC,PGM_FILE,PGM_LINE));
 			}
 		}
 		else
