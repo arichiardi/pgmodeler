@@ -32,6 +32,9 @@ DataGridWidget::DataGridWidget(const QString &sch_name, const QString &tab_name,
 	setupUi(this);
 
 	CustomUiStyle::setStyleHint(CustomUiStyle::InfoFrmHint, result_info_frm);
+	CustomUiStyle::setStyleHint(CustomUiStyle::AlertFrmHint, warning_frm);
+	CustomUiStyle::setStyleHint(CustomUiStyle::DefaultFrmHint, tab_info_frm);
+	CustomUiStyle::setStyleHint(CustomUiStyle::DefaultFrmHint, separator_ln);
 
 	schema_lbl->setText(sch_name);
 

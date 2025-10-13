@@ -70,14 +70,14 @@ class __libutils CustomUiStyle : public QProxyStyle {
 
 		struct WidgetState {
 			const bool is_enabled,
-							is_active,
-							is_hovered,
-							is_checked,
-							is_selected,
-							is_pressed,
-							is_focused,
-							is_default,
-							has_custom_color;
+								 is_active,
+								 is_hovered,
+								 is_checked,
+								 is_selected,
+								 is_pressed,
+								 is_focused,
+								 is_default,
+								 has_custom_color;
 
 			WidgetState(const QStyleOption *option, const QWidget *widget) :
 					is_enabled(option->state & State_Enabled),
@@ -240,6 +240,7 @@ class __libutils CustomUiStyle : public QProxyStyle {
 		//! \brief Enum for setting style hints on widgets via setProperty method			
 		enum StyleHint {
 			NoHint,
+			DefaultFrmHint, // Default frame
 			InfoFrmHint, // Blueish border (informational)
 			ConfirmFrmHint, // Green border (confirmation)
 			AlertFrmHint, // Yellow border (alert)

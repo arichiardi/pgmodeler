@@ -103,7 +103,7 @@ void CustomUiStyle::addEdgeWithCorner(QPainterPath &path, const QRectF &rect, Op
 }
 
 QPainterPath CustomUiStyle::createControlShape(const QRect &rect, int radius, CustomUiStyle::CornerFlag corners,
-				qreal dx, qreal dy, qreal dw, qreal dh, OpenEdge open_edge) const
+																							 qreal dx, qreal dy, qreal dw, qreal dh, OpenEdge open_edge) const
 {
 	QPainterPath path;
 
@@ -1114,10 +1114,13 @@ void CustomUiStyle::drawPEGenericElemFrame(PrimitiveElement element, const QStyl
 
 	/* The widget has a style hint property set, we use it to 
 	 * render a specific border color and radius. */
-	if(widget->property(StyleHintProp).toInt() != NoHint)
+	StyleHint hint = static_cast<StyleHint>(widget->property(StyleHintProp).toInt());
+
+	if(hint != NoHint)
 	{
 		if(wgt_st.is_enabled)
-			border_color = getAdjustedColor(widget->property(StyleHintColor).value<QColor>(), NoFactor, -XMinFactor);
+			border_color = getAdjustedColor(widget->property(StyleHintColor).value<QColor>(), 
+																			hint == DefaultFrmHint ? MidFactor : XMinFactor, -XMinFactor);
 
 		border_radius = HintFrameRadius;
 	}
@@ -2121,6 +2124,12 @@ void CustomUiStyle::setStyleHint(StyleHint hint, QFrame *frame)
 	};
 
 	frame->setProperty(StyleHintProp, static_cast<int>(hint));
-	frame->setProperty(StyleHintColor, frm_colors.at(hint));
-	frame->setFrameShape(QFrame::StyledPanel);
+
+	if(hint == DefaultFrmHint)
+		frame->setProperty(StyleHintColor, getStateColor(QPalette::Midlight, nullptr));
+	else
+		frame->setProperty(StyleHintColor, frm_colors.at(hint));
+
+	if(frame->frameStyle() == QFrame::NoFrame)
+		frame->setFrameShape(QFrame::Box);
 }
