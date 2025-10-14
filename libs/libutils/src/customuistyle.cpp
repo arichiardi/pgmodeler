@@ -2132,7 +2132,8 @@ void CustomUiStyle::setStyleHint(StyleHint hint, QFrame *frame)
 		{ ErrorFrmHint, "#eb4848" },
 		{ InfoFrmHint, "#52d0eb" },
 		{ AlertFrmHint, "#ebdc4a" },
-		{ ConfirmFrmHint, "#52d0eb" }
+		{ ConfirmFrmHint, "#52d0eb" },
+		{ SuccessFrmHint, "#4aeb5c" }
 	};
 
 	frame->setProperty(StyleHintProp, static_cast<int>(hint));
@@ -2155,7 +2156,7 @@ void CustomUiStyle::setStyleHint(StyleHint hint, QFrame *frame)
 												 .arg(PenWidth)
 												 .arg(color_role));
 	}
-	// For frames without a defined shape, set to Box to force the border drawing
-	else if(frame->frameStyle() == QFrame::NoFrame)
-		frame->setFrameShape(QFrame::Box);
+	// For other frames we force the shape to StyledPanel
+	else
+		frame->setFrameShape(QFrame::StyledPanel);
 }

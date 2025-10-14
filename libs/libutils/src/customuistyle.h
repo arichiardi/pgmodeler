@@ -244,7 +244,8 @@ class __libutils CustomUiStyle : public QProxyStyle {
 			InfoFrmHint, // Blueish border (informational)
 			ConfirmFrmHint, // Green border (confirmation)
 			AlertFrmHint, // Yellow border (alert)
-			ErrorFrmHint // Red border (error)
+			ErrorFrmHint, // Red border (error)
+			SuccessFrmHint // Greenish border (success)
 		};
 
 		CustomUiStyle() = default;

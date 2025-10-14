@@ -288,21 +288,14 @@
     </qresource>
     <qresource prefix="/images">
         <file>images/brazil_flag.png</file>
-        <file>images/checkmark_black.png</file>
-        <file>images/checkmark_disabled.png</file>
-        <file>images/checkmark_white.png</file>
         <file>images/exporttodatadict.png</file>
         <file>images/exporttodbms.png</file>
         <file>images/exporttoimg.png</file>
         <file>images/exporttosql.png</file>
         <file>images/handle_dark.png</file>
         <file>images/handle_light.png</file>
-        <file>images/hsplitter_handle_dark.png</file>
-        <file>images/hsplitter_handle_light.png</file>
         <file>images/pgmodeler_name.png</file>
         <file>images/schemafile.png</file>
-        <file>images/vsplitter_handle_dark.png</file>
-        <file>images/vsplitter_handle_light.png</file>
         <file>images/conn_crowsfoot.png</file>
         <file>images/conn_fktopk.png</file>
         <file>images/conn_tabcenter.png</file>
