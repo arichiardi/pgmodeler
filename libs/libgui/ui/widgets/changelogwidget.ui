@@ -219,9 +219,9 @@
        </layout>
       </item>
       <item>
-       <widget class="QGroupBox" name="summary_gb">
-        <property name="title">
-         <string/>
+       <widget class="QFrame" name="summary_frm">
+        <property name="frameShape">
+         <enum>QFrame::Shape::StyledPanel</enum>
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_2">
          <property name="spacing">

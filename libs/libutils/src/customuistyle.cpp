@@ -36,6 +36,7 @@
 #include <QToolButton>
 #include <qframe.h>
 #include <qnamespace.h>
+#include <qpalette.h>
 #include <qpen.h>
 #include <qpoint.h>
 
@@ -716,7 +717,7 @@ void CustomUiStyle::drawButtonMenuArrow(const QStyleOption *option, QPainter *pa
 		// TextUnderIcon QToolButton: arrow pointing right, positioned at right-center
 		arr_type = RightArrow;
 		arr_rect = QRect(btn_rect.right() - h_spc - ArrowWidth,
-						btn_rect.center().y() - ArrowHeight / 2,
+						btn_rect.center().y() - (ArrowHeight / 2),
 						ArrowWidth, ArrowHeight);
 	}
 	else
@@ -1051,39 +1052,44 @@ void CustomUiStyle::drawPECheckBoxRadioBtn(PrimitiveElement element, const QStyl
 void CustomUiStyle::drawPEHintFramePanel(PrimitiveElement element, const QStyleOption *option,
 																			 QPainter *painter, const QWidget *widget) const
 {
-	if(element != PE_Frame || !option || !painter || !widget)
-		return;
-
 	// Check if widget is a QFrame and has a StyleHint set
 	const QFrame *frame = qobject_cast<const QFrame *>(widget);
+	StyleHint hint = frame ? static_cast<StyleHint>(frame->property(StyleHintProp).toInt()) : NoHint;
 
-	if(!frame || widget->property(StyleHintProp).toInt() == NoHint)
+	if(element != PE_Frame || !option || !painter || !widget || hint == NoHint)
 		return;
-	
-	// Get the style hint color
-	QColor hint_color = widget->property(StyleHintColor).value<QColor>();
-	WidgetState wgt_st(option, widget);
+
+	// Get the style hint color	
+	WidgetState wgt_st(option, frame);
 
 	// Get the light color from palette for blending
-	QColor base_color = getStateColor(QPalette::Light, option);
+	QColor base_color = getStateColor(QPalette::Light, option),
 
 	/* Blend the hint color with the light color
 	 * Use a lower blend factor (0.3) to give more weight to light */
-	QColor bg_color;
+	bg_color;
 
 	if(!wgt_st.is_enabled)
 		bg_color = getStateColor(QPalette::Dark, option);
-	else
+	else 
 	{	
-		if(isDarkPalette())
-			bg_color = getAdjustedColor(bg_color, XMinFactor, NoFactor);
+		// For DefaultFrmHint we use the midlight color as background
+		if(hint == DefaultFrmHint)
+			bg_color = getStateColor(isDarkPalette() ? QPalette::Midlight : QPalette::Light, option);
 		else
-			bg_color = getAdjustedColor(bg_color, NoFactor, -XMinFactor);
+		{
+			if(isDarkPalette())
+				bg_color = getAdjustedColor(bg_color, XMinFactor, NoFactor);
+			else
+				bg_color = getAdjustedColor(bg_color, NoFactor, -XMinFactor);
 
-		// Blend hint color with base light color
-		bg_color.setRedF(hint_color.redF() * 0.25 + base_color.redF() * 0.75);
-		bg_color.setGreenF(hint_color.greenF() * 0.25 + base_color.greenF() * 0.75);
-		bg_color.setBlueF(hint_color.blueF() * 0.25 + base_color.blueF() * 0.75);
+			QColor hint_color = frame->property(StyleHintColor).value<QColor>();
+
+			// Blend hint color with base light color
+			bg_color.setRedF((hint_color.redF() * 0.25) + (base_color.redF() * 0.75));
+			bg_color.setGreenF((hint_color.greenF() * 0.25) + (base_color.greenF() * 0.75));
+			bg_color.setBlueF((hint_color.blueF() * 0.25) + (base_color.blueF() * 0.75));
+		}
 	}
 
 	// Create the shape with frame radius plus one pixel for a better context
@@ -1119,8 +1125,14 @@ void CustomUiStyle::drawPEGenericElemFrame(PrimitiveElement element, const QStyl
 	if(hint != NoHint)
 	{
 		if(wgt_st.is_enabled)
-			border_color = getAdjustedColor(widget->property(StyleHintColor).value<QColor>(), 
-																			hint == DefaultFrmHint ? MidFactor : XMinFactor, -XMinFactor);
+		{
+			// For DefaultFrmHint we use a standard border color based on theme
+			if(hint == DefaultFrmHint)
+				border_color = getStateColor(isDarkPalette() ? QPalette::Light : QPalette::Midlight, option);
+			else
+				// For other hints, use the custom color with slight adjustments
+				border_color = getAdjustedColor(widget->property(StyleHintColor).value<QColor>(), XMinFactor, -XMinFactor);
+		}
 
 		border_radius = HintFrameRadius;
 	}
@@ -2093,7 +2105,7 @@ void CustomUiStyle::drawPEHeaderArrow(const QStyleOption *option, QPainter *pain
 	// Calculate arrow position - right side of header with some margin
 	int arrow_margin = 5;
 	QRect arrow_rect(header_opt->rect.right() - arrow_margin - ArrowWidth,
-					header_opt->rect.center().y() - ArrowHeight / 2,
+					header_opt->rect.center().y() - (ArrowHeight / 2),
 					ArrowWidth, ArrowHeight);
 
 	// Create option for arrow drawing
@@ -2113,7 +2125,7 @@ void CustomUiStyle::drawPEHeaderArrow(const QStyleOption *option, QPainter *pain
 
 void CustomUiStyle::setStyleHint(StyleHint hint, QFrame *frame)
 {
-	if(!frame)
+	if(!frame || hint == NoHint)
 		return;
 
 	static const std::map<StyleHint, QColor> frm_colors = {
@@ -2125,11 +2137,25 @@ void CustomUiStyle::setStyleHint(StyleHint hint, QFrame *frame)
 
 	frame->setProperty(StyleHintProp, static_cast<int>(hint));
 
-	if(hint == DefaultFrmHint)
-		frame->setProperty(StyleHintColor, getStateColor(QPalette::Midlight, nullptr));
-	else
-		frame->setProperty(StyleHintColor, frm_colors.at(hint));
+	QColor hint_color;
 
-	if(frame->frameStyle() == QFrame::NoFrame)
+	if(hint != DefaultFrmHint)
+		hint_color = frm_colors.at(hint);
+
+	frame->setProperty(StyleHintColor, hint_color);
+
+	// Extract the frame shape using Shape_Mask to ignore shadow
+	QFrame::Shape shape = static_cast<QFrame::Shape>(frame->frameShape() & QFrame::Shape_Mask);
+
+	// For HLine/VLine frames, apply border color via stylesheet
+	if(shape == QFrame::HLine || shape == QFrame::VLine)
+	{
+		QString color_role = hint == DefaultFrmHint ? "light" : "midlight";
+		frame->setStyleSheet(QString("QFrame { border: %1px solid palette(%2); }")
+												 .arg(PenWidth)
+												 .arg(color_role));
+	}
+	// For frames without a defined shape, set to Box to force the border drawing
+	else if(frame->frameStyle() == QFrame::NoFrame)
 		frame->setFrameShape(QFrame::Box);
 }

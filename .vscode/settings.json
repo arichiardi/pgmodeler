@@ -17,9 +17,14 @@
     "C_Cpp.errorSquiggles": "disabled",
     
     // Delay para sugestões de código (menos intrusivo)
-    "editor.quickSuggestionsDelay": 500,  // Delay de 500ms antes de mostrar sugestões
+    "editor.quickSuggestionsDelay": 1000,  // Delay de 1000ms (1s) antes de mostrar sugestões
     "editor.suggestOnTriggerCharacters": false,  // Não mostrar sugestões ao digitar caracteres especiais
     "editor.acceptSuggestionOnCommitCharacter": false,  // Não aceitar sugestão ao digitar . ou (
+    "editor.quickSuggestions": {
+        "other": "on",
+        "comments": "on",
+        "strings": "on"
+    },
     
     // Desabilitar auto-completar chaves/colchetes/parênteses
     "editor.autoClosingBrackets": "never",

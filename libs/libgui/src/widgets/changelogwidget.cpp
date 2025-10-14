@@ -17,6 +17,7 @@
 */
 
 #include "changelogwidget.h"
+#include "customuistyle.h"
 #include "settings/generalconfigwidget.h"
 #include "guiutilsns.h"
 #include "baseform.h"
@@ -27,6 +28,10 @@ ChangelogWidget::ChangelogWidget(QWidget *parent) : QWidget(parent)
 	setupUi(this);
 	model = nullptr;
 	setModel(nullptr);
+
+	CustomUiStyle::setStyleHint(CustomUiStyle::DefaultFrmHint, summary_frm);
+	CustomUiStyle::setStyleHint(CustomUiStyle::DefaultFrmHint, separator_ln);
+
 	GuiUtilsNs::createDropShadow(this, 5, 5, 30);
 
 	GuiUtilsNs::configureWidgetsFont({ added_cnt_lbl, removed_cnt_lbl,
