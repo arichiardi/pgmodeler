@@ -11,7 +11,7 @@ Checks: >
   -misc-*,
   -misc-header-include-cycle,
   -misc-include-cleaner,
-  -clang-analyzer-optin.cplusplus.VirtualCall
+  -clang-analyzer-optin.cplusplus.VirtualCall,
   clang-*,
   cplusplus.*,
   bugprone.*,
@@ -69,7 +69,7 @@ WarningsAsErrors: ''
 # Regex to filter which headers to analyze
 # Only analyze headers from pgModeler project directories
 # This regex matches absolute paths containing /pgmodeler/ followed by apps, libs, or priv-plugins
-HeaderFilterRegex: '.*/pgmodeler/(apps|libs|priv-plugins)/.*\.(h|hpp|cpp)$'
+HeaderFilterRegex: '.*/pgmodeler/(apps|libs|plugins|priv-plugins)/.*\.(h|hpp|cpp)$'
 
 # Enable all checks by default in system headers (off for performance)
 SystemHeaders: false

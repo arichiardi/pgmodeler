@@ -5,7 +5,9 @@
    "cmake.configureSettings": {
         "PLUS_VERSION": "ON",
         "PGM_PREFIX": "${workspaceFolder}/build",
-        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
+        "USE_CLANG_TIDY": "ON",
+        "CLANG_TIDY_PATH": "/opt/qt/Tools/QtCreator/libexec/qtcreator/clang/bin/clang-tidy"
     },
 
     // Intelisense configurations
