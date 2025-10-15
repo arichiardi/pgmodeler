@@ -662,10 +662,10 @@ void ObjectsScene::setGridPattern(GridPattern pattern)
 
 QPointF ObjectsScene::alignPointToGrid(const QPointF &pnt)
 {
-	double px = static_cast<int>(round(pnt.x() / static_cast<double>(grid_size))) * grid_size,
-			   py = static_cast<int>(round(pnt.y()/static_cast<double>(grid_size))) * grid_size;
+	double px = round(pnt.x() / static_cast<double>(grid_size)) * grid_size,
+			   py = round(pnt.y() / static_cast<double>(grid_size)) * grid_size;
 
-	return { px,	py };
+	return { QPointF(px, py).toPoint() };
 }
 
 void ObjectsScene::setSceneRect(const QRectF &rect)
@@ -767,7 +767,7 @@ void ObjectsScene::drawBackground(QPainter *painter, const QRectF &rect)
 		int x1 = 0, y1 = 0,
 				x2 = 0, y2 = 0;
 
-		pen.setWidthF(pen_width *	(grid_pattern == GridPattern::DotPattern ? 1.65 : 1));
+		pen.setWidthF(pen_width *	(grid_pattern == GridPattern::DotPattern ? 1.60 : 1));
 		pen.setColor(grid_color);
 		painter->setPen(pen);
 
