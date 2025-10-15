@@ -693,10 +693,10 @@ void RelationshipWidget::showAdvancedObject(int row)
 		ObjectType obj_type=object->getObjectType();
 		bool is_protected = false;
 
-		if(obj_type==ObjectType::Column)
+		if(obj_type == ObjectType::Column)
 		{
 			Column *col = dynamic_cast<Column *>(object);
-			is_protected = col->isProtected();
+			//is_protected = col->isProtected();
 			openEditingForm<Column,ColumnWidget>(col, col->getParentTable());
 		}
 		else if(obj_type == ObjectType::Constraint)

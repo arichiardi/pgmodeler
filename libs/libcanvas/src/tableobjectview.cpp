@@ -449,11 +449,11 @@ void TableObjectView::configureObject()
 void TableObjectView::configureObject(const SimpleColumn &col)
 {
 	QTextCharFormat fmt;
-	double px;
+	double px = 0;
 
 	configureDescriptor();
 	descriptor->setPos(HorizSpacing * 3, 0);
-	px=descriptor->pos().x() + descriptor->boundingRect().width() + (2 * HorizSpacing);
+	px = descriptor->pos().x() + descriptor->boundingRect().width() + (2 * HorizSpacing);
 
 	fmt = font_config[Attributes::Column];
 
@@ -479,7 +479,7 @@ void TableObjectView::configureObject(const SimpleColumn &col)
 		lables[1]->setFont(fmt.font());
 		lables[1]->setBrush(fmt.foreground());
 		lables[1]->setPos(px, 0);
-		px+=lables[1]->boundingRect().width() + (4 * HorizSpacing);
+		//px += lables[1]->boundingRect().width() + (4 * HorizSpacing);
 	}
 	else
 		lables[1]->setText("");

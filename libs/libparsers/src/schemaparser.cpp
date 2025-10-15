@@ -132,7 +132,7 @@ QStringList SchemaParser::extractAttributes()
 				break;
 		}
 
-		start = end = 0;
+		start = /* end = */ 0;
 	}
 
 	attribs.removeDuplicates();
@@ -1589,7 +1589,7 @@ QString SchemaParser::getSourceCode(const attribs_map &attribs)
 							vet_prev_level.clear();
 
 							//Resets the ifs levels
-							if_level = prev_if_level = -1;
+							if_level = /* prev_if_level = */ -1;
 						}
 					}
 					else

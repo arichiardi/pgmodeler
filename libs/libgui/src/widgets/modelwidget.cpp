@@ -3969,25 +3969,27 @@ void ModelWidget::configureQuickMenu(BaseObject *object)
 						}
 						else if(types[i] == ObjectType::Role)
 						{
-							act = menus[i]->addAction(tr("None"), this, &ModelWidget::changeOwner);
+							menus[i]->addAction(tr("None"), this, &ModelWidget::changeOwner);
 							menus[i]->addSeparator();
 						}
 
-						while(!obj_list.empty())
+						// while(!obj_list.empty())
+						for(auto &obj : obj_list)
 						{
-							act=new QAction(obj_list.back()->getName(), menus[i]);
+							//act = new QAction(obj_list.back()->getName(), menus[i]);
+							act = new QAction(obj->getName(), menus[i]);
 							act->setIcon(QIcon(GuiUtilsNs::getIconPath(types[i])));
 
 							/* Check the current action only if there is only one selected object and the object representing
 								 the action is assigned to the selected object */
 							act->setCheckable(sel_objs.size() == 1);
 							act->setChecked(sel_objs.size() == 1 &&
-															(object->getSchema() == obj_list.back() ||
-															 object->getOwner() == obj_list.back() ||
-															 (tab_or_view && dynamic_cast<BaseTable *>(sel_objs[0])->getTag()==obj_list.back())));
+															(object->getSchema() == obj ||
+															 object->getOwner() == obj ||
+															 (tab_or_view && dynamic_cast<BaseTable *>(sel_objs[0])->getTag() == obj)));
 
 							act->setEnabled(!act->isChecked());
-							act->setData(QVariant::fromValue<void *>(obj_list.back()));
+							act->setData(QVariant::fromValue<void *>(obj));
 
 							if(i == 0) {
 								connect(act, &QAction::triggered, this, &ModelWidget::moveToSchema);
@@ -3998,16 +4000,18 @@ void ModelWidget::configureQuickMenu(BaseObject *object)
 							else
 								connect(act, &QAction::triggered, this, &ModelWidget::setTag);
 
-							act_map[obj_list.back()->getName()]=act;
+							act_map[obj->getName()] = act;
 							name_list.push_back(obj_list.back()->getName());
-							obj_list.pop_back();
+							//obj_list.pop_back();
 						}
 
 						name_list.sort();
-						while(!name_list.isEmpty())
+						//while(!name_list.isEmpty())
+						for(auto &name : name_list)
 						{
-							menus[i]->addAction(act_map[name_list.front()]);
-							name_list.pop_front();
+							//menus[i]->addAction(act_map[name_list.front()]);
+							menus[i]->addAction(act_map[name]);
+							//name_list.pop_front();
 						}
 
 						act_map.clear();

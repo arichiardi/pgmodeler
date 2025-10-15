@@ -2104,19 +2104,19 @@ void DatabaseModel::checkRelationshipRedundancy(Relationship *rel)
 
 void DatabaseModel::storeSpecialObjectsXML()
 {
-	unsigned count=0, i=0, type_id=0;
+	unsigned count = 0, i = 0, type_id = 0;
 	std::vector<BaseObject *>::iterator itr, itr_end;
-	Sequence *sequence=nullptr;
-	Permission *permission=nullptr;
-	PhysicalTable *table=nullptr;
-	TableObject *tab_obj=nullptr;
-	Constraint *constr=nullptr;
-	Index *index=nullptr;
-	Trigger *trigger=nullptr;
-	View *view=nullptr;
-	BaseRelationship *rel=nullptr;
-	GenericSQL *generic_sql=nullptr;
-	ObjectType tab_obj_type[3]={ ObjectType::Constraint, ObjectType::Trigger, ObjectType::Index };
+	Sequence *sequence = nullptr;
+	Permission *permission = nullptr;
+	PhysicalTable *table = nullptr;
+	TableObject *tab_obj = nullptr;
+	Constraint *constr = nullptr;
+	Index *index = nullptr;
+	Trigger *trigger = nullptr;
+	View *view = nullptr;
+	BaseRelationship *rel = nullptr;
+	GenericSQL *generic_sql = nullptr;
+	ObjectType tab_obj_type[] { ObjectType::Constraint, ObjectType::Trigger, ObjectType::Index };
 	bool found=false;
 	std::vector<BaseObject *> objects, rem_objects, upd_tables_rels, aux_tables;
 
@@ -2124,53 +2124,50 @@ void DatabaseModel::storeSpecialObjectsXML()
 	{
 		aux_tables = tables;
 		aux_tables.insert(aux_tables.end(), foreign_tables.begin(), foreign_tables.end());
-		itr=aux_tables.begin();
-		itr_end=aux_tables.end();
 
 		/* Check on tables if there is some constraint/index/trigger that is referencing
 		 some column added by relationship */
-		while(itr!=itr_end)
+		for(auto &aux_tab : aux_tables)
 		{
-			table=dynamic_cast<PhysicalTable *>(*itr);
-			itr++;
+			table = dynamic_cast<PhysicalTable *>(aux_tab);
 
-			for(type_id=0; type_id < 3; type_id++)
+			for(auto &tp_id : tab_obj_type)
 			{
 				// Ignoring index type if we are dealing with foreign table
 				if(table->getObjectType() == ObjectType::ForeignTable &&
-					 tab_obj_type[type_id] == ObjectType::Index)
+					 tp_id == ObjectType::Index)
 					continue;
 
 				//Gets the table object count for the curret object type
-				count=table->getObjectCount(tab_obj_type[type_id]);
+				count = table->getObjectCount(tp_id);
 
-				for(i=0; i < count; i++)
+				for(i = 0; i < count; i++)
 				{
-					tab_obj=dynamic_cast<TableObject *>(table->getObject(i, tab_obj_type[type_id]));
-					found=false;
+					tab_obj = dynamic_cast<TableObject *>(table->getObject(i, tp_id));
+					found = false;
 
-					if(tab_obj_type[type_id]==ObjectType::Constraint)
+					if(tp_id == ObjectType::Constraint)
 					{
-						constr=dynamic_cast<Constraint *>(tab_obj);
+						constr = dynamic_cast<Constraint *>(tab_obj);
 
 						/* A constraint is considered special in this case when it is referencing
 							 relationship added column and the constraint itself was not added by
 							 relationship (created manually by the user) */
-						found=(!constr->isAddedByRelationship() &&
-									 constr->isReferRelationshipAddedColumns() &&
-									 constr->getConstraintType() != ConstraintType::PrimaryKey);
+						found = (!constr->isAddedByRelationship() &&
+										 constr->isReferRelationshipAddedColumns() &&
+										 constr->getConstraintType() != ConstraintType::PrimaryKey);
 
 						//When found some special object, stores is xml definition
 						if(found)
-							xml_special_objs[constr->getObjectId()]=constr->getSourceCode(SchemaParser::XmlCode, true);
+							xml_special_objs[constr->getObjectId()] = constr->getSourceCode(SchemaParser::XmlCode, true);
 					}
-					else if(tab_obj_type[type_id]==ObjectType::Trigger)
+					else if(tp_id == ObjectType::Trigger)
 					{
-						trigger=dynamic_cast<Trigger *>(tab_obj);
-						found=trigger->isReferRelationshipAddedColumn();
+						trigger = dynamic_cast<Trigger *>(tab_obj);
+						found = trigger->isReferRelationshipAddedColumn();
 
 						if(found)
-							xml_special_objs[trigger->getObjectId()]=trigger->getSourceCode(SchemaParser::XmlCode);
+							xml_special_objs[trigger->getObjectId()] = trigger->getSourceCode(SchemaParser::XmlCode);
 					}
 					else
 					{
@@ -2179,7 +2176,7 @@ void DatabaseModel::storeSpecialObjectsXML()
 										index->isReferRelationshipAddedColumn();
 
 						if(found)
-							xml_special_objs[index->getObjectId()]=index->getSourceCode(SchemaParser::XmlCode);
+							xml_special_objs[index->getObjectId()] = index->getSourceCode(SchemaParser::XmlCode);
 					}
 
 					if(found)
@@ -2220,32 +2217,25 @@ void DatabaseModel::storeSpecialObjectsXML()
 
 		//Making a copy of the sequences list to avoid iterator invalidation when removing an object
 		rem_objects.assign(sequences.begin(), sequences.end());
-		itr=rem_objects.begin();
-		itr_end=rem_objects.end();
 
-		while(itr!=itr_end)
+		for(auto &obj : rem_objects)
 		{
-			sequence=dynamic_cast<Sequence *>(*itr);
-			itr++;
+			sequence = dynamic_cast<Sequence *>(obj);
 
 			if(sequence->isReferRelationshipAddedColumn())
 			{
-				xml_special_objs[sequence->getObjectId()]=sequence->getSourceCode(SchemaParser::XmlCode);
+				xml_special_objs[sequence->getObjectId()] = sequence->getSourceCode(SchemaParser::XmlCode);
 				removeSequence(sequence);
 				invalid_special_objs.push_back(sequence);
-				//delete sequence;
 			}
 		}
 
 		//Making a copy of the view list to avoid iterator invalidation when removing an object
 		rem_objects.assign(views.begin(), views.end());
-		itr=rem_objects.begin();
-		itr_end=rem_objects.end();
 
-		while(itr!=itr_end)
+		for(auto &obj : rem_objects)
 		{
-			view=dynamic_cast<View *>(*itr);
-			itr++;
+			view = dynamic_cast<View *>(obj);
 
 			if(view->isReferRelationshipAddedColumn())
 			{
@@ -2260,7 +2250,7 @@ void DatabaseModel::storeSpecialObjectsXML()
 
 					if(rel)
 					{
-						xml_special_objs[rel->getObjectId()]=rel->getSourceCode(SchemaParser::XmlCode);
+						xml_special_objs[rel->getObjectId()] = rel->getSourceCode(SchemaParser::XmlCode);
 						removeRelationship(rel);
 						invalid_special_objs.push_back(rel);
 					}
@@ -2268,10 +2258,11 @@ void DatabaseModel::storeSpecialObjectsXML()
 
 				/* Removing child objects from view and including them in the list of objects to be recreated,
 				 * this will avoid errors when removing the view from model */
-				objects=view->getObjects();
+				objects = view->getObjects();
+
 				for(auto &obj : objects)
 				{
-					xml_special_objs[obj->getObjectId()]=obj->getSourceCode(SchemaParser::XmlCode);
+					xml_special_objs[obj->getObjectId()] = obj->getSourceCode(SchemaParser::XmlCode);
 					view->removeObject(obj);
 					invalid_special_objs.push_back(obj);
 				}
@@ -2283,40 +2274,32 @@ void DatabaseModel::storeSpecialObjectsXML()
 
 		//Making a copy of the permissions list to avoid iterator invalidation when removing an object
 		rem_objects.assign(permissions.begin(), permissions.end());
-		itr=rem_objects.begin();
-		itr_end=rem_objects.end();
 
-		while(itr!=itr_end)
+		for(auto &obj : rem_objects)
 		{
-			permission=dynamic_cast<Permission *>(*itr);
-			tab_obj=dynamic_cast<TableObject *>(permission->getObject());
-			itr++;
+			permission = dynamic_cast<Permission *>(obj);
+			tab_obj = dynamic_cast<TableObject *>(permission->getObject());
 
 			if(tab_obj)
 			{
-				xml_special_objs[permission->getObjectId()]=permission->getSourceCode(SchemaParser::XmlCode);
+				xml_special_objs[permission->getObjectId()] = permission->getSourceCode(SchemaParser::XmlCode);
 				removePermission(permission);
 				invalid_special_objs.push_back(permission);
-				//delete permission;
 			}
 		}
 
 		//Making a copy of the generic SQL objects list to avoid iterator invalidation when removing an object
 		rem_objects.assign(genericsqls.begin(), genericsqls.end());
-		itr=rem_objects.begin();
-		itr_end=rem_objects.end();
 
-		while(itr!=itr_end)
+		for(auto &obj : rem_objects)
 		{
-			generic_sql = dynamic_cast<GenericSQL *>(*itr);
-			itr++;
+			generic_sql = dynamic_cast<GenericSQL *>(obj);
 
 			if(generic_sql->isReferRelationshipAddedObject())
 			{
 				xml_special_objs[generic_sql->getObjectId()] = generic_sql->getSourceCode(SchemaParser::XmlCode);
 				removeGenericSQL(generic_sql);
 				invalid_special_objs.push_back(generic_sql);
-				//delete generic_sql;
 			}
 		}
 	}

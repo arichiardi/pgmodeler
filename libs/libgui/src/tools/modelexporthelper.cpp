@@ -484,7 +484,7 @@ void ModelExportHelper::exportToDBMS(DatabaseModel *db_model, Connection conn, c
 							{
 								sql_cmd_comment = sql_cmd.mid(pos, match.capturedLength());
 								sql_cmd.remove(pos, match.capturedLength());
-								pos = -1;
+								//pos = -1;
 							}
 						}
 
@@ -1077,7 +1077,7 @@ void ModelExportHelper::exportBufferToDBMS(const QString &buffer, Connection &co
 					}
 
 					emit s_progressUpdated(aux_prog, msg, obj_type, sql_cmd);
-					is_create=is_drop=false;
+					/* is_create = */ is_drop = false;
 					msg.clear();
 				}
 				else if(!sql_cmd.trimmed().isEmpty())

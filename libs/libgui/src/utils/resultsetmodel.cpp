@@ -29,7 +29,7 @@ ResultSetModel::ResultSetModel(ResultSet &res, Catalog &catalog, QObject *parent
 		std::vector<unsigned>::iterator end;
 		std::vector<attribs_map> types;
 		std::map<int, QString> type_names;
-		int col = 0;
+		//int col = 0;
 
 		header_icons.clear();
 		col_count = res.getColumnCount();
@@ -38,7 +38,7 @@ ResultSetModel::ResultSetModel(ResultSet &res, Catalog &catalog, QObject *parent
 		insertColumns(0, col_count);
 		insertRows(0, row_count);
 
-		for(col=0; col < col_count; col++)
+		for(int col = 0; col < col_count; col++)
 		{
 			header_data.push_back(" " + res.getColumnName(col));
 			type_ids.push_back(res.getColumnTypeId(col));
@@ -49,7 +49,7 @@ ResultSetModel::ResultSetModel(ResultSet &res, Catalog &catalog, QObject *parent
 			do
 			{
 				//Fills the current row with the values of current tuple
-				for(int col=0; col < col_count; col++)
+				for(int col = 0; col < col_count; col++)
 				{
 					item_data.push_back(res.getColumnValue(col));
 				}
@@ -63,13 +63,14 @@ ResultSetModel::ResultSetModel(ResultSet &res, Catalog &catalog, QObject *parent
 		type_ids.erase(end, type_ids.end());
 
 		types = aux_cat.getObjectsAttributes(ObjectType::Type, "", "", type_ids);
-		col = 0;
+		//col = 0;
 
 		for(auto &tp : types)
 			type_names[tp[Attributes::Oid].toInt()] = tp[Attributes::Name];
 
 		int tp_id = 0;
-		for(col=0; col < col_count; col++)
+
+		for(int col = 0; col < col_count; col++)
 		{
 			tp_id = res.getColumnTypeId(col);
 			header_icons.append(QIcon(GuiUtilsNs::getIconPath(getPgTypeIconName(type_names[tp_id]))));

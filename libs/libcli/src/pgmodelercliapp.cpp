@@ -1128,7 +1128,7 @@ void PgModelerCliApp::extractObjectXML()
 
 	QStringList capt_txts;
 	match = ver_expr.match(buf);
-	start = match.capturedStart();
+	//start = match.capturedStart();
 	capt_txts = match.capturedTexts();
 	model_version = !capt_txts.isEmpty() ? capt_txts.at(0) : "";
 	model_version.remove(Attributes::PgModelerVersion);

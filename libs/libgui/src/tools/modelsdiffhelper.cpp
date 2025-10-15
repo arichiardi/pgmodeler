@@ -577,7 +577,7 @@ void ModelsDiffHelper::diffModels(ObjectsDiffInfo::DiffType diff_type)
 									diffTables(tab, aux_tab, ObjectsDiffInfo::CreateObject);
 								}
 
-								objs_differs=xml_differs=false;
+								/* bjs_differs = */ xml_differs = false;
 							}
 						}
 						else if(!aux_object)
