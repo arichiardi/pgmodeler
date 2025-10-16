@@ -83,7 +83,7 @@ Relationship::Relationship(BaseRelationship::RelType rel_type, PhysicalTable *sr
 		{
 			throw Exception(Exception::getErrorMessage(ErrorCode::InvCopyRelTableDefined)
 							.arg(src_tab->getName(true), dst_tab->getName(true),
-									 dynamic_cast<PhysicalTable *>(src_tab)->getCopyTable()->getName(true)),
+									 src_tab->getCopyTable()->getName(true)),
 							ErrorCode::InvCopyRelTableDefined,PGM_FUNC,PGM_FILE,PGM_LINE);
 		}
 

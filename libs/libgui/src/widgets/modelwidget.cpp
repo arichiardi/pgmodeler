@@ -1392,8 +1392,8 @@ void ModelWidget::configureObjectSelection()
 				BaseObjectView *object=dynamic_cast<BaseObjectView *>(graph_obj->getOverlyingObject());
 
 				scene->showRelationshipLine(true,
-																		QPointF(object->scenePos().x() + object->boundingRect().width()/2,
-																						object->scenePos().y() + object->boundingRect().height()/2));
+																		QPointF(object->scenePos().x() + (object->boundingRect().width() / 2),
+																						object->scenePos().y() + (object->boundingRect().height() / 2)));
 			}
 			//If the user has selected object that are not tables, cancel the operation
 			else if(!PhysicalTable::isPhysicalTable(obj_type1) || (!PhysicalTable::isPhysicalTable(obj_type2) && obj_type2 != ObjectType::BaseObject))
@@ -2292,10 +2292,10 @@ void ModelWidget::showObjectForm(ObjectType obj_type, BaseObject *object, BaseOb
 
 	try
 	{
-		BaseRelationship::RelType rel_type;
+		BaseRelationship::RelType rel_type = BaseRelationship::Relationship11;
 		int res = QDialog::Rejected;
-		Schema *sel_schema=dynamic_cast<Schema *>(parent_obj);
-		QPointF obj_pos=pos;
+		Schema *sel_schema = dynamic_cast<Schema *>(parent_obj);
+		QPointF obj_pos = pos;
 
 		/* Case the obj_type is greater than ObjectType::ObjBaseTable indicates that the object type is a
 		 relationship. To get the specific relationship id (1-1, 1-n, n-n, gen, dep) is necessary
@@ -2303,8 +2303,8 @@ void ModelWidget::showObjectForm(ObjectType obj_type, BaseObject *object, BaseOb
 		 to the BaseRelationship::RELATIONSHIP_??? constant. */
 		if(obj_type > ObjectType::BaseTable)
 		{
-			rel_type=static_cast<BaseRelationship::RelType>(enum_t(obj_type) - enum_t(ObjectType::Relationship));
-			obj_type=ObjectType::Relationship;
+			rel_type = static_cast<BaseRelationship::RelType>(enum_t(obj_type) - enum_t(ObjectType::Relationship));
+			obj_type = ObjectType::Relationship;
 		}
 
 		if(obj_type!=ObjectType::Permission)
@@ -2411,7 +2411,7 @@ void ModelWidget::showObjectForm(ObjectType obj_type, BaseObject *object, BaseOb
 				PhysicalTable *tab1 = dynamic_cast<PhysicalTable *>(selected_objects[0]),
 											*tab2 = (selected_objects.size()==2 ?
 															 dynamic_cast<PhysicalTable *>(selected_objects[1]) : tab1);
-				relationship_wgt->setAttributes(db_model, op_list, tab1, tab2, static_cast<BaseRelationship::RelType>(rel_type));
+				relationship_wgt->setAttributes(db_model, op_list, tab1, tab2, rel_type);
 			}
 			else
 				relationship_wgt->setAttributes(db_model, op_list, dynamic_cast<BaseRelationship *>(object));
@@ -3701,8 +3701,8 @@ void ModelWidget::removeObjects(bool cascade)
 															ErrorCode::RemProtectedObject,PGM_FUNC,PGM_FILE,PGM_LINE);
 						}
 
-						table=dynamic_cast<BaseTable *>(tab_obj->getParentTable());
-						obj_idx=table->getObjectIndex(tab_obj->getName(true), obj_type);
+						table = tab_obj->getParentTable();
+						obj_idx = table->getObjectIndex(tab_obj->getName(true), obj_type);
 
 						try
 						{

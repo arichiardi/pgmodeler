@@ -2144,7 +2144,7 @@ void DatabaseModel::storeSpecialObjectsXML()
 				for(i = 0; i < count; i++)
 				{
 					tab_obj = dynamic_cast<TableObject *>(table->getObject(i, tp_id));
-					found = false;
+					//found = false;
 
 					if(tp_id == ObjectType::Constraint)
 					{

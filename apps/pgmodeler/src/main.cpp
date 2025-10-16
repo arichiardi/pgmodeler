@@ -25,62 +25,64 @@
 	#include "execinfo.h"
 #endif
 
-void startCrashHandler(int signal)
-{
-	QFile output;
-	QString lin, cmd;
-
-	/** At the moment the backtrace function does not exists on MingW (Windows) this way
-	 the code that generates the stacktrace is available only on Linux/Unix systems */
-#ifndef Q_OS_WIN
-	void *stack[30];
-	size_t stack_size;
-	char **symbols=nullptr;
-	stack_size = backtrace(stack, 30);
-	symbols = backtrace_symbols(stack, stack_size);
-#endif
-
-	cmd=QString("\"%1\"").arg(GlobalAttributes::getPgModelerCHandlerPath()) + " -style " + GlobalAttributes::DefaultQtStyle;
-
-	//Creates the stacktrace file
-	output.setFileName(GlobalAttributes::getTemporaryFilePath(GlobalAttributes::StacktraceFile));
-	output.open(QFile::WriteOnly);
-
-	if(output.isOpen())
+namespace {
+	void startCrashHandler(int signal)
 	{
-		lin=QString("** pgModeler crashed after receive signal: %1 **\n\nDate/Time: %2 \nVersion: %3 \nBuild: %4 \n")
-			.arg(signal)
-			.arg(QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss"))
-			.arg(GlobalAttributes::PgModelerVersion)
-			.arg(GlobalAttributes::PgModelerBuildNumber);
+		QFile output;
+		QString lin, cmd;
 
-		lin+=QString("Compilation Qt version: %1\nRunning Qt version: %2\n\n")
-			 .arg(QT_VERSION_STR)
-			 .arg(qVersion());
+		/** At the moment the backtrace function does not exists on MingW (Windows) this way
+		 the code that generates the stacktrace is available only on Linux/Unix systems */
+	#ifndef Q_OS_WIN
+		void *stack[30];
+		size_t stack_size;
+		char **symbols=nullptr;
+		stack_size = backtrace(stack, 30);
+		symbols = backtrace_symbols(stack, stack_size);
+	#endif
 
-		output.write(lin.toStdString().c_str(), lin.size());
+		cmd=QString("\"%1\"").arg(GlobalAttributes::getPgModelerCHandlerPath()) + " -style " + GlobalAttributes::DefaultQtStyle;
 
-#ifndef Q_OS_WIN
-		for(size_t i=0; i < stack_size; i++)
+		//Creates the stacktrace file
+		output.setFileName(GlobalAttributes::getTemporaryFilePath(GlobalAttributes::StacktraceFile));
+		output.open(QFile::WriteOnly);
+
+		if(output.isOpen())
 		{
-			lin=QString("[%1] ").arg(stack_size-1-i) + QString(symbols[i]) + "\n";
+			lin=QString("** pgModeler crashed after receive signal: %1 **\n\nDate/Time: %2 \nVersion: %3 \nBuild: %4 \n")
+				.arg(signal)
+				.arg(QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss"))
+				.arg(GlobalAttributes::PgModelerVersion)
+				.arg(GlobalAttributes::PgModelerBuildNumber);
+
+			lin+=QString("Compilation Qt version: %1\nRunning Qt version: %2\n\n")
+				 .arg(QT_VERSION_STR)
+				 .arg(qVersion());
+
 			output.write(lin.toStdString().c_str(), lin.size());
+
+	#ifndef Q_OS_WIN
+			for(size_t i=0; i < stack_size; i++)
+			{
+				lin=QString("[%1] ").arg(stack_size-1-i) + QString(symbols[i]) + "\n";
+				output.write(lin.toStdString().c_str(), lin.size());
+			}
+			free(symbols);
+	#else
+			lin = "** Stack trace unavailable on Windows system **";
+			output.write(lin.toStdString().c_str(), lin.size());
+	#endif
+
+			output.close();
 		}
-		free(symbols);
-#else
-		lin = "** Stack trace unavailable on Windows system **";
-		output.write(lin.toStdString().c_str(), lin.size());
-#endif
 
-		output.close();
+		/* Changing the working dir to the main executable in order to call the crash handler
+		if the PGMODELER_CHANDLER_PATH isn't set */
+		QDir dir;
+		dir.cd(QApplication::applicationDirPath());
+
+		exit(1 + system(cmd.toStdString().c_str()));
 	}
-
-	/* Changing the working dir to the main executable in order to call the crash handler
-  if the PGMODELER_CHANDLER_PATH isn't set */
-	QDir dir;
-	dir.cd(QApplication::applicationDirPath());
-
-	exit(1 + system(cmd.toStdString().c_str()));
 }
 
 int main(int argc, char **argv)

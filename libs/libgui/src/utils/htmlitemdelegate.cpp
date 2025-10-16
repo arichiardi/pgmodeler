@@ -40,7 +40,8 @@ QSize HtmlItemDelegate::sizeHint(const QStyleOptionViewItem &option, const QMode
 			/* When ignoring html tags in size hint calculation we erase all tags from
 			 * the text and calculates the new size */
 			text.remove(TagRegExp);
-			sz.setWidth(option.fontMetrics.boundingRect(text).width() + option.decorationSize.width() * 2);
+			sz.setWidth(option.fontMetrics.boundingRect(text).width() +
+									(option.decorationSize.width() * 2));
 		}
 	}
 

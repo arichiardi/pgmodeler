@@ -227,7 +227,7 @@ void MetadataHandlingWidget::handleObjectsMetada()
 																									 UtilsNs::formatMessage(tr("Extracting metadata to file `%1'").arg(metadata_file)),
 																									 QPixmap(GuiUtilsNs::getIconPath("info")), nullptr);
 
-			extract_model->saveObjectsMetadata(metadata_file, static_cast<DatabaseModel::MetaAttrOptions>(options));
+			extract_model->saveObjectsMetadata(metadata_file, options);
 
 			if(op_type == OpRestoreOnly && !bkp_filename.isEmpty())
 			{
@@ -256,7 +256,7 @@ void MetadataHandlingWidget::handleObjectsMetada()
 																										QPixmap(GuiUtilsNs::getIconPath("info")), nullptr);
 
 
-			apply_model->loadObjectsMetadata(metadata_file, static_cast<DatabaseModel::MetaAttrOptions>(options));
+			apply_model->loadObjectsMetadata(metadata_file, options);
 			apply_model_wgt->adjustSceneRect(false);
 			apply_model_wgt->updateSceneLayers();
 			apply_model_wgt->restoreLastCanvasPosition();

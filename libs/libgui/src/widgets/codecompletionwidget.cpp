@@ -833,27 +833,7 @@ bool CodeCompletionWidget::retrieveObjectNames()
 
 void CodeCompletionWidget::extractTableNames()
 {
-	QString code = code_field_txt->toPlainText();
 	QTextCursor tc = code_field_txt->textCursor();
-	/* int into_idx = dml_kwords_pos[Into],
-			ins_cols_ini = -1, ins_cols_end = -1; */
-
-	/* If we have an INTO clause may be an indication that
-	 * we have an INSERT INTO command. In that case we need to
-	 * check if the cursor is in the () VALUES clause. In positive case
-	 * we need to show the column names instead of capture the alias of the table */
-	//if(into_idx > 0)
-	//{
-	//	ins_cols_ini = code.lastIndexOf("(", tc.position());
-	//	ins_cols_end = dml_kwords_pos[Values];
-
-		/* Invalidating the control variables if the "(" position is greater than the "values",
-		 * or if one of the variables is positive and the other not */
-		//if(ins_cols_ini < 0 || //ins_cols_end < 0
-		//	 (ins_cols_end >= 0 && ins_cols_ini > ins_cols_end))
-		//	ins_cols_ini = ins_cols_end = -1;
-	//}
-
 	QString curr_word, tab_name, alias;
 	bool extract_alias = false, tab_name_extracted = false, is_special_char = false;
 	TextBlockInfo *blk_info = nullptr;

@@ -401,24 +401,24 @@ void ViewWidget::showObjectData(TableObject *object, int row)
 
 void ViewWidget::listObjects(ObjectType obj_type)
 {
-	CustomTableWidget *tab=nullptr;
-	unsigned count, i;
-	View *view=nullptr;
+	CustomTableWidget *tab = nullptr;
+	unsigned count = 0, i = 0;
+	View *view = nullptr;
 
 	try
 	{
 		//Gets the object table related to the object type
-		tab=objects_tab_map[obj_type];
-		view=dynamic_cast<View *>(this->object);
+		tab = objects_tab_map[obj_type];
+		view = dynamic_cast<View *>(this->object);
 
 		tab->blockSignals(true);
 		tab->removeRows();
 
-		count=view->getObjectCount(obj_type);
-		for(i=0; i < count; i++)
+		count = view->getObjectCount(obj_type);
+		for(i = 0; i < count; i++)
 		{
 			tab->addRow();
-			showObjectData(dynamic_cast<TableObject*>(view->getObject(i, obj_type)), i);
+			showObjectData(view->getObject(i, obj_type), i);
 		}
 		tab->clearSelection();
 		tab->blockSignals(false);

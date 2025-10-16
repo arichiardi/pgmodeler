@@ -811,7 +811,7 @@ int NumberedTextEditor::getLineNumbersWidth()
 	}
 
 	chr_width = this->fontMetrics().horizontalAdvance(QChar('9'));
-	return (15 + chr_width * digits);
+	return (15 + (chr_width * digits));
 }
 
 void NumberedTextEditor::setWordWrapMode(QTextOption::WrapMode policy)

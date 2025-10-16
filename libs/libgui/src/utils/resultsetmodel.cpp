@@ -108,7 +108,7 @@ QVariant ResultSetModel::data(const QModelIndex &index, int role) const
 	if(index.row() < row_count && index.column() < col_count)
 	{
 		if(role == Qt::DisplayRole)
-			return (item_data.at(index.row() * col_count + index.column()));
+			return (item_data.at((index.row() * col_count) + index.column()));
 
 		if(role == Qt::TextAlignmentRole)
 			return { Qt::AlignLeft | Qt::AlignVCenter };

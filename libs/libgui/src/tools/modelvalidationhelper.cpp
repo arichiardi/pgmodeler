@@ -155,8 +155,8 @@ void ModelValidationHelper::resolveConflict(ValidationInfo &info)
 
 			if(rename_obj)
 			{
-				table=dynamic_cast<BaseTable *>(dynamic_cast<TableObject *>(obj)->getParentTable());
-				obj_type=obj->getObjectType();
+				table = dynamic_cast<TableObject *>(obj)->getParentTable();
+				obj_type = obj->getObjectType();
 
 				do
 				{
@@ -181,12 +181,12 @@ void ModelValidationHelper::resolveConflict(ValidationInfo &info)
 				//Tables and view aren't renamed only table child objects (constraints, indexes)
 				if(tab_obj && !tab_obj->isAddedByRelationship())
 				{
-					table=dynamic_cast<BaseTable *>(tab_obj->getParentTable());
+					table = tab_obj->getParentTable();
 
 					do
 					{
 						//Configures a new name for the object [name]_[suffix]
-						new_name=QString("%1_%2").arg(tab_obj->getName()).arg(suffix);
+						new_name = QString("%1_%2").arg(tab_obj->getName()).arg(suffix);
 						suffix++;
 					}
 					//Generates a new name until no object is found on parent table

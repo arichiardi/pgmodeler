@@ -60,14 +60,13 @@ attribs_map ForeignObject::getOptions()
 	return options;
 }
 
-void ForeignObject::getAlteredAttributes(ForeignObject *object, attribs_map &fo_attribs)
+void ForeignObject::getAlteredAttributes(ForeignObject *fobj, attribs_map &fo_attribs)
 {
-	attribs_map attribs;
-	ForeignObject *fobj = dynamic_cast<ForeignObject *>(object);
-	QStringList opts;
-
 	if(!fobj)
 		throw Exception(ErrorCode::OprNotAllocatedObject,PGM_FUNC,PGM_FILE,PGM_LINE);
+
+	attribs_map attribs;
+	QStringList opts;
 
 	// Comparing options (to be modified or added)
 	for(auto &opt : fobj->options)
