@@ -454,7 +454,7 @@ void ConnectionsConfigWidget::testConnection()
 		conn.connect();
 		srv_info = conn.getServerInfo();
 
-		Messagebox::info(UtilsNs::formatMessage(tr("Connection successfully established!\n\nServer details:\n\nPID: `%1'\nProtocol: `%2'\nVersion: `%3'"))
+		Messagebox::success(UtilsNs::formatMessage(tr("Connection successfully established!\n\nServer details:\n\nPID: `%1'\nProtocol: `%2'\nVersion: `%3'"))
 										 .arg(srv_info[Connection::ServerPid])
 										 .arg(srv_info[Connection::ServerProtocol])
 										 .arg(srv_info[Connection::ServerVersion]));

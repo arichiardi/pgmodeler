@@ -50,7 +50,8 @@ class __libgui Messagebox: public QDialog, public Ui::Messagebox {
 			Error,
 			Info,
 			Alert,
-			Confirm
+			Confirm,
+			Success
 		};
 
 		//! \brief Constants used to configure the visible buttons
@@ -107,6 +108,9 @@ class __libgui Messagebox: public QDialog, public Ui::Messagebox {
 
 		//! \brief Shows an info message box with the provided message, an info icon and only OK button
 		static void info(const QString &msg);
+
+		//! \brief Shows an success message box with the provided message, an success icon and only OK button
+		static void success(const QString &msg);
 
 		//! \brief Shows an confirmation message box with the provided message, a confirmation icon and the defined buttons id
 		static int confirm(const QString &msg, ButtonsId btns_id = YesNoButtons,

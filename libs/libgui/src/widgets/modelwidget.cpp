@@ -3902,7 +3902,7 @@ void ModelWidget::enableModelActions(bool value)
 
 void ModelWidget::configureQuickMenu(BaseObject *object)
 {
-	QAction *act=nullptr;
+	QAction *act = nullptr;
 	std::vector<BaseObject *> sel_objs;
 	ObjectType obj_type=ObjectType::BaseObject;
 	bool tab_or_view=false, is_graph_obj = false, accepts_owner=false, accepts_schema=false;
@@ -3914,7 +3914,7 @@ void ModelWidget::configureQuickMenu(BaseObject *object)
 
 	/* Determining if one or more selected objects accepts schema, owner or are table/views,
 	 this is done to correctly show the actions to the user */
-	for(BaseObject *obj : sel_objs)
+	for(auto &obj : sel_objs)
 	{
 		obj_type=obj->getObjectType();
 
@@ -3940,20 +3940,19 @@ void ModelWidget::configureQuickMenu(BaseObject *object)
 		{
 			std::vector<BaseObject *> obj_list;
 			std::map<QString, QAction *> act_map;
-			QStringList name_list;
 			QMenu *menus[]={ &schemas_menu, &owners_menu, &tags_menu };
-			ObjectType types[]={ ObjectType::Schema, ObjectType::Role, ObjectType::Tag };
+			ObjectType types[] { ObjectType::Schema, ObjectType::Role, ObjectType::Tag };
 
-			for(unsigned i=0; i < 3; i++)
+			for(unsigned i = 0; i < 3; i++)
 			{
 				menus[i]->clear();
 
 				//Configuring actions "Move to schema", "Change Owner" and "Set tag"
 				if((types[i] == ObjectType::Schema && accepts_schema) ||
 						(types[i] == ObjectType::Role && accepts_owner) ||
-						(types[i]==ObjectType::Tag && tab_or_view))
+						(types[i] == ObjectType::Tag && tab_or_view))
 				{
-					obj_list=db_model->getObjects(types[i]);
+					obj_list = db_model->getObjects(types[i]);
 
 					if(obj_list.empty())
 					{
@@ -3973,7 +3972,6 @@ void ModelWidget::configureQuickMenu(BaseObject *object)
 							menus[i]->addSeparator();
 						}
 
-						// while(!obj_list.empty())
 						for(auto &obj : obj_list)
 						{
 							//act = new QAction(obj_list.back()->getName(), menus[i]);
@@ -4001,18 +3999,10 @@ void ModelWidget::configureQuickMenu(BaseObject *object)
 								connect(act, &QAction::triggered, this, &ModelWidget::setTag);
 
 							act_map[obj->getName()] = act;
-							name_list.push_back(obj_list.back()->getName());
-							//obj_list.pop_back();
 						}
 
-						name_list.sort();
-						//while(!name_list.isEmpty())
-						for(auto &name : name_list)
-						{
-							//menus[i]->addAction(act_map[name_list.front()]);
-							menus[i]->addAction(act_map[name]);
-							//name_list.pop_front();
-						}
+						for(auto &[act_name, act] : act_map)
+							menus[i]->addAction(act);
 
 						act_map.clear();
 					}
@@ -4879,13 +4869,11 @@ void ModelWidget::configurePopupMenu(const std::vector<BaseObject *> &objects)
 	configureConstraintsMenu(tab_obj);
 
 	//Enable the popup actions that are visible
-	QList<QAction *> actions=popup_menu.actions();
+	QList<QAction *> actions = popup_menu.actions();
 	actions.append(quick_actions_menu.actions());
-	while(!actions.isEmpty())
-	{
-		actions.back()->setEnabled(true);
-		actions.pop_back();
-	}
+
+	for(auto &act : actions)
+		act->setEnabled(true);
 
 	if(objects.size() <= 2 && !scene->hasOnlyTableChildrenSelection())
 	{

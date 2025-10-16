@@ -189,6 +189,12 @@ void Messagebox::info(const QString &msg)
 	msgbox.show(msg, Info);
 }
 
+void Messagebox::success(const QString &msg)
+{
+	Messagebox msgbox;
+	msgbox.show(msg, Success);
+}
+
 int Messagebox::confirm(const QString &msg, ButtonsId btns_id,
 												const QString &yes_lbl, const QString &no_lbl, const QString &cancel_lbl,
 												const QString &yes_ico, const QString &no_ico, const QString &cancel_ico)
@@ -275,6 +281,12 @@ int Messagebox::show(const QString &title, const QString &msg, MessageType icon_
 			icon_name = "question";
 			aux_title = title.isEmpty() ? tr("Confirmation") : title;
 			style_hint = CustomUiStyle::ConfirmFrmHint;
+		break;
+
+		case Success:
+			icon_name = "success";
+			aux_title = title.isEmpty() ? tr("Success") : title;
+			style_hint = CustomUiStyle::SuccessFrmHint;
 		break;
 
 		default:

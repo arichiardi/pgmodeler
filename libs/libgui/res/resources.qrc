@@ -285,6 +285,7 @@
         <file>icons/closetab1.png</file>
         <file>icons/diff_dbs.png</file>
         <file>icons/diff_models.png</file>
+        <file>icons/success.png</file>
     </qresource>
     <qresource prefix="/images">
         <file>images/brazil_flag.png</file>
