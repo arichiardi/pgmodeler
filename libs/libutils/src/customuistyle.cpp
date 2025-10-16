@@ -631,6 +631,15 @@ void CustomUiStyle::drawPrimitive(PrimitiveElement element, const QStyleOption *
 		return;
 	}
 
+	// Handle QTabBar scroll button arrows (left/right navigation)
+	if((element == PE_IndicatorArrowLeft || element == PE_IndicatorArrowRight) && 
+		 widget && (widget->objectName() == "ScrollLeftButton" || widget->objectName() == "ScrollRightButton"))
+	{
+		ArrowType arrow_type = (element == PE_IndicatorArrowLeft) ? LeftArrow : RightArrow;
+		drawControlArrow(option, painter, widget, arrow_type);
+		return;
+	}
+
 	// Handle QToolButton and QPushButton menu arrow positioning
 	if(element == PE_IndicatorArrowDown && widget && (qobject_cast<const QToolButton *>(widget) || qobject_cast<const QPushButton *>(widget)))
 	{
