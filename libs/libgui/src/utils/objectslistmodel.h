@@ -49,7 +49,7 @@ class __libgui ObjectsListModel: public QAbstractTableModel {
 			clear();
 		}
 
-		inline void clear() {
+		void clear() {
 			id = 0;
 			text = icon = "";
 			fg_color = bg_color = "";

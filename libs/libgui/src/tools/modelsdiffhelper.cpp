@@ -325,7 +325,7 @@ void ModelsDiffHelper::diffColsInheritance(PhysicalTable *parent_tab, PhysicalTa
 
 	for(auto &parent_col : *parent_tab->getObjectList(ObjectType::Column))
 	{
-		child_col = dynamic_cast<Column *>(child_tab->getColumn(parent_col->getName()));
+		child_col = child_tab->getColumn(parent_col->getName());
 
 		//Ignoring columns with sql disabled
 		if(parent_col->isSQLDisabled())
@@ -577,7 +577,7 @@ void ModelsDiffHelper::diffModels(ObjectsDiffInfo::DiffType diff_type)
 									diffTables(tab, aux_tab, ObjectsDiffInfo::CreateObject);
 								}
 
-								objs_differs=xml_differs=false;
+								/* bjs_differs = */ xml_differs = false;
 							}
 						}
 						else if(!aux_object)

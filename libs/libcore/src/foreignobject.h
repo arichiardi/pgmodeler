@@ -49,7 +49,7 @@ class __libcore ForeignObject {
 		void removeOptions();
 		attribs_map getOptions();
 
-		void getAlteredAttributes(ForeignObject *object, attribs_map &fo_attribs);
+		void getAlteredAttributes(ForeignObject *fobj, attribs_map &fo_attribs);
 };
 
 #endif

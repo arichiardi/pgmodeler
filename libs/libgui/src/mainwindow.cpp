@@ -938,8 +938,8 @@ void MainWindow::resizeEvent(QResizeEvent *)
 {
 	if(welcome_wgt)
 	{
-		welcome_wgt->move(bg_widget->width()/2 - welcome_wgt->width()/2 ,
-							bg_widget->height()/2 - welcome_wgt->height()/2);
+		welcome_wgt->move((bg_widget->width() / 2) - (welcome_wgt->width() / 2),
+											(bg_widget->height() / 2) - (welcome_wgt->height() / 2));
 	}
 
 	action_about->setChecked(false);

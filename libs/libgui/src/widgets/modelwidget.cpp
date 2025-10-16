@@ -1392,8 +1392,8 @@ void ModelWidget::configureObjectSelection()
 				BaseObjectView *object=dynamic_cast<BaseObjectView *>(graph_obj->getOverlyingObject());
 
 				scene->showRelationshipLine(true,
-																		QPointF(object->scenePos().x() + object->boundingRect().width()/2,
-																						object->scenePos().y() + object->boundingRect().height()/2));
+																		QPointF(object->scenePos().x() + (object->boundingRect().width() / 2),
+																						object->scenePos().y() + (object->boundingRect().height() / 2)));
 			}
 			//If the user has selected object that are not tables, cancel the operation
 			else if(!PhysicalTable::isPhysicalTable(obj_type1) || (!PhysicalTable::isPhysicalTable(obj_type2) && obj_type2 != ObjectType::BaseObject))
@@ -2292,10 +2292,10 @@ void ModelWidget::showObjectForm(ObjectType obj_type, BaseObject *object, BaseOb
 
 	try
 	{
-		BaseRelationship::RelType rel_type;
+		BaseRelationship::RelType rel_type = BaseRelationship::Relationship11;
 		int res = QDialog::Rejected;
-		Schema *sel_schema=dynamic_cast<Schema *>(parent_obj);
-		QPointF obj_pos=pos;
+		Schema *sel_schema = dynamic_cast<Schema *>(parent_obj);
+		QPointF obj_pos = pos;
 
 		/* Case the obj_type is greater than ObjectType::ObjBaseTable indicates that the object type is a
 		 relationship. To get the specific relationship id (1-1, 1-n, n-n, gen, dep) is necessary
@@ -2303,8 +2303,8 @@ void ModelWidget::showObjectForm(ObjectType obj_type, BaseObject *object, BaseOb
 		 to the BaseRelationship::RELATIONSHIP_??? constant. */
 		if(obj_type > ObjectType::BaseTable)
 		{
-			rel_type=static_cast<BaseRelationship::RelType>(enum_t(obj_type) - enum_t(ObjectType::Relationship));
-			obj_type=ObjectType::Relationship;
+			rel_type = static_cast<BaseRelationship::RelType>(enum_t(obj_type) - enum_t(ObjectType::Relationship));
+			obj_type = ObjectType::Relationship;
 		}
 
 		if(obj_type!=ObjectType::Permission)
@@ -2411,7 +2411,7 @@ void ModelWidget::showObjectForm(ObjectType obj_type, BaseObject *object, BaseOb
 				PhysicalTable *tab1 = dynamic_cast<PhysicalTable *>(selected_objects[0]),
 											*tab2 = (selected_objects.size()==2 ?
 															 dynamic_cast<PhysicalTable *>(selected_objects[1]) : tab1);
-				relationship_wgt->setAttributes(db_model, op_list, tab1, tab2, static_cast<BaseRelationship::RelType>(rel_type));
+				relationship_wgt->setAttributes(db_model, op_list, tab1, tab2, rel_type);
 			}
 			else
 				relationship_wgt->setAttributes(db_model, op_list, dynamic_cast<BaseRelationship *>(object));
@@ -3701,8 +3701,8 @@ void ModelWidget::removeObjects(bool cascade)
 															ErrorCode::RemProtectedObject,PGM_FUNC,PGM_FILE,PGM_LINE);
 						}
 
-						table=dynamic_cast<BaseTable *>(tab_obj->getParentTable());
-						obj_idx=table->getObjectIndex(tab_obj->getName(true), obj_type);
+						table = tab_obj->getParentTable();
+						obj_idx = table->getObjectIndex(tab_obj->getName(true), obj_type);
 
 						try
 						{
@@ -3969,25 +3969,27 @@ void ModelWidget::configureQuickMenu(BaseObject *object)
 						}
 						else if(types[i] == ObjectType::Role)
 						{
-							act = menus[i]->addAction(tr("None"), this, &ModelWidget::changeOwner);
+							menus[i]->addAction(tr("None"), this, &ModelWidget::changeOwner);
 							menus[i]->addSeparator();
 						}
 
-						while(!obj_list.empty())
+						// while(!obj_list.empty())
+						for(auto &obj : obj_list)
 						{
-							act=new QAction(obj_list.back()->getName(), menus[i]);
+							//act = new QAction(obj_list.back()->getName(), menus[i]);
+							act = new QAction(obj->getName(), menus[i]);
 							act->setIcon(QIcon(GuiUtilsNs::getIconPath(types[i])));
 
 							/* Check the current action only if there is only one selected object and the object representing
 								 the action is assigned to the selected object */
 							act->setCheckable(sel_objs.size() == 1);
 							act->setChecked(sel_objs.size() == 1 &&
-															(object->getSchema() == obj_list.back() ||
-															 object->getOwner() == obj_list.back() ||
-															 (tab_or_view && dynamic_cast<BaseTable *>(sel_objs[0])->getTag()==obj_list.back())));
+															(object->getSchema() == obj ||
+															 object->getOwner() == obj ||
+															 (tab_or_view && dynamic_cast<BaseTable *>(sel_objs[0])->getTag() == obj)));
 
 							act->setEnabled(!act->isChecked());
-							act->setData(QVariant::fromValue<void *>(obj_list.back()));
+							act->setData(QVariant::fromValue<void *>(obj));
 
 							if(i == 0) {
 								connect(act, &QAction::triggered, this, &ModelWidget::moveToSchema);
@@ -3998,16 +4000,18 @@ void ModelWidget::configureQuickMenu(BaseObject *object)
 							else
 								connect(act, &QAction::triggered, this, &ModelWidget::setTag);
 
-							act_map[obj_list.back()->getName()]=act;
+							act_map[obj->getName()] = act;
 							name_list.push_back(obj_list.back()->getName());
-							obj_list.pop_back();
+							//obj_list.pop_back();
 						}
 
 						name_list.sort();
-						while(!name_list.isEmpty())
+						//while(!name_list.isEmpty())
+						for(auto &name : name_list)
 						{
-							menus[i]->addAction(act_map[name_list.front()]);
-							name_list.pop_front();
+							//menus[i]->addAction(act_map[name_list.front()]);
+							menus[i]->addAction(act_map[name]);
+							//name_list.pop_front();
 						}
 
 						act_map.clear();

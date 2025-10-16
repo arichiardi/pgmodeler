@@ -341,8 +341,10 @@ BaseObject *PgSqlType::getObject()
 {
 	if(this->isUserType())
 	{
-		return reinterpret_cast<BaseObject *>(
-				user_types[this->type_idx - (PseudoEnd + 1)].ptype);
+		/* return reinterpret_cast<BaseObject *>(
+				user_types[this->type_idx - (PseudoEnd + 1)].ptype);*/
+
+		return user_types[this->type_idx - (PseudoEnd + 1)].ptype;
 	}
 
 	return nullptr;

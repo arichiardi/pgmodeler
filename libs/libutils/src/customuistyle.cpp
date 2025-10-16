@@ -568,8 +568,21 @@ void CustomUiStyle::drawPrimitive(PrimitiveElement element, const QStyleOption *
 {
 	if(element == PE_PanelButtonTool || element == PE_PanelButtonCommand)
 	{
-		drawPEButtonPanel(element, option, painter, widget);
-		drawPEGenericElemFrame(PE_FrameButtonTool, option, painter, widget, ButtonRadius);
+		QStyleOption adjusted_opt;
+		const QStyleOption *curr_opt = option;
+
+		// Adjust button rect for QTabBar scroll buttons to fit inside the tab bar		
+		if(widget && (widget->objectName() == "ScrollLeftButton" || widget->objectName() == "ScrollRightButton"))
+		{
+			adjusted_opt = *option;
+			adjusted_opt.rect.adjust(1, 1, -1, -1);
+			adjusted_opt.rect.moveTo(adjusted_opt.rect.left() + 1, adjusted_opt.rect.top() + 1);
+			curr_opt = &adjusted_opt;
+		}
+		
+		drawPEButtonPanel(element, curr_opt, painter, widget);
+		drawPEGenericElemFrame(PE_FrameButtonTool, curr_opt, painter, widget, ButtonRadius);
+		
 		return;
 	}
 
@@ -628,6 +641,23 @@ void CustomUiStyle::drawPrimitive(PrimitiveElement element, const QStyleOption *
 	if(element == PE_IndicatorHeaderArrow)
 	{
 		drawPEHeaderArrow(option, painter, widget);
+		return;
+	}
+
+	// Handle QTabBar scroll button arrows (left/right navigation)
+	if((element == PE_IndicatorArrowLeft || element == PE_IndicatorArrowRight) && 
+		  widget && (widget->objectName() == "ScrollLeftButton" || widget->objectName() == "ScrollRightButton"))
+	{
+		// Adjust arrow position to match the button size and position
+		QStyleOption scroll_btn_opt = *option;
+
+		// Same adjustment as button: reduce height and move down
+		scroll_btn_opt.rect.adjust(1, 1, -1, -1);
+		scroll_btn_opt.rect.moveTo(scroll_btn_opt.rect.left() + 1, scroll_btn_opt.rect.top() + 1);
+		
+		ArrowType arrow_type = (element == PE_IndicatorArrowLeft) ? LeftArrow : RightArrow;
+		drawControlArrow(&scroll_btn_opt, painter, widget, arrow_type);
+		
 		return;
 	}
 

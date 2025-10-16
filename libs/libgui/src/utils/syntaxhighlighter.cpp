@@ -47,7 +47,8 @@ SyntaxHighlighter::SyntaxHighlighter(QPlainTextEdit *parent, bool single_line_mo
 	{
 		QFont fnt(default_font.family(), getCurrentFontSize());
 		QFontMetrics fm = QFontMetrics(fnt);
-		int height=fm.height() + fm.lineSpacing()/2;
+		int height = fm.height() + (fm.lineSpacing() / 2);
+
 		parent->setMinimumHeight(height);
 		parent->setMaximumHeight(height);
 		parent->setSizePolicy(parent->sizePolicy().horizontalPolicy(), QSizePolicy::Fixed);

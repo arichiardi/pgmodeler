@@ -335,8 +335,12 @@ void DatabaseImportWidget::setObjectPosition(BaseGraphicObject *graph_obj)
 
 		BaseObjectView *obj_view = dynamic_cast<BaseObjectView *>(graph_obj->getOverlyingObject());
 
-		std::uniform_int_distribution<int> dist_x(rect.left(), rect.right() + (rect.width() * scatter_lvl) * factor),
-				dist_y(rect.bottom(), rect.bottom() + (rect.height() * scatter_lvl) * factor);
+		std::uniform_int_distribution<int>
+				dist_x(rect.left(),
+							rect.right() + ((rect.width() * scatter_lvl) * factor)),
+
+				dist_y(rect.bottom(), rect.bottom() +
+							 ((rect.height() * scatter_lvl) * factor));
 
 		/* The new position's X coordinate will be between the rectangle's left and right with an additional value
 		 * to allow the canvas to grow horizontally.

@@ -168,12 +168,6 @@ void SQLToolWidget::setCornerButtonPos()
 		QWidget *left_btn = tab_bar->findChild<QWidget *>("ScrollLeftButton"),
 					*right_btn = tab_bar->findChild<QWidget *>("ScrollRightButton");
 
-		if(left_btn)
-		{
-			left_btn->move(left_btn->pos().x(), tab_bar->height() - left_btn->height() - 2);
-			right_btn->move(right_btn->pos().x(), tab_bar->height() - right_btn->height() - 2);
-		}
-
 		if(left_btn && left_btn->isVisible())
 			px = corner_wgt->geometry().left() + 3;
 		else
