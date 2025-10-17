@@ -1,6 +1,17 @@
 Changelog
 ---------
 
+v1.2.2
+------
+<em>Release date: October 17, 2025</em><br/>
+
+* [New] Added initial support for PostgreSQL 18.
+* [Change] Refactored the class ResultSet to avoid copying the PGresult instance, instead, it will be reused during class initialization taking ownership of it.
+* [Fix] Fixed a bug in XMLParser that was not configuring the DTD file path correctly.
+* [Fix] Fixed a bug that was causing collation assigned to column not to be reflected in SQL and XML codes.
+* [Fix] Fixed a bug that was causing collations to be saved always as deterministic even the user unchecked the option in editing form.
+* [Fix] Fixed the function PgSqlVersions::parseString to return the default version as a fallback when a major server version is not yet recognized by the tool.
+
 v1.2.1
 ------
 <em>Release date: August 29, 2025</em><br/>
