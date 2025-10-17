@@ -144,7 +144,7 @@ class __libcanvas BaseObjectView: public QObject, public QGraphicsItemGroup {
 		ObjectShadowXPos=8,
 		ObjectShadowYPos=8;
 
-		static constexpr int ObjectAlphaChannel=128,
+		static constexpr int ObjectAlphaChannel=150,
 		ObjectShadowAlphaChannel=50;
 
 		BaseObjectView(BaseObject *object=nullptr);
