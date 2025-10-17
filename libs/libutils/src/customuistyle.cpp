@@ -1002,7 +1002,7 @@ void CustomUiStyle::drawPEButtonPanel(PrimitiveElement element, const QStyleOpti
 
 	if(wgt_st.is_enabled)
 	{
-		if(wgt_st.has_custom_color)
+		if(wgt_st.has_custom_color && !wgt_st.is_pressed)
 			bg_color = getStateColor(widget->palette(), QPalette::Button, option);
 		else if(!wgt_st.is_pressed && (wgt_st.is_default || wgt_st.is_checked))
 		{
@@ -1169,7 +1169,7 @@ void CustomUiStyle::drawPEGenericElemFrame(PrimitiveElement element, const QStyl
 
 	if(wgt_st.is_enabled)
 	{
-		if(wgt_st.has_custom_color)
+		if(wgt_st.has_custom_color && !wgt_st.is_pressed)
 		{
 			border_color = getStateColor(widget->palette(), QPalette::Button, option);
 			border_color = border_color.lighter(QColor(border_color).lightness() < 128 ? MidFactor : MaxFactor);
