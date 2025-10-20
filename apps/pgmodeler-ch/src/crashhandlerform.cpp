@@ -20,6 +20,7 @@
 #include "messagebox.h"
 #include "guiutilsns.h"
 #include "qtconnectmacros.h"
+#include "customuistyle.h"
 
 const QString CrashHandlerForm::AnalysisMode {"-analysis-mode"};
 
@@ -29,6 +30,8 @@ CrashHandlerForm::CrashHandlerForm(bool analysis_mode, QWidget *parent, Qt::Wind
 	QString buf;
 	QWidget *wgt=new QWidget;
 	QHBoxLayout *layout=new QHBoxLayout;
+
+	CustomUiStyle::setStyleHint(CustomUiStyle::InfoFrmHint, hint_frm);
 
 	setWindowTitle(tr("pgModeler crash handler"));
 	setWindowIcon(QPixmap(":/images/images/crashhandler.png"));
