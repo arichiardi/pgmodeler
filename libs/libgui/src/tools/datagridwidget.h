@@ -302,6 +302,9 @@ class __libgui DataGridWidget: public QWidget, public Ui::DataGridWidget {
 		//! \brief Signal emitted whenever the user tries to browse a referenced/referred table
 		void s_browseTableRequested(const QString &schema, const QString &table, const QString &filter, ObjectType obj_type);
 
+		//! \brief Signal emitted whenever the user tries to duplicate the current data grid
+		void s_gridDuplicationRequested(DataGridWidget *grid);
+
 		friend class DataHandlingForm;
 };
 

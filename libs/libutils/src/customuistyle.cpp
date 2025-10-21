@@ -34,11 +34,9 @@
 #include <QTabWidget>
 #include <QToolBar>
 #include <QToolButton>
-#include <qframe.h>
-#include <qnamespace.h>
-#include <qpalette.h>
-#include <qpen.h>
-#include <qpoint.h>
+#include <QPalette>
+#include <QPen>
+#include <QPoint>
 
 QMap<QStyle::PixelMetric, int> CustomUiStyle::pixel_metrics;
 
@@ -1490,41 +1488,17 @@ void CustomUiStyle::drawCEHeaderSection(ControlElement element, const QStyleOpti
 	}
 
 	// Try to determine column information from the header widget
-	int section_idx = 0; // Default to 0 (first) if we can't determine
-
-	// Try to get section information from QHeaderView
-	const QHeaderView *header_view =
-					qobject_cast<const QHeaderView *>(widget);
-
-	if(header_view)
-	{
-		/* For section index, we need to find which section this rect corresponds to
-		 * We'll approximate by finding the section at the center of our rect */
-		section_idx = header_view->logicalIndexAt(header_opt->rect.center());
-
-		if(section_idx < 0)
-			section_idx = 0; // Fallback to first section
-	}
+	const QHeaderView *header_view = qobject_cast<const QHeaderView *>(widget);
 
 	painter->save();
-	painter->setBrush(bg_color);
-	painter->setPen(QPen(border_color, PenWidth));
 
-	QPainterPath shape = createControlShape(header_opt->rect, 0, NoCorners);
-	painter->drawPath(shape);
+	// Fill the background
+	painter->fillRect(header_opt->rect, bg_color);
 
-	// For columns from the second onwards, draw a background-colored line
-	// on the left border to "erase" it and avoid double lines between columns
-	if(section_idx > 0)
-	{
-		painter->setPen(QPen(bg_color, PenWidth));
-
-		// Draw line from 1px below top to 1px above bottom
-		QPoint start(header_opt->rect.left(), header_opt->rect.top() + 1),
-						end(header_opt->rect.left(), header_opt->rect.bottom() - 1);
-
-		painter->drawLine(start, end);
-	}
+	// Draw bottom and right borders
+	painter->setPen(QPen(border_color, 1));
+	painter->drawLine(header_opt->rect.bottomLeft(), header_opt->rect.bottomRight());
+	painter->drawLine(header_opt->rect.topRight(), header_opt->rect.bottomRight());
 
 	painter->restore();
 }
@@ -1775,13 +1749,6 @@ void CustomUiStyle::drawCEScrollBar(ControlElement element, const QStyleOption *
 		QColor bg_color = getStateColor(QPalette::Button, &btn_opt);
 		QColor border_color = getStateColor(QPalette::Midlight, &btn_opt);
 
-		// Apply state-based color modifications
-		/* if(!wgt_st.is_enabled)
-		{
-			bg_color = bg_color.darker(MidFactor);
-			border_color = border_color.darker(MidFactor);
-		}
-		else */
 		if(wgt_st.is_enabled)
 		{
 			if(wgt_st.is_pressed)
@@ -1838,13 +1805,6 @@ void CustomUiStyle::drawCEScrollBar(ControlElement element, const QStyleOption *
 		WidgetState wgt_st(option, widget);
 		QColor bg_color = getStateColor(QPalette::Button, option);
 		QColor border_color = getStateColor(QPalette::Midlight, option);
-
-		/* if(!wgt_st.is_enabled)
-		{
-			bg_color = bg_color.darker(MidFactor);
-			border_color = border_color.darker(MidFactor);
-		}
-		else */
 
 		if(wgt_st.is_enabled)
 		{
@@ -1912,14 +1872,6 @@ void CustomUiStyle::drawSpinBoxButton(const QStyleOptionSpinBox *option, QPainte
 	// Use the same color logic as button panels
 	QColor bg_color = getStateColor(QPalette::Button, option),
 		   border_color = getStateColor(QPalette::Midlight, option);
-
-	// Apply state-based color modifications (same as drawPEButtonPanel)
-	/* if(!wgt_st.is_enabled)
-	{
-		bg_color = bg_color.darker(MinFactor);
-		border_color = bg_color.darker(MinFactor);
-	}
-	else */
 
 	if(wgt_st.is_enabled)
 	{

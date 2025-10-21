@@ -278,6 +278,10 @@ DataGridWidget::DataGridWidget(const QString &sch_name, const QString &tab_name,
 		truncate_enabled = value;
 	});
 
+	connect(duplicate_tb, &QToolButton::clicked, this, [this](){
+		emit s_gridDuplicationRequested(this);
+	});
+
 	/* Installing event filters in the menus to override their
 	 * default position */
 	fks_menu.installEventFilter(this);

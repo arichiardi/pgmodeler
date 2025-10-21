@@ -41,7 +41,6 @@ DataHandlingForm::DataHandlingForm(QWidget * parent, Qt::WindowFlags f): QDialog
 		fnt.setWeight(QFont::Medium);
 		btn->setFont(fnt);
 		GuiUtilsNs::configureWidgetFont(btn, GuiUtilsNs::MediumFontFactor);
-		//GuiUtilsNs::updateDropShadow(btn);
 	}
 
 	refresh_tb->setToolTip(refresh_tb->toolTip() + QString(" (%1)").arg(refresh_tb->shortcut().toString()));
@@ -64,10 +63,13 @@ DataHandlingForm::DataHandlingForm(QWidget * parent, Qt::WindowFlags f): QDialog
 	connect(schema_cmb, &QComboBox::currentIndexChanged, this, &DataHandlingForm::enableRefreshButton);
 	connect(table_cmb, &QComboBox::currentIndexChanged, this, &DataHandlingForm::enableRefreshButton);
 
-	connect(table_cmb, &QComboBox::activated, this, [this](){
+	auto add_data_grid_lmb = [this](){
 		addDataGrid(schema_cmb->currentText(), table_cmb->currentText(), "",
 								static_cast<ObjectType>(table_cmb->currentData().toUInt()));
-	});
+	};
+
+	connect(table_cmb, &QComboBox::activated, this, add_data_grid_lmb);
+	connect(browse_data_tb, &QToolButton::clicked, this, add_data_grid_lmb);
 
 	connect(new_window_tb, &QToolButton::clicked, this, [this](){
 			openNewWindow(tmpl_conn_params);
@@ -208,6 +210,7 @@ void DataHandlingForm::setCurrentDataGrid(int tab_idx)
 		connect(data_grid_wgt, &DataGridWidget::s_pasteEnabled, paste_tb, &QToolButton::setEnabled);
 
 		connect(data_grid_wgt, &DataGridWidget::s_dataModified, this, &DataHandlingForm::setDataGridModified);
+		connect(data_grid_wgt, &DataGridWidget::s_gridDuplicationRequested, this, &DataHandlingForm::duplicateDataGrid);
 
 		connect(data_grid_wgt, &DataGridWidget::s_browseTableRequested, this,
 						qOverload<const QString &, const QString &, const QString &, ObjectType>(&DataHandlingForm::addDataGrid));
@@ -241,6 +244,11 @@ void DataHandlingForm::setDataGridModified(bool modified)
 		tab_txt.remove(mod_str);
 
 	data_grids_tbw->setTabText(idx, tab_txt);
+}
+
+void DataHandlingForm::duplicateDataGrid(DataGridWidget *grid)
+{
+	Messagebox::info("Duplicate Grid!");
 }
 
 void DataHandlingForm::closeDataGrid(int idx, bool confirm_close)
@@ -330,8 +338,11 @@ void DataHandlingForm::listTables()
 
 void DataHandlingForm::enableRefreshButton()
 {
-	refresh_tb->setEnabled(schema_cmb->currentIndex() > 0 &&
-												 table_cmb->currentIndex() > 0);
+	bool enable = schema_cmb->currentIndex() > 0 &&
+								table_cmb->currentIndex() > 0;
+
+	refresh_tb->setEnabled(enable);
+	browse_data_tb->setEnabled(enable);
 }
 
 void DataHandlingForm::listObjects(QComboBox *combo, std::vector<ObjectType> obj_types, const QString &schema)

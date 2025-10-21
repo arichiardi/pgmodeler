@@ -98,6 +98,9 @@ class __libgui DataHandlingForm: public QDialog, public Ui::DataHandlingForm {
 		/*! \brief Appeds or removes the '*' to the tab name that called this slot indicating
 		 *  depending on the value of 'modified', indicating that the tab has unsaved modifications */
 		void setDataGridModified(bool modified);
+
+		//! \brief Creates a new data grid by copying the filtering options of the provided grid
+		void duplicateDataGrid(DataGridWidget *grid);
 };
 
 #endif
