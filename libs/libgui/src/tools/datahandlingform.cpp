@@ -246,11 +246,6 @@ void DataHandlingForm::setDataGridModified(bool modified)
 	data_grids_tbw->setTabText(idx, tab_txt);
 }
 
-void DataHandlingForm::duplicateDataGrid(DataGridWidget *grid)
-{
-	Messagebox::info("Duplicate Grid!");
-}
-
 void DataHandlingForm::closeDataGrid(int idx, bool confirm_close)
 {
 	if(confirm_close)
@@ -286,10 +281,15 @@ void DataHandlingForm::closeDataGrid(int idx, bool confirm_close)
 	}
 }
 
-void DataHandlingForm::addDataGrid(const QString &schema, const QString &table, const QString &filter, ObjectType obj_type)
+DataGridWidget *DataHandlingForm::addDataGrid(const QString &schema, const QString &table, const QString &filter, ObjectType obj_type)
+{
+	return addDataGrid(schema, table, filter, obj_type, true);
+}
+
+DataGridWidget *DataHandlingForm::addDataGrid(const QString &schema, const QString &table, const QString &filter, ObjectType obj_type, bool retrieve_data)
 {
 	if(table_cmb->currentIndex() <= 0)
-		return;
+		return nullptr;
 
 	DataGridWidget *data_grid_wgt = new DataGridWidget(schema, table, obj_type, tmpl_conn_params);
 	QString data_grid_name = schema + "." + table;
@@ -304,11 +304,66 @@ void DataHandlingForm::addDataGrid(const QString &schema, const QString &table, 
 	try
 	{	
 		data_grid_wgt->filter_txt->setPlainText(filter);
-		data_grid_wgt->retrieveData();
+
+		if(retrieve_data)
+			data_grid_wgt->retrieveData();
 	}
 	catch(Exception &e)
 	{
 		Messagebox::error(e, PGM_FUNC, PGM_FILE, PGM_LINE);
+	}
+
+	return data_grid_wgt;
+}
+
+void DataHandlingForm::duplicateDataGrid(DataGridWidget *grid)
+{
+	bool toggle_filter = grid->isFilterToggled();
+	DataGridWidget *data_grid_wgt =
+			addDataGrid(grid->sch_name, grid->tab_name,
+									grid->filter_txt->toPlainText(),
+									grid->obj_type, false);
+
+	if(data_grid_wgt)
+	{
+		// Setting the filter tab visibility
+		filter_tb->setChecked(toggle_filter);
+		data_grid_wgt->limit_spb->setValue(grid->limit_spb->value());
+
+		// Setting the same order by columns
+		for(int row = 0; row < grid->ord_columns_lst->count(); row++)
+			data_grid_wgt->ord_columns_lst->addItem(grid->ord_columns_lst->item(row)->text());
+
+		data_grid_wgt->asc_rb->setChecked(grid->asc_rb->isChecked());
+		data_grid_wgt->desc_rb->setChecked(grid->desc_rb->isChecked());
+
+		try
+		{
+			QListWidgetItem *orig_item = nullptr, *new_item = nullptr;
+			data_grid_wgt->retrieveData();
+
+			/* After retrieving the data of the duplicate data grid we
+			 * need to replicate the selected/visible columns */
+			for(int row = 0; row < grid->columns_lst->count(); row++)
+			{
+				orig_item = grid->columns_lst->item(row);
+				new_item = data_grid_wgt->columns_lst->item(row);
+
+				/* Ignoring null items or items that has different texts
+				 * This may happen if the table structure is changed before
+				 * the grid is duplicated */
+				if((!orig_item || !new_item) ||
+					 (orig_item->text() != new_item->text()))
+					continue;
+
+				new_item->setCheckState(orig_item->checkState());
+				data_grid_wgt->toggleColumnDisplay(new_item);
+			}
+		}
+		catch(Exception &e)
+		{
+			Messagebox::error(e, PGM_FUNC, PGM_FILE, PGM_LINE);
+		}
 	}
 }
 

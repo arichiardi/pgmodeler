@@ -86,8 +86,14 @@ class __libgui DataHandlingForm: public QDialog, public Ui::DataHandlingForm {
 
 		void reject() override;
 
-		//! \brief Adds a new data grid by automatically loading the data of the specified table with the specified filter
-		void addDataGrid(const QString &schema, const QString &table, const QString &filter, ObjectType obj_type);
+		/*! \brief Adds a new data grid by automatically loading the data of the specified table with the specified filter
+		 *  The optional retrieve_data controls wheter the data must be retrieve right after adding the data grid. */
+		DataGridWidget *addDataGrid(const QString &schema, const QString &table, const QString &filter,
+																ObjectType obj_type, bool retrieve_data);
+
+		/*! \brief Adds a new data grid by automatically loading the data of the specified table with the specified filter
+		 *  This version automatically retrive the data of the added data grid */
+		DataGridWidget *addDataGrid(const QString &schema, const QString &table, const QString &filter, ObjectType obj_type);
 
 		//! \brief List the tables based upon the current schema
 		void listTables();
