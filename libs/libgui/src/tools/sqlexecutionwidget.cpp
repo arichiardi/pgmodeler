@@ -25,6 +25,8 @@
 #include "messagebox.h"
 #include "pgmodelerguiplugin.h"
 #include <QClipboard>
+#include <QButtonGroup>
+#include <qnamespace.h>
 
 std::map<QString, QString> SQLExecutionWidget::cmd_history;
 int SQLExecutionWidget::cmd_history_max_len {1000};
@@ -143,16 +145,10 @@ SQLExecutionWidget::SQLExecutionWidget(QWidget * parent) : QWidget(parent)
 			sql_cmd_txt->setFocus();
 	});
 
-	connect(exact_chk, &QCheckBox::toggled, this, &SQLExecutionWidget::filterResults);
-	connect(exact_chk, &QCheckBox::toggled, this, [this](bool checked){
-		regexp_chk->setChecked(false);
-		regexp_chk->setEnabled(!checked);
-		case_sensitive_chk->setChecked(false);
-		case_sensitive_chk->setEnabled(!checked);
-	});
 
-	connect(regexp_chk, &QCheckBox::toggled, this, &SQLExecutionWidget::filterResults);
-	connect(case_sensitive_chk, &QCheckBox::toggled, this, &SQLExecutionWidget::filterResults);
+	connect(all_words_tb, &QCheckBox::toggled, this, &SQLExecutionWidget::filterResults);
+	connect(regexp_tb, &QCheckBox::toggled, this, &SQLExecutionWidget::filterResults);
+	connect(case_sensitive_tb, &QCheckBox::toggled, this, &SQLExecutionWidget::filterResults);
 
 	connect(action_load, &QAction::triggered, this, &SQLExecutionWidget::loadCommands);
 	connect(action_save, &QAction::triggered, this, &SQLExecutionWidget::saveCommands);
@@ -584,21 +580,36 @@ void SQLExecutionWidget::finishExecution(int rows_affected)
 void SQLExecutionWidget::filterResults()
 {
 	QModelIndexList list;
-	Qt::MatchFlags flags = Qt::MatchStartsWith;
 	int rows_cnt = results_tbw->model()->rowCount();
 
-	if(exact_chk->isChecked())
-		flags = Qt::MatchExactly;
-	else if(regexp_chk->isChecked())
-		flags = Qt::MatchRegularExpression;
+	// Filtering using regular expressions
+	if(regexp_tb->isChecked())
+	{
+		QRegularExpression pattern { filter_edt->text() };
+
+		if(!case_sensitive_tb->isChecked())
+			pattern.setPatternOptions(QRegularExpression::CaseInsensitiveOption);
+
+		if(all_words_tb->isChecked())
+			pattern.setPattern(QString("^%1$").arg(pattern.pattern()));
+
+		list = results_tbw->model()->match(results_tbw->model()->index(0, columns_cmb->currentIndex()),
+																			 Qt::DisplayRole, pattern, -1, Qt::MatchRegularExpression);
+	}
+	// Filtering using normal text matching
 	else
-		flags = Qt::MatchContains;
+	{
+		Qt::MatchFlags flags = Qt::MatchContains;
 
-	if(case_sensitive_chk->isChecked())
-		flags |= Qt::MatchCaseSensitive;
+		if(all_words_tb->isChecked())
+			flags = Qt::MatchExactly;
+		
+		if(case_sensitive_tb->isChecked())
+			flags |= Qt::MatchCaseSensitive;
 
-	list = results_tbw->model()->match(results_tbw->model()->index(0, columns_cmb->currentIndex()),
-																		 Qt::DisplayRole, filter_edt->text(), -1, flags);
+		list = results_tbw->model()->match(results_tbw->model()->index(0, columns_cmb->currentIndex()),
+																			 Qt::DisplayRole, filter_edt->text(), -1, flags);
+	}
 
 	results_tbw->blockSignals(true);
 	results_tbw->setUpdatesEnabled(false);

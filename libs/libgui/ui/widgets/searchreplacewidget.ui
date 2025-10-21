@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>458</width>
+    <width>459</width>
     <height>70</height>
    </rect>
   </property>
@@ -137,25 +137,6 @@
        </property>
        <property name="toolButtonStyle">
         <enum>Qt::ToolButtonStyle::ToolButtonIconOnly</enum>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLabel" name="search_lbl_2">
-       <property name="minimumSize">
-        <size>
-         <width>0</width>
-         <height>0</height>
-        </size>
-       </property>
-       <property name="text">
-        <string>Options:</string>
-       </property>
-       <property name="margin">
-        <number>0</number>
-       </property>
-       <property name="indent">
-        <number>10</number>
        </property>
       </widget>
      </item>
