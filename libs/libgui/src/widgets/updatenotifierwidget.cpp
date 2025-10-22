@@ -26,10 +26,13 @@ UpdateNotifierWidget::UpdateNotifierWidget(QWidget *parent) : QWidget(parent)
 	setupUi(this);
 	setWindowFlags(Qt::Widget | Qt::FramelessWindowHint);
 
-	show_no_upd_msg=false;
-	update_chk_reply=nullptr;
+	show_no_upd_msg = false;
+	update_chk_reply = nullptr;
 	frame->installEventFilter(this);
+
 	GuiUtilsNs::createDropShadow(this, 5, 5, 30);
+	GuiUtilsNs::configureWidgetFont(ver_num_lbl, GuiUtilsNs::BigFontFactor);
+	GuiUtilsNs::configureWidgetFont(ver_date_lbl, GuiUtilsNs::BigFontFactor);
 
 	connect(&update_chk_manager, &QNetworkAccessManager::finished, this, &UpdateNotifierWidget::handleUpdateChecked);
 
@@ -50,9 +53,6 @@ UpdateNotifierWidget::UpdateNotifierWidget(QWidget *parent) : QWidget(parent)
 		emit s_hideRequested();
 	});
 
-	GuiUtilsNs::configureWidgetFont(changelog_txt, GuiUtilsNs::MediumFontFactor);
-	GuiUtilsNs::configureWidgetFont(ver_num_lbl, GuiUtilsNs::BigFontFactor);
-	GuiUtilsNs::configureWidgetFont(title_lbl, GuiUtilsNs::BigFontFactor);
 	this->adjustSize();
 }
 
@@ -79,6 +79,11 @@ bool UpdateNotifierWidget::eventFilter(QObject *obj, QEvent *event)
 	}
 
 	return QWidget::eventFilter(obj, event);
+}
+
+void UpdateNotifierWidget::showEvent(QShowEvent *)
+{
+	GuiUtilsNs::configureTextEditFont<QTextEdit>(changelog_txt);
 }
 
 void UpdateNotifierWidget::activateLink(const QString &link)

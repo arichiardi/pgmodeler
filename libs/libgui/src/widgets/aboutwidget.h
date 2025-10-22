@@ -32,6 +32,9 @@
 class __libgui AboutWidget: public QWidget, public Ui::AboutWidget {
 	Q_OBJECT
 
+	protected:
+		void showEvent(QShowEvent *) override;
+
 	public:
 		AboutWidget(QWidget *parent = nullptr);
 		
